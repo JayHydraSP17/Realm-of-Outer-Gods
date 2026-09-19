@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mythic Covenant — Party Sheets</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --void:#08080a;--char:#100f12;--char2:#16151a;--panel:#1c1a21;--panel2:#232029;
+    --line:#332e38;--line2:#46404e;--bone:#ece6da;--bone-dim:#b3aca0;--bone-faint:#7c766e;
+    --crimson:#e0565b;--crimson-deep:#8a2326;--gold:#d8b25a;--gold-soft:#ecd28f;--amber:#d8a24a;
+    --shadow:0 8px 30px rgba(0,0,0,.6);--glow:0 0 18px rgba(224,86,91,.3);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Cormorant Garamond',serif;background:
+    radial-gradient(1100px 560px at 82% -8%, rgba(224,86,91,.07), transparent 60%),
+    radial-gradient(900px 500px at -8% 108%, rgba(216,178,90,.05), transparent 60%),var(--void);
+    color:var(--bone);font-size:18px;line-height:1.5;min-height:100vh;padding:40px 18px 90px}
+  .wrap{max-width:1080px;margin:0 auto}
+  header{text-align:center;margin-bottom:8px}
+  .eyebrow{font-family:'Cinzel',serif;letter-spacing:6px;font-size:12px;text-transform:uppercase;color:var(--crimson);opacity:.85;margin-bottom:10px}
+  h1{font-family:'Cinzel Decorative',serif;font-weight:900;font-size:clamp(30px,6vw,56px);line-height:1;
+    background:linear-gradient(180deg,#fff,var(--bone) 30%,var(--gold-soft) 130%);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .sub{font-family:'Cinzel',serif;font-style:italic;color:var(--bone-dim);margin-top:10px;font-size:16px;letter-spacing:1px}
+  .synced-note{font-family:'Fira Code',monospace;font-size:12px;color:var(--bone-faint);margin-top:14px}
+  .synced-note b{color:#7c7}
+  h2.grouphead{font-family:'Cinzel',serif;font-size:15px;letter-spacing:2px;text-transform:uppercase;color:var(--gold-soft);
+    margin:38px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+  h2.grouphead::before{content:"";width:22px;height:2px;background:var(--crimson);box-shadow:var(--glow)}
+  .grid{display:grid;gap:15px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+  a.sheet{display:block;text-decoration:none;background:linear-gradient(180deg,var(--panel),var(--char2));
+    border:1px solid var(--line);border-radius:14px;padding:20px 20px;box-shadow:var(--shadow);
+    position:relative;overflow:hidden;transition:.16s}
+  a.sheet::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--crimson);opacity:.55;transition:.16s}
+  a.sheet:hover{transform:translateY(-3px);border-color:var(--crimson);box-shadow:var(--glow)}
+  a.sheet:hover::before{opacity:1}
+  a.sheet.rules::before{background:var(--gold)}
+  a.sheet .nm{font-family:'Cinzel Decorative',serif;font-size:22px;color:var(--bone);line-height:1.1}
+  a.sheet .ti{font-family:'Cinzel',serif;font-size:13px;color:var(--gold-soft);margin-top:7px;letter-spacing:.5px}
+  a.sheet .ti.tbd{color:var(--amber);background:rgba(216,162,74,.1);border:1px solid #6a5a2a;border-radius:6px;padding:2px 8px;display:inline-block;font-family:'Fira Code',monospace;font-size:11px}
+  a.sheet .go{position:absolute;right:16px;bottom:14px;color:var(--bone-faint);font-family:'Fira Code',monospace;font-size:12px;transition:.16s}
+  a.sheet:hover .go{color:var(--crimson)}
+  .footer{text-align:center;margin-top:46px;padding-top:18px;border-top:1px solid var(--line);color:var(--bone-faint);font-size:13px;font-family:'Fira Code',monospace}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">The Dark Pantheon</div>
+    <h1>Party Sheets</h1>
+    <div class="sub">Mythic Covenant · live combat &amp; ability references</div>
+    <div class="synced-note">Trackers sync across the table in real time · look for <b>●&nbsp;synced</b> in the corner of each sheet</div>
+  </header>
+
+  <h2 class="grouphead">Player Characters</h2>
+  <div class="grid" id="grid-players"></div>
+
+  <h2 class="grouphead">Reference</h2>
+  <div class="grid" id="grid-reference"></div>
+
+  <div class="footer">The Dark Pantheon · edit the SHEETS array at the bottom of this file to rename cards or add players.</div>
+</div>
+
+<script>
+/* ===== EDIT ME: player-facing sheets only. `file` must match the deployed filename. ===== */
+/* Titles I couldn't confirm are marked TBD — replace the subtitle text to set them.        */
+var SHEETS = [
+  { group:'players', file:'loryana.html',     name:'Loryana',     subtitle:'The Hand of Necrolien', tbd:false },
+  { group:'players', file:'hasani.html',      name:'Hasani',     subtitle:'The Scythe of Necrolien', tbd:false },
+  { group:'players', file:'dylan.html',       name:'Dylan',     subtitle:'Flagbearer of Betrayal', tbd:false },
+  { group:'players', file:'sika.html',        name:'Sika',              subtitle:'Mindful Melodies', tbd:false },
+  { group:'players', file:'magnolia.html',      name:'Magnolia',      subtitle:'The Radiant Tempest', tbd:false },
+  { group:'players', file:'beatrix.html',      name:'Beatrix',     subtitle:'The Harvesting Princess', tbd:false },
+  { group:'players', file:'yoha.html',      name:'Yohan',     subtitle:'Sands of Momentum', tbd:false },
+  { group:'players', file:'melissa.html',      name:'Melissa',     subtitle:'Seals of the Ancients', tbd:false },
+  { group:'reference', file:'companion.html', name:'Field Companion', subtitle:'Improved D&D — player toolkit', rules:true },
+  { group:'reference', file:'rules.html',     name:'Mythic Covenant', subtitle:'System reference', rules:true }
+];
+
+function card(s){
+  var a=document.createElement('a');
+  a.className='sheet'+(s.rules?' rules':'');
+  a.href=s.file;
+  var ti = s.tbd
+    ? '<div class="ti tbd">set subtitle — TBD</div>'
+    : '<div class="ti">'+ (s.subtitle||'') +'</div>';
+  a.innerHTML='<div class="nm">'+s.name+'</div>'+ti+'<div class="go">open →</div>';
+  return a;
+}
+SHEETS.forEach(function(s){
+  var g=document.getElementById('grid-'+s.group);
+  if(g) g.appendChild(card(s));
+});
+</script>
+</body>
+</html>
