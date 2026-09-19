@@ -1,0 +1,2273 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loryana &middot; The Hand of Necrolien</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --void:#070608; --char:#100d14; --panel:#17131e; --panel2:#1e1826;
+    --line:#2e2638; --line2:#453a52;
+    --bone:#ece6d8; --dim:#a9a0b2; --dimmer:#7a7288;
+    --soul:#c2abff; --soul-deep:#7d5cc4; --blood:#d8434f; --gold:#d9b154;
+    --veil:#5fd2c0; --iron:#d9b154; --croq:#e0506b;
+    /* live faction accent, rewritten by JS */
+    --ac:#c2abff; --ac-soft:#c2abff22; --ac-line:#c2abff55;
+    --rib:linear-gradient(90deg,#5fd2c0,#c2abff,#d9b154,#e0506b);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:
+      radial-gradient(1100px 560px at 82% -12%, rgba(194,171,255,.08), transparent 60%),
+      radial-gradient(900px 500px at -10% 108%, rgba(216,67,79,.07), transparent 60%),
+      var(--void);
+    color:var(--bone); font-family:'Cormorant Garamond',Georgia,serif; font-size:18px; line-height:1.55;
+    letter-spacing:.2px; padding:0 0 90px;
+  }
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.045;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+  .wrap{max-width:960px;margin:0 auto;padding:0 22px;position:relative;z-index:1;}
+  @media(min-width:1120px){ .wrap{margin-left:288px;max-width:900px;} }
+
+  h1,h2,h3,h4,.cz{font-family:'Cinzel',serif;font-weight:600;letter-spacing:.02em;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+
+  .rib{height:3px;background:var(--rib);opacity:.45;border-radius:2px;margin:32px 0 24px;}
+  .rib.thin{height:2px;opacity:.28;margin:18px 0;}
+
+  /* ---------- rail ---------- */
+  .rail{position:fixed;left:0;top:0;bottom:0;width:268px;z-index:70;overflow-y:auto;
+    background:linear-gradient(180deg,#120f17,#08070a);border-right:1px solid var(--line);}
+  .rail-brand{padding:22px 18px 14px;border-bottom:1px solid var(--line);}
+  .rail-brand .eb{font-family:'Cinzel';font-size:10px;letter-spacing:.26em;color:var(--soul);text-transform:uppercase;}
+  .rail-brand .nm{font-family:'Cinzel Decorative';font-weight:900;font-size:31px;line-height:1.05;margin:8px 0 5px;
+    background:linear-gradient(180deg,#fff,var(--bone) 40%,var(--soul) 130%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+  .rail-brand .lv{font-family:'IBM Plex Mono';font-size:11px;color:var(--dim);}
+  .rail-search{margin:13px 14px 6px;display:flex;align-items:center;gap:9px;padding:9px 11px;cursor:pointer;
+    background:#150f1c;border:1px solid var(--line);border-radius:9px;}
+  .rail-search:hover,.rail-search:focus-visible{border-color:var(--ac);background:#1a1324;}
+  .rail-search .mag{width:11px;height:11px;border:1.5px solid var(--ac);border-radius:50%;flex:none;position:relative;}
+  .rail-search .mag::after{content:"";position:absolute;right:-4px;bottom:-4px;width:6px;height:1.5px;background:var(--ac);transform:rotate(45deg);}
+  .rail-search .lbl{font-family:'Cinzel';font-size:12.5px;color:var(--dim);flex:1;}
+  .rail-search .kbd{font-family:'IBM Plex Mono';font-size:9.5px;color:var(--dimmer);border:1px solid var(--line);padding:1px 4px;border-radius:4px;}
+  .rail-nav{padding:8px 10px 26px;}
+  .rail-grp{font-family:'IBM Plex Mono';font-size:9.5px;letter-spacing:.2em;color:var(--dimmer);text-transform:uppercase;margin:14px 8px 6px;}
+  .rail-btn{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:9px 11px;margin-bottom:2px;
+    background:none;border:1px solid transparent;border-radius:8px;color:var(--dim);cursor:pointer;
+    font-family:'Cinzel';font-size:14px;font-weight:500;}
+  .rail-btn .gl{width:7px;height:7px;background:var(--c,var(--ac));flex:none;transform:rotate(45deg);opacity:.6;}
+  .rail-btn:hover{color:var(--bone);background:#17111f;}
+  .rail-btn.on{color:#fff;background:#1d1527;border-color:var(--line2);}
+  .rail-btn.on .gl{opacity:1;box-shadow:0 0 9px var(--c,var(--ac));}
+  @media(max-width:1119px){
+    .rail{position:static;width:auto;display:flex;flex-wrap:wrap;gap:6px;padding:12px;border-right:none;border-bottom:1px solid var(--line);}
+    .rail-brand{width:100%;padding:4px 6px 12px;border:none;}
+    .rail-search{margin:0;flex:1 1 170px;}
+    .rail-nav{display:flex;flex-wrap:wrap;gap:5px;padding:6px 0 0;width:100%;}
+    .rail-grp{display:none;}
+    .rail-btn{width:auto;padding:7px 12px;font-size:13px;border:1px solid var(--line);}
+  }
+
+  /* ---------- tracker bar ---------- */
+  .bar{position:sticky;top:0;z-index:60;display:flex;gap:11px;flex-wrap:wrap;
+    background:linear-gradient(180deg,rgba(18,15,23,.97),rgba(8,7,10,.97));
+    backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);
+    border:1px solid var(--line);border-top:3px solid var(--ac);border-radius:0 0 14px 14px;
+    padding:13px 15px;margin-bottom:12px;box-shadow:0 14px 30px #000a;transition:border-color .5s;}
+  .tk{background:linear-gradient(180deg,#1a1522,#141019);border:1px solid var(--line);border-radius:11px;padding:10px 12px;min-width:172px;}
+  .tk-h{font-family:'Cinzel';font-size:11.5px;letter-spacing:.1em;color:var(--ac);display:flex;align-items:center;gap:7px;margin-bottom:8px;transition:color .5s;}
+  .tk-h .d{width:7px;height:7px;background:var(--ac);transform:rotate(45deg);flex:none;transition:background .5s;}
+  .tk-r{display:flex;align-items:center;gap:6px;}
+  .btn{font-family:'Cinzel';min-width:28px;height:28px;border-radius:7px;border:1px solid var(--line);
+    background:#171120;color:var(--bone);font-size:15px;cursor:pointer;line-height:1;padding:0 7px;transition:.14s;}
+  .btn:hover{border-color:var(--ac);color:#fff;background:#1e1629;}
+  .btn.sm{height:22px;font-size:11px;min-width:24px;padding:0 6px;}
+  .cur{font-family:'Cinzel';font-weight:700;font-size:22px;color:#fff;min-width:44px;text-align:center;}
+  .sl{color:var(--dimmer);}
+  .max{font-family:'Cinzel';font-weight:600;font-size:16px;width:62px;text-align:center;color:var(--gold);
+    background:#100c15;border:1px solid var(--line);border-radius:6px;padding:3px 2px;-moz-appearance:textfield;}
+  .max::-webkit-outer-spin-button,.max::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  .rst{margin-left:auto;width:28px;height:28px;border-radius:7px;border:1px solid var(--line);background:#171120;color:var(--dim);cursor:pointer;}
+  .rst:hover{border-color:var(--blood);color:var(--blood);}
+  .meter{height:5px;background:#0d0a11;border-radius:3px;margin-top:8px;overflow:hidden;border:1px solid #241d2c;}
+  .meter i{display:block;height:100%;transition:width .3s;}
+  .tmp{display:flex;align-items:center;gap:6px;font-family:'IBM Plex Mono';font-size:10.5px;color:var(--dim);margin-top:7px;}
+  .tmp input{width:56px;background:#100c15;border:1px solid var(--line);border-radius:5px;color:var(--veil);
+    font-family:'Cinzel';font-size:14px;text-align:center;padding:2px;}
+  .bar-tools{display:flex;gap:9px;align-items:center;width:100%;padding-top:4px;border-top:1px solid var(--line);flex-wrap:wrap;}
+  .bar-tools button{font-family:'IBM Plex Mono';font-size:10.5px;color:var(--dim);background:#150f1c;
+    border:1px solid var(--line);border-radius:6px;padding:5px 9px;cursor:pointer;}
+  .bar-tools button:hover{color:var(--ac);border-color:var(--ac);}
+  .savehint{font-family:'IBM Plex Mono';font-size:10px;color:var(--dimmer);margin-left:auto;}
+  .savehint.flash{color:var(--ac);}
+  .bar.fold .tk{display:none;}
+  .pips{display:flex;gap:5px;align-items:center;margin-top:8px;flex-wrap:wrap;}
+  .pip-b{width:22px;height:22px;border-radius:6px;border:1.5px solid var(--line2);background:#100c15;cursor:pointer;padding:0;transition:.12s;}
+  .pip-b.live{background:var(--ac);border-color:var(--ac);box-shadow:0 0 8px var(--ac-line);}
+  .pip-b.rx{border-radius:50%;}
+  .pip-b.rx.live{background:var(--gold);border-color:var(--gold);box-shadow:0 0 8px #d9b15466;}
+  .pip-b.fl.live{background:var(--veil);border-color:var(--veil);box-shadow:0 0 8px #5fd2c066;}
+  .wep-slot{width:100%;text-align:left;background:#100c15;border:1px solid var(--line);border-radius:9px;
+    padding:8px 10px;cursor:pointer;color:var(--bone);transition:.14s;}
+  .wep-slot:hover{border-color:var(--ac);background:#181022;}
+  .wep-slot .nm{font-family:'Cinzel';font-size:15px;color:#fff;display:block;line-height:1.2;}
+  .wep-slot .hint{font-family:'IBM Plex Mono';font-size:9.5px;color:var(--dimmer);letter-spacing:.06em;}
+  .wep-edit{width:100%;margin-top:7px;font-size:13px;padding:5px 8px;}
+
+  /* ---------- collapsible trackers ---------- */
+  .tk-h .caret{margin-left:auto;width:20px;height:20px;border-radius:5px;border:1px solid var(--line);
+    background:#100c15;color:var(--dim);cursor:pointer;font-size:10px;line-height:1;padding:0;}
+  .tk-h .caret:hover{border-color:var(--ac);color:var(--ac);}
+  .tk-sum{display:none;font-family:'Cinzel';font-size:17px;color:#fff;}
+  .tk-sum span{font-family:'IBM Plex Mono';font-size:11px;color:var(--dim);margin-left:6px;}
+  .tk.min{min-width:0;}
+  .tk.min .tk-body{display:none;} .tk.min .tk-sum{display:block;}
+  .bar.compact .tk{padding:7px 9px;min-width:0;}
+  .bar.compact .cur{font-size:17px;min-width:34px;}
+  .bar.compact .tk-h{font-size:10.5px;margin-bottom:5px;}
+  .minibar{display:none;width:100%;gap:14px;flex-wrap:wrap;align-items:center;font-family:'IBM Plex Mono';font-size:12px;color:var(--dim);}
+  .minibar b{font-family:'Cinzel';font-size:16px;color:#fff;margin-left:5px;}
+  .bar.fold .minibar{display:flex;}
+  .dmgbox{display:flex;gap:5px;align-items:center;margin-top:8px;}
+  .dmgbox input{width:64px;background:#100c15;border:1px solid var(--line);border-radius:6px;color:#fff;
+    font-family:'Cinzel';font-size:15px;text-align:center;padding:3px;}
+
+  /* ---------- relationships & grades ---------- */
+  .relrow{display:flex;align-items:center;gap:9px;padding:6px 2px;border-bottom:1px solid #1f1927;flex-wrap:wrap;}
+  .relrow.party{background:linear-gradient(90deg,var(--ac-soft),transparent);border-radius:6px;}
+  .relrow .rn{flex:1;min-width:130px;font-size:15.5px;}
+  .party-toggle{width:24px;height:24px;border-radius:6px;border:1px solid var(--line);background:#100c15;
+    color:var(--dimmer);cursor:pointer;font-size:12px;line-height:1;padding:0;}
+  .party-toggle.on{color:var(--gold);border-color:var(--gold);background:#d9b15418;}
+  .tierpick{display:flex;gap:3px;}
+  .tierpick button{width:26px;height:24px;border-radius:5px;border:1px solid var(--line);background:#100c15;
+    color:var(--dimmer);cursor:pointer;font-family:'Cinzel';font-size:12px;padding:0;}
+  .tierpick button.sel{color:var(--void);font-weight:700;}
+  .tierpick button.sel[data-t="0"]{background:#d8434f;border-color:#d8434f;}
+  .tierpick button.sel[data-t="1"]{background:#9c7c2c;border-color:#9c7c2c;}
+  .tierpick button.sel[data-t="2"]{background:#c2abff;border-color:#c2abff;}
+  .tierpick button.sel[data-t="3"]{background:#d9b154;border-color:#d9b154;}
+  .tierpick button.sel[data-t="4"]{background:#5fd2c0;border-color:#5fd2c0;}
+  .tierpick button.sel[data-t="5"]{background:#fff;border-color:#fff;}
+  .relx{width:24px;height:24px;border-radius:6px;border:1px solid var(--line);background:#100c15;color:var(--dimmer);cursor:pointer;font-size:11px;padding:0;}
+  .relx:hover{color:var(--blood);border-color:var(--blood);}
+  .rel-filter{display:flex;gap:6px;margin:10px 0;}
+  .rel-filter button{font-family:'IBM Plex Mono';font-size:11px;color:var(--dim);background:#150f1c;
+    border:1px solid var(--line);border-radius:6px;padding:5px 11px;cursor:pointer;}
+  .rel-filter button.on{color:#fff;border-color:var(--ac);background:var(--ac-soft);}
+  .gradechip{font-family:'Cinzel';font-weight:700;font-size:13px;min-width:32px;height:24px;border-radius:6px;
+    border:1px solid var(--line);background:#100c15;color:var(--bone);cursor:pointer;padding:0 6px;}
+  .gradechip.g-S{background:#fff;color:#100c15;border-color:#fff;}
+  .gradechip.g-A{background:#5fd2c0;color:#0d1a17;border-color:#5fd2c0;}
+  .gradechip.g-B{background:#d9b154;color:#1c1505;border-color:#d9b154;}
+  .gradechip.g-C{background:#c2abff;color:#150f22;border-color:#c2abff;}
+  .gradechip.g-D{background:#9c7c2c;color:#1a1405;border-color:#9c7c2c;}
+  .gradechip.g-F{background:#d8434f;color:#210608;border-color:#d8434f;}
+  .chip{font-family:'IBM Plex Mono';font-size:10.5px;letter-spacing:.06em;border:1px solid var(--line);
+    border-radius:20px;padding:4px 11px;color:var(--dim);cursor:pointer;background:#150f1c;}
+  .chip.ready{color:#fff;border-color:var(--veil);background:#5fd2c022;}
+  .chip.used{color:var(--dimmer);}
+  .veilrow{display:flex;gap:9px;align-items:center;padding:9px 11px;background:#150f1c;border:1px solid var(--line);
+    border-left:3px solid var(--veil);border-radius:10px;margin-bottom:6px;flex-wrap:wrap;}
+  .veilrow .vn{flex:1;min-width:140px;font-family:'Cinzel';font-size:16px;color:#fff;}
+
+  /* ---------- panes ---------- */
+  .pane{display:none;} .pane.on{display:block;}
+  .pane-head{padding:26px 0 4px;}
+  .pane-head .eb{font-family:'Cinzel';font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--soul);}
+  .pane-head h1{font-family:'Cinzel Decorative';font-weight:900;font-size:clamp(28px,5.5vw,46px);color:#fff;line-height:1.05;margin-top:7px;}
+  .pane-head .bl{color:var(--dim);font-size:16px;max-width:64ch;margin-top:8px;}
+  section{margin:30px 0;scroll-margin-top:150px;}
+  section h2{font-size:23px;color:#fff;display:flex;align-items:baseline;gap:11px;margin-bottom:5px;flex-wrap:wrap;}
+  section h2 .sub{font-family:'IBM Plex Mono';font-size:10.5px;letter-spacing:.13em;color:var(--dimmer);text-transform:uppercase;}
+  .lede{font-size:18px;color:var(--bone);max-width:68ch;margin:12px 0 4px;}
+  .note{color:var(--dim);font-size:15px;max-width:70ch;margin-top:8px;}
+  .gm{border-left:3px solid var(--blood);background:#1a0d11aa;padding:11px 15px;margin:14px 0;border-radius:0 8px 8px 0;}
+  .gm b{font-family:'Cinzel';color:var(--blood);font-weight:600;}
+  .quote{font-style:italic;color:var(--soul);border-left:2px solid var(--line2);padding-left:14px;margin:10px 0;max-width:66ch;}
+
+  .card{background:linear-gradient(180deg,#1a1522,#141019);border:1px solid var(--line);border-radius:12px;padding:15px 17px;margin:11px 0;}
+  .card h3{font-size:18px;color:#fff;margin-bottom:3px;display:flex;flex-wrap:wrap;align-items:baseline;gap:9px;}
+  .card h3 .tag{font-family:'IBM Plex Mono';font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--ac);border:1px solid var(--ac-line);border-radius:4px;padding:1px 6px;}
+  .card h3 .tag.gold{color:var(--gold);border-color:#d9b15455;}
+  .card h3 .tag.blood{color:var(--blood);border-color:#d8434f55;}
+  .card h3 .tag.veil{color:var(--veil);border-color:#5fd2c055;}
+  .card p{color:var(--bone);font-size:16px;}
+  .card .cost{font-family:'IBM Plex Mono';font-size:11px;color:var(--dim);margin-bottom:6px;}
+  .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));gap:11px;}
+
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:15.5px;}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top;}
+  th{font-family:'Cinzel';font-weight:600;font-size:12.5px;letter-spacing:.07em;color:var(--ac);}
+  td.n,th.n{font-family:'IBM Plex Mono';font-size:13px;white-space:nowrap;}
+  tr.hl td{background:var(--ac-soft);}
+  ul{margin:8px 0 8px 20px;} li{margin-bottom:5px;}
+  .dl{margin:10px 0;} .dl div{display:flex;gap:12px;padding:6px 0;border-bottom:1px solid var(--line);flex-wrap:wrap;}
+  .dl dt{font-family:'Cinzel';font-size:14.5px;color:var(--gold);min-width:170px;flex:none;}
+  .dl dd{color:var(--bone);font-size:15.5px;flex:1;min-width:220px;}
+
+  /* ---------- balance of power console ---------- */
+  .bop{background:linear-gradient(180deg,#1b1524,#100c16);border:1px solid var(--line);
+    border-top:3px solid var(--ac);border-radius:16px;padding:20px;margin:16px 0 8px;transition:border-color .5s;}
+  .bop-top{display:flex;gap:18px;flex-wrap:wrap;align-items:center;justify-content:space-between;}
+  .bop-read .st{font-family:'Cinzel Decorative';font-weight:900;font-size:34px;color:var(--ac);line-height:1;transition:color .5s;}
+  .bop-read .sub{font-family:'IBM Plex Mono';font-size:11px;color:var(--dim);letter-spacing:.1em;margin-top:5px;}
+  .fac{margin-top:16px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#140f1b;transition:.2s;}
+  .fac.active{border-color:var(--fc);box-shadow:inset 0 0 0 1px var(--fc), 0 0 22px -8px var(--fc);}
+  .fac-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .fac-h .nm{font-family:'Cinzel';font-size:19px;color:var(--fc);font-weight:700;}
+  .fac-h .role{font-family:'IBM Plex Mono';font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dimmer);}
+  .fac-h .state{margin-left:auto;font-family:'Cinzel';font-size:14px;color:#fff;}
+  .track{display:flex;gap:3px;margin:10px 0 6px;}
+  .track button{flex:1;height:22px;border-radius:4px;border:1px solid var(--line);background:#0e0a13;cursor:pointer;
+    font-family:'IBM Plex Mono';font-size:9px;color:var(--dimmer);padding:0;transition:.12s;}
+  .track button.neg{background:#2a1016;}
+  .track button.fill{background:var(--fc);border-color:var(--fc);color:#100c15;}
+  .track button.zero{border-color:var(--line2);}
+  .fac-btns{display:flex;gap:7px;flex-wrap:wrap;align-items:center;}
+  .fac-btns .mi{font-family:'IBM Plex Mono';font-size:11px;color:var(--dim);margin-left:auto;}
+  .flags{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+  .flag{font-family:'IBM Plex Mono';font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+    border:1px solid var(--line);border-radius:20px;padding:4px 11px;color:var(--dim);cursor:pointer;}
+  .flag.on{color:#fff;border-color:var(--ac);background:var(--ac-soft);}
+  .flag.warn.on{color:#f0a0a8;border-color:var(--blood);background:#d8434f22;}
+  .log{font-family:'IBM Plex Mono';font-size:11px;color:var(--dim);margin-top:11px;max-height:96px;overflow-y:auto;}
+  .log div{padding:2px 0;border-bottom:1px dotted #241d2c;}
+
+  /* ---------- stats ---------- */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:9px;margin:12px 0;}
+  .stat{background:#150f1c;border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center;}
+  .stat .lb{font-family:'IBM Plex Mono';font-size:10px;letter-spacing:.14em;color:var(--dim);text-transform:uppercase;}
+  .stat .mo{font-family:'Cinzel';font-size:28px;font-weight:700;color:#fff;line-height:1.1;}
+  .stat input{width:66px;background:#0f0b14;border:1px solid var(--line);border-radius:6px;color:var(--gold);
+    font-family:'Cinzel';font-size:16px;text-align:center;padding:3px;margin-top:3px;}
+  .vitals{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:9px;margin:12px 0;}
+  .vit{background:#150f1c;border:1px solid var(--line);border-radius:10px;padding:9px;text-align:center;}
+  .vit .lb{font-family:'IBM Plex Mono';font-size:9.5px;letter-spacing:.12em;color:var(--dim);text-transform:uppercase;}
+  .vit input{width:100%;background:none;border:none;color:#fff;font-family:'Cinzel';font-size:23px;font-weight:700;
+    text-align:center;border-bottom:1px solid transparent;}
+  .vit input:focus{outline:none;border-bottom-color:var(--ac);}
+  .skl{display:grid;grid-template-columns:repeat(auto-fit,minmax(238px,1fr));gap:1px 16px;}
+  .sk{display:flex;align-items:center;gap:9px;padding:5px 2px;border-bottom:1px solid #1f1927;font-size:15px;}
+  .sk .pip{width:15px;height:15px;border-radius:50%;border:1.5px solid var(--line2);background:#0f0b14;cursor:pointer;flex:none;
+    font-family:'IBM Plex Mono';font-size:8.5px;color:var(--void);text-align:center;line-height:12px;}
+  .sk .pip.p{background:var(--ac);border-color:var(--ac);}
+  .sk .pip.e{background:var(--gold);border-color:var(--gold);color:#2a1f04;}
+  .sk .nm{flex:1;} .sk .ab{font-family:'IBM Plex Mono';font-size:10px;color:var(--dimmer);}
+  .sk .vl{font-family:'Cinzel';font-size:16px;color:#fff;min-width:38px;text-align:right;}
+
+  /* ---------- marks, tree, lists ---------- */
+  .mark{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:11px 13px;background:#150f1c;
+    border:1px solid var(--line);border-left:3px solid var(--croq);border-radius:10px;margin-bottom:7px;}
+  .mark .nm{font-family:'Cinzel';font-size:17px;color:#fff;min-width:130px;}
+  .mark .st{font-family:'IBM Plex Mono';font-size:11.5px;color:var(--dim);flex:1;min-width:190px;}
+  .mark.dying{border-left-color:var(--dimmer);opacity:.65;}
+  .sel{font-family:'Cinzel';font-size:14px;background:#0f0b14;border:1px solid var(--line);color:var(--bone);
+    border-radius:7px;padding:7px 9px;}
+  input[type=text],textarea{font-family:'Cormorant Garamond';background:#0f0b14;border:1px solid var(--line);color:var(--bone);
+    border-radius:7px;padding:8px 10px;width:100%;font-size:15.5px;}
+  textarea{min-height:110px;resize:vertical;line-height:1.6;}
+  .empty{color:var(--dimmer);font-style:italic;font-size:15px;padding:8px 0;}
+  .treegrid{display:grid;grid-template-columns:110px repeat(3,1fr);gap:6px;margin-top:10px;}
+  .treegrid .hd{font-family:'IBM Plex Mono';font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--dimmer);padding:4px 2px;}
+  .node{background:#150f1c;border:1px solid var(--line);border-radius:9px;padding:9px 10px;cursor:pointer;text-align:left;
+    color:var(--dim);font-family:'Cormorant Garamond';font-size:14px;transition:.14s;}
+  .node b{font-family:'Cinzel';display:block;font-size:13.5px;color:var(--bone);margin-bottom:3px;}
+  .node.locked{opacity:.38;cursor:not-allowed;}
+  .node.own{border-color:var(--fc,var(--ac));background:#1d1627;color:var(--bone);box-shadow:inset 0 0 0 1px var(--fc,var(--ac));}
+  .node.own b{color:var(--fc,var(--ac));}
+  .modrow{font-family:'Cinzel';font-size:14px;color:var(--gold);align-self:center;padding-left:2px;}
+  .bp{display:flex;gap:9px;align-items:flex-start;padding:9px 11px;border-bottom:1px solid #1f1927;}
+  .bp .box{width:17px;height:17px;border:1.5px solid var(--line2);border-radius:4px;background:#0f0b14;cursor:pointer;
+    flex:none;margin-top:3px;color:var(--void);text-align:center;line-height:14px;font-size:12px;}
+  .bp .box.on{background:var(--ac);border-color:var(--ac);}
+
+  /* ---------- palette ---------- */
+  .pal-back{position:fixed;inset:0;background:#000b;backdrop-filter:blur(3px);z-index:90;display:none;}
+  .pal-back.on{display:block;}
+  .pal{position:fixed;top:11vh;left:50%;transform:translateX(-50%);width:min(620px,94vw);z-index:91;display:none;
+    background:#150f1c;border:1px solid var(--line2);border-radius:14px;box-shadow:0 30px 70px #000c;overflow:hidden;}
+  .pal.on{display:block;}
+  .pal input{border:none;border-bottom:1px solid var(--line);border-radius:0;font-family:'Cinzel';font-size:18px;padding:15px 18px;}
+  .pal input:focus{outline:none;}
+  .pal-res{max-height:56vh;overflow-y:auto;}
+  .pal-res button{display:block;width:100%;text-align:left;padding:11px 18px;background:none;border:none;
+    border-bottom:1px solid #1d1725;color:var(--bone);cursor:pointer;font-family:'Cormorant Garamond';font-size:15.5px;}
+  .pal-res button:hover{background:#1d1627;}
+  .pal-res .k{font-family:'IBM Plex Mono';font-size:9.5px;letter-spacing:.12em;color:var(--soul);text-transform:uppercase;display:block;}
+  .hit{animation:hit 1.6s ease;}
+  @keyframes hit{0%,100%{background:transparent}20%{background:var(--ac-soft)}}
+  :focus-visible{outline:2px solid var(--ac);outline-offset:2px;}
+  .foot{color:var(--dimmer);font-size:13px;text-align:center;margin-top:40px;font-family:'IBM Plex Mono';}
+</style>
+</head>
+<body>
+<nav class="rail" id="rail">
+  <div class="rail-brand">
+    <div class="eb">The Hand of Necrolien</div>
+    <div class="nm">Loryana</div>
+    <div class="lv" id="brandLv">Level 13 &middot; Monk 10 / Ranger 3 / Duskworn 11 / Jaeger 2</div>
+  </div>
+  <div class="rail-search" data-openpal role="button" tabindex="0">
+    <span class="mag"></span><span class="lbl">Search the sheet</span><span class="kbd">Ctrl K</span>
+  </div>
+  <div class="rail-nav">
+    <div class="rail-grp">Table</div>
+    <button class="rail-btn" data-pane="turn" style="--c:#c2abff;"><span class="gl"></span>Her turn</button>
+    <button class="rail-btn" data-pane="char" style="--c:#d9b154;"><span class="gl"></span>Character</button>
+    <div class="rail-grp">Soul</div>
+    <button class="rail-btn" data-pane="pass" style="--c:#e0506b;"><span class="gl"></span>Passives &amp; marks</button>
+    <button class="rail-btn" data-pane="maiden" style="--c:#5fd2c0;"><span class="gl"></span>The Iron Maiden</button>
+    <button class="rail-btn" data-pane="tree" style="--c:#d9b154;"><span class="gl"></span>Armor upgrades</button>
+    <div class="rail-grp">Craft</div>
+    <button class="rail-btn" data-pane="geibo" style="--c:#ece6d8;"><span class="gl"></span>Way of the Geibo</button>
+    <button class="rail-btn" data-pane="hex" style="--c:#7d5cc4;"><span class="gl"></span>Hexes &amp; Pale Embrace</button>
+    <button class="rail-btn" data-pane="shroud" style="--c:#5fd2c0;"><span class="gl"></span>Shroud of Caprevi</button>
+    <div class="rail-grp">Build</div>
+    <button class="rail-btn" data-pane="class" style="--c:#d8434f;"><span class="gl"></span>Classes &amp; levels</button>
+    <button class="rail-btn" data-pane="gear" style="--c:#d9b154;"><span class="gl"></span>Equipment</button>
+    <button class="rail-btn" data-pane="court" style="--c:#c2abff;"><span class="gl"></span>School &amp; court</button>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <div class="bar" id="bar">
+    <div class="tk">
+      <div class="tk-h"><span class="d"></span>Hit points</div>
+      <div class="tk-r">
+        <button class="btn" data-hp="-25">&minus;</button>
+        <span class="cur" id="hpCur">428</span><span class="sl">/</span>
+        <input class="max" id="hpMax" type="number" value="428" inputmode="numeric" aria-label="Maximum hit points">
+        <button class="btn" data-hp="25">+</button>
+        <button class="rst" id="hpReset" title="Full heal">&#8635;</button>
+      </div>
+      <div class="tk-r" style="margin-top:6px;gap:5px;">
+        <button class="btn sm" data-hp="-50">&minus;50</button>
+        <button class="btn sm" data-hp="-10">&minus;10</button>
+        <button class="btn sm" data-hp="10">+10</button>
+        <button class="btn sm" data-hp="50">+50</button>
+      </div>
+      <div class="tmp">Temp <input id="hpTemp" type="number" value="0" aria-label="Temporary hit points">
+        Sorrowed <input id="hpSorrow" type="number" value="0" aria-label="Sorrowed hit points"></div>
+      <div class="tk-r" style="margin-top:7px;gap:5px;">
+        <span class="tmp" style="margin:0;">Hit dice</span>
+        <button class="btn sm" id="hdSpend">spend</button>
+        <span class="cur" id="hdCur" style="font-size:17px;min-width:22px;">5</span><span class="sl">/</span>
+        <input class="max" id="hdMax" type="number" value="5" style="width:44px;font-size:13px;" aria-label="Hit dice">
+      </div>
+      <div class="dmgbox">
+        <input id="dmgIn" type="number" placeholder="0" aria-label="Amount">
+        <button class="btn sm" id="dmgHit">take it</button>
+        <button class="btn sm" id="dmgHeal">heal</button>
+      </div>
+      <div class="meter"><i id="hpFill" style="width:100%;background:linear-gradient(90deg,#8a1f28,#d8434f);"></i></div>
+    </div>
+
+    <div class="tk">
+      <div class="tk-h"><span class="d"></span>Transformation load</div>
+      <div class="tk-r">
+        <button class="btn" data-tl="-10">&minus;</button>
+        <span class="cur" id="tlCur">50</span><span class="sl">/</span>
+        <input class="max" id="tlMax" type="number" value="320" aria-label="Maximum TL">
+        <button class="btn" data-tl="10">+</button>
+        <button class="rst" id="tlReset" title="Refill">&#8635;</button>
+      </div>
+      <div class="tk-r" style="margin-top:6px;gap:5px;">
+        <button class="btn sm" data-tl="-50">&minus;50</button>
+        <button class="btn sm" data-tl="-20">&minus;20</button>
+        <button class="btn sm" data-tl="-5">&minus;5</button>
+        <button class="btn sm" data-tl="30">+30</button>
+      </div>
+      <div class="meter"><i id="tlFill" style="width:16%;background:linear-gradient(90deg,#7d5cc4,#c2abff);"></i></div>
+      <div class="tmp" id="tlNote">Necklace adds 50</div>
+    </div>
+
+    <div class="tk" style="min-width:150px;">
+      <div class="tk-h"><span class="d"></span>Ki</div>
+      <div class="tk-r">
+        <button class="btn" data-ki="-1">&minus;</button>
+        <span class="cur" id="kiCur">21</span><span class="sl">/</span>
+        <input class="max" id="kiMax" type="number" value="21" aria-label="Maximum ki">
+        <button class="btn" data-ki="1">+</button>
+        <button class="rst" id="kiReset" title="Short rest">&#8635;</button>
+      </div>
+      <div class="tk-r" style="margin-top:7px;">
+        <span class="tmp" style="margin:0;">Overflow</span>
+        <button class="btn sm" data-over="-10">&minus;</button>
+        <span class="cur" id="overCur" style="font-size:17px;min-width:34px;">0</span>
+        <button class="btn sm" data-over="10">+</button>
+      </div>
+    </div>
+
+    <div class="tk" style="min-width:160px;">
+      <div class="tk-h"><span class="d"></span>Morale &amp; wear</div>
+      <div class="tk-r">
+        <button class="btn" data-mor="-10">&minus;</button>
+        <span class="cur" id="morCur">100</span><span class="sl">/</span>
+        <input class="max" id="morMax" type="number" value="100" aria-label="Maximum morale">
+        <button class="btn" data-mor="10">+</button>
+        <button class="rst" id="morReset" title="Restore">&#8635;</button>
+      </div>
+      <div class="meter"><i id="morFill" style="width:100%;background:linear-gradient(90deg,#9c7c2c,#d9b154);"></i></div>
+      <div class="tk-r" style="margin-top:7px;">
+        <span class="tmp" style="margin:0;">Round</span>
+        <button class="btn sm" data-round="-1">&minus;</button>
+        <span class="cur mono" id="rdNum" style="font-size:17px;min-width:26px;">1</span>
+        <button class="btn sm" data-round="1">+</button>
+        <button class="rst" id="rdReset" title="New combat">&#8635;</button>
+      </div>
+    </div>
+
+    <div class="tk" style="min-width:176px;">
+      <div class="tk-h"><span class="d"></span>Nails &amp; momentum</div>
+      <div class="tk-r">
+        <span class="tmp" style="margin:0;min-width:52px;">Nails</span>
+        <button class="btn sm" data-nail="-1">&minus;</button>
+        <span class="cur" id="nailCur" style="font-size:18px;min-width:24px;">0</span><span class="sl">/</span>
+        <input class="max" id="nailMax" type="number" value="5" style="width:46px;font-size:14px;" aria-label="Maximum nails">
+        <button class="btn sm" data-nail="1">+</button>
+      </div>
+      <div class="tk-r" style="margin-top:7px;">
+        <span class="tmp" style="margin:0;min-width:52px;">Momentum</span>
+        <button class="btn sm" data-mom="-1">&minus;</button>
+        <span class="cur" id="momCur" style="font-size:18px;min-width:24px;">0</span>
+        <button class="btn sm" data-mom="1">+</button>
+        <button class="rst" id="momReset" title="Missed, reset">&#8635;</button>
+      </div>
+      <div class="tmp" id="nailNote">Fortress at max nails</div>
+    </div>
+
+    <div class="tk" style="min-width:230px;">
+      <div class="tk-h"><span class="d"></span>In her hands</div>
+      <button class="wep-slot" id="wepSlot">
+        <span class="nm" id="wepName">Pale Embrace</span>
+        <span class="hint">click to spend an attack</span>
+      </button>
+      <div class="pips" id="atkPips"></div>
+      <div class="tk-r" style="margin-top:7px;gap:5px;">
+        <span class="tmp" style="margin:0;">Attacks</span>
+        <button class="btn sm" data-atkmax="-1">&minus;</button>
+        <span class="cur" id="atkMaxOut" style="font-size:16px;min-width:20px;">3</span>
+        <button class="btn sm" data-atkmax="1">+</button>
+        <button class="rst" id="atkReset" title="New turn">&#8635;</button>
+      </div>
+      <input class="wep-edit" id="wepEdit" type="text" placeholder="equipped weapon" aria-label="Equipped weapon">
+    </div>
+
+    <div class="tk" style="min-width:150px;">
+      <div class="tk-h"><span class="d"></span>Flurry &amp; reactions</div>
+      <div class="tmp" style="margin:0;">Flurry strikes</div>
+      <div class="pips" id="flPips"></div>
+      <div class="tmp" style="margin-top:9px;">Reactions</div>
+      <div class="pips" id="rxPips"></div>
+      <div class="tk-r" style="margin-top:8px;gap:5px;">
+        <button class="btn sm" data-rxmax="-1">&minus;</button>
+        <span class="cur" id="rxMaxOut" style="font-size:16px;min-width:20px;">2</span>
+        <button class="btn sm" data-rxmax="1">+</button>
+        <button class="rst" id="rxReset" title="New round">&#8635;</button>
+      </div>
+    </div>
+
+    <div class="minibar" id="miniBar"></div>
+
+    <div class="bar-tools">
+      <button id="barFold">Hide trackers</button>
+      <button id="barCompact">Compact</button>
+      <button id="barMinAll">Minimize all</button>
+      <button data-openpal>Search</button>
+      <button id="expBtn">Export</button>
+      <button id="impBtn">Import</button>
+      <button id="wipeBtn">Reset sheet</button>
+      <span class="savehint" id="saveHint">Saved to this device automatically</span>
+    </div>
+  </div>
+
+<!-- ========================= HER TURN ========================= -->
+<div class="pane on" id="pane-turn" data-name="Her turn">
+  <div class="pane-head">
+    <div class="eb">Initiative +21</div>
+    <h1>Her turn</h1>
+    <div class="bl">Channel a faction, pay the upkeep, then spend. Everything on this page reads off the console below.</div>
+  </div>
+
+  <div class="bop" id="bopPanel">
+    <div class="bop-top">
+      <div class="bop-read">
+        <div class="st" id="bopActive">Unchanneled</div>
+        <div class="sub" id="bopSub">No faction holds the Iron Maiden</div>
+      </div>
+      <div class="tk-r" style="gap:8px;flex-wrap:wrap;">
+        <button class="btn" id="advTurn" style="height:36px;padding:0 15px;">End of turn</button>
+        <button class="btn" id="shortRest" style="height:36px;padding:0 15px;">Short rest</button>
+        <button class="btn" id="longRest" style="height:36px;padding:0 15px;">Long rest</button>
+        <button class="btn" id="endTrans" style="height:36px;padding:0 15px;">End transformation</button>
+      </div>
+    </div>
+
+    <div class="flags">
+      <span class="flag" id="flagForm">Iron Maiden</span>
+      <span class="flag" id="flagSpark">Rotating Spark</span>
+      <span class="flag" id="flagShroud">Shroud open</span>
+      <span class="flag" id="flagNeck">Necklace</span>
+      <span class="flag warn" id="flagAsc">Ascension</span>
+      <span class="flag" id="flagAuto">Auto ticks</span>
+    </div>
+
+    <div class="flags" style="margin-top:9px;">
+      <span class="chip" id="chipPalm">Infinite Palm Strike</span>
+      <span class="chip" id="chipCradle">Severance Cradle</span>
+      <span class="chip" id="chipCathedral">Cathedral triggers met</span>
+      <span class="chip" id="chipShort">Short rest</span>
+      <span class="chip" id="chipLong">Long rest</span>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>Per round while transformed <span class="tag" id="upkTag">idle</span></h3>
+      <div class="tk-r" style="gap:9px;flex-wrap:wrap;margin-top:8px;">
+        <span class="mono" style="font-size:11.5px;color:var(--dim);">Unchanneled form upkeep</span>
+        <input class="max" id="formUp" type="number" value="20" style="width:58px;" aria-label="Form upkeep">
+        <span class="mono" style="font-size:11.5px;color:var(--dim);">Spark discount</span>
+        <input class="max" id="sparkCut" type="number" value="3" style="width:52px;" aria-label="Spark discount">
+        <span class="mono" style="font-size:11.5px;color:var(--dim);">Spark gain</span>
+        <input class="max" id="sparkGain" type="number" value="30" style="width:58px;" aria-label="Spark gain">
+      </div>
+      <p class="cost" id="upkLine" style="margin-top:10px;"></p>
+      <div class="tk-r" style="gap:8px;flex-wrap:wrap;margin-top:6px;">
+        <button class="btn sm" id="payNow">Pay this round now</button>
+        <span class="mono" style="font-size:11px;color:var(--dimmer);">End of turn pays it automatically while the Iron Maiden is up</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Riftbound <span class="tag veil">reaction</span></h3>
+      <p class="cost">Hit by an attack, she shifts partway into Caprevi. Gain is proficiency times the multiplier, doubled by Ground Sovereign when she holds her ground.</p>
+      <div class="tk-r" style="gap:9px;flex-wrap:wrap;margin-top:8px;">
+        <span class="mono" style="font-size:11.5px;color:var(--dim);">PB &times;</span>
+        <input class="max" id="riftMult" type="number" value="5" style="width:52px;" aria-label="Riftbound multiplier">
+        <button class="btn sm" id="riftMove">Reposition, 5 to 10 ft</button>
+        <button class="btn sm" id="riftHold">Hold ground</button>
+        <span class="chip" id="riftDiv">Magical or divine</span>
+        <span class="mono" id="riftOut" style="font-size:11.5px;color:var(--dim);"></span>
+      </div>
+    </div>
+
+    <div id="facHost"></div>
+
+    <div class="log" id="bopLog"></div>
+  </div>
+
+  <section id="quick">
+    <h2>Quick actions <span class="sub">what a round looks like</span></h2>
+    <div class="grid2">
+      <div class="card"><h3>Channel Faction <span class="tag">bonus action &middot; 20 TL</span></h3>
+        <p>One faction takes the Iron Maiden. The armor changes to show which. She cannot swap again until the start of her next turn.</p></div>
+      <div class="card"><h3>Rotating Spark <span class="tag gold">bonus action</span></h3>
+        <p>Cores start spinning. She gains 30 TL at the start of each of her turns and every ability costs 3 less.</p></div>
+      <div class="card"><h3>Wave Dashing <span class="tag veil">reaction &middot; 3 ki</span></h3>
+        <p>An enemy moves within 20 feet or ends its turn there and she closes the gap. Two more ki and it does not provoke. This has to be taken the moment it triggers.</p></div>
+      <div class="card"><h3>Hex a mark <span class="tag">bonus action</span></h3>
+        <p>One hex per marked enemy, concentration up to a minute. Hexlock moves the concentration into a claw.</p></div>
+      <div class="card"><h3>Riftbound <span class="tag">reaction</span></h3>
+        <p>Hit by an attack, she slips halfway into Caprevi: reposition 5 to 10 feet and gain TL off her proficiency bonus. Divine or magical attacks halve the gain and cost her 1d8 psychic.</p></div>
+      <div class="card"><h3>Ancient Technique <span class="tag blood">action &middot; HP</span></h3>
+        <p>Pay in life, not load. Self-inflicted Soul Erosion that nothing reduces, and 25 percent of what she spent comes back as Overflow.</p></div>
+    </div>
+  </section>
+
+  <section id="attacks">
+    <h2>Attacks <span class="sub">save DC 28 &middot; spell attack +17</span></h2>
+    <table>
+      <tr><th>Attack</th><th class="n">Hit</th><th class="n">Damage</th><th>Notes</th></tr>
+      <tr class="hl"><td>Pale Embrace, the claws</td><td class="n">+18</td><td class="n">3d11+18 slashing</td><td>Divine, so it stays online inside the Iron Maiden. Three consecutive hits sets a Witch&rsquo;s Mark.</td></tr>
+      <tr><td>Fist</td><td class="n">+16</td><td class="n">3d6+13 bludgeoning</td><td>Default martial arts strike.</td></tr>
+      <tr><td>Elbow</td><td class="n">+16</td><td class="n">3d8+13 piercing</td><td>Ignores temporary hit points.</td></tr>
+      <tr><td>Knee</td><td class="n">+16</td><td class="n">3d8+13 piercing</td><td>Five feet of knockback.</td></tr>
+      <tr><td>Kick</td><td class="n">+16</td><td class="n">3d10+13 bludgeoning</td><td>Five foot reach, ten more feet of knockback, and she is vulnerable if it misses.</td></tr>
+      <tr><td>Hedwig&rsquo;s claw</td><td class="n">+15</td><td class="n">3d8+10 slashing</td><td>He acts on the initiative immediately after her.</td></tr>
+      <tr><td>Soul dagger, Charmer crest</td><td class="n">thrown</td><td class="n">1d10 true</td><td>Soul erosion, and it needs no hand free of anything.</td></tr>
+    </table>
+    <p class="note">Damage resolves on full dice in this system, so Pale Embrace reads 33 + 18 = <b>51</b> before anything else is added, and a critical doubles on top of that.</p>
+  </section>
+
+  <section id="erosion">
+    <h2>Soul Erosion <span class="sub">her win condition</span></h2>
+    <p>Counts as necrotic and psychic at once, ignores temporary hit points and most resistance, and stacks in three tiers.</p>
+    <table>
+      <tr><th>Tier</th><th>Name</th><th>What it does</th></tr>
+      <tr><td class="n">I</td><td>Weakened Soul</td><td>The first hold. Everything after this gets easier.</td></tr>
+      <tr><td class="n">II</td><td>Flickering Soul</td><td>Magical resistance is suppressed.</td></tr>
+      <tr><td class="n">III</td><td>Soul Broken</td><td>All resistances and immunities gone, stunned three rounds, vulnerable to psychic, necrotic and hellfire. Anything killed while Soul Broken cannot be revived.</td></tr>
+    </table>
+    <p class="note">Self-inflicted erosion from her own techniques never stacks tiers on her.</p>
+  </section>
+
+  <section id="fightnotes">
+    <h2>Live notes</h2>
+    <textarea id="fightNotes" placeholder="Who is marked, who is hexed, what the DM said about the nails."></textarea>
+  </section>
+</div>
+
+<!-- ========================= CHARACTER ========================= -->
+<div class="pane" id="pane-char" data-name="Character">
+  <div class="pane-head">
+    <div class="eb">Dossier</div>
+    <h1>Character</h1>
+    <div class="bl">Every number here is editable and the sheet recalculates from it.</div>
+  </div>
+
+  <section id="vitals">
+    <h2>Vitals</h2>
+    <div class="vitals">
+      <div class="vit"><div class="lb">Armor class</div><input id="vAC" type="number" value="35"></div>
+      <div class="vit"><div class="lb">Initiative</div><input id="vInit" type="text" value="+21"></div>
+      <div class="vit"><div class="lb">Speed</div><input id="vSpd" type="text" value="60 ft"></div>
+      <div class="vit"><div class="lb">Proficiency</div><input id="vPB" type="number" value="5"></div>
+      <div class="vit"><div class="lb">Save DC</div><input id="vDC" type="number" value="28" readonly></div>
+      <div class="vit"><div class="lb">Spell attack</div><input id="vSA" type="text" value="+17" readonly></div>
+    </div>
+    <div class="dl">
+      <div><dt>Name</dt><dd>Loryana De La Rouge, the Hand of Necrolien. Heir to the Ruined Throne, the White Witch, Flower, Lory, Guardian.</dd></div>
+      <div><dt>Level</dt><dd>13. Monk 10, Ranger 3, Duskworn 11, Jaeger 2. The stack exceeds her level on purpose.</dd></div>
+      <div><dt>Race and age</dt><dd>Human, she/her, 16, seven feet even, 198 pounds. White hair, orange eyes.</dd></div>
+      <div><dt>Alignment</dt><dd>Chaotic good. Background noble, main family, ruined. Deity Necrolien.</dd></div>
+      <div><dt>Hit dice</dt><dd>10d8 + 3d12 + 11d10 + 2d10, five d12 remaining</dd></div>
+      <div><dt>Saving throws</dt><dd>Str +8, Dex +16, Con +12, Int +7, Wis +17, Cha +10. Proficient in all six from Stillness of Mind.</dd></div>
+      <div><dt>Defining trait</dt><dd>Resilient. Once a round, when she takes damage she adds +3 to her next saving throw.</dd></div>
+      <div><dt>Max TL</dt><dd>(Con + Wis) &times; 10 + 80 = 270, or 320 while wearing the Necklace of Monstrous Divinity.</dd></div>
+      <div><dt>Wealth</dt><dd>11 pp, 534 gp. Income 10 pp weekly from the student council. Expenses 79 pp 6 gp weekly.</dd></div>
+    </div>
+  </section>
+
+  <section id="abilities">
+    <h2>Abilities <span class="sub">type a score, the sheet does the rest</span></h2>
+    <div class="stats" id="statGrid"></div>
+    <div class="rib thin"></div>
+    <h3 class="cz" style="font-size:17px;color:#fff;margin:14px 0 6px;">Skills</h3>
+    <p class="note">Click a circle once for proficiency, twice for expertise, again to clear.</p>
+    <div class="skl" id="sklGrid"></div>
+  </section>
+
+  <section id="pnotes">
+    <h2>Player notes</h2>
+    <textarea id="charNotes" placeholder="Open rulings, promises made, what she is not telling anybody."></textarea>
+  </section>
+</div>
+<!-- ========================= PASSIVES ========================= -->
+<div class="pane" id="pane-pass" data-name="Passives and marks">
+  <div class="pane-head">
+    <div class="eb">Always on</div>
+    <h1>Passives &amp; marks</h1>
+    <div class="bl">What is true before she spends anything.</div>
+  </div>
+
+  <section id="marks">
+    <h2>Witch&rsquo;s Mark <span class="sub">live tracker</span></h2>
+    <p>Three consecutive hits with the claws and the mark sets. It lasts three rounds, two creatures can carry one at a time, and the enhancement extends it or places it at range for 10 TL.</p>
+    <div class="tk-r" style="gap:8px;flex-wrap:wrap;margin:12px 0;">
+      <input type="text" id="markName" placeholder="target" style="max-width:220px;">
+      <select class="sel" id="markHex"></select>
+      <button class="btn" id="markAdd" style="height:34px;padding:0 14px;">Set the mark</button>
+      <button class="btn" id="markClear" style="height:34px;padding:0 14px;">Clear all</button>
+      <span class="mono" id="markCap" style="font-size:12px;color:var(--dim);"></span>
+    </div>
+    <div id="markList"></div>
+    <p class="note">While marked: corrupted and unable to regain hit points, she attacks with advantage, hexes can land, and magical invisibility stops working.</p>
+  </section>
+
+  <section id="genpass">
+    <h2>General passives</h2>
+    <div class="grid2">
+      <div class="card"><h3>Peer into Caprevi <span class="tag">D rank</span></h3>
+        <p>She sees and speaks with the Wayward, souls that fell with regrets still attached. She can separate her soul and walk into Caprevi herself, and her body lies unconscious in the living world while she does.</p></div>
+      <div class="card"><h3>Soulscry <span class="tag">20 ft</span></h3>
+        <p>Every soul in range reads as a colour, as plainly as hair or clothing, measured against her own. White is faint, yellow is substantial and dangerous in the ordinary way, red is towering and deadly to her. It exposes a sheep in wolf&rsquo;s clothing and the reverse.</p></div>
+      <div class="card"><h3>Bestial Hierarchy <span class="tag gold">crown</span></h3>
+        <p>Beasts read her as an apex predator. Anything weaker runs on sight. Contracted handlers out of Thrymgard treat her carefully.</p></div>
+      <div class="card"><h3>Therapist</h3>
+        <p>When she takes the Rally action she can push MP instead.</p></div>
+      <div class="card"><h3>Resilient <span class="tag">defining trait</span></h3>
+        <p>Once a round, taking damage grants +3 on her next saving throw.</p></div>
+      <div class="card"><h3>Reinforced Soul <span class="tag blood">inherited, 100 percent</span></h3>
+        <p>Her father&rsquo;s technique. The dead she takes feed the body and raise her armor class.</p></div>
+    </div>
+  </section>
+
+  <section id="abilities2">
+    <h2>Abilities</h2>
+    <div class="card"><h3>Ghastly Visages <span class="tag">action</span></h3>
+      <p>One creature she can see makes a Wisdom save without knowing it was asked. On a failure she sees the faces of everyone it has killed or is haunted by, and those faces shout information about themselves and about the target. A success locks her out of that creature until a long rest.</p></div>
+    <div class="card"><h3>Wave Dashing <span class="tag veil">reaction &middot; 3 ki</span></h3>
+      <p>An opponent moves within twenty feet or ends its turn there and she closes. Two extra ki avoids opportunity attacks. It has to be taken the instant it triggers, the same way you would disrupt neutral.</p></div>
+    <div class="card"><h3>Parry <span class="tag">exclusive dynamic reaction</span></h3>
+      <p>Hit by a melee attack, she spends a token to strike back. Beat their roll and her attack lands and cancels theirs. Miss and the attack goes through with twenty percent more damage on it. The token is gone either way.</p>
+      <p style="margin-top:6px;">Her own technique on top of it: parry with a knockback strike, Kick or Knee, to spend the approach they just paid for. It pairs with Hex of Binding halving their speed to erase a whole turn.</p></div>
+  </section>
+
+  <section id="crest">
+    <h2>Crest of the day <span class="sub">chosen at a long rest, locked until the next</span></h2>
+    <div class="tk-r" style="gap:9px;margin:12px 0;flex-wrap:wrap;">
+      <button class="btn" data-crest="charmer" style="height:36px;padding:0 16px;">Crest of the Charmer</button>
+      <button class="btn" data-crest="scholar" style="height:36px;padding:0 16px;">Crest of the Scholar</button>
+      <button class="btn" data-crest="none" style="height:36px;padding:0 14px;">None</button>
+    </div>
+    <div id="crestBody"></div>
+  </section>
+</div>
+
+<!-- ========================= IRON MAIDEN ========================= -->
+<div class="pane" id="pane-maiden" data-name="The Iron Maiden">
+  <div class="pane-head">
+    <div class="eb">Transformation &middot; 75 TL</div>
+    <h1>The Witch of the Iron Veil</h1>
+    <div class="bl">She separates her soul and lets the spirits of Caprevi bind her in spectral armor. The Iron Maiden is a prison and a conduit at once.</div>
+  </div>
+
+  <section id="form">
+    <h2>Form effects</h2>
+    <ul>
+      <li>She passes through objects, unless she is doused in salt.</li>
+      <li>Physical attacks cannot harm her, unless she is doused in salt.</li>
+      <li>Divine and magical attacks harm her normally.</li>
+      <li>She carries no weapons, shields or physical objects. Pale Embrace counts as divine, so the claws, the Witch&rsquo;s Mark and the Waywire all stay online.</li>
+      <li>She counts as undead: immune to psychic, resistant to necrotic, vulnerable to radiant.</li>
+      <li>Flying speed equal to her movement, and difficult terrain stops mattering.</li>
+    </ul>
+    <div class="card"><h3>Extended Reach <span class="tag">passive &middot; 10 TL</span></h3><p>One more square of reach.</p></div>
+    <div class="card"><h3>Rotating Spark <span class="tag gold">bonus action</span></h3><p>30 TL at the start of each of her turns and every ability costs 3 less. Assume the discount applies to faction upkeep until the DM rules otherwise.</p></div>
+    <div class="card"><h3>Riftbound <span class="tag">reaction</span></h3><p>Hit by an attack, she shifts partway into Caprevi, repositions five to ten feet and gains TL based on her proficiency bonus. Magical or divine attacks halve the gain and deal her 1d8 psychic.</p></div>
+  </section>
+
+  <section id="bop">
+    <h2>Balance of Power <span class="sub">how influence moves</span></h2>
+    <table>
+      <tr><th class="n">Influence</th><th>State</th><th>Effect</th></tr>
+      <tr><td class="n">&minus;5</td><td>Hostile</td><td>Soul backlash</td></tr>
+      <tr><td class="n">&minus;3</td><td>Rebellious</td><td>Minor drawbacks</td></tr>
+      <tr><td class="n">0</td><td>Neutral</td><td>Base faction abilities</td></tr>
+      <tr><td class="n">+3</td><td>Influential</td><td>Passive boosts unlock</td></tr>
+      <tr><td class="n">+5</td><td>Dominant</td><td>Major ability enhancements</td></tr>
+    </table>
+    <ul>
+      <li>Only one faction can be Dominant at a time, and an inactive faction cannot climb past Influential.</li>
+      <li>The active faction gains one Influence at the start of each turn.</li>
+      <li>Each faction carries a mission rolled by the DM on a d4. Completing it is worth one Influence and it can be done while that faction is inactive. Missions only change when the transformation ends.</li>
+      <li>At Influential the inactive factions lose one each round. At Dominant the opposing faction loses two.</li>
+      <li>All influence resets to zero when the transformation ends.</li>
+    </ul>
+  </section>
+
+  <section id="veiled">
+    <h2>Veiled spirits <span class="sub">Aethyra &middot; auto ticking</span></h2>
+    <div class="tk-r" style="gap:8px;flex-wrap:wrap;margin:10px 0;">
+      <input type="text" id="veilName" placeholder="ally" style="max-width:220px;">
+      <button class="btn" id="veilAdd" style="height:34px;padding:0 14px;">Attach a Veiled</button>
+      <button class="btn" id="veilClear" style="height:34px;padding:0 12px;">Clear</button>
+      <span class="mono" id="veilCap" style="font-size:12px;color:var(--dim);"></span>
+    </div>
+    <div id="veilList"></div>
+    <p class="note">Capacity is two at Neutral, three at Influential, four at Dominant. Lost Essence runs two rounds, or four with Enduring Suffering taken. Advancing the turn counts them down and drops them when they expire.</p>
+  </section>
+
+  <section id="facdetail">
+    <h2>Faction abilities</h2>
+    <div id="facDetail"></div>
+  </section>
+</div>
+
+<!-- ========================= ARMOR TREE ========================= -->
+<div class="pane" id="pane-tree" data-name="Armor upgrades">
+  <div class="pane-head">
+    <div class="eb">Five modules, three tiers</div>
+    <h1>Armor upgrades</h1>
+    <div class="bl">Faction Demands are random challenges the active faction sets. Meeting them pays upgrade points, and the points buy mutations. Everything resets when the transformation ends.</div>
+  </div>
+
+  <section id="treeuse">
+    <h2>Upgrade points</h2>
+    <div class="tk-r" style="gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+      <span class="mono" style="font-size:12px;color:var(--dim);">Points banked</span>
+      <button class="btn" data-up="-1">&minus;</button>
+      <span class="cur" id="upCur">0</span>
+      <button class="btn" data-up="1">+</button>
+      <button class="btn" id="treeReset" style="height:30px;padding:0 12px;">Reset the tree</button>
+      <span class="mono" id="treeNote" style="font-size:11.5px;color:var(--dimmer);"></span>
+    </div>
+    <p class="note">Tier 1 needs the faction at Neutral, tier 2 at Influential, tier 3 at Dominant. Nodes cost one point each and lock again if the faction slips below the tier they sit on.</p>
+    <div class="tk-r" style="gap:7px;flex-wrap:wrap;margin:14px 0 4px;" id="treeTabs"></div>
+    <div id="treeHost"></div>
+  </section>
+</div>
+<!-- ========================= GEIBO ========================= -->
+<div class="pane" id="pane-geibo" data-name="Way of the Geibo">
+  <div class="pane-head">
+    <div class="eb">Paid in life, not load</div>
+    <h1>Way of the Geibo</h1>
+    <div class="bl">The Geibo guided wandering souls from the living world into Caprevi and helped raise the Guardian of the Realm. The Guardian fell, their work went with it, and the mantle is hers now.</div>
+  </div>
+
+  <section id="tolls">
+    <h2>The two laws</h2>
+    <div class="card"><h3>Geibo&rsquo;s Toll <span class="tag blood">passive</span></h3>
+      <p>Every technique is paid in hit points as self-inflicted Soul Erosion. It ignores resistance, immunity, temporary hit points and damage reduction, it cannot be redirected or prevented by anything, and it never stacks erosion tiers on her.</p></div>
+    <div class="card"><h3>Spiritual Overflow <span class="tag">passive</span></h3>
+      <p>Landing a technique returns Overflow equal to a quarter of the hit points she spent. It holds for a minute, caps at proficiency bonus times level, and spends three ways: added to a heal, subtracted from incoming damage, or added to one attack as Soul Erosion.</p></div>
+    <div class="tk-r" style="gap:8px;flex-wrap:wrap;margin-top:12px;">
+      <span class="mono" style="font-size:12px;color:var(--dim);">Pay a toll</span>
+      <button class="btn" data-toll="10" style="height:32px;padding:0 12px;">10 HP</button>
+      <button class="btn" data-toll="25" style="height:32px;padding:0 12px;">25 HP</button>
+      <button class="btn" data-toll="50" style="height:32px;padding:0 12px;">50 HP</button>
+      <button class="btn" data-toll="100" style="height:32px;padding:0 12px;">100 HP</button>
+      <span class="mono" id="tollOut" style="font-size:12px;color:var(--dim);"></span>
+    </div>
+    <p class="note">The buttons take the hit points off the bar and bank the Overflow for you. Overflow caps at proficiency times level, which is 65 right now.</p>
+  </section>
+
+  <section id="techniques">
+    <h2>Ancient techniques</h2>
+    <div class="card"><h3>Infinite Palm Strike <span class="tag blood">action &middot; recharge 5 to 6</span></h3>
+      <p class="cost">Any amount of HP in blocks of ten, minimum ten. Fifteen foot wide line.</p>
+      <p>Each ten hit points is one spectral palm. Every strike deals three percent of the target&rsquo;s maximum hit points as Soul Erosion and pushes it five feet, and she can travel with it. After each strike the target makes a Constitution save: succeed and the barrage ends there and it moves half its speed, fail and the next palm lands. Undead save with disadvantage. Once a creature succeeds it is immune until the start of her next turn.</p></div>
+    <div class="card"><h3>Astral Displacement <span class="tag blood">50 HP</span></h3>
+      <p>Before she hits a living creature she can lace the attack with psionic force and cut a limb off the mind rather than the body. Arm: it drops what it is holding and cannot use that arm. Leg: movement becomes zero. Torso: disadvantage on attacks. Head: no reactions. It lasts until the end of the target&rsquo;s next turn, she can use it up to her proficiency bonus, and undead and constructs are immune.</p></div>
+    <div class="card"><h3>Geibo Seal <span class="tag blood">action &middot; 100 HP</span></h3>
+      <p>A seal set directly on a soul within twenty feet. Constitution save or the target cannot cast spells, use divine abilities or hold a magical transformation. It rerolls the save at the end of each of its turns. One minute.</p></div>
+  </section>
+</div>
+
+<!-- ========================= HEXES ========================= -->
+<div class="pane" id="pane-hex" data-name="Hexes and Pale Embrace">
+  <div class="pane-head">
+    <div class="eb">One hex per mark</div>
+    <h1>Hexes &amp; Pale Embrace</h1>
+    <div class="bl">Hexes attach to a Witch&rsquo;s Mark as a bonus action. Concentration, up to a minute, one at a time per enemy.</div>
+  </div>
+
+  <section id="hexlist">
+    <h2>Hex abilities</h2>
+    <div id="hexHost"></div>
+  </section>
+
+  <section id="embrace">
+    <h2>Pale Embrace <span class="sub">Elegy of the First Sin</span></h2>
+    <p>The claw tree. Numbers are node costs, and the materials listed are what each node eats.</p>
+    <div id="embraceHost"></div>
+  </section>
+</div>
+
+<!-- ========================= SHROUD ========================= -->
+<div class="pane" id="pane-shroud" data-name="Shroud of Caprevi">
+  <div class="pane-head">
+    <div class="eb">Once per combat &middot; 50 TL, then 10 a round</div>
+    <h1>The Shroud of Caprevi</h1>
+    <div class="bl">Other domains take you somewhere else. Hers brings the somewhere else here: a shroud of Wayward twenty feet wide and ten feet high that nothing walks out of.</div>
+  </div>
+
+  <section id="shroudctl">
+    <h2>The gates</h2>
+    <div class="tk-r" style="gap:9px;flex-wrap:wrap;margin:12px 0;">
+      <button class="btn" id="shroudOpen" style="height:36px;padding:0 16px;">Open the gates, 50 TL</button>
+      <button class="btn" id="shroudUp" style="height:36px;padding:0 15px;">Pay upkeep, 10 TL</button>
+      <button class="btn" id="shroudClose" style="height:36px;padding:0 14px;">Relinquish</button>
+      <span class="mono" id="shroudOut" style="font-size:12px;color:var(--dim);"></span>
+    </div>
+    <p>Once a creature is inside it cannot leave until she relinquishes the shroud or it escapes by divine or otherwise unique means. Salt alone will not do it.</p>
+    <div class="card"><h3>Blind to the Living <span class="tag">passive</span></h3>
+      <p>Anything that is not close to death and lacks truesight or better cannot see the domain, though it feels every part of the effect. Senses are not hindered.</p></div>
+    <div class="card"><h3>Latching on Regret <span class="tag blood">passive</span></h3>
+      <p>Every living creature inside takes 2d8 Soul Erosion a round. Anything that goes Soul Broken in here rolls death saves or joins the shroud.</p></div>
+  </section>
+
+  <section id="domainacts">
+    <h2>Domain actions <span class="sub">initiative 20, losing ties, never the same one twice running</span></h2>
+    <div class="card"><h3>Onslaught of the Damned</h3><p>A ten foot line of Wayward charges. Dexterity save against her spell DC, 5d10 Soul Erosion, half on a success.</p></div>
+    <div class="card"><h3>Peek-a-Boo</h3><p>Wayward come up out of the floor at their feet and scream. Wisdom save or frightened and knocked prone.</p></div>
+    <div class="card"><h3>Hidden in Plain Sight</h3><p>The shroud speeds up and goes invisible. Without truesight nobody sees in or out. It is still there.</p></div>
+  </section>
+</div>
+
+<!-- ========================= CLASSES ========================= -->
+<div class="pane" id="pane-class" data-name="Classes and levels">
+  <div class="pane-head">
+    <div class="eb">Four stacks, thirteen levels</div>
+    <h1>Classes &amp; levels</h1>
+    <div class="bl">Extra Attack stacks in this system, which is the reason the stack is built the way it is. Each subclass sits directly under the class it belongs to, written out to the top of its ladder.</div>
+  </div>
+
+  <section id="monk">
+    <h2>Monk 10 <span class="sub">J.T.&rsquo;s revised monk, d10 hit die</span></h2>
+    <div class="dl">
+      <div><dt>Martial arts</dt><dd>Fist 1d6 bludgeoning. Elbow 1d8 piercing, ignores temp HP. Knee 1d8 piercing, five feet of knockback. Kick 1d10 bludgeoning, five foot reach, ten more feet of knockback, vulnerable on a miss. The die steps up at 5, 10 and 17.</dd></div>
+      <div><dt>Ki Surge</dt><dd>Double the baseline pool, plus five more at 10, 20, 30, 40 and 50.</dd></div>
+      <div><dt>Athletic Flow</dt><dd>After any successful attack in a chain she can grapple or shove for free, and she can use Acrobatics in place of Athletics for it.</dd></div>
+      <div><dt>Unarmored Defense</dt><dd>10 + Dexterity + Wisdom, which is where the 35 comes from.</dd></div>
+      <div><dt>Focus</dt><dd>Flurry of Blows, Patient Defense and Step of the Wind. At 10 the flurry is three strikes, Patient Defense grants temp HP, and Step of the Wind can carry an ally.</dd></div>
+      <div><dt>Stillness of Mind</dt><dd>Proficiency in every saving throw and resistance to psychic damage.</dd></div>
+      <div><dt>Deflect Attacks</dt><dd>Reaction to cut an attack&rsquo;s damage, and redirect it if the damage reaches zero.</dd></div>
+      <div><dt>Soul Knives</dt><dd>Unarmed strikes deal psychic, piercing, slashing or bludgeoning, her choice on every hit, and a bonus action adds thirty feet of reach until end of turn.</dd></div>
+      <div><dt>Psychic Slash</dt><dd>On any flurry hit that deals psychic: life drain, invoke terror, invoke wrath, astral slide, or synaptic overload.</dd></div>
+    </div>
+  </section>
+  <section id="soulknife">
+    <h2>Way of the Soul Knife <span class="sub">monk 10 of 20</span></h2>
+    <p>Assassins and bounty hunters who manifest psionic blades that cut through bodies and auras alike. Their reach extends past combat, because seeing an aura means seeing through a lie.</p>
+
+    <div class="card"><h3>Soul Knives <span class="tag veil">3rd &middot; online</span></h3>
+      <p>Her unarmed strikes deal psychic, piercing, slashing or bludgeoning damage, chosen fresh on every hit.</p>
+      <p style="margin-top:6px;">As a bonus action she extends the reach of her unarmed strikes by thirty feet until the end of her turn.</p></div>
+
+    <div class="card"><h3>Psychic Slash <span class="tag veil">3rd &middot; online</span></h3>
+      <p>Whenever an attack granted by Flurry of Blows hits and deals psychic damage, she imposes one of these on the target:</p>
+      <ul>
+        <li><b>Life Drain.</b> She gains temporary hit points equal to half the damage the attack dealt.</li>
+        <li><b>Invoke Terror.</b> Wisdom save or frightened of her until the end of her next turn.</li>
+        <li><b>Invoke Wrath.</b> Disadvantage on every attack roll against anyone but her until the end of its next turn.</li>
+        <li><b>Astral Slide.</b> She teleports the target up to ten feet to a spot she can see.</li>
+        <li><b>Synaptic Overload.</b> Vulnerable to psychic damage until the end of her next turn.</li>
+      </ul></div>
+
+    <div class="card"><h3>Aura Sight <span class="tag gold">6th &middot; replaced</span></h3>
+      <p>The printed feature reads auras on a failed Wisdom save, learning shared alignment, current hit points, and attitude toward her or toward something she names, then tracking distance and direction for a day. On her sheet this slot is taken by <b>Ghastly Visages</b> instead, which shows her the faces of everyone the target has killed or is haunted by, and those faces speak. Both versions lock her out of a creature that saves until she finishes a long rest.</p></div>
+
+    <div class="card"><h3>Spectral Blades <span class="tag blood">11th &middot; not yet</span></h3>
+      <p>The blades phase through cover and armor. Once on her turn she gives up one unarmed strike and instead forces a creature within that attack's reach to make a Dexterity save against her ki DC. Failure deals psychic damage equal to her unarmed strike, success halves it.</p></div>
+
+    <div class="card"><h3>Psychic Form <span class="tag blood">17th &middot; not yet</span></h3>
+      <p>Bonus action to turn her body into the same psychic energy her blades are made of, for one minute, once per long rest. Resistance to all damage, a flying speed of thirty feet, and she moves through creatures and objects as though they were difficult terrain, taking 5 force damage if she ends her turn inside something.</p></div>
+
+    <div class="gm"><b>Where it stacks.</b> Psychic Slash triggers on flurry hits that deal psychic, and Soul Knives lets her choose psychic on every strike, so the rider is always available. Blooded Edge under Croqur and Dreadful Strikes from the ranger side both ride the same hits.</div>
+  </section>
+
+  <section id="duskworn">
+    <h2>Duskworn 11 <span class="sub">the largest stack</span></h2>
+    <div class="dl">
+      <div><dt>Ruinous Touch</dt><dd>A pool of ruin dice, 9d6 at this level, spent as an action to deal necrotic on a touch.</dd></div>
+      <div><dt>Shadowed Weapon</dt><dd>One bonded melee weapon she cannot be disarmed of and can summon to her hand as a bonus action from anywhere on the plane.</dd></div>
+      <div><dt>Sundering Shadow</dt><dd>+3 necrotic on every hit with the bonded weapon, and darkvision out to sixty feet.</dd></div>
+      <div><dt>Dark Inheritance</dt><dd>One of dusk-infused magic, mantle of the wicked, shadow-cursed resilience or vile tenacity. Each of them keys off the Shadow Damage number.</dd></div>
+      <div><dt>Spellcasting</dt><dd>Charisma by the book, Wisdom on her sheet. DC 28, attack +17, slots 2 and 1.</dd></div>
+      <div><dt>Invoke Malice</dt><dd>Twice between rests at this level. Aura of Darkness turns the light around her down, which is also how she sets up an epic boon in one round.</dd></div>
+      <div><dt>Aura of the Dark Scion</dt><dd>Contempt, Despair, Hopelessness or Infirmity, twenty feet at 13th. Despair is the one that matters: every save inside her reach is worse.</dd></div>
+      <div><dt>Improved Extra Attack and Shadow Knight&rsquo;s Aura</dt><dd>A second aura on top of the first, and spells folded into her attack sequence.</dd></div>
+    </div>
+  </section>
+  <section id="mindscourge">
+    <h2>Mindscourge <span class="sub">duskworn 11 of 20</span></h2>
+    <p>Dusksworn who carry dark magic and psionics at once, laying waste to bodies and minds together and doing whatever it takes to reach the end of another day.</p>
+
+    <div class="card"><h3>Mindwrack <span class="tag veil">3rd &middot; online</span></h3>
+      <p>All necrotic damage from Ruinous Touch can be converted to psychic whenever she deals it.</p>
+      <p style="margin-top:6px;">On top of that, any creature subjected to Ruinous Touch must succeed on an Intelligence save or be stunned until the end of her next turn. Anything with an Intelligence of 4 or lower is unaffected.</p></div>
+
+    <div class="card"><h3>Invoke Malice: Mindburst <span class="tag veil">3rd &middot; online</span></h3>
+      <p>Action. A creature she can see or is aware of within ninety feet takes a blast of psychic energy. Intelligence save or it falls unconscious for a minute as its mind is overwhelmed. It wakes early if it takes damage, or if somebody spends an action and beats her spell save DC on a Strength check to shake it awake.</p></div>
+
+    <div class="card"><h3>Invoke Malice: Stunning Blast <span class="tag veil">3rd &middot; online</span></h3>
+      <p>On the Attack action she replaces one attack with a fifteen foot cone of psychic energy. Every creature inside makes an Intelligence save or is stunned for a minute, repeating the save at the end of each of its turns.</p></div>
+
+    <div class="card"><h3>Mindscourge spells <span class="tag">pledge list</span></h3>
+      <p>Always memorised, and they do not count against her spells known.</p>
+      <table style="margin-top:8px;">
+        <tr><th class="n">Level</th><th>Spells</th></tr>
+        <tr><td class="n">3rd</td><td>sleep, Tasha's hideous laughter</td></tr>
+        <tr><td class="n">5th</td><td>detect thoughts, mind spike</td></tr>
+        <tr><td class="n">9th</td><td>hypnotic pattern, major image</td></tr>
+        <tr><td class="n">13th</td><td>hallucinatory terrain, Raulothim's psychic lance</td></tr>
+        <tr><td class="n">17th</td><td>synaptic static, telekinesis</td></tr>
+      </table></div>
+
+    <div class="card"><h3>Aura of Blanking <span class="tag veil">7th &middot; online</span></h3>
+      <p>A psychic field that interferes with thought. When a hostile creature within five feet takes a reaction, it makes an Intelligence save or the reaction is wasted doing nothing while its mind lapses and it forgets what it was doing. She has to be conscious for the save to happen at all. The range grows to ten feet at 13th and fifteen at 18th.</p></div>
+
+    <div class="card"><h3>Tormenting Shadow <span class="tag veil">11th &middot; online</span></h3>
+      <p>Hitting a creature with her shadowed weapon or using Ruinous Touch on it deals an extra 1d4 psychic and forces an Intelligence save.</p>
+      <p style="margin-top:6px;"><b>Failure:</b> no reactions until the end of its next turn, and on that turn it picks one of a move, an action or a bonus action and gets only that one.</p>
+      <p style="margin-top:6px;"><b>Success:</b> none of the above until the start of her next turn, but the extra psychic still lands.</p></div>
+
+    <div class="card"><h3>Mindstorm <span class="tag blood">15th &middot; not yet</span></h3>
+      <p>Resistance to psychic damage, and every short rest returns half her ruin dice, never more than she has actually spent.</p>
+      <p style="margin-top:6px;">She can also spend two extra ruin dice when Mindwrack fires off Ruinous Touch. Any number of creatures she can see or is aware of within twenty feet must then save against Intelligence or be stunned until the end of her next turn. Intelligence 4 or lower is still immune.</p></div>
+
+    <div class="card"><h3>Psionic Mastery <span class="tag blood">20th &middot; not yet</span></h3>
+      <p>Psychic resistance stops applying to her, and immunity only halves her damage instead of stopping it.</p>
+      <p style="margin-top:6px;">On the Attack action she can replace an attack with a use of Mindwrack that spends no ruin dice. It deals no damage and cannot be paired with Mindstorm, and she still has to be able to touch the target.</p>
+      <p style="margin-top:6px;">At the end of each of her turns, one stunned creature she can see or is aware of within thirty feet makes an Intelligence save or takes 3d10 psychic.</p></div>
+
+    <div class="card"><h3>Base duskworn milestones still ahead <span class="tag gold">12 to 20</span></h3>
+      <p>Aura Improvements at 13 and again at 18 widen every aura she has. Blasphemous Aegis at 14 makes her immune to disease and poison, unable to be charmed, and resistant to nonmagical bludgeoning, piercing and slashing. Invoke Malice gains a second option at 13 and a third at 17.</p></div>
+
+    <div class="gm"><b>Where it stacks.</b> Aura of Blanking and the Aura of Despair overlap on the same ten to twenty feet, so anything standing next to her saves at a penalty and risks losing its reaction for trying to do anything about it. Tormenting Shadow choking a turn down to one of three options pairs with Hex of Binding halving movement.</div>
+  </section>
+
+  <section id="rangerjaeger">
+    <h2>Ranger 3 and Jaeger 2</h2>
+    <div class="dl">
+      <div><dt>Ranger 3</dt><dd>Three d12 hit dice, a fighting style, and the archetype features at 3rd. The smallest stack and mostly there for the chassis.</dd></div>
+      <div><dt>Alacrity</dt><dd>Proficiency bonus added to initiative, which is most of the +21.</dd></div>
+      <div><dt>Improved Two-Weapon Fighting</dt><dd>Offhand only needs the light property, and she can draw, stow and reload without a free hand.</dd></div>
+      <div><dt>Slayer&rsquo;s Initiative</dt><dd>No action required, lasts until end of turn, and grants a second bonus action. Two uses, half back on a short rest. It also comes free whenever she crits, drops a creature to zero, or rolls an unmodified 20 on initiative.</dd></div>
+      <div><dt>Lissom</dt><dd>Shove or Disengage as bonus actions, and she can shove with Acrobatics.</dd></div>
+    </div>
+    <div class="gm"><b>Where the stack is going.</b> Eleven more levels to character level 24 and proficiency 8, adding Jaeger 13 for Ordo Luna and Sword Saint 14 for the Way of the Grim Passenger. Roughly sixteen attacks a round at that point, since the Attack action, a Dragon Surge action and two flurries all stack. Ki and Sword Saint focus share one pool.</div>
+  </section>
+  <section id="feywanderer">
+    <h2>Fey Wanderer <span class="sub">ranger 3 of 20</span></h2>
+    <p>A fey mystique from an archfey's boon, fruit off a talking tree, a magic spring, or some other auspicious accident. A ranger who stands for the mortal and the fey realms at once, whose laughter lifts the downtrodden and whose fury is dreadful, because great is the mirth of the fey.</p>
+
+    <div class="card"><h3>Dreadful Strikes <span class="tag veil">3rd &middot; online</span></h3>
+      <p>Mind-scarring magic out of the murky hollows of the Feywild, laid over her weapon. When she hits a creature with a weapon she can deal an extra 1d4 psychic, and any one creature can only take that extra damage once a turn. It rises to 1d6 at 11th level.</p></div>
+
+    <div class="card"><h3>Otherworldly Glamour <span class="tag veil">3rd &middot; online</span></h3>
+      <p>She adds her Wisdom modifier, minimum one, to every Charisma check she makes, and gains proficiency in one of Deception, Performance or Persuasion. At Wisdom 34 that is +12 on top of her Charisma, which is why her Deception, Intimidation, Performance and Persuasion all sit far above her ability score.</p></div>
+
+    <div class="card"><h3>Fey Wanderer Magic <span class="tag">3rd &middot; online</span></h3>
+      <p>One spell at each listed level, always prepared and not counted against her prepared total.</p>
+      <table style="margin-top:8px;">
+        <tr><th class="n">Level</th><th>Spell</th></tr>
+        <tr><td class="n">3rd</td><td>charm person</td></tr>
+        <tr><td class="n">5th</td><td>misty step</td></tr>
+        <tr><td class="n">9th</td><td>dispel magic</td></tr>
+        <tr><td class="n">13th</td><td>dimension door</td></tr>
+        <tr><td class="n">17th</td><td>mislead</td></tr>
+      </table></div>
+
+    <div class="card"><h3>Beguiling Twist <span class="tag blood">7th &middot; not yet</span></h3>
+      <p>Advantage on every saving throw against being charmed or frightened.</p>
+      <p style="margin-top:6px;">On top of that, whenever she or a creature she can see within 120 feet succeeds on a save against being charmed or frightened, she can spend a reaction to force another creature she can see within that range to make a Wisdom save against her spell save DC. Failure means charmed or frightened, her choice, for one minute, with a save at the end of each of its turns.</p></div>
+
+    <div class="card"><h3>Fey Reinforcements <span class="tag blood">11th &middot; not yet</span></h3>
+      <p>Summon fey is always prepared and does not count against her prepared spells. She can cast it once without a spell slot and without the material component, and gets that use back on a long rest.</p>
+      <p style="margin-top:6px;">Whenever she casts it with a slot, she can choose to drop concentration entirely, and the spirit lasts one minute instead.</p></div>
+
+    <div class="card"><h3>Misty Wanderer <span class="tag blood">15th &middot; not yet</span></h3>
+      <p>She can cast misty step without a spell slot a number of times equal to her Wisdom modifier, all of them back on a long rest. Each casting can bring one willing creature within five feet along, dropping them in an unoccupied space within five feet of where she lands.</p></div>
+
+    <div class="gm"><b>Where it stacks.</b> Dreadful Strikes is once per turn per creature rather than once per turn, so with her attack count it pays out across a crowd. Beguiling Twist redirects a failed charm or fear onto a second target, which is the same shape as the Mark spreading under Croqur's ascension: hit one, land on another.</div>
+  </section>
+</div>
+
+
+<!-- ========================= EQUIPMENT ========================= -->
+<div class="pane" id="pane-gear" data-name="Equipment">
+  <div class="pane-head">
+    <div class="eb">Carried</div>
+    <h1>Equipment</h1>
+    <div class="bl">Four pieces do almost all the work.</div>
+  </div>
+
+  <section id="kit">
+    <h2>Worn</h2>
+    <div class="card"><h3>Crown of the Damned <span class="tag gold">head &middot; decisteel</span></h3>
+      <p><b>Bestial Hierarchy.</b> Beasts read her as an apex predator and weaker animals flee.</p>
+      <p style="margin-top:6px;"><b>Dominion Waltz.</b> Any time she moves she can spend a reaction to roll Intimidation. On a failure every creature within ten feet kneels, which counts as prone.</p>
+      <p style="margin-top:6px;"><b>Queen of Mean, 50 TL.</b> Action, within ten feet: she takes hold of them and puts the fear of the damned in them. Wisdom save or stunned with their stats shuffled highest to weakest.</p></div>
+    <div class="card"><h3>Pale Embrace <span class="tag blood">two weapon slots</span></h3>
+      <p><b>Frigid Mark.</b> The claws can deal cold instead. Two consecutive cold strikes on a marked creature drop it to &minus;5 AC and &minus;20 feet and make it vulnerable to cold and its environment for a round, once per creature.</p></div>
+    <div class="card"><h3>Waywire <span class="tag veil">claw enhancement</span></h3>
+      <p><b>Reel, replaces an attack, 2 ki.</b> Thirty feet of thread. Strength save or she yanks them fifteen feet in or pulls herself adjacent, and arriving adjacent makes her next claw strike count as two consecutive hits.</p>
+      <p style="margin-top:6px;"><b>Carrion Waltz, action, 5 ki.</b> She spins through two creatures within reach and ten feet of each other, trailing wire. Dexterity saves, two claw hits counted consecutive, and the two are tethered: while both stand within fifteen feet any forced movement on one drags the other the same distance. Ending adjacent to a marked creature tightens the thread for another 1d8 + Wisdom Soul Erosion.</p>
+      <p style="margin-top:6px;"><b>Gallows Lattice, action, 50 HP.</b> Fifteen foot line or ten foot square of hovering wire for two rounds. Moving through or starting a turn in it costs 2d8 Soul Erosion and half speed, and marked creatures cannot Disengage.</p>
+      <p style="margin-top:6px;"><b>Severance Cradle, Croqur only, action, 30 TL, recharge 5 to 6.</b> A marked creature is cocooned. Dexterity save or restrained and suspended, unable to move or react for a round, while she unloads a full claw flurry with advantage. Three hits and the wires snap closed for 3d10 more Soul Erosion and maximum Mind Spikes. Soul Broken makes the snap an automatic critical.</p></div>
+    <div class="card"><h3>Necklace of Monstrous Divinity <span class="tag">C tier</span></h3>
+      <p>+50 TL. Monsters get an extra attack from innate counters, they target her before anyone else, and they are drawn to her in the open world.</p></div>
+    <div class="card"><h3>Craven Cloak</h3><p>Limited flight, hovering rather than true flying.</p></div>
+  </section>
+
+  <section id="learnable">
+    <h2>Learnable abilities <span class="sub">Otushar&rsquo;s Dark Knight, Rosario de La Rouge</span></h2>
+    <p>Percentages are mastery progress toward her father&rsquo;s techniques.</p>
+    <div class="dl">
+      <div><dt>Reinforced Soul, 100%</dt><dd>The dead she takes invigorate the body and raise armor class.</dd></div>
+      <div><dt>Embed Soul, 20%</dt><dd>Souls folded into armor and weapons to amplify them, similar to ki but stronger.</dd></div>
+      <div><dt>Solar Eclipse</dt><dd>Everlasting darkness around the user that blunts radiant damage. Most followers of Dorepeus carry it.</dd></div>
+      <div><dt>Trample</dt><dd>Anything within ten feet of the mount makes an Athletics check or goes prone.</dd></div>
+      <div><dt>Swift as Steel</dt><dd>Mounted, she cannot be targeted by opportunity attacks and dodges with advantage.</dd></div>
+      <div><dt>Trailblazer</dt><dd>Mounted movement triples, which would put Hedwig at 120.</dd></div>
+      <div><dt>Flash Pierce</dt><dd>Run straight through opponents and leave them skewered and restrained on a piercing weapon. Rosario managed five at once.</dd></div>
+      <div><dt>Draining Blade</dt><dd>Applies Soul Erosion to a weapon that lacks it, and at the cost of her own soul the blade drains life.</dd></div>
+      <div><dt>Death Thicker than Blood</dt><dd>Fighting someone she is close to doubles her damage, paid in morale and sanity.</dd></div>
+      <div><dt>Broken but Alive</dt><dd>Exhaustion stops mattering, and depression, charm and fear lose their hold.</dd></div>
+      <div><dt>Pushing Past the Limits, S</dt><dd>One additional turn.</dd></div>
+      <div><dt>Surface of the Dead</dt><dd>Mounted on an undead creature she walks on the souls of the damned.</dd></div>
+    </div>
+  </section>
+
+  <section id="hedwig">
+    <h2>Hedwig <span class="sub">monster bond unlocked</span></h2>
+    <div class="dl">
+      <div><dt>Stats</dt><dd>Str 30, Dex 32, Con 35, Int 5, Wis 13, Cha 12. HP 220, AC 24.</dd></div>
+      <div><dt>Initiative</dt><dd>He acts immediately after her.</dd></div>
+      <div><dt>Claw</dt><dd>+15 to hit, 3d8+10 slashing.</dd></div>
+      <div><dt>Kit</dt><dd>Cryocannon, Blizzard that travels with him, Trample, upgraded beak and claw, Roll Over.</dd></div>
+      <div><dt>Still to learn</dt><dd>Swift as Steel and Trailblazer.</dd></div>
+    </div>
+  </section>
+
+  <section id="inv">
+    <h2>Inventory</h2>
+    <div id="invList"></div>
+    <button class="btn" id="invAdd" style="height:32px;padding:0 14px;margin-top:9px;">Add a row</button>
+    <div class="vitals" style="margin-top:14px;">
+      <div class="vit"><div class="lb">Copper</div><input id="wCP" type="number" value="0"></div>
+      <div class="vit"><div class="lb">Silver</div><input id="wSP" type="number" value="0"></div>
+      <div class="vit"><div class="lb">Gold</div><input id="wGP" type="number" value="534"></div>
+      <div class="vit"><div class="lb">Platinum</div><input id="wPP" type="number" value="11"></div>
+    </div>
+  </section>
+</div>
+
+<!-- ========================= COURT ========================= -->
+<div class="pane" id="pane-court" data-name="School and court">
+  <div class="pane-head">
+    <div class="eb">Outside the fight</div>
+    <h1>School &amp; court</h1>
+    <div class="bl">The first vow of maidenhood, the people who answer to her, and what the school has taught her.</div>
+  </div>
+
+  <section id="servants">
+    <h2>Servants</h2>
+    <div class="card"><h3>Alliyah <span class="tag">servant and tutor</span></h3>
+      <p>Advantage on History and Arcana, as long as Loryana makes time for lessons twice a week. Thirty platinum a week in allowance.</p></div>
+    <div class="card"><h3>Dmitri Kranellon <span class="tag gold">sub-committee</span></h3>
+      <p><b>Underhanded Tactics.</b> Once a week he asks what she is investing, between 50 and 200 gp, and pays back a portion on a d20 the following week.</p>
+      <p style="margin-top:6px;"><b>Ship and Sell.</b> He sells anything handed to him, three times a week, amount and share on a d20. All of it is dirty money, so manage the enemies it makes.</p></div>
+    <div class="card"><h3>Knight Lysander <span class="tag gold">sub-committee</span></h3>
+      <p><b>War Advantage.</b> Once a week, a d6 list of battalions at half price.</p>
+      <p style="margin-top:6px;"><b>Training Master.</b> Three battalions a week in training, with a chance each week to raise endurance, gambit charge, bonuses and tier.</p></div>
+    <div class="card"><h3>Augusto <span class="tag veil">nephew</span></h3><p>Stays cute. Makes her smile.</p></div>
+    <div class="dl" style="margin-top:14px;">
+      <div><dt>Income</dt><dd>10 pp weekly from the student council, plus whatever Dmitri returns</dd></div>
+      <div><dt>Expenses</dt><dd>79 pp 6 gp weekly. Animal handling 49 pp 6 gp, Aaliyah 30 pp.</dd></div>
+    </div>
+  </section>
+
+  <section id="school">
+    <h2>School knowledge</h2>
+    <div class="dl">
+      <div><dt>Athletics, A+</dt><dd>Athlete feat free and physical saves with advantage. Calisthenics Trained: Acrobatics proficiency, and beating a check by five or more grants advantage on her next melee attack.</dd></div>
+      <div><dt>Forgery, A+</dt><dd>Blacksmith and Weaponsmith. Easier forging, and one reroll per long rest when forging, modifying or upgrading a weapon, keeping the second roll.</dd></div>
+      <div><dt>Team Combat, A</dt><dd>Gambit Initiative, +2 to gambit use. Commander: grant an ally an extra reaction once per long rest.</dd></div>
+      <div><dt>Celestial Theory, B</dt><dd>Theorist, Core Weakening at Arcana DC 18, and Core Immunity as a +2 Constitution save against poison.</dd></div>
+      <div><dt>Transformations, B</dt><dd>Transformation Adept: once per long rest one ability costs 25 percent less TL.</dd></div>
+      <div><dt>Creative Arts, B</dt><dd>Creative Mind. Sparks of inspiration on a new piece, usable once per long rest.</dd></div>
+      <div><dt>Culinary, B</dt><dd>Disciple Chef. Cooking well is easier.</dd></div>
+      <div><dt>History, C &middot; Herbology, C</dt><dd>Attending, nothing unlocked yet.</dd></div>
+      <div><dt>Alchemy, D</dt><dd>Volatile Touch. Her ingredients fizzle and explode more often, so good potions are harder to make.</dd></div>
+    </div>
+  </section>
+
+  <section id="rel">
+    <h2>Relationships</h2>
+    <div class="rel-filter">
+      <button class="on" data-rf="all">Everyone</button>
+      <button data-rf="party">Party only</button>
+      <button data-rf="close">C and better</button>
+    </div>
+    <div id="relList"></div>
+    <div class="tk-r" style="gap:8px;margin-top:10px;flex-wrap:wrap;">
+      <input type="text" id="relName" placeholder="name, then Enter" style="max-width:240px;">
+      <button class="btn" id="relAdd" style="height:34px;padding:0 14px;">Add</button>
+      <span class="mono" style="font-size:11.5px;color:var(--dimmer);">star marks party, click a letter to set the tier</span>
+    </div>
+  </section>
+
+  <section id="lore">
+    <h2>What the world says about witches</h2>
+    <p>Witches are older than the witches of Msiona, derived from the fae. Their power runs on hexes closer to ruin than to spellcraft, their potions are greater elixirs, and they were said to control mana the way dragons do. After the ancient species were driven out and the dragons dispelled, the gods held the Greater Atlas, and the gap between mana and divinity widened until mana itself read as a disgrace. The trials followed, and the world executed mana users at scale for fear that magic would outrun the gods. The gods did not stop their followers. Witches disappeared into rumour, and their reappearance is always singular: one at a time, and nobody agrees where the power comes from.</p>
+    <div class="gm"><b>Effacement.</b> Western Arcadia, the Pale March, punishes by erasure: every record cut, the pages removed from the Atlas of Names.</div>
+  </section>
+
+  <div class="foot">Loryana De La Rouge &middot; the Hand of Necrolien &middot; state saves to this browser</div>
+</div>
+
+</div><!-- /wrap -->
+
+<div class="pal-back" id="palBack"></div>
+<div class="pal" id="pal">
+  <input id="palIn" type="text" placeholder="Search abilities, hexes, factions, gear" autocomplete="off">
+  <div class="pal-res" id="palRes"></div>
+</div>
+
+<!-- ===== Firebase sync (added by Sync Injector) ===== -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+(function(){
+"use strict";
+var KEY="loryana_v1:sheet";
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+
+/* ---------------- data ---------------- */
+var STATS=[["str","Strength"],["dex","Dexterity"],["con","Constitution"],["int","Intelligence"],["wis","Wisdom"],["cha","Charisma"]];
+var SKILLS=[["Acrobatics","dex",1],["Animal Handling","wis",0],["Arcana","int",1],["Athletics","str",1],
+["Deception","cha",1],["History","int",2],["Insight","wis",2],["Intimidation","cha",1],["Investigation","int",1],
+["Medicine","wis",0],["Nature","int",0],["Perception","wis",1],["Performance","cha",1],["Persuasion","cha",1],
+["Religion","int",2],["Sleight of Hand","dex",1],["Stealth","dex",1],["Survival","wis",0]];
+
+var FAC={
+ aeth:{n:"Aethyra",role:"The Weeping Veil, support",col:"#5fd2c0",up:40,hates:"croq",
+  miss:["Force enemies to miss five attacks","Reduce a creature's morale by a tier","Frighten three creatures using the domain","Interact with Wayward spirits"],
+  asc:"Saintess of the Lost: veiled healing doubled, and allies in range gain the Chosen Sorrow resistance.",
+  ab:[
+   ["Sorrowed Life","passive","A quarter of the damage she takes converts to Sorrowed HP, and at the start of each turn it becomes true health based on proficiency. Dominant makes it thirty percent and doubles the conversion. Rebellious drops it to twenty percent and halves it."],
+   ["Chosen Sorrow","passive","Monk strikes and claws lose two damage dice, she gains ten feet of movement, and at the start of each turn she names a damage type and resists one attack of it. Rebellious grants no resistance. Influential makes it last the whole round."],
+   ["Weeping Veil","action, 30 TL","Summon Veiled spirits up to capacity: two at Neutral, three at Influential, four at Dominant."],
+   ["Lost Essence","free action","Attach a Veiled to an ally within thirty feet. They heal 2d8 + Wis + PB a round and anything within ten feet of them heals 1d8 + Wis + PB. One per ally, two rounds, line of sight and thirty feet or the Veiled hovers where the link broke."],
+   ["Veiled Sacrifice","bonus action, 10 TL","Destroy a Veiled: the attached ally heals 4d8 + Wis + PB and gains 50 Sorrowed HP, anyone within ten feet heals 3d8 + Wis + PB and gains 30. Ten more TL cleanses Soul Erosion entirely or a tier one status, and doubles the Sorrowed HP."],
+   ["Spirit Shift","free action","Once a round, move a Veiled to another ally. Not on the turn it was applied."],
+   ["Shared Lament","reaction","Once a round, a creature within thirty feet takes damage and she takes up to half of it instead, after resistance."]
+  ],
+  tree:{
+   Halo:[["Whisper Network","Chosen Sorrow resistance can be handed to Veiled allies."],["Unveiled Bond","The Veiled bond to their first target. No line of sight needed and they shift back to the bonded target automatically."],["Death Watch","A Veiled ally dropping to 0 makes the Veiled sacrifice itself to keep them alive."]],
+   Chest:[["Lamenting Vessel","Shared Lament twice a round."],["Excess Sorrow","Overflowing Sorrowed conversion redirects to an ally within thirty feet."],["Weeping Sacrifice","Once per transformation, take true damage up to PB times ten. That much lands on every Veiled ally and anyone in range as Sorrowed HP, and on every enemy in range as damage."]],
+   Arms:[["Extended Reach","Lost Essence reaches sixty feet."],["Echoed Sacrifice","A sacrificed Veiled makes another nearby Veiled pulse half the healing."],["Unbound Sacrifice","Veiled sacrifice can be turned on enemies for the inverse, and Sorrowed HP strips temp HP."]],
+   Legs:[["Enduring Suffering","Lost Essence lasts four rounds."],["Anguish Surge","Absorbing 20 or more with Shared Lament grants twenty feet of movement."],["Spirit Trail","Moving thirty feet or more leaves a Spiritual Imprint any Veiled can teleport to as a free action."]],
+   Wings:[["Sorrow Broadcast","Flying leaves a thirty foot trail healing Veiled allies an extra 1d8."],["Warden Veil","React to an ally failing a save, fly to them and help, with advantage if they are Veiled."],["Veiled Shroud","Veiled allies become immune to all effects, their attacks count as magical and add her Wisdom to every hit."]]
+  }},
+ bast:{n:"Bastem",role:"The Stalwart Ward, defense",col:"#d9b154",up:50,hates:"aeth",
+  miss:["Do not dodge for three rounds","Survive a round below a quarter health","Block three attacks with Riftbound","Take 100 damage"],
+  asc:"Iron Warden: damage reduction doubled, enemies within ten feet are slowed, and she cannot be pushed or moved.",
+  ab:[
+   ["Anchored Frame","passive","Twenty feet slower, and advantage against being knocked prone, pushed or moved."],
+   ["Iron Cathedral","passive","At the end of any round where she took damage, an enemy ended its turn within five feet, or she lost Momentum, a Penitent Nail manifests, up to her proficiency bonus. Melee attackers take 1d10 piercing per nail. Influential manifests two a round, Dominant raises nails to 2d8, Hostile drops them to 1d5."],
+   ["Martyr's Fortress","passive","At maximum nails: +2 AC, and attackers take double nail damage."],
+   ["Funeral March","reaction","Losing a Momentum stack, she can take true damage equal to the stacks lost and keep the momentum. That damage cannot be converted to temp HP."],
+   ["Bastem's Judgement","reaction, 10 TL","Taking 20 or more from one source within thirty feet fires a nail for 2d10 piercing + Con, and knocks them prone if they are within five feet."],
+   ["Cathedral Rupture","action, 20 TL","Every nail launches in a fifteen foot radius, 2d8 piercing each, Constitution save or slowed ten feet. Influential widens it to twenty feet, Dominant raises it to 3d8, Rebellious shrinks it to five."]
+  ],
+  tree:{
+   Helm:[["Guided Iron","Two allies in the radius can be spared from Cathedral Rupture."],["Bastem's Gaze","Once a round, react to a creature targeting her or an ally: Wisdom save or Threatened and unable to attack the original target."],["Maiden's Verdict","Cathedral Rupture knocks every Frightened creature in the radius prone, no save."]],
+   Chest:[["Penitent Plating","Nail cap rises to PB times two."],["Consecrated Core","While Martyr's Fortress is up, the first instance of magical damage each round is ignored."],["Maiden's Resolve","Using no movement grants a heavy armor dynamic reaction, AV 24."]],
+   Arms:[["Iron Grasp","While Martyr's Fortress is up, advantage on grapples and full movement while holding one."],["Penitent Punishment","Once a round, use Bastem's Judgement on a creature within five feet without needing to take damage."],["Maiden's Lance","Once per transformation, spend five or more nails to forge a lance. Thrown, 2d10 per nail in a sixty foot line, Constitution save or Slowed."]],
+   Legs:[["Funeral Bell","Once a round, Funeral March also generates 5 TL per stack paid."],["Ground Sovereign","Riftbound without repositioning doubles the TL and drops the magical and divine penalty."],["Maiden's Cage","Enemies ending their turn within ten feet make a Strength save or cannot move away from her until the end of their next turn."]],
+   Backpiece:[["Stoic Visage","Allies within twenty feet who can see her gain advantage against Frightened and Charmed."],["Penitent Arsenal","After Cathedral Rupture, roll a d4 and that many nails come straight back. The die grows with proficiency."],["Maiden's Honor","Once per transformation, HP or TL reduced to 0 drops to 1 instead. Every nail fires at one creature within thirty feet and she gains ten times PB of that resource as temp. Cannot be prevented or redirected."]]
+  }},
+ croq:{n:"Croqur",role:"The Vicious Will, offense",col:"#e0506b",up:60,hates:"bast",
+  miss:["Kill a Soul Broken creature","Apply three Witch's Marks","Reduce two marked enemies to 0 HP","Move enemies thirty feet in total with abilities"],
+  asc:"Ravager of Souls: every claw attack applies Soul Erosion, kills restore 10 TL, and the Witch's Mark spreads to adjacent enemies.",
+  ab:[
+   ["Blooded Edge","passive","Monk strikes and claws gain a damage die, critical chance rises by one, and marked creatures take 1d8 + Wis psychic on top. Influential raises it to 2d8 + Wis, Dominant lets it apply to unmarked creatures too."],
+   ["Mind Flayer","passive","Two consecutive weapon hits on the same creature give it a Mind Spike orbiting its head. Each spike cuts 2 from its Wisdom or Intelligence and hands that to her. She holds spikes up to her proficiency bonus, three per creature maximum, and only she and truesight can see them."],
+   ["Psychic Harvest","bonus action, 15 TL","Consume every spike on a target: 2d8 psychic and 1d6 TL stripped per spike. Three spikes stuns until the end of its next turn."],
+   ["Devour Thought","action, 25 TL","A creature with a spike takes 2d10 psychic and loses them all, one reaction per spike removed. Three spikes frightens it of her for a round."],
+   ["Possession","reaction","Remove two spikes to take the soul briefly. Wisdom save against her DC or she moves it half its speed, forces one weapon attack, or makes it drop something. Influential gives disadvantage at three spikes, Dominant allows two commands. On a success she takes 30 true damage and is stunned a round."]
+  ],
+  tree:{
+   Helm:[["Soul Scent","She always knows the exact location of anything carrying a Mark or a Mind Spike."],["Mercenary's Lock","Once a round, a creature with three spikes can be Marked as a free action without consuming them."],["Collecting Debt","Once per transformation, a marked creature with three spikes gets its mind broken into. Wisdom save or 10d10 damage and instant death below 100 HP. On a success, half and stunned a round. The mark and the spikes are spent."]],
+   Chest:[["Ravenous Hunger","Killing a marked creature grants advantage on her next attack."],["Soul Gorging","Killing a marked creature restores 5 + PB of TL."],["Paranoia Plating","A marked creature that hits her takes a Mind Spike, once per round per creature."]],
+   Claws:[["Barbed Edge","The claws only need two consecutive hits to Mark."],["Parasitic Spike","A fourth spike overflows to the nearest unmarked creature within twenty feet."],["Reverb","Damage to a spiked creature reverberates to the others as psychic: thirty percent at one spike, forty at two, fifty at three."]],
+   Legs:[["Phantom Step","Marked creatures do not get opportunity attacks on her."],["Predator's Pursuit","Wave Dashing plus one ki applies a Mind Spike on arrival."],["Death Stride","Killing a marked creature grants twenty feet of movement that applies a spike to everyone she passes, provoking nothing."]],
+   Backpiece:[["Weakened Mind","Marked targets make the Possession save with disadvantage."],["Aftershock","A forced attack from Possession puts a spike on any ally it hits."],["Apex Possession","Failure no longer stuns her, and she can force two actions."]]
+  }}
+};
+var FKEYS=["aeth","bast","croq"];
+
+var HEXES=[
+ ["Hex of Weakening","30 TL","Damage cut by a quarter and disadvantage on Athletics."],
+ ["Hex of Binding","30 TL","Speed halved and no Disengage. Teleports and magical movement need a Wisdom save or they fail for 1d8 psychic."],
+ ["Withering Hex","30 TL","AC down 2, to a maximum of five. Every hit deals 1d4 necrotic and worsens the reduction by one, and no temp HP while it holds."],
+ ["Haunting Hex","40 TL","Wayward surround them. Disadvantage on Perception and concentration, and alone with no ally within twenty feet they are frightened and lose 15 morale."],
+ ["Hex of Misfortune","50 TL","Disadvantage on attacks and saves. Roll a d8, and any unmodified roll at or under it costs them 1d8 psychic, doubled on a natural 1."],
+ ["Hex of Dread","50 TL &middot; mournite","Disadvantage on Wisdom saves, no Dash and no Help, and a Wisdom save or 30 morale gone."],
+ ["Hex of Silence","50 TL &middot; decisteel","Silenced, and 1d8 psychic if they try to speak."],
+ ["Malefic Imprint","75 TL","Every marked creature takes a random hex. Anything already hexed becomes Soul Broken: stunned and vulnerable to psychic for a round."],
+ ["Ultimate Hex of Tragedy","100 TL","Charisma save. Fate's Cruel Hand gives disadvantage on everything, Mirror of Misery returns half their own damage as psychic, Shattered Spirit frightens them below half health, Death's Echo deals 5d10 necrotic on any natural 1. A success only spares them Fate's Cruel Hand and halves Death's Echo."]
+];
+
+var EMBRACE=[
+ ["Insaanite","1","A first mark in an encounter deals 1d8 psychic immediately."],
+ ["Sinful Elegy","4","A creature dying while marked lets her release a pulse: 2d6 psychic in thirty feet, Wisdom save or 10 morale gone and frightened a round."],
+ ["Hexlock","4 &middot; 5 TL","Bind a hex to a claw and the claw holds the concentration. Disarmed, destroyed or interrupted, it makes a DC 10 concentration check like a caster."],
+ ["Watcher's Mark","4 &middot; cravox","Bonus action to look through a marked creature's eyes for a round, leaving her in a trance. Leaving early forces a Wisdom save or they are blinded for a round."],
+ ["Lost Thoughts","6","Marked creatures are fed thoughts of their own death and lose 10 morale a round on a failed Wisdom save."],
+ ["Weaving Life","6","Tether up to three marked creatures within ten feet of each other. Damage, healing, statuses, AC and hexes are shared. Cutting the line or stretching past twenty feet forces a Constitution save for 2d10 necrotic, half on a success."],
+ ["Undying Mark","8 &middot; tradite","A marked creature dies and the mark jumps to something she has scratched, duration and hex intact. Wisdom save or every point of damage stored in that mark arrives as necrotic."],
+ ["Rejuvenating Mark","8 &middot; lumicore","Bonus action to strip a mark and take twice the damage dealt under it as temporary hit points."],
+ ["Bounded by Fate","2","React to a marked creature hitting her: remove the mark and halve the damage."],
+ ["Witchbrand","10","Action. The talons leave the claws in an arcane spin. Everything within thirty feet up to her mark cap makes a Dexterity save or is Marked. Already marked, they are stunned and vulnerable to necrotic for a round."],
+ ["The First Sin","2","Root of the tree."],
+ ["Frigid Mark","claws","Cold damage type, and two consecutive cold strikes on a mark break their AC, speed and cold resistance for a round."]
+];
+
+var CRESTS={
+ charmer:{n:"Crest of the Charmer",who:"Augustus",items:[
+  ["Beautiful Beyond Belief","passive","Proficiency added to every Charisma skill, including ones she already has expertise in, and advantage on Charisma saves and checks."],
+  ["Greatest Pretender","passive","Two more feint tokens, and disadvantage for anyone trying to read the feint."],
+  ["Always the Victim","reaction","An ally within twenty feet fails a save and she swaps places with them to take it instead."],
+  ["Needs Protection","bonus action","Pull pieces of her soul into simple thrown weapons, daggers or chakrams, dealing 1d10 true Soul Erosion."],
+  ["Till Death Do We Part","action","Bind her soul to a willing creature within ten feet. They gain her Charisma to AC and a quarter of her maximum health, damage is shared both ways, and she cannot move more than thirty feet from them. If they go down she has disadvantage on everything."]]},
+ scholar:{n:"Crest of the Scholar",who:"Adonis",items:[
+  ["Naturally Academic","passive","Proficiency added to every Intelligence skill, including expertise, and advantage on Intelligence saves and checks."],
+  ["Hunger for Wisdom","passive","Sharper focus while studying, and extra experience from classes and books."],
+  ["Astute Guard","reaction","Targeted by an attack, she adds her Intelligence modifier to AC."],
+  ["Quick Thought","bonus action","Two extra reactions for three rounds."],
+  ["Focused Strike","action, recharge 5 to 6","A ten foot wide, thirty foot long strike for normal melee damage. It can be interrupted."]]}
+};
+
+/* ---------------- state ---------------- */
+var S={
+ hp:{cur:428,max:428,temp:0,sorrow:0}, tl:{cur:50,max:320}, ki:{cur:21,max:21}, over:0,
+ mor:{cur:100,max:100}, round:1, nails:{cur:0,max:5}, mom:0,
+ wep:{name:"Pale Embrace",max:3,left:3}, fl:{max:3,left:3}, rx:{max:2,left:2},
+ stats:{str:16,dex:32,con:25,int:14,wis:34,cha:20}, skills:{},
+ vit:{ac:35,init:"+21",spd:"60 ft",pb:5,shadow:3},
+ fac:{aeth:0,bast:0,croq:0}, active:"", form:false, spark:false, shroud:false, neck:true,
+ up:0, tree:{}, treeTab:"aeth", crest:"none",
+ marks:[], rels:[], inv:[], emb:{}, wealth:{cp:0,sp:0,gp:534,pp:11},
+ notes:{fight:"",char:""}, log:[], pane:"turn", fold:false, seq:1,
+ min:{}, compact:false, auto:true, relFilter:"all", grades:{},
+ formUp:20, sparkCut:3, sparkGain:30, riftMult:5, riftDiv:false, hd:{cur:5,max:5},
+ veiled:[], overRounds:0, cath:true, rech:{palm:true,cradle:true}
+};
+var TIERS=["F","D","C","B","A","S"];
+var GRADE_LADDER=["F","D","D+","C","C+","B","B+","A","A+","S"];
+SKILLS.forEach(function(s){S.skills[s[0]]=s[2];});
+["Alexander Volkbane:D","Anais:F","Andrew Long:C","Amias Rosetherry:F","Beatrix Callie:D","Bonnie & Clyde:F","Callisto:D","Cynthia Goodwill:D","Damien Creed:D","Dylan:C","Fior Munya:C","Hazel:F","Jason:D","Magnolia:B","Melissa:F","Raphael DuBois:D","Rhea:D","Sika Carmichael:C","Sylvana:C","Tyler Vullistos:D","Victoria:D","Yohan Portrov:C"].forEach(function(r){
+ var p=r.split(":"); S.rels.push({n:p[0],t:TIERS.indexOf(p[1]),party:false});});
+
+var store={get:function(k){try{return localStorage.getItem(k);}catch(e){return null;}},
+           set:function(k,v){try{localStorage.setItem(k,v);}catch(e){}}};
+function deep(t,src){for(var k in src){if(!src.hasOwnProperty(k))continue;
+ if(src[k]&&typeof src[k]==="object"&&!Array.isArray(src[k])&&t[k]&&typeof t[k]==="object"&&!Array.isArray(t[k]))deep(t[k],src[k]);
+ else t[k]=src[k];}return t;}
+var saveT=null;
+function save(){store.set(KEY,JSON.stringify(S));var h=$("saveHint");if(!h)return;
+ h.textContent="Saved";h.classList.add("flash");clearTimeout(saveT);
+ saveT=setTimeout(function(){h.textContent="Saved to this device automatically";h.classList.remove("flash");},1100);}
+
+/* ---------------- derived ---------------- */
+function mod(v){return Math.floor((v-10)/2);}
+function fmt(m){return (m>=0?"+":"")+m;}
+function pb(){return parseInt(S.vit.pb)||0;}
+function dc(){return 8+pb()+mod(S.stats.wis)+(parseInt(S.vit.shadow)||0);}
+function state(i){return i>=5?"Dominant":i>=3?"Influential":i<=-5?"Hostile":i<=-3?"Rebellious":"Neutral";}
+function theme(col){var r=document.documentElement.style;
+ r.setProperty("--ac",col);r.setProperty("--ac-soft",col+"22");r.setProperty("--ac-line",col+"66");}
+
+/* ---------------- faction console ---------------- */
+function renderFac(){
+ var host=$("facHost");host.innerHTML="";
+ FKEYS.forEach(function(k){
+  var f=FAC[k],i=S.fac[k],st=state(i),on=S.active===k;
+  var d=document.createElement("div");
+  d.className="fac"+(on?" active":"");d.style.setProperty("--fc",f.col);
+  var track="";
+  for(var v=-5;v<=5;v++){
+   var cls="";
+   if(v===0)cls=" zero";
+   if(i>0&&v>0&&v<=i)cls+=" fill";
+   if(i<0&&v<0&&v>=i)cls+=" neg fill";
+   track+='<button class="track-b'+cls+'" data-inf="'+k+':'+v+'" title="set to '+v+'">'+(v===0?"0":(v>0?"+"+v:v))+'</button>';
+  }
+  d.innerHTML='<div class="fac-h"><span class="nm">'+f.n+'</span><span class="role">'+f.role+'</span>'+
+   '<span class="state">'+st+' <span style="color:var(--dimmer);font-family:IBM Plex Mono;font-size:11px;">'+(i>0?"+"+i:i)+'</span></span></div>'+
+   '<div class="track">'+track.replace(/class="track-b/g,'class="')+'</div>'+
+   '<div class="fac-btns">'+
+   '<button class="btn sm" data-chan="'+k+'">'+(on?"Channelled":"Channel, 20 TL")+'</button>'+
+   '<button class="btn sm" data-inf="'+k+':up">+1</button>'+
+   '<button class="btn sm" data-inf="'+k+':down">&minus;1</button>'+
+   '<span class="mi">'+facMath(k)+'</span></div>'+
+   '<div class="mono" style="font-size:10.5px;color:var(--dimmer);margin-top:6px;">mission: '+f.miss[(S.seq+FKEYS.indexOf(k))%4]+'</div>';
+  host.appendChild(d);
+ });
+ host.querySelectorAll("[data-chan]").forEach(function(b){b.addEventListener("click",function(){
+  var k=b.getAttribute("data-chan");
+  if(S.active===k){S.active="";logline("released "+FAC[k].n);}
+  else{S.active=k;var c=Math.max(0,20-(S.spark?(parseInt(S.sparkCut)||0):0));
+   S.tl.cur=Math.max(0,S.tl.cur-c);
+   logline("channelled "+FAC[k].n+", "+c+" TL, upkeep "+Math.max(0,FAC[k].up-(S.spark?(parseInt(S.sparkCut)||0):0))+" a round");}
+  renderAll();save();});});
+ host.querySelectorAll("[data-inf]").forEach(function(b){b.addEventListener("click",function(){
+  var p=b.getAttribute("data-inf").split(":"),k=p[0];
+  if(p[1]==="up")setInf(k,S.fac[k]+1);
+  else if(p[1]==="down")setInf(k,S.fac[k]-1);
+  else setInf(k,parseInt(p[1]));
+  renderAll();save();});});
+
+ var a=S.active?FAC[S.active]:null;
+ theme(a?a.col:"#c2abff");
+ $("bopActive").textContent=a?a.n:"Unchanneled";
+ $("bopSub").textContent=a?(a.role+" \u00b7 "+state(S.fac[S.active])+" \u00b7 "+a.up+" TL a round"):"No faction holds the Iron Maiden";
+ $("flagForm").classList.toggle("on",S.form);
+ $("flagSpark").classList.toggle("on",S.spark);
+ $("flagShroud").classList.toggle("on",S.shroud);
+ $("flagNeck").classList.toggle("on",S.neck);
+ var asc=a&&S.fac[S.active]>=5;
+ $("flagAsc").classList.toggle("on",!!asc);
+ $("flagAsc").textContent=asc?("Ascension: "+a.n):"Ascension";
+ var L=$("bopLog");L.innerHTML="";
+ S.log.slice(-12).reverse().forEach(function(t){var e=document.createElement("div");e.textContent=t;L.appendChild(e);});
+ renderFacDetail();renderUpkeep();
+}
+function facMath(k){
+ var f=FAC[k],cut=S.spark?(parseInt(S.sparkCut)||0):0,gain=S.spark?(parseInt(S.sparkGain)||0):0;
+ var cost=Math.max(0,f.up-cut),net=gain-cost-(S.shroud?10:0);
+ var s=f.up+" TL";
+ if(cut)s+=" \u2192 "+cost+" with Spark";
+ if(gain)s+=", +"+gain+" back";
+ if(S.shroud)s+=", shroud 10";
+ s+=" \u00b7 net "+(net>=0?"+":"")+net+" a round";
+ return s;
+}
+function setInf(k,v){
+ v=Math.max(-5,Math.min(5,v));
+ if(k!==S.active&&v>3)v=3;
+ if(v>=5)FKEYS.forEach(function(o){if(o!==k&&S.fac[o]>=5)S.fac[o]=4;});
+ S.fac[k]=v;
+}
+function logline(t){S.log.push("R"+S.round+"  "+t);}
+function renderFacDetail(){
+ var host=$("facDetail");if(!host)return;host.innerHTML="";
+ FKEYS.forEach(function(k){
+  var f=FAC[k],i=S.fac[k];
+  var h=document.createElement("div");
+  h.innerHTML='<h3 class="cz" style="font-size:20px;color:'+f.col+';margin:18px 0 4px;">'+f.n+
+   ' <span class="mono" style="font-size:11px;color:var(--dimmer);">'+f.role+' \u00b7 '+facMath(k)+' \u00b7 '+state(i)+'</span></h3>'+
+   '<div class="card" style="border-color:'+f.col+'55;"><h3>Ascension <span class="tag gold">+5</span></h3><p>'+f.asc+'</p></div>';
+  f.ab.forEach(function(a){
+   h.innerHTML+='<div class="card"><h3>'+esc(a[0])+' <span class="tag">'+esc(a[1])+'</span></h3><p>'+a[2]+'</p></div>';
+  });
+  host.appendChild(h);
+ });
+}
+
+/* ---------------- armor tree ---------------- */
+function renderTree(){
+ var tabs=$("treeTabs");tabs.innerHTML="";
+ FKEYS.forEach(function(k){
+  var b=document.createElement("button");
+  b.className="btn";b.style.height="32px";b.style.padding="0 14px";
+  if(S.treeTab===k){b.style.borderColor=FAC[k].col;b.style.color="#fff";}
+  b.textContent=FAC[k].n;b.setAttribute("data-tt",k);
+  tabs.appendChild(b);
+ });
+ tabs.querySelectorAll("[data-tt]").forEach(function(b){b.addEventListener("click",function(){
+  S.treeTab=b.getAttribute("data-tt");renderTree();save();});});
+
+ if(!FAC[S.treeTab])S.treeTab="aeth";
+ var k=S.treeTab,f=FAC[k],inf=S.fac[k]||0;
+ var host=$("treeHost");host.innerHTML="";
+ var g=document.createElement("div");g.className="treegrid";g.style.setProperty("--fc",f.col);
+ g.innerHTML='<div class="hd">Module</div><div class="hd">Tier 1 &middot; neutral</div><div class="hd">Tier 2 &middot; influential</div><div class="hd">Tier 3 &middot; dominant</div>';
+ var need=[0,3,5];
+ Object.keys(f.tree).forEach(function(mod_){
+  var row='<div class="modrow">'+mod_+'</div>';
+  f.tree[mod_].forEach(function(node,ti){
+   var id=k+":"+mod_+":"+ti,own=!!S.tree[id],locked=inf<need[ti];
+   row+='<button class="node'+(own?" own":"")+(locked&&!own?" locked":"")+'" data-node="'+id+'">'+
+     '<b>'+esc(node[0])+'</b>'+esc(node[1])+'</button>';
+  });
+  g.innerHTML+=row;
+ });
+ host.appendChild(g);
+ host.querySelectorAll("[data-node]").forEach(function(b){b.addEventListener("click",function(){
+  var id=b.getAttribute("data-node"),ti=parseInt(id.split(":")[2]);
+  if(S.tree[id]){delete S.tree[id];S.up++;}
+  else{ if(inf<need[ti]) return; if(S.up<1){flashBar();return;} S.tree[id]=true;S.up--; }
+  renderTree();renderMisc();save();});});
+ var owned=Object.keys(S.tree).filter(function(x){return x.indexOf(k+":")===0;}).length;
+ $("treeNote").textContent=owned+" of 15 taken in "+f.n+", influence "+(inf>0?"+"+inf:inf)+" ("+state(inf)+")";
+ $("upCur").textContent=S.up;
+}
+
+/* ---------------- marks ---------------- */
+function renderMarks(){
+ var sel=$("markHex");
+ if(sel && !sel.options.length){
+  var o=document.createElement("option");o.value="";o.textContent="no hex";sel.appendChild(o);
+  HEXES.forEach(function(h){var x=document.createElement("option");x.value=h[0];x.textContent=h[0];sel.appendChild(x);});
+ }
+ var cap=S.tree["croq:Helm:0"]?2:2;
+ $("markCap").textContent=S.marks.length+" of "+cap+" marks out";
+ var w=$("markList");w.innerHTML="";
+ if(!S.marks.length){w.innerHTML='<div class="empty">Nothing is marked.</div>';return;}
+ S.marks.forEach(function(m){
+  var d=document.createElement("div");d.className="mark"+(m.r<=1?" dying":"");
+  d.innerHTML='<span class="nm">'+esc(m.n)+'</span>'+
+   '<span class="st">'+(m.h?esc(m.h):"no hex")+' \u00b7 corrupted, no healing \u00b7 she attacks with advantage</span>'+
+   '<span class="tk-r"><button class="btn sm" data-mr="'+m.id+':-1">&minus;</button>'+
+   '<span class="cur" style="font-size:16px;min-width:56px;">'+m.r+' rnd</span>'+
+   '<button class="btn sm" data-mr="'+m.id+':1">+</button>'+
+   '<button class="btn sm" data-mx="'+m.id+'">&times;</button></span>';
+  w.appendChild(d);
+ });
+ w.querySelectorAll("[data-mr]").forEach(function(b){b.addEventListener("click",function(){
+  var p=b.getAttribute("data-mr").split(":");
+  S.marks.forEach(function(m){if(m.id===p[0])m.r=Math.max(0,m.r+parseInt(p[1]));});
+  renderMarks();save();});});
+ w.querySelectorAll("[data-mx]").forEach(function(b){b.addEventListener("click",function(){
+  S.marks=S.marks.filter(function(m){return m.id!==b.getAttribute("data-mx");});renderMarks();save();});});
+}
+
+/* ---------------- static lists ---------------- */
+function renderHexes(){
+ var w=$("hexHost");w.innerHTML="";
+ HEXES.forEach(function(h){
+  var d=document.createElement("div");d.className="card";
+  d.innerHTML='<h3>'+esc(h[0])+' <span class="tag">'+h[1]+'</span></h3><p>'+esc(h[2])+'</p>'+
+   '<div class="tk-r" style="margin-top:8px;"><button class="btn sm" data-hexpay="'+parseInt(h[1])+'">pay it</button></div>';
+  w.appendChild(d);
+ });
+ w.querySelectorAll("[data-hexpay]").forEach(function(b){b.addEventListener("click",function(){
+  var c=parseInt(b.getAttribute("data-hexpay"))-(S.spark?3:0);
+  if(S.tl.cur<c){flashBar();return;}
+  S.tl.cur-=c;renderTL();logline("hex paid, "+c+" TL");renderFac();save();});});
+}
+function renderEmbrace(){
+ var w=$("embraceHost");w.innerHTML="";
+ EMBRACE.forEach(function(e){
+  var on=!!S.emb[e[0]];
+  var d=document.createElement("div");d.className="bp";
+  d.innerHTML='<span class="box'+(on?" on":"")+'" data-emb="'+esc(e[0])+'" role="button" tabindex="0">'+(on?"\u2713":"")+'</span>'+
+   '<span><b class="cz" style="font-size:16px;color:'+(on?"var(--ac)":"#fff")+';">'+esc(e[0])+'</b>'+
+   '<span class="mono" style="font-size:11px;color:var(--dim);display:block;">'+esc(e[1])+'</span>'+
+   '<span style="font-size:15px;">'+esc(e[2])+'</span></span>';
+  w.appendChild(d);
+ });
+ w.querySelectorAll("[data-emb]").forEach(function(el){
+  function t(){var k=el.getAttribute("data-emb");S.emb[k]=!S.emb[k];renderEmbrace();save();}
+  el.addEventListener("click",t);
+  el.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();t();}});});
+}
+function renderCrest(){
+ var w=$("crestBody");w.innerHTML="";
+ if(S.crest==="none"||!CRESTS[S.crest]){w.innerHTML='<div class="empty">No crest chosen for the day.</div>';return;}
+ var c=CRESTS[S.crest];
+ w.innerHTML='<p class="lede">'+c.n+', guided by '+c.who+'.</p>';
+ c.items.forEach(function(i){
+  w.innerHTML+='<div class="card"><h3>'+esc(i[0])+' <span class="tag">'+esc(i[1])+'</span></h3><p>'+esc(i[2])+'</p></div>';});
+}
+function renderRels(){
+ var w=$("relList");w.innerHTML="";
+ var order={A:0,B:1,C:2,D:3,F:4};
+ S.rels.slice().sort(function(a,b){return (order[a.g]-order[b.g])||a.n.localeCompare(b.n);}).forEach(function(r,i){
+  var d=document.createElement("div");d.className="sk";
+  d.innerHTML='<span class="nm">'+esc(r.n)+'</span><span class="vl" style="color:'+
+   (r.g==="A"?"#5fd2c0":r.g==="B"?"#d9b154":r.g==="C"?"#c2abff":r.g==="F"?"#d8434f":"var(--dim)")+'">'+r.g+'</span>'+
+   '<button class="btn sm" data-relx="'+esc(r.n)+'">&times;</button>';
+  w.appendChild(d);
+ });
+ w.querySelectorAll("[data-relx]").forEach(function(b){b.addEventListener("click",function(){
+  S.rels=S.rels.filter(function(r){return r.n!==b.getAttribute("data-relx");});renderRels();save();});});
+}
+function renderInv(){
+ var w=$("invList");w.innerHTML="";
+ if(!S.inv.length)w.innerHTML='<div class="empty">Nothing logged.</div>';
+ S.inv.forEach(function(row,i){
+  var d=document.createElement("div");d.className="tk-r";d.style.marginBottom="6px";
+  d.innerHTML='<input type="text" value="'+esc(row.n)+'" data-inv="'+i+':n" placeholder="item" style="flex:3;">'+
+   '<input type="text" value="'+esc(row.q)+'" data-inv="'+i+':q" placeholder="#" style="flex:0 0 70px;">'+
+   '<input type="text" value="'+esc(row.d)+'" data-inv="'+i+':d" placeholder="note" style="flex:4;">'+
+   '<button class="btn sm" data-invx="'+i+'">&times;</button>';
+  w.appendChild(d);});
+ w.querySelectorAll("[data-inv]").forEach(function(i){i.addEventListener("input",function(){
+  var p=i.getAttribute("data-inv").split(":");S.inv[parseInt(p[0])][p[1]]=i.value;save();});});
+ w.querySelectorAll("[data-invx]").forEach(function(b){b.addEventListener("click",function(){
+  S.inv.splice(parseInt(b.getAttribute("data-invx")),1);renderInv();save();});});
+}
+
+/* ---------------- trackers ---------------- */
+function renderHP(){
+ $("hpCur").textContent=S.hp.cur;
+ if(document.activeElement!==$("hpMax"))$("hpMax").value=S.hp.max;
+ if(document.activeElement!==$("hpTemp"))$("hpTemp").value=S.hp.temp;
+ if(document.activeElement!==$("hpSorrow"))$("hpSorrow").value=S.hp.sorrow;
+ $("hpFill").style.width=Math.max(0,Math.min(100,(S.hp.cur/Math.max(1,S.hp.max))*100))+"%";
+}
+function renderTL(){
+ $("tlCur").textContent=S.tl.cur;
+ if(document.activeElement!==$("tlMax"))$("tlMax").value=S.tl.max;
+ $("tlFill").style.width=Math.max(0,Math.min(100,(S.tl.cur/Math.max(1,S.tl.max))*100))+"%";
+ $("tlNote").textContent=S.neck?("Necklace included, cap "+S.tl.max):"Necklace off";
+}
+function renderMisc(){
+ $("kiCur").textContent=S.ki.cur;
+ if(document.activeElement!==$("kiMax"))$("kiMax").value=S.ki.max;
+ $("overCur").textContent=S.over;
+ $("morCur").textContent=S.mor.cur;
+ if(document.activeElement!==$("morMax"))$("morMax").value=S.mor.max;
+ $("morFill").style.width=Math.max(0,Math.min(100,(S.mor.cur/Math.max(1,S.mor.max))*100))+"%";
+ $("rdNum").textContent=S.round;
+ $("nailCur").textContent=S.nails.cur;
+ if(document.activeElement!==$("nailMax"))$("nailMax").value=S.nails.max;
+ $("momCur").textContent=S.mom;
+ $("upCur").textContent=S.up;
+ if($("hdCur")){$("hdCur").textContent=S.hd.cur;
+  if(document.activeElement!==$("hdMax"))$("hdMax").value=S.hd.max;}
+ $("nailNote").textContent=S.nails.cur>=S.nails.max?"Fortress up: +2 AC, double nail damage":"Fortress at max nails";
+}
+function renderPips(){
+ function row(host,n,live,attr,cls){
+  var w=$(host);if(!w)return;w.innerHTML="";
+  for(var i=0;i<n;i++){var b=document.createElement("button");
+   b.className="pip-b "+cls+(i<live?" live":"");b.setAttribute(attr,String(i));
+   b.setAttribute("aria-label",cls+" "+(i+1));w.appendChild(b);}
+ }
+ row("atkPips",S.wep.max,S.wep.left,"data-atk","");
+ row("flPips",S.fl.max,S.fl.left,"data-fl","fl");
+ row("rxPips",S.rx.max,S.rx.left,"data-rx","rx");
+ $("atkMaxOut").textContent=S.wep.max;
+ $("rxMaxOut").textContent=S.rx.max;
+ $("wepName").textContent=S.wep.name;
+ if(document.activeElement!==$("wepEdit"))$("wepEdit").value=S.wep.name==="Pale Embrace"?"":S.wep.name;
+ document.querySelectorAll("[data-atk]").forEach(function(b){b.addEventListener("click",function(){
+  var i=parseInt(b.getAttribute("data-atk"));S.wep.left=i<S.wep.left?S.wep.left-1:S.wep.left+1;
+  S.wep.left=Math.max(0,Math.min(S.wep.max,S.wep.left));renderPips();save();});});
+ document.querySelectorAll("[data-fl]").forEach(function(b){b.addEventListener("click",function(){
+  var i=parseInt(b.getAttribute("data-fl"));S.fl.left=i<S.fl.left?S.fl.left-1:S.fl.left+1;
+  S.fl.left=Math.max(0,Math.min(S.fl.max,S.fl.left));renderPips();save();});});
+ document.querySelectorAll("[data-rx]").forEach(function(b){b.addEventListener("click",function(){
+  var i=parseInt(b.getAttribute("data-rx"));S.rx.left=i<S.rx.left?S.rx.left-1:S.rx.left+1;
+  S.rx.left=Math.max(0,Math.min(S.rx.max,S.rx.left));renderPips();save();});});
+}
+function flashBar(){var b=$("bar");b.style.borderTopColor="#d8434f";setTimeout(function(){b.style.borderTopColor="";},420);}
+
+/* ---------------- stats ---------------- */
+function renderStats(){
+ var g=$("statGrid");g.innerHTML="";
+ STATS.forEach(function(s){
+  var d=document.createElement("div");d.className="stat";
+  d.innerHTML='<div class="lb">'+s[1]+'</div><div class="mo">'+fmt(mod(S.stats[s[0]]))+'</div>'+
+   '<input type="number" data-stat="'+s[0]+'" value="'+S.stats[s[0]]+'" aria-label="'+s[1]+'">'+
+   '<div class="lb" style="margin-top:6px;">save '+fmt(mod(S.stats[s[0]])+pb())+'</div>';
+  g.appendChild(d);});
+ g.querySelectorAll("input[data-stat]").forEach(function(i){i.addEventListener("input",function(){
+  S.stats[i.getAttribute("data-stat")]=parseInt(i.value)||0;
+  i.parentNode.querySelector(".mo").textContent=fmt(mod(parseInt(i.value)||0));
+  renderSkills();renderDerived();save();});});
+ renderSkills();
+}
+function renderSkills(){
+ var g=$("sklGrid");g.innerHTML="";
+ SKILLS.forEach(function(s){
+  var lvl=S.skills[s[0]]||0,val=mod(S.stats[s[1]])+(lvl===1?pb():lvl===2?pb()*2:0);
+  var d=document.createElement("div");d.className="sk";
+  d.innerHTML='<span class="pip '+(lvl===1?"p":lvl===2?"e":"")+'" data-sk="'+esc(s[0])+'" role="button" tabindex="0">'+(lvl===2?"E":"")+'</span>'+
+   '<span class="nm">'+s[0]+'</span><span class="ab">'+s[1]+'</span><span class="vl">'+fmt(val)+'</span>';
+  g.appendChild(d);});
+ g.querySelectorAll(".pip").forEach(function(p){
+  function cyc(){var k=p.getAttribute("data-sk");S.skills[k]=((S.skills[k]||0)+1)%3;renderSkills();save();}
+  p.addEventListener("click",cyc);
+  p.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();cyc();}});});
+}
+function renderDerived(){
+ $("vDC").value=dc();
+ $("vSA").value=fmt(pb()+mod(S.stats.wis));
+}
+function safe(fn,tag){try{fn();}catch(e){if(window.console)console.warn("render failed:",tag,e&&e.message);}}
+function renderAll(){
+ safe(renderHP,"hp");safe(renderTL,"tl");safe(renderMisc,"misc");safe(renderPips,"pips");
+ safe(renderFac,"factions");safe(renderTree,"tree");safe(renderMarks,"marks");
+ safe(renderVeil,"veiled");safe(renderChips,"chips");safe(renderSums,"summaries");safe(renderUpkeep,"upkeep");
+}
+
+/* ---------------- turn and rests ---------------- */
+function refreshTurn(){
+ S.wep.left=S.wep.max; S.fl.left=S.fl.max; S.rx.left=S.rx.max;
+}
+function doShortRest(){
+ S.ki.cur=S.ki.max; S.tl.cur=S.tl.max; S.mor.cur=S.mor.max;
+ S.rech={palm:true,cradle:true}; S.mom=0; S.over=0; S.overRounds=0;
+ refreshTurn();
+ logline("short rest: ki, TL, morale, recharges, attacks, flurry and reactions back. Spend hit dice for health.");
+ renderAll(); save();
+}
+function spendHitDie(){
+ if(S.hd.cur<1){flashBar();return;}
+ S.hd.cur--;
+ var heal=12+mod(S.stats.con);
+ S.hp.cur=Math.min(S.hp.max,S.hp.cur+heal);
+ logline("hit die spent, healed "+heal);
+ renderAll(); save();
+}
+function doLongRest(){
+ S.hp.cur=S.hp.max; S.hp.temp=0; S.hp.sorrow=0;
+ S.ki.cur=S.ki.max; S.tl.cur=S.tl.max; S.mor.cur=S.mor.max;
+ S.over=0; S.overRounds=0; S.rech={palm:true,cradle:true};
+ S.fac={aeth:0,bast:0,croq:0}; S.active=""; S.form=false; S.shroud=false;
+ S.tree={}; S.up=0; S.marks=[]; S.veiled=[]; S.nails.cur=0; S.mom=0;
+ S.hd.cur=S.hd.max; S.round=1; S.log=[]; refreshTurn();
+ logline("long rest: everything back, transformation and marks cleared");
+ renderAll(); save();
+}
+
+/* ---------------- upkeep math ---------------- */
+function upkeepCost(){
+ if(!S.form)return 0;
+ var base=S.active?FAC[S.active].up:(parseInt(S.formUp)||0);
+ return Math.max(0,base-(S.spark?(parseInt(S.sparkCut)||0):0));
+}
+function upkeepGain(){return S.spark?(parseInt(S.sparkGain)||0):0;}
+function renderUpkeep(){
+ var c=upkeepCost(),g=upkeepGain(),sh=S.shroud?10:0,net=g-c-sh;
+ var tag=$("upkTag");if(!tag)return;
+ tag.textContent=S.form?(S.active?FAC[S.active].n:"unchanneled"):"idle";
+ var bits=[];
+ if(!S.form)bits.push("The Iron Maiden is down, nothing is being paid.");
+ else{
+  bits.push((S.active?FAC[S.active].n+" consumption ":"Form upkeep ")+(S.active?FAC[S.active].up:S.formUp)+" TL");
+  if(S.spark)bits.push("Rotating Spark cuts "+S.sparkCut+" to "+c+" and returns "+g);
+  else bits.push("costing "+c);
+  if(sh)bits.push("shroud 10");
+  bits.push("net "+(net>=0?"+":"")+net+" a round, "+(net<0?Math.floor(S.tl.cur/Math.max(1,-net))+" rounds left at this rate":"she is gaining"));
+ }
+ $("upkLine").textContent=bits.join(" \u00b7 ");
+ var rb=$("riftOut");
+ if(rb){var gain=pb()*(parseInt(S.riftMult)||0);
+  rb.textContent="base "+gain+" TL"+(S.tree["bast:Legs:1"]?", Ground Sovereign owned":"")+(S.riftDiv?", halved for divine":"");}
+ var rd=$("riftDiv");if(rd)rd.className="chip "+(S.riftDiv?"used":"ready");
+}
+function payUpkeep(silent){
+ var c=upkeepCost(),g=upkeepGain(),sh=S.shroud?10:0,parts=[];
+ if(g){S.tl.cur=Math.min(S.tl.max,S.tl.cur+g);parts.push("+"+g+" spark");}
+ if(c){S.tl.cur=Math.max(0,S.tl.cur-c);parts.push("-"+c+(S.active?" "+FAC[S.active].n:" form"));}
+ if(sh){S.tl.cur=Math.max(0,S.tl.cur-sh);parts.push("-10 shroud");}
+ if(S.form&&S.tl.cur<=0){S.form=false;S.active="";parts.push("TL ran out, the armor fell");}
+ if(!silent&&parts.length)logline(parts.join(", "));
+ return parts;
+}
+function riftbound(hold){
+ var gain=pb()*(parseInt(S.riftMult)||0);
+ if(hold&&S.tree["bast:Legs:1"])gain*=2;
+ if(S.riftDiv&&!(hold&&S.tree["bast:Legs:1"]))gain=Math.floor(gain/2);
+ S.tl.cur=Math.min(S.tl.max,S.tl.cur+gain);
+ var note="Riftbound "+(hold?"held ground":"repositioned")+", +"+gain+" TL";
+ if(S.riftDiv&&!(hold&&S.tree["bast:Legs:1"])){var d=1+Math.floor(Math.random()*8);
+  S.hp.cur=Math.max(0,S.hp.cur-d);note+=", "+d+" psychic";}
+ logline(note);
+ renderTL();renderHP();renderSums();renderFac();save();
+ $("riftOut").textContent=note;
+}
+
+/* ---------------- collapsible trackers ---------------- */
+var SUMKEY=[["Hit points","hp"],["Transformation load","tl"],["Ki","ki"],["Morale","mor"],["Nails","nails"],["In her hands","wep"],["Flurry","pips"]];
+function wrapCards(){
+ document.querySelectorAll("#bar .tk").forEach(function(card,idx){
+  if(card.getAttribute("data-k"))return;
+  var h=card.querySelector(".tk-h"),txt=h?h.textContent.trim():"";
+  var key="c"+idx;
+  SUMKEY.forEach(function(pair){ if(txt.indexOf(pair[0])===0) key=pair[1]; });
+  card.setAttribute("data-k",key);
+  var body=document.createElement("div");body.className="tk-body";
+  var kids=[];for(var i=0;i<card.children.length;i++){if(card.children[i]!==h)kids.push(card.children[i]);}
+  kids.forEach(function(n){body.appendChild(n);});
+  var sum=document.createElement("div");sum.className="tk-sum";sum.setAttribute("data-sum",key);
+  card.appendChild(sum);card.appendChild(body);
+  var c=document.createElement("button");c.className="caret";c.type="button";
+  c.setAttribute("data-min",key);c.setAttribute("aria-label","Minimize");c.textContent="\u25BE";
+  if(h)h.appendChild(c);
+  c.addEventListener("click",function(){S.min[key]=!S.min[key];renderMin();save();});
+ });
+ renderMin();
+}
+function renderMin(){
+ document.querySelectorAll("#bar .tk").forEach(function(card){
+  var k=card.getAttribute("data-k"),m=!!S.min[k];
+  card.classList.toggle("min",m);
+  var c=card.querySelector(".caret");if(c)c.textContent=m?"\u25B8":"\u25BE";
+ });
+ $("bar").classList.toggle("compact",!!S.compact);
+ renderSums();
+}
+function renderSums(){
+ var v={
+  hp:S.hp.cur+'<span>/'+S.hp.max+(S.hp.temp?" +"+S.hp.temp+" temp":"")+(S.hp.sorrow?" +"+S.hp.sorrow+" sorrow":"")+'</span>',
+  tl:S.tl.cur+'<span>/'+S.tl.max+' TL</span>',
+  ki:S.ki.cur+'<span>/'+S.ki.max+' ki, '+S.over+' overflow</span>',
+  mor:S.mor.cur+'<span>/'+S.mor.max+' morale, round '+S.round+'</span>',
+  nails:S.nails.cur+'<span>/'+S.nails.max+' nails, '+S.mom+' momentum</span>',
+  wep:S.wep.left+'<span>/'+S.wep.max+' attacks, '+esc(S.wep.name)+'</span>',
+  pips:S.fl.left+'<span>/'+S.fl.max+' flurry, '+S.rx.left+'/'+S.rx.max+' reactions</span>'
+ };
+ document.querySelectorAll("[data-sum]").forEach(function(el){
+  var k=el.getAttribute("data-sum");el.innerHTML=v[k]||"";});
+ var mb=$("miniBar");
+ if(mb)mb.innerHTML='HP<b>'+S.hp.cur+'</b> &middot; TL<b>'+S.tl.cur+'</b> &middot; Ki<b>'+S.ki.cur+'</b> &middot; Round<b>'+S.round+'</b>'+
+   (FAC[S.active]?' &middot; '+FAC[S.active].n+'<b>'+(S.fac[S.active]>0?"+":"")+S.fac[S.active]+'</b>':'');
+}
+
+/* ---------------- damage routing ---------------- */
+function takeDamage(n){
+ var left=n,parts=[];
+ if(S.hp.temp>0){var a=Math.min(S.hp.temp,left);S.hp.temp-=a;left-=a;if(a)parts.push(a+" temp");}
+ if(left>0&&S.hp.sorrow>0){var b=Math.min(S.hp.sorrow,left);S.hp.sorrow-=b;left-=b;if(b)parts.push(b+" sorrowed");}
+ if(left>0){S.hp.cur=Math.max(0,S.hp.cur-left);parts.push(left+" health");}
+ if(S.active==="aeth"){
+  var conv=Math.floor(n*(S.fac.aeth>=5?0.30:S.fac.aeth<=-3?0.20:0.25));
+  S.hp.sorrow+=conv;parts.push("+"+conv+" sorrowed back");
+ }
+ if(S.active==="bast"&&S.cath){S.nails.cur=Math.min(S.nails.max,S.nails.cur+1);}
+ logline("took "+n+": "+parts.join(", "));
+ renderHP();renderMisc();renderSums();renderFac();save();
+}
+
+/* ---------------- veiled ---------------- */
+function veilCap(){return S.fac.aeth>=5?4:S.fac.aeth>=3?3:2;}
+function renderVeil(){
+ var w=$("veilList");if(!w)return;w.innerHTML="";
+ $("veilCap").textContent=S.veiled.length+" of "+veilCap()+" attached";
+ if(!S.veiled.length){w.innerHTML='<div class="empty">No Veiled attached.</div>';return;}
+ S.veiled.forEach(function(v){
+  var d=document.createElement("div");d.className="veilrow";
+  d.innerHTML='<span class="vn">'+esc(v.n)+'</span>'+
+   '<span class="mono" style="font-size:11.5px;color:var(--dim);">2d8 + Wis + PB a round, 1d8 in ten feet</span>'+
+   '<button class="btn sm" data-vr="'+v.id+':-1">&minus;</button><span class="cur" style="font-size:16px;min-width:56px;">'+v.r+' rnd</span>'+
+   '<button class="btn sm" data-vr="'+v.id+':1">+</button>'+
+   '<button class="btn sm" data-vs="'+v.id+'">sacrifice</button>'+
+   '<button class="btn sm" data-vx="'+v.id+'">&times;</button>';
+  w.appendChild(d);});
+ w.querySelectorAll("[data-vr]").forEach(function(b){b.addEventListener("click",function(){
+  var p=b.getAttribute("data-vr").split(":");
+  S.veiled.forEach(function(v){if(v.id===p[0])v.r=Math.max(0,v.r+parseInt(p[1]));});renderVeil();save();});});
+ w.querySelectorAll("[data-vs]").forEach(function(b){b.addEventListener("click",function(){
+  var id=b.getAttribute("data-vs"),c=10-(S.spark?3:0);
+  if(S.tl.cur<c){flashBar();return;}
+  S.tl.cur-=c;S.veiled=S.veiled.filter(function(v){return v.id!==id;});
+  logline("Veiled sacrificed, 4d8 + Wis + PB and 50 sorrowed");renderVeil();renderTL();renderFac();save();});});
+ w.querySelectorAll("[data-vx]").forEach(function(b){b.addEventListener("click",function(){
+  S.veiled=S.veiled.filter(function(v){return v.id!==b.getAttribute("data-vx");});renderVeil();save();});});
+}
+
+/* ---------------- relationships ---------------- */
+function renderRels2(){
+ var w=$("relList");if(!w)return;w.innerHTML="";
+ var rows=S.rels.slice().sort(function(a,b){
+  if(a.party!==b.party)return a.party?-1:1;
+  if(b.t!==a.t)return b.t-a.t;return a.n.localeCompare(b.n);});
+ var shown=0;
+ rows.forEach(function(r){
+  if(S.relFilter==="party"&&!r.party)return;
+  if(S.relFilter==="close"&&r.t<2)return;
+  shown++;
+  var d=document.createElement("div");d.className="relrow"+(r.party?" party":"");
+  var tp='<div class="tierpick">';
+  for(var i=0;i<6;i++)tp+='<button data-rt="'+esc(r.n)+':'+i+'" data-t="'+i+'" class="'+(r.t===i?"sel":"")+'">'+TIERS[i]+'</button>';
+  tp+='</div>';
+  d.innerHTML='<button class="party-toggle'+(r.party?" on":"")+'" data-rp="'+esc(r.n)+'" title="party member">\u2605</button>'+
+   '<span class="rn">'+esc(r.n)+'</span>'+tp+'<button class="relx" data-rx="'+esc(r.n)+'">\u2715</button>';
+  w.appendChild(d);});
+ if(!shown)w.innerHTML='<div class="empty">Nobody matches that filter.</div>';
+ w.querySelectorAll("[data-rt]").forEach(function(b){b.addEventListener("click",function(){
+  var p=b.getAttribute("data-rt").split(":");
+  S.rels.forEach(function(r){if(r.n===p[0])r.t=parseInt(p[1]);});renderRels2();save();});});
+ w.querySelectorAll("[data-rp]").forEach(function(b){b.addEventListener("click",function(){
+  S.rels.forEach(function(r){if(r.n===b.getAttribute("data-rp"))r.party=!r.party;});renderRels2();save();});});
+ w.querySelectorAll("[data-rx]").forEach(function(b){b.addEventListener("click",function(){
+  S.rels=S.rels.filter(function(r){return r.n!==b.getAttribute("data-rx");});renderRels2();save();});});
+}
+
+/* ---------------- grade chips ---------------- */
+function initGrades(){
+ var host=$("school");if(!host)return;
+ host.querySelectorAll("dt").forEach(function(dt,i){
+  if(dt.getAttribute("data-g"))return;
+  var m=dt.textContent.match(/^(.*?),\s*([SABCDF]\+?)$/);
+  if(!m)return;
+  var gid="g"+i, g=S.grades[gid]||m[2];
+  dt.setAttribute("data-g",gid);
+  dt.innerHTML=esc(m[1])+' <button class="gradechip" data-gid="'+gid+'">'+g+'</button>';
+  var chip=dt.querySelector(".gradechip");
+  chip.className="gradechip g-"+g.replace("+","");
+  chip.addEventListener("click",function(){
+   var idx=(GRADE_LADDER.indexOf(chip.textContent.trim())+1)%GRADE_LADDER.length;
+   var ng=GRADE_LADDER[idx];S.grades[gid]=ng;chip.textContent=ng;
+   chip.className="gradechip g-"+ng.replace("+","");save();});
+ });
+}
+
+/* ---------------- automatic ticks ---------------- */
+function autoTick(){
+ if(!S.auto)return;
+ var said=[];
+ var kept=[];
+ S.marks.forEach(function(m){ m.r=Math.max(0,m.r-1); if(m.r>0)kept.push(m); else said.push("mark on "+m.n+" fell off"); });
+ S.marks=kept;
+ var vk=[];
+ S.veiled.forEach(function(v){ v.r=Math.max(0,v.r-1); if(v.r>0)vk.push(v); else said.push("Veiled on "+v.n+" faded"); });
+ S.veiled=vk;
+ if(S.hp.sorrow>0&&S.active==="aeth"){
+  var conv=Math.min(S.hp.sorrow,pb()*(S.fac.aeth>=5?2:S.fac.aeth<=-3?0.5:1));
+  conv=Math.floor(conv);
+  if(conv>0){S.hp.sorrow-=conv;S.hp.cur=Math.min(S.hp.max,S.hp.cur+conv);said.push(conv+" sorrowed became health");}
+ }
+ if(S.active==="bast"&&S.cath){
+  var add=S.fac.bast>=3?2:1;
+  S.nails.cur=Math.min(S.nails.max,S.nails.cur+add);said.push("+"+add+" nail"+(add>1?"s":""));
+ }
+ if(S.over>0){S.overRounds++;if(S.overRounds>=10){S.over=0;S.overRounds=0;said.push("overflow expired");}}
+ ["palm","cradle"].forEach(function(k){
+  if(!S.rech[k]){var r=1+Math.floor(Math.random()*6);
+   if(r>=5){S.rech[k]=true;said.push((k==="palm"?"Palm Strike":"Severance Cradle")+" recharged on a "+r);}}
+ });
+ if(said.length)logline(said.join(", "));
+ renderChips();
+}
+function renderChips(){
+ $("chipPalm").className="chip "+(S.rech.palm?"ready":"used");
+ $("chipPalm").textContent="Infinite Palm Strike "+(S.rech.palm?"ready":"charging");
+ $("chipCradle").className="chip "+(S.rech.cradle?"ready":"used");
+ $("chipCradle").textContent="Severance Cradle "+(S.rech.cradle?"ready":"charging");
+ $("chipCathedral").className="chip "+(S.cath?"ready":"used");
+ $("flagAuto").classList.toggle("on",!!S.auto);
+}
+
+/* ---------------- panes & search ---------------- */
+function showPane(p,skip){
+ document.querySelectorAll(".pane").forEach(function(x){x.classList.toggle("on",x.id==="pane-"+p);});
+ document.querySelectorAll(".rail-btn").forEach(function(b){b.classList.toggle("on",b.getAttribute("data-pane")===p);});
+ S.pane=p;if(!skip){window.scrollTo({top:0,behavior:"smooth"});save();}
+}
+var INDEX=[];
+function buildIndex(){
+ INDEX=[];
+ document.querySelectorAll(".pane").forEach(function(p){
+  var pane=p.id.replace("pane-",""),pname=p.getAttribute("data-name")||pane;
+  p.querySelectorAll("section").forEach(function(sec){
+   var h=sec.querySelector("h2");if(!h)return;
+   var title=h.childNodes[0]?String(h.childNodes[0].nodeValue||"").trim():"section";
+   INDEX.push({p:pane,pn:pname,id:sec.id,t:title,x:sec.textContent.replace(/\s+/g," ").slice(0,700)});
+   sec.querySelectorAll(".card h3, .dl dt").forEach(function(el){
+    var ct=el.childNodes[0]?String(el.childNodes[0].nodeValue||"").trim():"";
+    if(!ct)return;
+    INDEX.push({p:pane,pn:pname,id:sec.id,t:ct,x:(el.parentNode.textContent||"").replace(/\s+/g," ").slice(0,400)});});
+   sec.querySelectorAll("tr").forEach(function(tr){
+    var tds=tr.querySelectorAll("td");if(tds.length<2)return;
+    INDEX.push({p:pane,pn:pname,id:sec.id,t:tds[0].textContent.trim()||tds[1].textContent.trim(),
+      x:tr.textContent.replace(/\s+/g," ").slice(0,300)});});
+  });});
+}
+function palOpen(){$("palBack").classList.add("on");$("pal").classList.add("on");$("palIn").value="";palSearch("");$("palIn").focus();}
+function palClose(){$("palBack").classList.remove("on");$("pal").classList.remove("on");}
+function palSearch(q){
+ var res=$("palRes");res.innerHTML="";q=q.trim().toLowerCase();
+ var out=[];
+ for(var i=0;i<INDEX.length&&out.length<40;i++){var e=INDEX[i];
+  if(!q||e.t.toLowerCase().indexOf(q)>-1||e.x.toLowerCase().indexOf(q)>-1)out.push(e);}
+ if(!out.length){res.innerHTML='<button disabled style="color:var(--dimmer);">Nothing on the sheet matches that.</button>';return;}
+ out.forEach(function(e){
+  var b=document.createElement("button");
+  b.innerHTML='<span class="k">'+esc(e.pn)+'</span><b>'+esc(e.t)+'</b><br><span style="color:var(--dim);font-size:13px;">'+esc(e.x.slice(0,120))+'</span>';
+  b.addEventListener("click",function(){palClose();showPane(e.p,true);
+   setTimeout(function(){var t=$(e.id);if(t){t.scrollIntoView({behavior:"smooth",block:"start"});
+    t.classList.remove("hit");void t.offsetWidth;t.classList.add("hit");}},60);save();});
+  res.appendChild(b);});
+}
+
+/* ---------------- init ---------------- */
+function bind(id,path,after){
+ var el=$(id);if(!el)return;
+ el.addEventListener("input",function(){
+  var v=el.type==="number"?(parseFloat(el.value)||0):el.value;
+  var p=path.split("."),o=S;for(var i=0;i<p.length-1;i++)o=o[p[i]];
+  o[p[p.length-1]]=v;if(after)after();save();});
+}
+function init(){
+ var raw=store.get(KEY);if(raw){try{deep(S,JSON.parse(raw));}catch(e){}}
+ /* sanitize anything a stale save could have left behind */
+ if(!FAC[S.active])S.active="";
+ if(!FAC[S.treeTab])S.treeTab="aeth";
+ if(S.crest!=="none"&&!CRESTS[S.crest])S.crest="none";
+ FKEYS.forEach(function(k){if(typeof S.fac[k]!=="number")S.fac[k]=0;});
+ [["hp",{cur:428,max:428,temp:0,sorrow:0}],["tl",{cur:50,max:320}],["ki",{cur:21,max:21}],
+  ["mor",{cur:100,max:100}],["nails",{cur:0,max:5}],["hd",{cur:5,max:5}],
+  ["wep",{name:"Pale Embrace",max:3,left:3}],["fl",{max:3,left:3}],["rx",{max:2,left:2}]].forEach(function(p){
+  if(!S[p[0]]||typeof S[p[0]]!=="object")S[p[0]]=p[1];
+  for(var f in p[1])if(typeof S[p[0]][f]!==typeof p[1][f])S[p[0]][f]=p[1][f];});
+ if(!S.rech||typeof S.rech!=="object")S.rech={palm:true,cradle:true};
+ if(!Array.isArray(S.marks))S.marks=[];
+ if(!Array.isArray(S.veiled))S.veiled=[];
+ if(!S.tree||typeof S.tree!=="object")S.tree={};
+
+ document.querySelectorAll(".rail-btn").forEach(function(b){
+  b.addEventListener("click",function(){showPane(b.getAttribute("data-pane"));});});
+ showPane(S.pane||"turn",true);
+
+ document.querySelectorAll("[data-hp]").forEach(function(b){b.addEventListener("click",function(){
+  S.hp.cur=Math.max(0,S.hp.cur+parseInt(b.getAttribute("data-hp")));renderHP();save();});});
+ $("hpReset").addEventListener("click",function(){S.hp.cur=S.hp.max;renderHP();save();});
+ document.querySelectorAll("[data-tl]").forEach(function(b){b.addEventListener("click",function(){
+  S.tl.cur=Math.max(0,Math.min(S.tl.max,S.tl.cur+parseInt(b.getAttribute("data-tl"))));renderTL();save();});});
+ $("tlReset").addEventListener("click",function(){S.tl.cur=S.tl.max;renderTL();save();});
+ document.querySelectorAll("[data-ki]").forEach(function(b){b.addEventListener("click",function(){
+  S.ki.cur=Math.max(0,Math.min(S.ki.max,S.ki.cur+parseInt(b.getAttribute("data-ki"))));renderMisc();save();});});
+ $("kiReset").addEventListener("click",function(){S.ki.cur=S.ki.max;renderMisc();save();});
+ document.querySelectorAll("[data-over]").forEach(function(b){b.addEventListener("click",function(){
+  S.over=Math.max(0,S.over+parseInt(b.getAttribute("data-over")));renderMisc();save();});});
+ document.querySelectorAll("[data-mor]").forEach(function(b){b.addEventListener("click",function(){
+  S.mor.cur=Math.max(0,Math.min(S.mor.max,S.mor.cur+parseInt(b.getAttribute("data-mor"))));renderMisc();save();});});
+ $("morReset").addEventListener("click",function(){S.mor.cur=S.mor.max;renderMisc();save();});
+ document.querySelectorAll("[data-nail]").forEach(function(b){b.addEventListener("click",function(){
+  S.nails.cur=Math.max(0,Math.min(S.nails.max,S.nails.cur+parseInt(b.getAttribute("data-nail"))));renderMisc();save();});});
+ document.querySelectorAll("[data-mom]").forEach(function(b){b.addEventListener("click",function(){
+  S.mom=Math.max(0,S.mom+parseInt(b.getAttribute("data-mom")));renderMisc();save();});});
+ $("momReset").addEventListener("click",function(){S.mom=0;renderMisc();save();});
+ document.querySelectorAll("[data-up]").forEach(function(b){b.addEventListener("click",function(){
+  S.up=Math.max(0,S.up+parseInt(b.getAttribute("data-up")));renderMisc();renderTree();save();});});
+
+ document.querySelectorAll("[data-round]").forEach(function(b){b.addEventListener("click",function(){
+  var d=parseInt(b.getAttribute("data-round"));S.round=Math.max(1,S.round+d);
+  if(d>0){refreshTurn();autoTick();}
+  renderMisc();renderPips();renderMarks();renderVeil();renderSums();save();});});
+ $("rdReset").addEventListener("click",function(){S.round=1;S.log=[];S.marks=[];renderMisc();renderMarks();renderFac();save();});
+
+ $("advTurn").addEventListener("click",function(){
+  var parts=payUpkeep(true);
+  if(S.active&&S.form){
+   var f=FAC[S.active];
+   setInf(S.active,S.fac[S.active]+1);parts.push(f.n+" +1");
+   var inf=S.fac[S.active];
+   if(inf>=3)FKEYS.forEach(function(o){if(o!==S.active)setInf(o,S.fac[o]-1);});
+   if(inf>=5)setInf(f.hates,S.fac[f.hates]-1);
+  }
+  S.round++;refreshTurn();
+  parts.push("attacks, flurry and reactions reset");
+  logline(parts.join(", "));
+  autoTick();
+  renderAll();save();});
+
+ $("endTrans").addEventListener("click",function(){
+  S.fac={aeth:0,bast:0,croq:0};S.active="";S.form=false;S.tree={};S.up=0;S.shroud=false;S.veiled=[];
+  logline("transformation ended, influence and upgrades reset");renderAll();save();});
+
+ [["flagForm","form"],["flagSpark","spark"],["flagShroud","shroud"],["flagNeck","neck"]].forEach(function(p){
+  $(p[0]).addEventListener("click",function(){
+   S[p[1]]=!S[p[1]];
+   if(p[1]==="neck"){S.tl.max=S.neck?320:270;S.tl.cur=Math.min(S.tl.cur,S.tl.max);renderTL();}
+   if(p[1]==="form"&&S.form){S.tl.cur=Math.max(0,S.tl.cur-75);logline("Iron Maiden raised, 75 TL");renderTL();}
+   renderAll();save();});});
+
+ bind("hpMax","hp.max",renderHP);bind("hpTemp","hp.temp");bind("hpSorrow","hp.sorrow");
+ bind("tlMax","tl.max",renderTL);bind("kiMax","ki.max");bind("morMax","mor.max",renderMisc);
+ bind("nailMax","nails.max",renderMisc);
+ bind("vAC","vit.ac");bind("vInit","vit.init");bind("vSpd","vit.spd");
+ bind("vPB","vit.pb",function(){renderStats();renderDerived();});
+ ["cp","sp","gp","pp"].forEach(function(k){bind("w"+k.toUpperCase(),"wealth."+k);});
+ $("vAC").value=S.vit.ac;$("vInit").value=S.vit.init;$("vSpd").value=S.vit.spd;$("vPB").value=S.vit.pb;
+ ["cp","sp","gp","pp"].forEach(function(k){$("w"+k.toUpperCase()).value=S.wealth[k];});
+ ["fight","char"].forEach(function(k){var el=$(k+"Notes");if(!el)return;
+  el.value=S.notes[k]||"";el.addEventListener("input",function(){S.notes[k]=el.value;save();});});
+
+ $("wepSlot").addEventListener("click",function(){if(S.wep.left>0){S.wep.left--;renderPips();save();}});
+ $("wepEdit").addEventListener("input",function(){S.wep.name=$("wepEdit").value.trim()||"Pale Embrace";
+  $("wepName").textContent=S.wep.name;save();});
+ document.querySelectorAll("[data-atkmax]").forEach(function(b){b.addEventListener("click",function(){
+  S.wep.max=Math.max(1,Math.min(16,S.wep.max+parseInt(b.getAttribute("data-atkmax"))));
+  S.wep.left=Math.min(S.wep.left,S.wep.max);renderPips();save();});});
+ $("atkReset").addEventListener("click",function(){S.wep.left=S.wep.max;S.fl.left=S.fl.max;renderPips();save();});
+ document.querySelectorAll("[data-rxmax]").forEach(function(b){b.addEventListener("click",function(){
+  S.rx.max=Math.max(1,Math.min(6,S.rx.max+parseInt(b.getAttribute("data-rxmax"))));
+  S.rx.left=Math.min(S.rx.left,S.rx.max);renderPips();save();});});
+ $("rxReset").addEventListener("click",function(){S.rx.left=S.rx.max;renderPips();save();});
+
+ $("markAdd").addEventListener("click",function(){
+  if(S.marks.length>=2){flashBar();return;}
+  var n=$("markName").value.trim()||"target";
+  S.marks.push({id:"m"+(S.seq++),n:n,h:$("markHex").value,r:3});
+  $("markName").value="";renderMarks();save();});
+ $("markClear").addEventListener("click",function(){S.marks=[];renderMarks();save();});
+
+ document.querySelectorAll("[data-crest]").forEach(function(b){b.addEventListener("click",function(){
+  S.crest=b.getAttribute("data-crest");renderCrest();save();});});
+
+ document.querySelectorAll("[data-toll]").forEach(function(b){b.addEventListener("click",function(){
+  var c=parseInt(b.getAttribute("data-toll"));
+  S.hp.cur=Math.max(0,S.hp.cur-c);
+  var gain=Math.floor(c*0.25),cap=pb()*13;
+  S.over=Math.min(cap,S.over+gain);
+  $("tollOut").textContent="paid "+c+", banked "+gain+" overflow, cap "+cap;
+  renderHP();renderMisc();save();});});
+
+ $("shroudOpen").addEventListener("click",function(){
+  if(S.tl.cur<50){flashBar();return;}
+  S.tl.cur-=50;S.shroud=true;$("shroudOut").textContent="gates open, 10 TL a round";
+  logline("shroud opened, 50 TL");renderTL();renderFac();save();});
+ $("shroudUp").addEventListener("click",function(){
+  if(S.tl.cur<10){flashBar();return;}S.tl.cur-=10;$("shroudOut").textContent="upkeep paid";renderTL();save();});
+ $("shroudClose").addEventListener("click",function(){
+  S.shroud=false;$("shroudOut").textContent="relinquished";renderFac();save();});
+
+ function addRel(){
+  var n=$("relName").value.trim();if(!n)return;
+  if(!S.rels.some(function(r){return r.n.toLowerCase()===n.toLowerCase();}))S.rels.push({n:n,t:1,party:false});
+  $("relName").value="";renderRels2();save();}
+ $("relAdd").addEventListener("click",addRel);
+ $("relName").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();addRel();}});
+ document.querySelectorAll("[data-rf]").forEach(function(b){b.addEventListener("click",function(){
+  S.relFilter=b.getAttribute("data-rf");
+  document.querySelectorAll("[data-rf]").forEach(function(x){x.classList.toggle("on",x===b);});
+  renderRels2();save();});});
+
+ $("invAdd").addEventListener("click",function(){S.inv.push({n:"",q:"",d:""});renderInv();save();});
+
+ $("barFold").addEventListener("click",function(){S.fold=!S.fold;$("bar").classList.toggle("fold",S.fold);
+  $("barFold").textContent=S.fold?"Show trackers":"Hide trackers";save();});
+ $("bar").classList.toggle("fold",!!S.fold);
+ $("barFold").textContent=S.fold?"Show trackers":"Hide trackers";
+
+ [["formUp","formUp"],["sparkCut","sparkCut"],["sparkGain","sparkGain"],["riftMult","riftMult"]].forEach(function(p){
+  var el=$(p[0]);if(!el)return;el.value=S[p[1]];
+  el.addEventListener("input",function(){S[p[1]]=parseInt(el.value)||0;renderFac();save();});});
+ $("payNow").addEventListener("click",function(){payUpkeep(false);renderAll();save();});
+ $("riftMove").addEventListener("click",function(){riftbound(false);});
+ $("riftHold").addEventListener("click",function(){riftbound(true);});
+ $("riftDiv").addEventListener("click",function(){S.riftDiv=!S.riftDiv;renderUpkeep();save();});
+
+ $("barCompact").addEventListener("click",function(){S.compact=!S.compact;renderMin();save();});
+ $("barMinAll").addEventListener("click",function(){
+  var any=false;document.querySelectorAll("#bar .tk").forEach(function(c){if(!S.min[c.getAttribute("data-k")])any=true;});
+  document.querySelectorAll("#bar .tk").forEach(function(c){S.min[c.getAttribute("data-k")]=any;});
+  $("barMinAll").textContent=any?"Expand all":"Minimize all";renderMin();save();});
+
+ $("hdSpend").addEventListener("click",spendHitDie);
+ bind("hdMax","hd.max",renderMisc);
+ $("dmgHit").addEventListener("click",function(){var n=parseInt($("dmgIn").value)||0;if(n>0){takeDamage(n);$("dmgIn").value="";}});
+ $("dmgHeal").addEventListener("click",function(){var n=parseInt($("dmgIn").value)||0;
+  if(n>0){S.hp.cur=Math.min(S.hp.max,S.hp.cur+n);logline("healed "+n);$("dmgIn").value="";renderHP();renderSums();renderFac();save();}});
+ $("dmgIn").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();$("dmgHit").click();}});
+
+ $("flagAuto").addEventListener("click",function(){S.auto=!S.auto;renderChips();save();});
+ $("chipPalm").addEventListener("click",function(){S.rech.palm=!S.rech.palm;renderChips();save();});
+ $("chipCradle").addEventListener("click",function(){S.rech.cradle=!S.rech.cradle;renderChips();save();});
+ $("chipCathedral").addEventListener("click",function(){S.cath=!S.cath;renderChips();save();});
+ $("chipShort").addEventListener("click",doShortRest);
+ $("shortRest").addEventListener("click",doShortRest);
+ $("chipLong").addEventListener("click",function(){
+  if(window.confirm("Long rest resets health, TL, ki, morale, the transformation, marks and the upgrade tree. Go ahead?"))doLongRest();});
+ $("longRest").addEventListener("click",function(){
+  if(window.confirm("Long rest resets health, TL, ki, morale, the transformation, marks and the upgrade tree. Go ahead?"))doLongRest();});
+
+ $("veilAdd").addEventListener("click",function(){
+  if(S.veiled.length>=veilCap()){flashBar();return;}
+  var n=$("veilName").value.trim()||"ally";
+  var dur=S.tree["aeth:Legs:0"]?4:2;
+  S.veiled.push({id:"v"+(S.seq++),n:n,r:dur});$("veilName").value="";renderVeil();save();});
+ $("veilClear").addEventListener("click",function(){S.veiled=[];renderVeil();save();});
+
+ document.addEventListener("keydown",function(e){
+  if(e.target&&/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;
+  if(e.key==="t"||e.key==="T"){e.preventDefault();$("advTurn").click();}
+  if(e.key==="m"||e.key==="M"){e.preventDefault();$("barMinAll").click();}
+  if(e.key==="r"||e.key==="R"){e.preventDefault();doShortRest();}
+ });
+
+ document.querySelectorAll("[data-openpal]").forEach(function(b){
+  b.addEventListener("click",palOpen);
+  b.addEventListener("keydown",function(e){if(e.key==="Enter")palOpen();});});
+ $("palBack").addEventListener("click",palClose);
+ $("palIn").addEventListener("input",function(){palSearch($("palIn").value);});
+ document.addEventListener("keydown",function(e){
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();palOpen();}
+  if(e.key==="Escape")palClose();});
+
+ $("expBtn").addEventListener("click",function(){
+  var blob=new Blob([JSON.stringify(S,null,2)],{type:"application/json"});
+  var a=document.createElement("a");a.href=URL.createObjectURL(blob);
+  a.download="loryana-sheet.json";a.click();URL.revokeObjectURL(a.href);});
+ $("impBtn").addEventListener("click",function(){
+  var f=document.createElement("input");f.type="file";f.accept="application/json";
+  f.addEventListener("change",function(){var file=f.files[0];if(!file)return;
+   var r=new FileReader();
+   r.onload=function(){try{deep(S,JSON.parse(r.result));save();location.reload();}catch(e){window.alert("That file did not parse.");}};
+   r.readAsText(file);});
+  f.click();});
+ $("wipeBtn").addEventListener("click",function(){
+  if(window.confirm("Clear every tracker, mark and upgrade on this sheet?")){store.set(KEY,"");location.reload();}});
+
+ S.rels.forEach(function(r){ if(typeof r.t!=="number"){ r.t=Math.max(0,TIERS.indexOf(r.g||"D")); r.party=!!r.party; delete r.g; } });
+ wrapCards();initGrades();
+ renderStats();renderDerived();renderHexes();renderEmbrace();renderCrest();renderRels2();renderInv();
+ document.querySelectorAll("[data-rf]").forEach(function(x){x.classList.toggle("on",x.getAttribute("data-rf")===S.relFilter);});
+ renderAll();buildIndex();
+}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init();
+})();
+
+
+/* ======================= CLOUD SYNC (Firebase) ======================= */
+/* Inserted by the Sync Injector. Adaptive across sheet versions:         */
+/*  - v1 sheets: storage var SK, state rebuilt via load()                 */
+/*  - v2 sheets: storage var KEY, state hydrated via deep(S, data)        */
+/* Config + campaign come from firebase-config.js. Local-only until keys  */
+/* are filled in. CHAR_ID is derived from the sheet's own storage key.    */
+(function(){
+  var CFG = window.FIREBASE_CONFIG || {};
+  var CAMPAIGN_ID = window.CAMPAIGN_ID || "astrology-club";
+
+  /* storage key: v1 uses SK, v2 uses KEY */
+  var STORE_KEY = (typeof SK !== "undefined" && SK) ? SK
+                : ((typeof KEY !== "undefined" && KEY) ? KEY : null);
+  if(!STORE_KEY) return;  /* can't identify this sheet — leave it local */
+
+  /* "loryana_v1:sheet" -> "loryana" ; "beatrix_v1" -> "beatrix" */
+  var CHAR_ID = String(STORE_KEY).split(":")[0].replace(/_v[0-9]+$/,"").replace(/[^a-z0-9_-]/gi,"").toLowerCase() || "unknown";
+  var configured = CFG && CFG.apiKey && CFG.apiKey.indexOf("PASTE") !== 0;
+
+  var pill = document.createElement("div");
+  pill.style.cssText = "position:fixed;bottom:10px;right:12px;z-index:99999;font:600 11px/1 monospace;padding:5px 9px;border-radius:20px;background:rgba(0,0,0,.55);color:#bbb;letter-spacing:.05em;pointer-events:none;";
+  pill.textContent = configured ? "○ connecting" : "○ local only";
+  document.body.appendChild(pill);
+  function setPill(t,c){ pill.textContent=t; pill.style.color=c; }
+  if(!configured) return;
+
+  var docRef=null, applyingRemote=false, pushT=null;
+  try{
+    firebase.initializeApp(CFG);
+    var db = firebase.firestore();
+    db.enablePersistence({synchronizeTabs:true}).catch(function(){});
+    docRef = db.collection("campaigns").doc(CAMPAIGN_ID).collection("characters").doc(CHAR_ID);
+  }catch(e){ setPill("○ sync error","#e08"); return; }
+
+  var _origSave = save;
+  save = function(){
+    _origSave();
+    if(applyingRemote) return;
+    clearTimeout(pushT);
+    pushT = setTimeout(pushRemote, 400);
+  };
+  function pushRemote(){
+    if(!docRef) return;
+    docRef.set(JSON.parse(JSON.stringify(S)))
+      .then(function(){ setPill("● synced","#7c7"); })
+      .catch(function(){ setPill("○ offline","#c96"); });
+  }
+  function applyRemote(data){
+    applyingRemote = true;
+    try{
+      if(typeof load === "function"){
+        /* v1: write to storage, rebuild state through the sheet's own load() */
+        try{ localStorage.setItem(STORE_KEY, JSON.stringify(data)); }catch(e){}
+        S = load();
+      } else if(typeof deep === "function"){
+        /* v2: deep-merge remote into the live S, then persist */
+        deep(S, data);
+        try{ localStorage.setItem(STORE_KEY, JSON.stringify(S)); }catch(e){}
+      } else {
+        /* fallback: shallow merge */
+        for(var k in data){ if(data.hasOwnProperty(k)) S[k]=data[k]; }
+        try{ localStorage.setItem(STORE_KEY, JSON.stringify(S)); }catch(e){}
+      }
+    }catch(e){}
+    try{ renderAll(); }catch(e){}
+    if(typeof buildIndex === "function"){ try{ buildIndex(); }catch(e){} }
+    applyingRemote = false;
+  }
+  var rb = document.getElementById("resetAll");
+  if(rb) rb.addEventListener("click", function(){ setTimeout(function(){ if(!applyingRemote) pushRemote(); },0); });
+
+  docRef.onSnapshot(function(snap){
+    if(snap.metadata.hasPendingWrites) return;
+    if(!snap.exists){ pushRemote(); setPill("● synced","#7c7"); return; }
+    var data = snap.data(); if(!data) return;
+    applyRemote(data);
+    setPill("● synced","#7c7");
+  }, function(){ setPill("○ offline","#c96"); });
+})();
+
+</script>
+</body></html>
