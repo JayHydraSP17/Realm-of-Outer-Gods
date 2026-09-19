@@ -1,12 +1,12 @@
 window.FIREBASE_CONFIG = {
-  apiKey:            "PASTE_apiKey",
-  authDomain:        "PASTE_authDomain",
-  projectId:         "PASTE_projectId",
-  storageBucket:     "PASTE_storageBucket",
-  messagingSenderId: "PASTE_messagingSenderId",
-  appId:             "PASTE_appId"
+  apiKey: "AIzaSyCl1ByKSzgHrvqboTFhoWlARsZC16KrKow",
+  authDomain: "realm-of-the-outer-gods.firebaseapp.com",
+  projectId: "realm-of-the-outer-gods",
+  storageBucket: "realm-of-the-outer-gods.firebasestorage.app",
+  messagingSenderId: "18156075787",
+  appId: "1:18156075787:web:9d968b38955b6a34a4400e",
+  measurementId: "G-D39KTNYJM4"
 };
 
-/* Shared "room" for the whole party. Leave as-is unless you run
-   multiple separate campaigns off the same Firebase project. */
+/* Shared "room" for the whole party. */
 window.CAMPAIGN_ID = "mythic-covenant";
