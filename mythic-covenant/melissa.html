@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<!-- saved from url=(0061)file:///C:/Users/jaden/Downloads/Melissa_Reference__1_0_.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stands Unmoved in the Raging Storm — Melissa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+<link href="./Melissa_Reference (1.0)_files/css2" rel="stylesheet">
+<style>
+:root{
+  --void:#070a0f;--storm:#0b1018;--storm2:#111824;--panel:#15202e;--panel2:#1c2838;
+  --line:#27323f;--line2:#3a4a5c;
+  --bone:#eceef3;--bone-dim:#b1bbc8;--bone-faint:#7a8593;
+  --crimson:#e24a52;--crimson-deep:#9d2630;--crimson-soft:#ff7a80;
+  --gold:#d8b25a;--gold-soft:#ecd592;
+  --storm-pale:#a9c2dc;--lightning:#dbe9f7;
+  --jade:#54cf9c;--jade-deep:#2a8a6a;
+  --shadow:0 8px 30px rgba(0,0,0,.6);
+  --glow-crimson:0 0 16px rgba(226,74,82,.35);--glow-gold:0 0 16px rgba(216,178,90,.3);
+  --glow-storm:0 0 18px rgba(169,194,220,.32);--glow-jade:0 0 16px rgba(84,207,156,.3);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Cormorant Garamond',serif;background:radial-gradient(1100px 560px at 82% -12%, rgba(169,194,220,.07), transparent 60%),radial-gradient(900px 520px at -8% 108%, rgba(226,74,82,.06), transparent 60%),var(--void);color:var(--bone);font-size:18px;line-height:1.5;min-height:100vh;letter-spacing:.2px}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.022'/%3E%3C/svg%3E");mix-blend-mode:overlay;opacity:.6}
+.wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:0 18px 90px}
+header.top{text-align:center;padding:34px 0 16px;position:relative}
+.eyebrow{font-family:'Cinzel',serif;letter-spacing:6px;font-size:12px;text-transform:uppercase;color:var(--storm-pale);opacity:.85;margin-bottom:8px}
+h1.title{font-family:'Cinzel Decorative',serif;font-weight:900;font-size:clamp(28px,5.6vw,54px);line-height:1.02;background:linear-gradient(180deg,#fff,var(--bone) 32%,var(--crimson) 140%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 2px 40px rgba(169,194,220,.18)}
+.subtitle{font-family:'Cinzel',serif;font-style:italic;color:var(--bone-dim);margin-top:10px;font-size:16px;letter-spacing:1px}
+.tagline{color:var(--crimson);font-style:italic;margin-top:6px;font-size:17px;opacity:.9}
+.idline{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 22px;margin-top:14px;font-size:14px;color:var(--bone-faint);font-family:'Fira Code',monospace}
+.idline b{color:var(--bone-dim);font-weight:500}
+.idline .stars{color:var(--gold)}
+
+.vitals{position:sticky;top:0;z-index:40;margin:18px 0 8px;background:linear-gradient(180deg,rgba(11,16,24,.97),rgba(11,16,24,.9));border:1px solid var(--line);border-radius:14px;backdrop-filter:blur(8px);box-shadow:var(--shadow);padding:12px 14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.vital{background:var(--storm2);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.vital .vlabel{font-family:'Cinzel',serif;font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--bone-faint);display:flex;justify-content:space-between;align-items:center}
+.vital .vval{font-family:'Fira Code',monospace;font-size:20px;font-weight:600;margin-top:2px;display:flex;align-items:baseline;gap:4px}
+.vital .vval input{width:54px;background:transparent;border:none;border-bottom:1px solid var(--line2);color:var(--crimson-soft);font-family:'Fira Code',monospace;font-size:20px;font-weight:600;text-align:right}
+.vital .vval input:focus{outline:none;border-color:var(--crimson)}
+.vital .vval input.maxinput{width:42px;color:var(--bone-faint);font-size:15px;border-bottom:1px dotted var(--line2);text-align:left}
+.vital .vval input.maxinput:focus{color:var(--bone-dim);border-color:var(--bone-dim)}
+.vital .vval .vmax{color:var(--bone-faint);font-size:14px}
+.vital.cfg .vval input{color:var(--storm-pale);width:44px;text-align:center}
+.vital .vderive{font-family:'Fira Code',monospace;font-size:11px;color:var(--storm-pale);margin-top:3px;letter-spacing:.3px}
+.vbar{height:5px;border-radius:3px;background:var(--storm);margin-top:6px;overflow:hidden}
+.vbar i{display:block;height:100%;border-radius:3px;transition:width .35s ease}
+.vbar.hp i{background:linear-gradient(90deg,var(--crimson-deep),var(--crimson))}
+.vbar.ki i{background:linear-gradient(90deg,var(--jade-deep),var(--jade))}
+.vbar.sup i{background:linear-gradient(90deg,#8a6a1f,var(--gold))}
+.vbar.flow i{background:linear-gradient(90deg,#3a6f96,var(--storm-pale),var(--lightning))}
+.stepbtns{display:flex;gap:3px}
+.stepbtns button{background:var(--panel);border:1px solid var(--line2);color:var(--bone-dim);width:20px;height:18px;border-radius:5px;cursor:pointer;font-size:13px;line-height:1;font-family:'Fira Code',monospace}
+.stepbtns button:hover{background:var(--storm-pale);color:var(--void);border-color:var(--storm-pale)}
+
+.layout{display:flex;gap:22px;margin-top:18px;align-items:flex-start}
+.content{flex:1;min-width:0}
+nav.tabs{flex:0 0 210px;display:flex;flex-direction:column;gap:6px;position:sticky;top:14px;align-self:flex-start;border:1px solid var(--line);border-radius:14px;padding:12px 10px;background:linear-gradient(180deg,var(--panel),var(--storm2));box-shadow:var(--shadow)}
+nav.tabs button{font-family:'Cinzel',serif;font-size:13px;letter-spacing:1px;text-align:left;background:transparent;border:1px solid transparent;color:var(--bone-faint);padding:10px 14px;border-radius:8px;cursor:pointer;transition:.18s;text-transform:uppercase;position:relative}
+nav.tabs button:hover{color:var(--bone);background:var(--panel2)}
+nav.tabs button.active{color:var(--crimson);border-color:var(--crimson-deep);background:rgba(226,74,82,.08);box-shadow:var(--glow-crimson)}
+nav.tabs button.active::before{content:"";position:absolute;left:-1px;top:8px;bottom:8px;width:3px;background:var(--crimson);border-radius:3px;box-shadow:var(--glow-crimson)}
+@media(max-width:760px){.layout{flex-direction:column}nav.tabs{flex:none;width:100%;position:static;flex-direction:row;flex-wrap:wrap;justify-content:center}nav.tabs button{text-align:center}nav.tabs button.active::before{display:none}}
+.tabpanel{display:none;animation:fade .4s ease}
+.tabpanel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+h2.sec{font-family:'Cinzel',serif;font-weight:700;font-size:25px;color:var(--bone);margin:30px 0 4px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+h2.sec::before{content:"";width:26px;height:2px;background:var(--crimson);box-shadow:var(--glow-crimson)}
+h2.sec .note{font-family:'Fira Code',monospace;font-size:13px;color:var(--bone-faint);font-weight:400}
+.sec-note{color:var(--bone-faint);font-style:italic;font-size:15px;margin-bottom:14px}
+.quote{font-style:italic;color:var(--crimson);text-align:center;font-size:20px;margin:6px 0 20px;opacity:.9}
+
+.card{background:linear-gradient(180deg,var(--panel),var(--storm2));border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:14px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--storm-pale);opacity:.65}
+.card.crimson::before{background:var(--crimson)}.card.gold::before{background:var(--gold)}.card.jade::before{background:var(--jade)}.card.storm::before{background:var(--storm-pale)}
+.card h3{font-family:'Cinzel',serif;font-size:18px;color:var(--gold-soft);margin-bottom:2px;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.card h3 .tag{font-family:'Fira Code',monospace;font-size:11px;color:var(--bone-faint);background:var(--storm);border:1px solid var(--line2);padding:2px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:.5px}
+.card h3 .tag.passive{color:var(--storm-pale);border-color:#3a5266}
+.card h3 .tag.reaction{color:var(--crimson-soft);border-color:var(--crimson-deep)}
+.card h3 .tag.bonus{color:var(--jade);border-color:var(--jade-deep)}
+.card h3 .tag.cost{color:var(--jade);border-color:var(--jade-deep)}
+.card p{margin:6px 0;color:var(--bone-dim)}
+.card ul{list-style:none;margin:6px 0}
+.card ul li{position:relative;padding-left:18px;margin:4px 0;color:var(--bone-dim)}
+.card ul li::before{content:"\26A1";position:absolute;left:0;color:var(--storm-pale);font-size:11px;top:4px;opacity:.8}
+.card ul li.sub{padding-left:34px;font-size:.96em;color:var(--bone-faint)}
+.card ul li.sub::before{content:"\203A";left:20px;color:var(--bone-faint)}
+.card .fix{display:inline-block;font-family:'Fira Code',monospace;font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--gold-soft);background:rgba(216,178,90,.08);border:1px solid var(--gold);border-radius:5px;padding:1px 6px;margin-left:6px;vertical-align:middle}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.muted{color:var(--bone-faint);font-size:14px}
+
+table.gt{width:100%;border-collapse:collapse;margin:8px 0;font-size:15px}
+table.gt th,table.gt td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+table.gt th{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.5px;text-transform:uppercase;color:var(--gold-soft);background:var(--storm);font-weight:600}
+table.gt td{color:var(--bone-dim)}
+table.gt td .tn{font-family:'Cinzel',serif;color:var(--bone);font-size:14px}
+table.gt tr:nth-child(even) td{background:rgba(255,255,255,.012)}
+table.gt.ang th{color:var(--gold-soft)} table.gt.dra th{color:var(--jade)} table.gt.dem th{color:var(--crimson-soft)}
+
+.btn{font-family:'Cinzel',serif;font-size:13px;letter-spacing:.5px;background:var(--crimson);color:#1a0608;border:none;padding:9px 16px;border-radius:8px;cursor:pointer;transition:.15s;font-weight:600}
+.btn:hover{background:var(--crimson-deep);color:#fff}
+.btn.ghost{background:transparent;border:1px solid var(--line2);color:var(--bone-dim)}
+.btn.ghost:hover{border-color:var(--crimson);color:var(--crimson)}
+.minibtn{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.5px;background:var(--storm);border:1px solid var(--line2);color:var(--bone-dim);padding:7px 12px;border-radius:8px;cursor:pointer;transition:.15s}
+.minibtn:hover{border-color:var(--storm-pale);color:var(--storm-pale)}
+
+/* ---------- SEAL TRACKER ---------- */
+.seal-toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px;background:linear-gradient(180deg,var(--panel2),var(--storm2));border:1px solid var(--line2);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow)}
+.seal-cap{font-family:'Fira Code',monospace;font-size:13px;color:var(--bone-faint);margin-left:auto}
+.seal-cap b{color:var(--crimson-soft);font-size:17px}
+.seal-cap.over b{color:var(--gold)}
+.seal-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px}
+.seal-empty{grid-column:1/-1;text-align:center;color:var(--bone-faint);font-style:italic;padding:30px;border:1px dashed var(--line2);border-radius:12px}
+.sealcard{background:linear-gradient(180deg,var(--panel),var(--storm2));border:1px solid var(--line);border-radius:13px;padding:14px 15px;position:relative;box-shadow:var(--shadow);overflow:hidden}
+.sealcard::before{content:"";position:absolute;left:0;top:0;right:0;height:3px;opacity:.85}
+.sealcard.angelic::before{background:linear-gradient(90deg,var(--gold),var(--lightning))}
+.sealcard.draconic::before{background:linear-gradient(90deg,var(--jade-deep),var(--jade))}
+.sealcard.demonic::before{background:linear-gradient(90deg,var(--crimson-deep),var(--crimson))}
+.sc-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.sc-name{flex:1;background:transparent;border:none;border-bottom:1px solid var(--line2);color:var(--bone);font-family:'Cinzel',serif;font-size:16px;padding:2px 0}
+.sc-name:focus{outline:none;border-color:var(--storm-pale)}
+.sc-del{background:transparent;border:none;color:var(--bone-faint);cursor:pointer;font-size:16px;opacity:.6;padding:0 2px}
+.sc-del:hover{color:var(--crimson);opacity:1}
+.sc-schools{display:flex;gap:5px;margin-bottom:10px}
+.sc-schools button{flex:1;font-family:'Cinzel',serif;font-size:12px;letter-spacing:.5px;background:var(--storm);border:1px solid var(--line2);color:var(--bone-faint);padding:6px 4px;border-radius:7px;cursor:pointer;transition:.15s}
+.sc-schools button[data-s="angelic"].on{color:var(--gold-soft);border-color:var(--gold);background:rgba(216,178,90,.1);box-shadow:var(--glow-gold)}
+.sc-schools button[data-s="draconic"].on{color:var(--jade);border-color:var(--jade-deep);background:rgba(84,207,156,.1);box-shadow:var(--glow-jade)}
+.sc-schools button[data-s="demonic"].on{color:var(--crimson-soft);border-color:var(--crimson-deep);background:rgba(226,74,82,.1);box-shadow:var(--glow-crimson)}
+.sc-meta{display:flex;flex-wrap:wrap;gap:8px 14px;font-family:'Fira Code',monospace;font-size:12px;color:var(--bone-faint);margin-bottom:10px;align-items:center}
+.sc-meta .res-in{width:54px;background:transparent;border:none;border-bottom:1px dotted var(--line2);color:var(--bone-dim);font-family:'Fira Code',monospace;font-size:13px;text-align:center}
+.sc-meta .res-in:focus{outline:none;border-color:var(--storm-pale)}
+.sc-meta .drainval{color:var(--crimson-soft)}
+/* tier ladder */
+.ladder{display:flex;gap:4px;margin:4px 0 10px}
+.rung{flex:1;height:34px;border-radius:6px;border:1px solid var(--line2);background:var(--storm);position:relative;display:flex;align-items:center;justify-content:center;font-family:'Fira Code',monospace;font-size:13px;color:var(--bone-faint);transition:.2s}
+.rung .rn{position:relative;z-index:2}
+.rung.filled{color:var(--bone)}
+.angelic .rung.filled{border-color:var(--gold);background:linear-gradient(180deg,rgba(216,178,90,.22),rgba(216,178,90,.06));box-shadow:var(--glow-gold)}
+.draconic .rung.filled{border-color:var(--jade-deep);background:linear-gradient(180deg,rgba(84,207,156,.2),rgba(84,207,156,.05));box-shadow:var(--glow-jade)}
+.demonic .rung.filled{border-color:var(--crimson-deep);background:linear-gradient(180deg,rgba(226,74,82,.2),rgba(226,74,82,.05));box-shadow:var(--glow-crimson)}
+.rung.current{outline:2px solid var(--storm-pale);outline-offset:1px}
+.rung .pip{position:absolute;bottom:2px;left:50%;transform:translateX(-50%);display:flex;gap:2px;z-index:2}
+.rung .pip i{width:4px;height:4px;border-radius:50%;background:var(--line2)}
+.rung .pip i.on{background:var(--storm-pale)}
+.sc-tierline{font-size:14px;color:var(--bone-dim);margin-bottom:8px;min-height:20px}
+.sc-tierline b{color:var(--gold-soft);font-family:'Cinzel',serif}
+.angelic .sc-tierline b{color:var(--gold-soft)}.draconic .sc-tierline b{color:var(--jade)}.demonic .sc-tierline b{color:var(--crimson-soft)}
+.sc-effs{list-style:none;font-size:13.5px;margin:0 0 10px}
+.sc-effs li{position:relative;padding-left:20px;margin:3px 0;color:var(--bone-dim)}
+.sc-effs li::before{content:attr(data-t);position:absolute;left:0;font-family:'Fira Code',monospace;font-size:10px;color:var(--bone-faint);top:3px}
+.sc-effs li.cur{color:var(--bone)}
+.sc-actions{display:flex;flex-wrap:wrap;gap:6px}
+.sc-actions button{font-family:'Cinzel',serif;font-size:12px;background:var(--storm);border:1px solid var(--line2);color:var(--bone-dim);padding:6px 10px;border-radius:7px;cursor:pointer;transition:.15s}
+.sc-actions button:hover{border-color:var(--storm-pale);color:var(--storm-pale)}
+.sc-actions button.tick{border-color:var(--crimson-deep);color:var(--crimson-soft)}
+.sc-actions button.tick:hover{background:rgba(226,74,82,.1)}
+.sc-actions button.storm-tick{border-color:#3a5266;color:var(--storm-pale)}
+.sc-log{font-family:'Fira Code',monospace;font-size:11px;color:var(--storm-pale);margin-top:9px;padding-top:8px;border-top:1px dashed var(--line2);min-height:0;display:none}
+.sc-log.show{display:block}
+
+/* ---------- LOCKED PANEL ---------- */
+.locked-wrap{position:relative;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:linear-gradient(180deg,var(--panel),var(--storm2));box-shadow:var(--shadow)}
+.locked-veil{padding:40px 28px;text-align:center}
+.locked-veil .lk-ic{font-size:34px;color:var(--storm-pale);opacity:.5}
+.locked-veil h3{font-family:'Cinzel Decorative',serif;font-size:24px;color:var(--bone);margin:10px 0 6px;letter-spacing:1px}
+.locked-veil .lk-sub{font-family:'Cinzel',serif;font-style:italic;color:var(--crimson);margin-bottom:14px}
+.locked-veil .lk-cond{display:inline-block;font-family:'Fira Code',monospace;font-size:13px;color:var(--bone-dim);background:var(--storm);border:1px dashed var(--line2);border-radius:8px;padding:10px 16px;margin-top:4px}
+.locked-veil .lk-cond b{color:var(--gold-soft)}
+.lk-preview{margin-top:18px;color:var(--bone-faint);font-size:14px;font-style:italic;max-width:560px;margin-left:auto;margin-right:auto}
+
+.footer{text-align:center;margin-top:40px;padding-top:18px;border-top:1px solid var(--line);color:var(--bone-faint);font-size:13px;font-family:'Fira Code',monospace}
+.reset-btn{background:transparent;border:1px solid var(--line2);color:var(--bone-faint);font-family:'Cinzel',serif;font-size:11px;padding:5px 12px;border-radius:6px;cursor:pointer;margin-top:10px}
+.reset-btn:hover{border-color:var(--crimson);color:var(--crimson)}
+.attr-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-family:'Fira Code',monospace;font-size:14px;color:var(--bone-dim);margin-top:6px}
+.attr-row label{display:flex;align-items:center;gap:5px}
+.attr-row input{width:48px;background:transparent;border:none;border-bottom:1px solid var(--line2);color:var(--storm-pale);font-family:'Fira Code',monospace;font-size:15px;text-align:center}
+.attr-row input:focus{outline:none;border-color:var(--storm-pale)}
+.attr-row .dc{color:var(--gold-soft)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <div class="eyebrow">NPC Reference</div>
+  <h1 class="title"> Seals of the Ancients</h1>
+  <div class="subtitle">Melissa — Sealkeeper of the Ancients</div>
+  <div class="tagline">"Pain is temporary. I am not."</div>
+  <div class="idline">
+    <span><b>Role</b> Seal Skirmisher</span>
+    <span><b>Chassis</b> Fighter (Battlemaster) + Ki</span>
+    <span><b>Difficulty</b> <span class="stars">★★</span></span>
+    <span><b>System</b> Mythic Covenant</span>
+  </div>
+</header>
+
+<section class="vitals" id="vitals">
+  <div class="vital">
+    <div class="vlabel">Hit Points <span class="stepbtns"><button data-k="hp" data-d="-5">−</button><button data-k="hp" data-d="5">+</button></span></div>
+    <div class="vval"><input id="hp" type="number" value="0"> <span class="vmax">/ <input id="hpmax" type="number" value="120" class="maxinput"></span></div>
+    <div class="vbar hp"><i id="hpbar" style="width: 100%;"></i></div>
+  </div>
+  <div class="vital">
+    <div class="vlabel">Ki <span class="stepbtns"><button data-k="ki" data-d="-1">−</button><button data-k="ki" data-d="1">+</button></span></div>
+    <div class="vval"><input id="ki" type="number" value="5"> <span class="vmax">/ <input id="kimax" type="number" value="5" class="maxinput"></span></div>
+    <div class="vbar ki"><i id="kibar" style="width: 100%;"></i></div>
+  </div>
+  <div class="vital">
+    <div class="vlabel">Superiority Dice <span class="stepbtns"><button data-k="sup" data-d="-1">−</button><button data-k="sup" data-d="1">+</button></span></div>
+    <div class="vval"><input id="sup" type="number" value="5"> <span class="vmax">/ <input id="supmax" type="number" value="5" class="maxinput"></span></div>
+    <div class="vbar sup"><i id="supbar" style="width: 100%;"></i></div>
+    <div class="vderive">d10 · DC <span id="manDC">17</span></div>
+  </div>
+  <div class="vital">
+    <div class="vlabel">Flow <span class="stepbtns"><button data-k="flow" data-d="-1">−</button><button data-k="flow" data-d="1">+</button></span></div>
+    <div class="vval"><input id="flow" type="number" value="0"> <span class="vmax">/ <span id="flowmax">4</span></span></div>
+    <div class="vbar flow"><i id="flowbar" style="width: 0%;"></i></div>
+    <div class="vderive" id="flowDerive">+0 Dodge · +0 ft</div>
+  </div>
+  <div class="vital cfg">
+    <div class="vlabel">Prof. Bonus</div>
+    <div class="vval"><input id="pb" type="number" value="4"></div>
+    <div class="vderive">max Flow &amp; seals</div>
+  </div>
+  <div class="vital cfg">
+    <div class="vlabel">WIS Modifier</div>
+    <div class="vval"><input id="wis" type="number" value="4"></div>
+    <div class="vderive">drain = WIS×PB = <span id="drainOut">32</span></div>
+  </div>
+</section>
+
+<div class="layout">
+<nav class="tabs" id="tabnav">
+  <button data-tab="overview" class="">Overview</button>
+  <button data-tab="seals" class="">Seal Tracker</button>
+  <button data-tab="schools" class="">Seal Schools</button>
+  <button data-tab="abilities" class="active">Abilities</button>
+  <button data-tab="transform">Transformation</button>
+</nav>
+<div class="content">
+
+<!-- ================= OVERVIEW ================= -->
+<section class="tabpanel" id="tab-overview">
+  <div class="quote">"She is not only rewarded for doing damage, but for turning her opponents' failures into opportunities."</div>
+
+  <h2 class="sec">Identity</h2>
+  <div class="card storm"><p>Melissa fights like the eye of a storm — she dances out of reach, banks <b>Flow</b> on every dodge, and brands <b>Seals of the Ancients</b> onto allies and enemies to rewrite their cores over time. Her seals drain a resource each round and climb through six escalating tiers; the longer a fight runs, the more inevitable she becomes. Every whiff and failed save the enemy throws is fuel.</p></div>
+
+  <h2 class="sec">The Dodge Engine <span class="note">how Flow works</span></h2>
+  <div class="grid2">
+    <div class="card storm"><h3>Flow State <span class="tag passive">Passive</span></h3><p>Each successful dodge banks <b>1 Flow</b> (max = PB). Per stack: <b>+2</b> to Dodge checks and <b>+5 ft</b> movement. Lose 1 stack each time she is hit.</p><p class="muted">Live readout in the vitals bar — set PB and current Flow there.</p></div>
+    <div class="card storm"><h3>Read the Flow <span class="tag passive">Passive</span></h3><p>The first time she dodges an attack each round, she gains <b>advantage on her next action</b> against that enemy.</p></div>
+  </div>
+
+  <h2 class="sec">Fighter (Battlemaster) <span class="note">chassis</span></h2>
+  <div class="card gold"><h3>Combat Superiority</h3>
+    <ul>
+      <li><b>Superiority Dice</b> 5d10 · tracked in the vitals bar</li>
+      <li><b>Maneuver Save DC</b> = 8 + Dex + PB</li>
+    </ul>
+    <div class="attr-row">
+      <label>DEX <input id="dex" type="number" value="5"></label>
+      <label>PB <span style="color:var(--storm-pale)" id="pbEcho">4</span></label>
+      <span class="dc">→ Maneuver DC = <b id="manDC2">17</b></span>
+    </div>
+    <p class="muted" style="margin-top:8px">Full maneuver list is on the <b>Abilities</b> tab.</p>
+  </div>
+
+  <h2 class="sec">At a Glance</h2>
+  <div class="card"><ul>
+    <li><b>Seal placement</b> — on a hit, use a reaction to seal a creature (self-seal as a bonus action). Max seals on field = <b>PB</b>.</li>
+    <li><b>Seal drain</b> — <b>WIS × PB</b> of the target's school resource at the start of its turn; every 3rd drain tick advances the seal one tier (max 6).</li>
+    <li><b>Failure = fuel</b> — a sealed creature that misses her or fails a save she forces takes an extra drain tick (Eye of the Storm), and she can convert that failure into movement (Rushing Current).</li>
+    <li><b>Stays standing</b> — Still Water converts a hit into a dodge; Waking Tiger plants a seal off a clean dodge.</li>
+  </ul></div>
+</section>
+
+<!-- ================= SEAL TRACKER ================= -->
+<section class="tabpanel" id="tab-seals">
+  <h2 class="sec">Seals of the Ancients <span class="note">Core Mechanic</span></h2>
+  <p class="sec-note">Place a seal, pick its school, and advance it with drain ticks. Every 3rd tick climbs a tier (max 6); effects are cumulative. Drain and progression scale off PB &amp; WIS in the vitals bar.</p>
+
+  <div class="seal-toolbar">
+    <button class="btn" id="addSeal">+ Place Seal</button>
+    <button class="minibtn" id="advAll" title="Start-of-turn: drain tick on every seal">⟳ Advance Round (tick all)</button>
+    <button class="minibtn" id="clearSeals">Clear All</button>
+    <span class="seal-cap" id="sealCap">Seals on field: <b>0</b> / 4</span>
+  </div>
+
+  <div class="seal-grid" id="sealGrid"><div class="seal-empty">No seals placed. Use <b>+ Place Seal</b> to brand a target.</div></div>
+
+  <h2 class="sec">Core Rules <span class="note">revised for functional sense</span></h2>
+  <div class="grid2">
+    <div class="card crimson"><h3>Placement &amp; Cap</h3><ul>
+      <li>On a successful <b>hit</b>, use your <b>reaction</b> to place a Seal (1 per creature).</li>
+      <li>Place a seal on <b>yourself</b> as a bonus action.</li>
+      <li>Max seals on field = <b>PB</b>. <span class="muted">Ally buffs share this cap with enemy seals.</span></li>
+    </ul></div>
+    <div class="card storm"><h3>Drain &amp; Progression <span class="fix">revised</span></h3><ul>
+      <li>A <b>drain tick</b> = one drain of <b>WIS×PB</b> from the seal's school resource, taken at the start of the sealed creature's turn.</li>
+      <li>The seal advances <b>one tier every 3rd drain tick</b> (Tier 6 at 15 ticks). Effects are cumulative.</li>
+      <li>If the resource hits 0 with no alternative, the tick instead deals <b>WIS×PB necrotic</b>.</li>
+    </ul></div>
+  </div>
+  <p class="muted" style="margin-top:-4px">Note: the original draft stated progression two ways (a "total threshold" and "every 3rd tick"). This sheet uses the single rule above — the threshold <em>is</em> three ticks. The 0-resource fallback was also raised to WIS×PB to match the drain.</p>
+</section>
+
+<!-- ================= SEAL SCHOOLS ================= -->
+<section class="tabpanel" id="tab-schools">
+  <h2 class="sec">Angelic Seals <span class="note">sets Good · consumes TL</span></h2>
+  <p class="sec-note">"The Angels come for me — I tell them no." A sustaining buff line; best on allies or herself.</p>
+  <table class="gt ang">
+    <tbody><tr><th>Tier</th><th>Name</th><th>Effect</th></tr>
+    <tr><td>1</td><td class="tn">Preserve</td><td>Cleanse all Tier&nbsp;I status effects from the target at the moment of sealing, and at the start of each turn.</td></tr>
+    <tr><td>2</td><td class="tn">Union</td><td>Increase AC by PB.</td></tr>
+    <tr><td>3</td><td class="tn">Health</td><td>Restore HP = WIS×PB per round (cannot exceed max).</td></tr>
+    <tr><td>4</td><td class="tn">Freedom</td><td>Movement speed doubled. Ignores difficult terrain and cannot be grappled or restrained by non-magical means.</td></tr>
+    <tr><td>5</td><td class="tn">Divine</td><td>Restore TL = WIS×PB per round, sustaining the seal's progression.</td></tr>
+    <tr><td>6</td><td class="tn">Judgement</td><td>Advantage on attacks against Evil creatures. Evil creatures have disadvantage on all attacks, saves, and checks targeting this creature.</td></tr>
+  </tbody></table>
+
+  <h2 class="sec">Draconic Seals <span class="note">sets Neutral · consumes Ki</span></h2>
+  <p class="sec-note">"Dragons don't choose sides. They become the outcome." No Ki? Drains HP instead, at double rate. Several tiers link to nearby creatures — battlefield tools, quiet in a duel.</p>
+  <table class="gt dra">
+    <tbody><tr><th>Tier</th><th>Name</th><th>Effect</th></tr>
+    <tr><td>1</td><td class="tn">Prosperity</td><td>+PB to attack and damage rolls.</td></tr>
+    <tr><td>2</td><td class="tn">Golden</td><td>Links to all Good creatures within 30 ft. When any linked creature is hit, half the damage becomes Draconic Growth; spend stored Growth on a later turn to advance this seal 1 tier as a free action.</td></tr>
+    <tr><td>3</td><td class="tn">Evolution</td><td>At the end of each round, gain resistance to the last damage type taken (if already resistant, −10% further). Resistances reset at the start of Melissa's turn.</td></tr>
+    <tr><td>4</td><td class="tn">Obsidian</td><td>Links to all Evil creatures within 30 ft. When any linked creature attacks the Draconic target, half the total damage is reflected to the attacker as force.</td></tr>
+    <tr><td>5</td><td class="tn">Primordial</td><td>Once per round, when reduced to 0 HP, drop to 1 instead. Immune to frightened and charmed for the duration.</td></tr>
+    <tr><td>6</td><td class="tn">Dominance</td><td>Links to all Good and Evil within 30 ft. Steal all buffs from Good creatures. Linked Evil creatures make a WIS save: fail = Dominated (Melissa controls); success = Weakened.</td></tr>
+  </tbody></table>
+
+  <h2 class="sec">Demonic Seals <span class="note">sets Evil · consumes Health</span></h2>
+  <p class="sec-note">"Everything breaks. I simply decide when." Her enemy line — a pure pressure seal that races a target's HP down.</p>
+  <table class="gt dem">
+    <tbody><tr><th>Tier</th><th>Name</th><th>Effect</th></tr>
+    <tr><td>1</td><td class="tn">Ruin</td><td>Takes +1 die of damage from all sources.</td></tr>
+    <tr><td>2</td><td class="tn">Fracture</td><td>AC decreased by PB.</td></tr>
+    <tr><td>3</td><td class="tn">Bleed</td><td>Loses additional HP = WIS×PB per round.</td></tr>
+    <tr><td>4</td><td class="tn">Restraint</td><td>Speed halved; cannot take the Dash action.</td></tr>
+    <tr><td>5</td><td class="tn">Infernal</td><td>Burns TL = WIS×PB per round. If no TL, the HP drain rate increases by 50% instead.</td></tr>
+    <tr><td>6</td><td class="tn">Collapse</td><td>Disadvantage on all attacks against Good creatures. Healing reduced by PB×2.</td></tr>
+  </tbody></table>
+</section>
+
+<!-- ================= ABILITIES ================= -->
+<section class="tabpanel active" id="tab-abilities">
+  <h2 class="sec">Passives</h2>
+  <div class="grid2">
+    <div class="card storm"><h3>Read the Flow <span class="tag passive">Passive</span></h3><p>Each round, the first time Melissa dodges an attack, she gains <b>advantage on her next action</b> against that enemy.</p></div>
+    <div class="card storm"><h3>Flow State <span class="tag passive">Passive</span></h3><p>After every successful dodge, gain <b>1 Flow</b> (max PB). Per stack: <b>+2</b> Dodge checks, <b>+5 ft</b> movement. Lose 1 stack each time she is hit.</p></div>
+    <div class="card gold"><h3>Eye of the Storm <span class="tag passive">Passive</span> <span class="fix">clarified</span></h3><p>When a <b>sealed</b> creature misses her or fails a save she forces, its seal takes an immediate <b>+1 drain tick</b> (applying the drain and counting toward tier progression).</p></div>
+  </div>
+
+  <h2 class="sec">Bonus Action</h2>
+  <div class="card jade"><h3>Undertow <span class="tag bonus">Bonus Action</span> <span class="tag cost">2 Ki</span></h3><p>Once per round, every sealed creature within <b>20 ft</b> gains <b>+1 drain tick</b>, and Melissa may move up to her <b>Flow movement bonus</b>.</p></div>
+
+  <h2 class="sec">Reactions</h2>
+  <div class="grid2">
+    <div class="card crimson"><h3>Rushing Current <span class="tag reaction">Reaction</span> <span class="tag cost">1 Ki</span></h3><p>Once per round, when a sealed creature fails a saving throw or has an attack miss, immediately use <b>Step of the Wind</b> to move away from or toward the target.</p></div>
+    <div class="card crimson"><h3>Still Water <span class="tag reaction">Reaction</span> <span class="fix">clarified</span></h3><p>Once per round, when Melissa would be hit she may spend <b>1 Flow</b> to convert it into a <b>successful dodge</b>.</p><ul><li>The converted dodge <b>counts as a successful dodge</b> for Read the Flow and Waking Tiger…</li><li>…but does <b>not</b> grant a Flow stack (you spent one to fuel it — net −1 Flow).</li></ul></div>
+    <div class="card crimson"><h3>Waking Tiger <span class="tag reaction">Reaction</span> <span class="fix">clarified</span></h3><p>On a successful dodge, Melissa may place a seal on the creature.</p><ul><li>This placement costs <b>no extra reaction</b> (it rides on the dodge) and triggers <b>once per turn</b>.</li><li>Still bound by 1 seal per creature and the PB field cap.</li></ul></div>
+  </div>
+
+  <h2 class="sec">Fighter Maneuvers <span class="note">Class Feature · unchanged</span></h2>
+  <div class="card gold"><ul>
+    <li><b>Superiority Die</b> 5d10 · <b>Save DC</b> 8 + Dex + PB</li>
+  </ul></div>
+  <div class="grid2">
+    <div class="card"><h3>Disarming Attack</h3><p>On a hit, expend one Superiority Die and add it to the damage. The target makes a Strength save or drops one object of your choice, landing in its space.</p></div>
+    <div class="card"><h3>Trip Attack</h3><p>On a weapon or unarmed hit, expend one die and add it to the damage. A Large-or-smaller target makes a Strength save or is knocked Prone.</p></div>
+    <div class="card"><h3>Evasive Footwork</h3><p>As a bonus action, expend one die and take the Disengage action; add the die to your AC until the start of your next turn.</p></div>
+    <div class="card"><h3>Maneuvering Attack</h3><p>On a hit, expend one die (added to damage) and choose a willing ally who can see/hear you. They may use their reaction to move up to half their Speed without provoking an opportunity attack from your target.</p></div>
+    <div class="card"><h3>Distracting Strike</h3><p>On a hit, expend one die (added to damage). The next attack against the target by another attacker has advantage if made before the start of your next turn.</p></div>
+    <div class="card"><h3>Sweeping Attack</h3><p>On a melee hit, expend one die. Choose another creature within 5 ft of the target and within reach; if the attack roll would also hit it, it takes damage equal to the die (same type as the original).</p></div>
+    <div class="card"><h3>Lunging Attack</h3><p>As a bonus action, expend one die and take the Dash action. If you move at least 5 ft in a straight line before a melee hit on this turn's Attack action, add the die to that attack's damage.</p></div>
+  </div>
+</section>
+
+<!-- ================= TRANSFORMATION ================= -->
+<section class="tabpanel" id="tab-transform">
+  <h2 class="sec">Transformation</h2>
+  <div class="locked-wrap">
+    <div class="locked-veil">
+      <div class="lk-ic">🔒</div>
+      <h3>Locked</h3>
+      <div class="lk-sub">The storm has not yet broken.</div>
+      <div class="lk-cond">Unlock by completing <b>Mountains of the Ancients</b> — Melissa's Paralogue Mission.</div>
+      <p class="lk-preview">When unlocked, her ascended form is sketched toward an <em>Eye of the Storm</em> state — seals advancing on their own each round, immunity to forced movement, and enemy failures cascading across every seal. Mechanics and values pending the paralogue.</p>
+    </div>
+  </div>
+</section>
+
+</div><!-- /content -->
+</div><!-- /layout -->
+
+<div class="footer">
+  Melissa · Stands Unmoved in the Raging Storm — interactive reference · v1.0
+  <br><button class="reset-btn" id="resetAll">Reset all trackers</button>
+</div>
+</div><!-- /wrap -->
+
+
+<!-- ===== Firebase sync (added by Sync Injector) ===== -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+/* ============================ STATE ============================ */
+const SK='melissa_v1';
+const defaults={
+  hp:0,hpmax:120, ki:5,kimax:5, sup:5,supmax:5, flow:0,
+  pb:4, wis:4, dex:5,
+  seals:[]
+};
+let S=load();
+function load(){
+  try{var r=localStorage.getItem(SK);if(r){var o=JSON.parse(r);var d=JSON.parse(JSON.stringify(defaults));deepMerge(d,o);return d;}}catch(e){}
+  return JSON.parse(JSON.stringify(defaults));
+}
+function deepMerge(t,s){for(var k in s){if(s[k]&&typeof s[k]==='object'&&!Array.isArray(s[k])&&t[k]&&typeof t[k]==='object'){deepMerge(t[k],s[k]);}else{t[k]=s[k];}}}
+function save(){try{localStorage.setItem(SK,JSON.stringify(S));}catch(e){}}
+function escapeHtml(s){return (''+s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+
+/* ============================ SCHOOL DATA ============================ */
+const SCHOOLS={
+  angelic:{label:'Angelic',resource:'TL',align:'Good',tiers:[
+    ['Preserve','Cleanse all Tier I status effects at sealing and each turn start.'],
+    ['Union','+PB to AC.'],
+    ['Health','Restore HP = WIS\u00d7PB per round (cannot exceed max).'],
+    ['Freedom','Speed doubled; ignores difficult terrain; immune to non-magical grapple/restrain.'],
+    ['Divine','Restore TL = WIS\u00d7PB per round, sustaining progression.'],
+    ['Judgement','Advantage vs Evil; Evil have disadvantage on attacks/saves/checks vs this creature.']
+  ]},
+  draconic:{label:'Draconic',resource:'Ki',align:'Neutral',tiers:[
+    ['Prosperity','+PB to attack and damage rolls.'],
+    ['Golden','Link Good within 30 ft \u2014 half damage they take becomes Draconic Growth (spend to advance a tier).'],
+    ['Evolution','End of round: resist the last damage type taken (\u221210% further if already resistant); resets on Melissa\u2019s turn.'],
+    ['Obsidian','Link Evil within 30 ft \u2014 their attacks on this target reflect half as force.'],
+    ['Primordial','1/round drop to 1 HP instead of 0; immune to frightened & charmed.'],
+    ['Dominance','Link all within 30 ft. Steal Good buffs; linked Evil WIS save or Dominated (success = Weakened).']
+  ]},
+  demonic:{label:'Demonic',resource:'HP',align:'Evil',tiers:[
+    ['Ruin','Takes +1 die of damage from all sources.'],
+    ['Fracture','\u2212PB to AC.'],
+    ['Bleed','Loses additional HP = WIS\u00d7PB per round.'],
+    ['Restraint','Speed halved; cannot Dash.'],
+    ['Infernal','Burns TL = WIS\u00d7PB per round; if no TL, HP drain rate +50%.'],
+    ['Collapse','Disadvantage vs Good; healing reduced by PB\u00d72.']
+  ]}
+};
+function drain(){return S.wis*S.pb;}
+function tierOf(ticks){return clamp(1+Math.floor(ticks/3),1,6);}
+
+/* ============================ VITALS ============================ */
+function renderVitals(){
+  ['hp','ki','sup','flow','pb','wis','dex'].forEach(function(k){var el=document.getElementById(k);if(el&&document.activeElement!==el)el.value=S[k];});
+  ['hpmax','kimax','supmax'].forEach(function(k){var el=document.getElementById(k);if(el&&document.activeElement!==el)el.value=S[k];});
+  document.getElementById('hpbar').style.width=clamp(S.hp/Math.max(S.hpmax,1)*100,0,100)+'%';
+  document.getElementById('kibar').style.width=clamp(S.ki/Math.max(S.kimax,1)*100,0,100)+'%';
+  document.getElementById('supbar').style.width=clamp(S.sup/Math.max(S.supmax,1)*100,0,100)+'%';
+  var fmax=Math.max(S.pb,1);
+  document.getElementById('flowmax').textContent=fmax;
+  document.getElementById('flowbar').style.width=clamp(S.flow/fmax*100,0,100)+'%';
+  document.getElementById('flowDerive').textContent='+'+(S.flow*2)+' Dodge \u00b7 +'+(S.flow*5)+' ft';
+  var dc=8+S.dex+S.pb;
+  document.getElementById('manDC').textContent=dc;
+  document.getElementById('manDC2').textContent=dc;
+  document.getElementById('pbEcho').textContent=S.pb;
+  document.getElementById('drainOut').textContent=drain();
+  renderSealCap();
+}
+['hp','ki','sup','flow','pb','wis','dex'].forEach(function(k){
+  document.getElementById(k).addEventListener('input',function(e){
+    var v=parseInt(e.target.value||0);
+    if(k==='flow')v=clamp(v,0,Math.max(S.pb,1));
+    if(k==='pb'||k==='wis'||k==='dex')v=Math.max(0,v);
+    S[k]=v;renderVitals();
+    if(k==='pb'||k==='wis')renderSeals();
+    save();
+  });
+});
+['hpmax','kimax','supmax'].forEach(function(k){
+  document.getElementById(k).addEventListener('input',function(e){S[k]=Math.max(1,parseInt(e.target.value||1));renderVitals();save();});
+});
+document.querySelectorAll('.vitals .stepbtns button[data-k]').forEach(function(b){
+  b.addEventListener('click',function(){
+    var k=b.dataset.k,d=parseInt(b.dataset.d);
+    S[k]=(S[k]||0)+d;
+    if(k==='flow')S[k]=clamp(S[k],0,Math.max(S.pb,1));
+    else if(k!=='hp')S[k]=Math.max(0,S[k]);
+    renderVitals();save();
+  });
+});
+
+/* ============================ SEAL TRACKER ============================ */
+function newSeal(){return {id:'s'+Date.now()+Math.floor(Math.random()*999),name:'Target '+(S.seals.length+1),school:'demonic',ticks:0,res:null,log:''};}
+function findSeal(id){return S.seals.find(function(s){return s.id===id;});}
+function renderSealCap(){
+  var cap=document.getElementById('sealCap');if(!cap)return;
+  var n=S.seals.length, max=Math.max(S.pb,1);
+  cap.innerHTML='Seals on field: <b>'+n+'</b> / '+max;
+  cap.classList.toggle('over',n>max);
+}
+function renderSeals(){
+  var host=document.getElementById('sealGrid');if(!host)return;host.innerHTML='';
+  if(!S.seals.length){host.innerHTML='<div class="seal-empty">No seals placed. Use <b>+ Place Seal</b> to brand a target.</div>';renderSealCap();return;}
+  S.seals.forEach(function(s){
+    var sc=SCHOOLS[s.school];var tier=tierOf(s.ticks);var prog=s.ticks%3;
+    var card=document.createElement('div');card.className='sealcard '+s.school;
+    // ladder
+    var ladder='';
+    for(var t=1;t<=6;t++){
+      var pips='';
+      if(t<tier){pips='<span class="pip"><i class="on"></i><i class="on"></i><i class="on"></i></span>';}
+      else if(t===tier){pips='<span class="pip"><i class="'+(prog>0?'on':'')+'"></i><i class="'+(prog>1?'on':'')+'"></i><i></i></span>';}
+      ladder+='<div class="rung'+(t<=tier?' filled':'')+(t===tier?' current':'')+'"><span class="rn">'+t+'</span>'+pips+'</div>';
+    }
+    // cumulative effects
+    var effs='';
+    sc.tiers.forEach(function(tr,i){var ti=i+1;if(ti<=tier){effs+='<li data-t="T'+ti+'" class="'+(ti===tier?'cur':'')+'"><b>'+tr[0]+'</b> \u2014 '+tr[1]+'</li>';}});
+    var curName=sc.tiers[tier-1][0];
+    card.innerHTML=
+      '<div class="sc-head"><input class="sc-name" value="'+escapeHtml(s.name)+'" data-id="'+s.id+'"><button class="sc-del" data-id="'+s.id+'" data-act="del" title="Remove">\u2715</button></div>'+
+      '<div class="sc-schools">'+
+        ['angelic','draconic','demonic'].map(function(k){return '<button data-id="'+s.id+'" data-act="school" data-s="'+k+'" class="'+(s.school===k?'on':'')+'">'+SCHOOLS[k].label+'</button>';}).join('')+
+      '</div>'+
+      '<div class="sc-meta">'+
+        '<span>Aligned: <b style="color:var(--bone-dim)">'+sc.align+'</b></span>'+
+        '<span>Drains: <b style="color:var(--bone-dim)">'+sc.resource+'</b></span>'+
+        '<span>Tick: <b class="drainval">'+drain()+'</b></span>'+
+        '<span>Resource left: <input class="res-in" type="number" data-id="'+s.id+'" placeholder="\u2014" value="'+(s.res===null?'':s.res)+'"></span>'+
+      '</div>'+
+      '<div class="ladder">'+ladder+'</div>'+
+      '<div class="sc-tierline">Tier <b>'+tier+'</b> \u00b7 <b>'+curName+'</b> <span class="muted">('+prog+'/3 to next)</span></div>'+
+      '<ul class="sc-effs">'+effs+'</ul>'+
+      '<div class="sc-actions">'+
+        '<button class="tick" data-id="'+s.id+'" data-act="tick" title="Start-of-turn drain">+ Drain Tick</button>'+
+        '<button class="storm-tick" data-id="'+s.id+'" data-act="tick" title="Eye of the Storm: enemy missed / failed a save">\u26A1 Failure Tick</button>'+
+        '<button data-id="'+s.id+'" data-act="untick">\u2212 Tick</button>'+
+        '<button data-id="'+s.id+'" data-act="reset" title="Reset to Tier 1">Reset</button>'+
+      '</div>'+
+      '<div class="sc-log'+(s.log?' show':'')+'">'+escapeHtml(s.log)+'</div>';
+    host.appendChild(card);
+  });
+  wireSeals();renderSealCap();
+}
+function applyTick(s){
+  var d=drain();var sc=SCHOOLS[s.school];var before=tierOf(s.ticks);
+  s.ticks++;var after=tierOf(s.ticks);
+  var msg='+1 tick \u2192 drained '+d+' '+sc.resource;
+  if(s.res!==null){
+    if(s.res<=0){msg='resource empty \u2192 '+d+' necrotic';}
+    else{s.res=Math.max(0,s.res-d);if(s.res===0)msg='drained '+d+' '+sc.resource+' \u2192 empty (now '+d+' necrotic/round)';}
+  }
+  if(after>before)msg+=' \u00b7 advanced to Tier '+after+': '+sc.tiers[after-1][0];
+  s.log=msg;
+}
+function wireSeals(){
+  var host=document.getElementById('sealGrid');
+  host.querySelectorAll('.sc-name').forEach(function(inp){inp.addEventListener('input',function(){var s=findSeal(inp.dataset.id);if(s){s.name=inp.value;save();}});});
+  host.querySelectorAll('.res-in').forEach(function(inp){inp.addEventListener('input',function(){var s=findSeal(inp.dataset.id);if(s){s.res=(inp.value===''?null:Math.max(0,parseInt(inp.value||0)));save();}});});
+  host.querySelectorAll('button[data-act]').forEach(function(b){
+    b.addEventListener('click',function(){
+      var s=findSeal(b.dataset.id);if(!s)return;var act=b.dataset.act;
+      if(act==='del'){S.seals=S.seals.filter(function(x){return x.id!==s.id;});}
+      else if(act==='school'){s.school=b.dataset.s;s.log='';}
+      else if(act==='tick'){applyTick(s);}
+      else if(act==='untick'){s.ticks=Math.max(0,s.ticks-1);s.log='\u22121 tick \u2192 Tier '+tierOf(s.ticks);}
+      else if(act==='reset'){s.ticks=0;s.log='Reset to Tier 1.';}
+      renderSeals();save();
+    });
+  });
+}
+document.getElementById('addSeal').addEventListener('click',function(){S.seals.push(newSeal());renderSeals();save();});
+document.getElementById('advAll').addEventListener('click',function(){
+  if(!S.seals.length)return;
+  S.seals.forEach(function(s){applyTick(s);});
+  renderSeals();save();
+});
+document.getElementById('clearSeals').addEventListener('click',function(){if(confirm('Remove all seals?')){S.seals=[];renderSeals();save();}});
+
+/* ============================ TABS ============================ */
+document.querySelectorAll('#tabnav button').forEach(function(b){
+  b.addEventListener('click',function(){
+    document.querySelectorAll('#tabnav button').forEach(function(x){x.classList.remove('active');});b.classList.add('active');
+    document.querySelectorAll('.tabpanel').forEach(function(p){p.classList.remove('active');});
+    document.getElementById('tab-'+b.dataset.tab).classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+});
+
+/* ============================ RESET ============================ */
+document.getElementById('resetAll').addEventListener('click',function(){
+  if(confirm('Reset all trackers and seals to defaults?')){try{localStorage.removeItem(SK);}catch(e){}S=load();renderAll();}
+});
+
+/* ============================ INIT ============================ */
+function renderAll(){renderVitals();renderSeals();}
+renderAll();
+
+
+/* ======================= CLOUD SYNC (Firebase) ======================= */
+/* Inserted by the Sync Injector. Wraps save() + subscribes once.        */
+/* Config + campaign come from firebase-config.js (window.FIREBASE_CONFIG).*/
+/* CHAR_ID is derived from this sheet's own SK key. Local-only until the  */
+/* shared config is filled in. Remote applies reuse the sheet's own load(). */
+(function(){
+  var CFG = window.FIREBASE_CONFIG || {};
+  var CAMPAIGN_ID = window.CAMPAIGN_ID || "astrology-club";
+  var CHAR_ID = (typeof SK === "string" ? SK.replace(/_v[0-9]+$/, "") : "unknown");
+  var configured = CFG && CFG.apiKey && CFG.apiKey.indexOf("PASTE") !== 0;
+
+  var pill = document.createElement("div");
+  pill.style.cssText = "position:fixed;bottom:10px;right:12px;z-index:99999;font:600 11px/1 monospace;padding:5px 9px;border-radius:20px;background:rgba(0,0,0,.55);color:#bbb;letter-spacing:.05em;pointer-events:none;";
+  pill.textContent = configured ? "○ connecting" : "○ local only";
+  document.body.appendChild(pill);
+  function setPill(t,c){ pill.textContent=t; pill.style.color=c; }
+  if(!configured) return;
+
+  var docRef=null, applyingRemote=false, pushT=null;
+  try{
+    firebase.initializeApp(CFG);
+    var db = firebase.firestore();
+    db.enablePersistence({synchronizeTabs:true}).catch(function(){});
+    docRef = db.collection("campaigns").doc(CAMPAIGN_ID).collection("characters").doc(CHAR_ID);
+  }catch(e){ setPill("○ sync error","#e08"); return; }
+
+  var _origSave = save;
+  save = function(){
+    _origSave();
+    if(applyingRemote) return;
+    clearTimeout(pushT);
+    pushT = setTimeout(pushRemote, 400);
+  };
+  function pushRemote(){
+    if(!docRef) return;
+    docRef.set(JSON.parse(JSON.stringify(S)))
+      .then(function(){ setPill("● synced","#7c7"); })
+      .catch(function(){ setPill("○ offline","#c96"); });
+  }
+  var rb = document.getElementById("resetAll");
+  if(rb) rb.addEventListener("click", function(){ setTimeout(function(){ if(!applyingRemote) pushRemote(); },0); });
+
+  docRef.onSnapshot(function(snap){
+    if(snap.metadata.hasPendingWrites) return;
+    if(!snap.exists){ pushRemote(); setPill("● synced","#7c7"); return; }
+    var data = snap.data(); if(!data) return;
+    applyingRemote = true;
+    try{ localStorage.setItem(SK, JSON.stringify(data)); }catch(e){}
+    try{ S = load(); }catch(e){}
+    try{ renderAll(); }catch(e){}
+    applyingRemote = false;
+    setPill("● synced","#7c7");
+  }, function(){ setPill("○ offline","#c96"); });
+})();
+
+</script>
+
+
+</body></html>

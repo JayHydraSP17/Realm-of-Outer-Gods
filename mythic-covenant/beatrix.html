@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<!-- saved from url=(0065)file:///C:/Users/jaden/Downloads/Beatrix%20Reference%20(1.1).html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Harvesting Princess — Beatrix</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+<link href="./Beatrix Reference (1.1)_files/css2" rel="stylesheet">
+<style>
+:root{
+  --void:#060a08;--char:#0c1210;--char2:#111814;--panel:#16201b;--panel2:#1c2922;
+  --line:#27352c;--line2:#3a4d40;--bone:#ece9da;--bone-dim:#b3b6a3;--bone-faint:#7b8478;
+  --leaf:#4fd18a;--leaf-deep:#1f7a4d;--jade:#5fe0b0;--jade-deep:#2c8a78;
+  --bloom:#e0506b;--bloom-deep:#a02f44;--rose:#ff8b9e;
+  --gold:#d9b154;--gold-soft:#e8cd87;
+  --soul:#c2abff;--soul-deep:#7d5cc4;
+  --shadow:0 8px 30px rgba(0,0,0,.6);--glow-leaf:0 0 18px rgba(79,209,138,.32);--glow-bloom:0 0 16px rgba(224,80,107,.3);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Cormorant Garamond',serif;background:radial-gradient(1200px 600px at 80% -10%, rgba(79,209,138,.07), transparent 60%),radial-gradient(900px 500px at -10% 110%, rgba(224,80,107,.06), transparent 60%),var(--void);color:var(--bone);font-size:18px;line-height:1.5;min-height:100vh;letter-spacing:.2px}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.025'/%3E%3C/svg%3E");mix-blend-mode:overlay;opacity:.6}
+.wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:0 18px 90px}
+header.top{text-align:center;padding:34px 0 18px;position:relative}
+.eyebrow{font-family:'Cinzel',serif;letter-spacing:6px;font-size:12px;text-transform:uppercase;color:var(--leaf);opacity:.85;margin-bottom:8px}
+h1.title{font-family:'Cinzel Decorative',serif;font-weight:900;font-size:clamp(30px,6vw,58px);line-height:1;background:linear-gradient(180deg,#fff,var(--bone) 30%,var(--leaf) 130%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 2px 40px rgba(79,209,138,.18)}
+.subtitle{font-family:'Cinzel',serif;font-style:italic;color:var(--bone-dim);margin-top:10px;font-size:16px;letter-spacing:1px}
+.tagline{color:var(--leaf);font-style:italic;margin-top:6px;font-size:17px;opacity:.85}
+.idline{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 22px;margin-top:16px;font-size:14px;color:var(--bone-faint);font-family:'Fira Code',monospace}
+.idline b{color:var(--bone-dim);font-weight:500}
+.vitals{position:sticky;top:0;z-index:40;margin:18px 0 8px;background:linear-gradient(180deg,rgba(12,18,16,.97),rgba(12,18,16,.9));border:1px solid var(--line);border-radius:14px;backdrop-filter:blur(8px);box-shadow:var(--shadow);padding:12px 14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.vital{background:var(--char2);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.vital .vlabel{font-family:'Cinzel',serif;font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--bone-faint);display:flex;justify-content:space-between;align-items:center}
+.vital .vval{font-family:'Fira Code',monospace;font-size:20px;font-weight:600;margin-top:2px;display:flex;align-items:baseline;gap:4px}
+.vital .vval input{width:62px;background:transparent;border:none;border-bottom:1px solid var(--line2);color:var(--leaf);font-family:'Fira Code',monospace;font-size:20px;font-weight:600;text-align:right}
+.vital .vval input:focus{outline:none;border-color:var(--leaf)}
+.vital .vval input.maxinput{width:46px;color:var(--bone-faint);font-size:15px;border-bottom:1px dotted var(--line2);text-align:left}
+.vital .vval input.maxinput:focus{color:var(--bone-dim);border-color:var(--bone-dim)}
+.vital .vmax{color:var(--bone-faint);font-size:14px}
+.vbar{height:5px;border-radius:3px;background:var(--char);margin-top:6px;overflow:hidden}
+.vbar i{display:block;height:100%;border-radius:3px;transition:width .35s ease}
+.vbar.tl i{background:linear-gradient(90deg,var(--soul-deep),var(--soul))}
+.vbar.hp i{background:linear-gradient(90deg,var(--bloom-deep),var(--bloom))}
+.vbar.morale i{background:linear-gradient(90deg,var(--gold),var(--gold-soft))}
+.vbar.vine i{background:linear-gradient(90deg,var(--leaf-deep),var(--leaf))}
+.stepbtns{display:flex;gap:3px}
+.stepbtns button{background:var(--panel);border:1px solid var(--line2);color:var(--bone-dim);width:20px;height:18px;border-radius:5px;cursor:pointer;font-size:13px;line-height:1;font-family:'Fira Code',monospace}
+.stepbtns button:hover{background:var(--leaf);color:var(--void);border-color:var(--leaf)}
+.alch-stat{display:flex;gap:10px;align-items:baseline;font-family:'Fira Code',monospace;margin-top:2px}
+.alch-stat .as-big{font-size:20px;font-weight:600;color:var(--gold-soft)}
+.alch-stat .as-lbl{font-size:9.5px;color:var(--bone-faint);letter-spacing:1px;text-transform:uppercase}
+.alch-inputs{display:flex;gap:8px;margin-top:5px;font-size:11px;color:var(--bone-faint);font-family:'Fira Code',monospace}
+.alch-inputs label{display:flex;align-items:center;gap:3px}
+.alch-inputs input{width:34px;background:transparent;border:none;border-bottom:1px solid var(--line2);color:var(--bone);font-family:'Fira Code',monospace;font-size:13px;text-align:center}
+.alch-inputs input:focus{outline:none;border-color:var(--gold)}
+.layout{display:flex;gap:22px;margin-top:18px;align-items:flex-start}
+.content{flex:1;min-width:0}
+nav.tabs{flex:0 0 210px;display:flex;flex-direction:column;gap:6px;position:sticky;top:14px;align-self:flex-start;border:1px solid var(--line);border-radius:14px;padding:12px 10px;background:linear-gradient(180deg,var(--panel),var(--char2));box-shadow:var(--shadow)}
+nav.tabs button{font-family:'Cinzel',serif;font-size:13px;letter-spacing:1px;text-align:left;background:transparent;border:1px solid transparent;color:var(--bone-faint);padding:10px 14px;border-radius:8px;cursor:pointer;transition:.18s;text-transform:uppercase;position:relative}
+nav.tabs button:hover{color:var(--bone);background:var(--panel2)}
+nav.tabs button.active{color:var(--leaf);border-color:var(--leaf);background:rgba(79,209,138,.08);box-shadow:var(--glow-leaf)}
+nav.tabs button.active::before{content:"";position:absolute;left:-1px;top:8px;bottom:8px;width:3px;background:var(--leaf);border-radius:3px;box-shadow:var(--glow-leaf)}
+@media(max-width:760px){.layout{flex-direction:column}nav.tabs{flex:none;width:100%;position:static;flex-direction:row;flex-wrap:wrap;justify-content:center}nav.tabs button{text-align:center}nav.tabs button.active::before{display:none}}
+.tabpanel{display:none;animation:fade .4s ease}
+.tabpanel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h2.sec{font-family:'Cinzel',serif;font-weight:700;font-size:26px;color:var(--bone);margin:30px 0 4px;display:flex;align-items:center;gap:12px}
+h2.sec::before{content:"";width:26px;height:2px;background:var(--leaf);box-shadow:var(--glow-leaf)}
+.sec-note{color:var(--bone-faint);font-style:italic;font-size:15px;margin-bottom:14px}
+.card{background:linear-gradient(180deg,var(--panel),var(--char2));border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:14px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--leaf);opacity:.6}
+.card.bloom::before{background:var(--bloom)}.card.gold::before{background:var(--gold)}.card.jade::before{background:var(--jade)}.card.soul::before{background:var(--soul)}
+.card h3{font-family:'Cinzel',serif;font-size:18px;color:var(--gold-soft);margin-bottom:2px;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.card h3 .cost{font-family:'Fira Code',monospace;font-size:12px;color:var(--soul);background:rgba(194,171,255,.1);border:1px solid var(--soul-deep);padding:2px 8px;border-radius:20px;letter-spacing:.5px}
+.card h3 .tag{font-family:'Fira Code',monospace;font-size:11px;color:var(--bone-faint);background:var(--char);border:1px solid var(--line2);padding:2px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:.5px}
+.card h3 .tag.leaf{color:var(--leaf);border-color:var(--leaf-deep)}.card h3 .tag.bloom{color:var(--rose);border-color:var(--bloom-deep)}.card h3 .tag.gold{color:var(--gold-soft);border-color:var(--gold)}
+.card p{margin:6px 0;color:var(--bone-dim)}
+.card ul{list-style:none;margin:6px 0}
+.card ul li{position:relative;padding-left:18px;margin:4px 0;color:var(--bone-dim)}
+.card ul li::before{content:"\2767";position:absolute;left:0;color:var(--leaf-deep);font-size:12px;top:3px}
+.card ul li.sub{padding-left:34px;font-size:.96em;color:var(--bone-faint)}
+.card ul li.sub::before{content:"\203A";left:20px;color:var(--bone-faint)}
+.enh{border-top:1px dashed var(--line2);margin-top:10px;padding-top:8px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.quote{font-style:italic;color:var(--leaf);text-align:center;font-size:20px;margin:6px 0 20px;opacity:.85}
+table.gt{width:100%;border-collapse:collapse;margin:8px 0;font-size:15px}
+table.gt th,table.gt td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+table.gt th{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.5px;text-transform:uppercase;color:var(--gold-soft);background:var(--char);font-weight:600}
+table.gt td{color:var(--bone-dim)}
+table.gt tr:nth-child(even) td{background:rgba(255,255,255,.012)}
+.btn{font-family:'Cinzel',serif;font-size:13px;letter-spacing:.5px;background:var(--leaf);color:var(--void);border:none;padding:9px 16px;border-radius:8px;cursor:pointer;transition:.15s;font-weight:600}
+.btn:hover{background:var(--leaf-deep);color:#fff}
+.btn.ghost{background:transparent;border:1px solid var(--line2);color:var(--bone-dim)}
+.btn.ghost:hover{border-color:var(--leaf);color:var(--leaf);background:transparent}
+.btn.bloom{background:var(--bloom)}.btn.bloom:hover{background:var(--bloom-deep);color:#fff}
+.btn.soul{background:var(--soul)}.btn.soul:hover{background:var(--soul-deep);color:#fff}
+.minibtn{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.5px;background:var(--char);border:1px solid var(--line2);color:var(--bone-dim);padding:7px 12px;border-radius:8px;cursor:pointer;transition:.15s}
+.minibtn:hover{border-color:var(--leaf);color:var(--leaf)}
+.footer{text-align:center;margin-top:40px;padding-top:18px;border-top:1px solid var(--line);color:var(--bone-faint);font-size:13px;font-family:'Fira Code',monospace}
+.reset-btn{background:transparent;border:1px solid var(--line2);color:var(--bone-faint);font-family:'Cinzel',serif;font-size:11px;padding:5px 12px;border-radius:6px;cursor:pointer;margin-top:10px}
+.reset-btn:hover{border-color:var(--bloom);color:var(--bloom)}
+.weapon-state{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:14px;background:var(--char2);border:1px solid var(--line2);border-radius:12px;padding:14px 16px}
+.ws-lbl{font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--bone-faint)}
+.ws-btn{font-family:'Cinzel',serif;font-size:14px;letter-spacing:.5px;background:var(--char);border:1px solid var(--line2);color:var(--bone-dim);padding:10px 20px;border-radius:9px;cursor:pointer;transition:.15s}
+.ws-btn.on[data-w="bow"]{border-color:var(--leaf);color:var(--leaf);background:rgba(79,209,138,.1);box-shadow:var(--glow-leaf)}
+.ws-btn.on[data-w="blades"]{border-color:var(--bloom);color:var(--rose);background:rgba(224,80,107,.1);box-shadow:var(--glow-bloom)}
+.ws-season{font-family:'Cinzel',serif;font-style:italic;font-size:14px;margin-left:auto;color:var(--bone-faint)}
+.ws-season b{font-style:normal;color:var(--gold-soft)}
+.vine-toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px;background:linear-gradient(180deg,var(--panel2),var(--char2));border:1px solid var(--line2);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow)}
+.vine-toolbar .biome-pick{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.biome-pick .clbl{font-family:'Cinzel',serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--bone-faint);margin-right:4px}
+.biome-btn{font-family:'Cinzel',serif;font-size:12px;background:var(--char);border:1px solid var(--line2);color:var(--bone-dim);padding:6px 12px;border-radius:7px;cursor:pointer;transition:.15s}
+.biome-btn.on{border-color:var(--leaf);color:var(--leaf);background:rgba(79,209,138,.1)}
+.bigturn{font-family:'Cinzel',serif;font-size:15px;letter-spacing:.5px;font-weight:700;background:linear-gradient(135deg,var(--leaf),var(--leaf-deep));color:var(--void);border:none;padding:12px 20px;border-radius:10px;cursor:pointer;box-shadow:var(--glow-leaf);transition:.15s}
+.bigturn:hover{transform:translateY(-2px);filter:brightness(1.08)}
+.vine-roundcount{font-family:'Fira Code',monospace;font-size:13px;color:var(--bone-faint)}
+.vine-roundcount b{color:var(--leaf);font-size:18px}
+.vine-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:14px}
+.vinecard{background:linear-gradient(180deg,var(--panel),var(--char2));border:1px solid var(--line);border-radius:13px;padding:14px 15px;position:relative;box-shadow:var(--shadow);overflow:hidden}
+.vinecard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--leaf)}
+.vinecard.verdant::before{background:linear-gradient(180deg,var(--jade),var(--gold))}
+.vinecard.inactive{opacity:.62}
+.vinecard.interlocked{box-shadow:0 0 0 1px var(--jade-deep), var(--shadow)}
+.vine-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.vine-head input.vname{flex:1;min-width:0;background:transparent;border:none;border-bottom:1px solid var(--line2);color:var(--bone);font-family:'Cinzel',serif;font-size:17px;padding:2px 0}
+.vine-head input.vname:focus{outline:none;border-color:var(--leaf)}
+.vstate-badge{font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:3px 9px;border-radius:20px;border:1px solid;font-weight:700;cursor:pointer;white-space:nowrap}
+.vstate-badge.blooming{color:var(--leaf);border-color:var(--leaf-deep);background:rgba(79,209,138,.08)}
+.vstate-badge.verdant{color:var(--gold-soft);border-color:var(--gold);background:rgba(217,177,84,.1)}
+.vine-hp{display:flex;align-items:center;gap:6px;margin:8px 0 4px}
+.vine-hp .hplbl{font-family:'Cinzel',serif;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--bone-faint)}
+.vine-hp input{width:54px;background:var(--char);border:1px solid var(--line2);border-radius:6px;color:var(--bloom);font-family:'Fira Code',monospace;font-size:16px;text-align:right;padding:3px 6px}
+.vine-hp input.vmaxin{color:var(--bone-faint);font-size:13px;width:48px}
+.vine-hp input:focus{outline:none;border-color:var(--bloom)}
+.vine-hp .vstep{background:var(--panel);border:1px solid var(--line2);color:var(--bone-dim);width:24px;height:24px;border-radius:6px;cursor:pointer;font-size:14px;font-family:'Fira Code',monospace}
+.vine-hp .vstep:hover{background:var(--bloom);color:#fff;border-color:var(--bloom)}
+.vbar.vinehp{height:5px;margin:2px 0 8px}
+.vbar.vinehp i{background:linear-gradient(90deg,var(--bloom-deep),var(--bloom))}
+.vine-meta{display:flex;flex-wrap:wrap;gap:6px 14px;font-family:'Fira Code',monospace;font-size:12px;color:var(--bone-faint);margin-bottom:8px;align-items:center}
+.vine-meta .vm-round{display:flex;align-items:center;gap:5px}
+.vine-meta .rdsteps button{background:var(--panel);border:1px solid var(--line2);color:var(--bone-dim);width:20px;height:18px;border-radius:5px;cursor:pointer;font-size:12px;font-family:'Fira Code',monospace}
+.vine-meta .rdsteps button:hover{background:var(--leaf);color:var(--void)}
+.vine-meta b{color:var(--leaf)}
+.vine-meta .ev-ready{color:var(--gold-soft)}
+.bonus-pill{font-family:'Fira Code',monospace;font-size:10px;color:var(--jade);border:1px solid var(--jade-deep);background:rgba(95,224,176,.08);padding:1px 7px;border-radius:10px}
+.ac-pill{font-family:'Fira Code',monospace;font-size:10px;color:var(--bone-dim);border:1px solid var(--line2);background:var(--char);padding:1px 7px;border-radius:10px}
+.ac-pill.linked{color:var(--jade);border-color:var(--jade-deep);background:rgba(95,224,176,.08)}
+.reagent-zone{border-top:1px dashed var(--line2);padding-top:8px;margin-top:4px}
+.reagent-zone .rzlbl{font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--bone-faint);display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.reagent-zone .rztotal{color:var(--leaf);font-family:'Fira Code',monospace}
+.reagent-chips{display:flex;flex-wrap:wrap;gap:5px;min-height:8px}
+.rchip{display:inline-flex;align-items:center;gap:4px;font-family:'Fira Code',monospace;font-size:12px;padding:3px 8px;border-radius:20px;border:1px solid var(--line2);background:var(--char);cursor:pointer;transition:.12s}
+.rchip:hover{border-color:var(--bloom)}
+.rchip .rq{font-weight:600}
+.rchip.cur{color:var(--rose);border-color:var(--bloom-deep)}
+.rchip.rea{color:#ff9d5c;border-color:#7a4a1a}
+.rchip.poi{color:var(--leaf);border-color:var(--leaf-deep)}
+.rchip.ess{color:var(--soul);border-color:var(--soul-deep)}
+.rchip-empty{color:var(--bone-faint);font-style:italic;font-size:13px}
+.vine-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.vine-actions .va{font-family:'Cinzel',serif;font-size:11.5px;letter-spacing:.3px;background:var(--char);border:1px solid var(--line2);color:var(--bone-dim);padding:6px 10px;border-radius:7px;cursor:pointer;transition:.15s}
+.vine-actions .va:hover{border-color:var(--leaf);color:var(--leaf)}
+.vine-actions .va.harvest:hover{border-color:var(--gold);color:var(--gold-soft)}
+.vine-actions .va.evolve{border-color:var(--gold);color:var(--gold-soft)}
+.vine-actions .va.evolve.disabled{opacity:.4;cursor:not-allowed;border-color:var(--line2);color:var(--bone-faint)}
+.vine-actions .va.baby:hover{border-color:var(--bloom);color:var(--rose)}
+.vine-actions .va.del{margin-left:auto;border-color:transparent;color:var(--bone-faint)}
+.vine-actions .va.del:hover{color:var(--bloom);border-color:var(--bloom-deep)}
+.vine-actions .va.intr.on{border-color:var(--jade);color:var(--jade);background:rgba(95,224,176,.08)}
+.vine-log{font-family:'Fira Code',monospace;font-size:12px;color:var(--gold-soft);margin-top:8px;background:var(--char);border:1px solid var(--line2);border-radius:7px;padding:6px 9px;display:none}
+.vine-log.show{display:block;animation:fade .25s ease}
+.vine-empty{color:var(--bone-faint);font-style:italic;padding:18px;text-align:center;border:1px dashed var(--line2);border-radius:12px}
+.roller-bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;background:linear-gradient(180deg,var(--panel2),var(--char2));border:1px solid var(--line2);border-radius:14px;padding:14px 16px;margin-bottom:16px;box-shadow:var(--shadow)}
+.roller-bar .rb-d100{font-family:'Cinzel Decorative',serif;font-size:34px;color:var(--leaf);min-width:64px;text-align:center;text-shadow:var(--glow-leaf)}
+.roller-bar .rb-result{flex:1;min-width:200px;font-family:'Fira Code',monospace;font-size:14px;color:var(--bone-dim)}
+.roller-bar .rb-result b{color:var(--gold-soft)}
+.inv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.inv-card{background:var(--char2);border:1px solid var(--line);border-radius:11px;padding:13px 14px}
+.inv-card h4{font-family:'Cinzel',serif;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--gold-soft);margin-bottom:10px;border-bottom:1px solid var(--line);padding-bottom:6px}
+.invrow{display:flex;align-items:center;gap:8px;margin:6px 0}
+.invrow .inm{flex:1;font-size:15px;color:var(--bone-dim)}
+.invrow .iqty{font-family:'Fira Code',monospace;font-size:16px;font-weight:600;color:var(--leaf);min-width:26px;text-align:center}
+.invrow button{background:var(--panel);border:1px solid var(--line2);color:var(--bone-dim);width:24px;height:24px;border-radius:6px;cursor:pointer;font-size:14px;font-family:'Fira Code',monospace}
+.invrow button:hover{background:var(--leaf);color:var(--void);border-color:var(--leaf)}
+.dot-cur{color:var(--rose)}.dot-rea{color:#ff9d5c}.dot-poi{color:var(--leaf)}.dot-ess{color:var(--soul)}.dot-con{color:var(--gold-soft)}
+.slot-grid{display:flex;flex-wrap:wrap;gap:10px}
+.slot-lvl{background:var(--char2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-width:110px;text-align:center}
+.slot-lvl .sl-name{font-family:'Cinzel',serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--bone-faint)}
+.slot-lvl .sl-val{font-family:'Fira Code',monospace;font-size:18px;font-weight:600;color:var(--soul);margin-top:4px}
+.slot-lvl .sl-val input{width:30px;background:transparent;border:none;border-bottom:1px solid var(--line2);color:var(--soul);font-family:'Fira Code',monospace;font-size:18px;text-align:center}
+.slot-lvl .sl-val input.smx{color:var(--bone-faint);font-size:13px;width:24px}
+.slot-lvl .sl-val input:focus{outline:none;border-color:var(--soul)}
+.slot-lvl .sl-steps{display:flex;gap:4px;justify-content:center;margin-top:6px}
+.slot-lvl .sl-steps button{background:var(--panel);border:1px solid var(--line2);color:var(--bone-dim);width:24px;height:20px;border-radius:5px;cursor:pointer;font-size:13px;font-family:'Fira Code',monospace}
+.slot-lvl .sl-steps button:hover{background:var(--soul);color:var(--void)}
+.alch-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+.alch-toolbar input[type=text]{background:var(--char2);border:1px solid var(--line);color:var(--bone);padding:9px 12px;border-radius:8px;font-family:'Cormorant Garamond',serif;font-size:16px;flex:1;min-width:160px}
+.alch-toolbar input:focus{outline:none;border-color:var(--leaf)}
+.filt{display:flex;gap:5px;flex-wrap:wrap}
+.filt button{font-family:'Cinzel',serif;background:var(--char2);border:1px solid var(--line);color:var(--bone-faint);padding:6px 11px;border-radius:7px;cursor:pointer;font-size:11.5px;letter-spacing:.3px;transition:.12s}
+.filt button.on{border-color:var(--leaf);color:var(--leaf);background:rgba(79,209,138,.08)}
+.alch-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:13px}
+.acard{background:linear-gradient(180deg,var(--panel),var(--char2));border:1px solid var(--line);border-radius:12px;padding:14px 16px;position:relative;overflow:hidden}
+.acard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px}
+.acard.r-common::before{background:var(--bone-faint)}
+.acard.r-uncommon::before{background:var(--leaf)}
+.acard.r-rare::before{background:#5b9bff}
+.acard.r-veryrare::before{background:var(--soul)}
+.acard.r-legendary::before{background:linear-gradient(180deg,var(--gold),var(--bloom))}
+.acard h3{font-family:'Cinzel',serif;font-size:17px;color:var(--bone);margin-bottom:4px;display:flex;flex-wrap:wrap;align-items:center;gap:7px}
+.rarity-chip{font-family:'Fira Code',monospace;font-size:10px;letter-spacing:.5px;text-transform:uppercase;padding:2px 8px;border-radius:20px;border:1px solid}
+.rarity-chip.r-common{color:var(--bone-dim);border-color:var(--line2)}
+.rarity-chip.r-uncommon{color:var(--leaf);border-color:var(--leaf-deep);background:rgba(79,209,138,.08)}
+.rarity-chip.r-rare{color:#7fb4ff;border-color:#2f5a9c;background:rgba(91,155,255,.08)}
+.rarity-chip.r-veryrare{color:var(--soul);border-color:var(--soul-deep);background:rgba(194,171,255,.08)}
+.rarity-chip.r-legendary{color:var(--gold-soft);border-color:var(--gold);background:rgba(217,177,84,.1)}
+.cat-chip{font-family:'Fira Code',monospace;font-size:10px;color:var(--bone-faint);background:var(--char);border:1px solid var(--line2);padding:2px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:.5px}
+.action-chip{font-family:'Fira Code',monospace;font-size:10px;padding:2px 8px;border-radius:20px;border:1px solid;letter-spacing:.3px;margin-left:auto}
+.action-chip.ba{color:var(--leaf);border-color:var(--leaf-deep);background:rgba(79,209,138,.08)}
+.action-chip.act{color:var(--gold-soft);border-color:var(--gold);background:rgba(217,177,84,.1)}
+.action-chip.pt{color:var(--rose);border-color:var(--bloom-deep);background:rgba(224,80,107,.08)}
+.acard .eff{color:var(--bone-dim);font-size:15.5px;margin:6px 0 8px}
+.acard .vary{margin:6px 0 8px}
+.acard .vary table{width:100%;border-collapse:collapse;font-size:13.5px}
+.acard .vary td{border:1px solid var(--line);padding:4px 8px;color:var(--bone-dim)}
+.acard .vary td:first-child{font-family:'Cinzel',serif;color:var(--gold-soft);font-size:12px}
+.acard .mats{border-top:1px dashed var(--line2);padding-top:8px;margin-top:4px}
+.acard .mats .ml{font-family:'Cinzel',serif;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--bone-faint);margin-bottom:4px}
+.acard .mats ul{list-style:none}
+.acard .mats li{font-family:'Fira Code',monospace;font-size:12.5px;color:var(--bone-dim);padding-left:14px;position:relative;margin:2px 0}
+.acard .mats li::before{content:"\25AB";position:absolute;left:0;color:var(--leaf-deep);font-size:10px;top:3px}
+.acard .foot{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px;font-family:'Fira Code',monospace;font-size:11.5px;color:var(--bone-faint)}
+.acard .foot b{color:var(--bone-dim);font-weight:500}
+.acount{font-family:'Fira Code',monospace;font-size:13px;color:var(--bone-faint);margin-left:6px}
+.rel-toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
+.rel-toolbar input[type=text]{background:var(--char2);border:1px solid var(--line);color:var(--bone);padding:8px 12px;border-radius:8px;font-family:'Cormorant Garamond',serif;font-size:16px;flex:1;min-width:180px}
+.rel-toolbar input:focus{outline:none;border-color:var(--leaf)}
+.rel-filter{display:flex;gap:6px;align-items:center;font-size:14px;color:var(--bone-faint)}
+.rel-filter button{font-family:'Cinzel',serif;background:var(--char2);border:1px solid var(--line);color:var(--bone-faint);padding:5px 10px;border-radius:6px;cursor:pointer;font-size:12px}
+.rel-filter button.on{border-color:var(--leaf);color:var(--leaf)}
+.reltable{width:100%;border-collapse:collapse}
+.reltable th{font-family:'Cinzel',serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--bone-faint);text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+.relrow{border-bottom:1px solid var(--line);transition:.15s}
+.relrow:hover{background:rgba(255,255,255,.02)}
+.relrow td{padding:9px 10px;vertical-align:middle}
+.relrow .rcname{font-size:18px;color:var(--bone)}
+.relrow.party .rcname::after{content:" \2605";color:var(--gold)}
+.party-toggle{width:28px;height:28px;border-radius:7px;border:1px solid var(--line2);background:var(--char);cursor:pointer;color:var(--bone-faint);font-size:15px;transition:.15s}
+.party-toggle.on{background:rgba(217,177,84,.15);border-color:var(--gold);color:var(--gold)}
+.tierpick{display:flex;gap:4px}
+.tierpick button{width:30px;height:30px;border-radius:7px;border:1px solid var(--line2);background:var(--char);cursor:pointer;font-family:'Cinzel',serif;font-weight:700;font-size:13px;color:var(--bone-faint);transition:.12s}
+.tierpick button.sel{transform:scale(1.05)}
+.tierpick button.sel[data-t="0"]{background:var(--line2);color:var(--bone);border-color:var(--bone-faint)}
+.tierpick button.sel[data-t="1"]{background:#3a4a4e;color:var(--jade);border-color:var(--jade)}
+.tierpick button.sel[data-t="2"]{background:#2a5a4a;color:#bfffe0;border-color:var(--leaf)}
+.tierpick button.sel[data-t="3"]{background:var(--leaf-deep);color:#fff;border-color:var(--leaf)}
+.tierpick button.sel[data-t="4"]{background:#a8881b;color:#fff;border-color:var(--gold)}
+.tierpick button.sel[data-t="5"]{background:linear-gradient(135deg,var(--gold),var(--bloom));color:#fff;border-color:var(--gold)}
+.delrel{background:transparent;border:none;color:var(--bone-faint);cursor:pointer;font-size:16px;opacity:.5}
+.delrel:hover{color:var(--bloom);opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <div class="eyebrow">A Noble's Duty</div>
+  <h1 class="title">The Harvesting Princess</h1>
+  <div class="subtitle">Beatrix — Alchemist of the Blooming Vine</div>
+  <div class="tagline">"It's a noble's duty to protect those under them."</div>
+  <div class="idline">
+    <span><b>Class</b> Inventor · Alchemist</span>
+    <span><b>Weapon</b> Sylvan's Oblige</span>
+    <span><b>System</b> KibblesTasty Crafting</span>
+    <span><b>Difficulty</b> ★★★★</span>
+  </div>
+</header>
+<section class="vitals" id="vitals">
+  <div class="vital">
+    <div class="vlabel">Thread Link (TL) <span class="stepbtns"><button data-k="tl" data-d="-10">−</button><button data-k="tl" data-d="10">+</button></span></div>
+    <div class="vval"><input id="tl" type="number" value="80"> <span class="vmax">/ <input id="tlmax" type="number" value="80" class="maxinput"></span></div>
+    <div class="vbar tl"><i id="tlbar" style="width: 100%;"></i></div>
+  </div>
+  <div class="vital">
+    <div class="vlabel">HP / Temp HP <span class="stepbtns"><button data-k="hp" data-d="-5">−</button><button data-k="hp" data-d="5">+</button></span></div>
+    <div class="vval"><input id="hp" type="number" value="0"><span class="vmax"> + </span><input id="thp" type="number" value="0" style="color:var(--gold-soft)"></div>
+    <div class="vbar hp"><i id="hpbar" style="width: 100%;"></i></div>
+  </div>
+  <div class="vital">
+    <div class="vlabel">Morale <span class="stepbtns"><button data-k="morale" data-d="-5">−</button><button data-k="morale" data-d="5">+</button></span></div>
+    <div class="vval"><input id="morale" type="number" value="100"> <span class="vmax">/ <input id="moralemax" type="number" value="100" class="maxinput"></span></div>
+    <div class="vbar morale"><i id="moralebar" style="width: 100%;"></i></div>
+  </div>
+  <div class="vital">
+    <div class="vlabel">Alchemy</div>
+    <div class="alch-stat"><span class="as-big" id="alchDC">22</span><span class="as-lbl">DC</span><span class="as-big" id="alchMod">+18</span><span class="as-lbl">Mod</span></div>
+    <div class="alch-inputs"><label>INT <input id="intmod" type="number" value="5"></label><label>PB <input id="pb" type="number" value="4"></label></div>
+  </div>
+  <div class="vital">
+    <div class="vlabel">Active Vines <span class="stepbtns"><button data-k="vinemax" data-d="-1">−</button><button data-k="vinemax" data-d="1">+</button></span></div>
+    <div class="vval"><input id="vinecount" type="number" value="0" readonly="" style="color:var(--leaf)"> <span class="vmax">/ <input id="vinemax" type="number" value="5" class="maxinput"></span></div>
+    <div class="vbar vine"><i id="vinebar" style="width: 20%;"></i></div>
+  </div>
+</section>
+<div class="layout">
+<nav class="tabs" id="tabnav">
+  <button data-tab="overview" class="">Overview</button>
+  <button data-tab="vines">Blooming Vines</button>
+  <button data-tab="harvest">Harvest &amp; Reagents</button>
+  <button data-tab="transform" class="active">Transformation</button>
+  <button data-tab="alchemy">Alchemy List</button>
+</nav>
+<div class="content">
+<section class="tabpanel" id="tab-overview">
+  <div class="quote">"She is not one to mess with without a plan."</div>
+  <h2 class="sec">Weapon — Sylvan's Oblige</h2>
+  <div class="weapon-state" id="weaponState">
+    <span class="ws-lbl">Current State</span>
+    <button class="ws-btn on" data-w="bow">Sylvan Bow</button>
+    <button class="ws-btn" data-w="blades">Sylvan Blades</button>
+    <span class="ws-season" id="seasonNote">Cycle: <b>Spring</b> — next strike has 25% to deal double damage</span>
+  </div>
+  <div class="grid2">
+    <div class="card leaf"><h3>Sylvan Bow <span class="tag leaf">1 Weapon Slot</span></h3><p>Always lets Beatrix shoot <b>three arrows</b> at any target in range.</p><ul><li><b>Dmg</b> 2d8 · <b>Range</b> 80/320</li></ul></div>
+    <div class="card bloom"><h3>Sylvan Blades <span class="tag bloom">2 Weapon Slots</span></h3><p>Dual-blades. When <b>both strikes hit</b> a creature, gain temp HP = <b>20% of the target's max HP</b> (once per creature per round).</p><ul><li><b>Dmg</b> 1d10 · <b>Range</b> 5 ft · multiattack</li><li class="sub">Needs a free hand (weapon slot) to switch to blades.</li></ul></div>
+  </div>
+  <div class="card"><h3>Natural Cycle <span class="tag">Bonus Action</span></h3><p>Switch weapon state for a seasonal effect:</p><ul><li><b>Spring</b> (→ Bow): next strike has 25% chance to deal <b>double damage</b>.</li><li><b>Autumn</b> (→ Blades): next strike has 25% chance to <b>heal her</b> proportional to the damage.</li></ul></div>
+  <div class="card"><h3>Coated Arrows <span class="tag">Free Action</span></h3><p>Coat up to <b>3 arrows</b> with potions/poisons that have the <b>Contact</b> property. On hit, the target follows the rules of the coating or suffers its effect.</p></div>
+  <h2 class="sec">Passives</h2>
+  <div class="grid2">
+    <div class="card gold"><h3>Alchemy Genius <span class="tag gold">Passive</span></h3><p>Add her <b>Intelligence modifier</b> to damage &amp; healing of all crafted alchemical creations.</p><ul><li><b>Rare and below:</b> created as a <b>bonus action</b> — crafting time ignored, no check.</li><li><b>Above Rare:</b> requires an <b>action</b> — half the checks, one round of concentration.</li></ul></div>
+    <div class="card"><h3>Alchemy Bag <span class="tag">Passive · Daily</span></h3><p>Each day her bag refills with:</p><ul><li>5 glass vials · 5 glass flasks</li><li>2 common Reactive reagents</li><li>1 common Curative <i>or</i> Poisonous reagent</li></ul><p style="font-size:14px;color:var(--bone-faint)">Use <b>Reset Daily Bag</b> on the Harvest tab to refill.</p></div>
+  </div>
+  <h2 class="sec">Reactions</h2>
+  <div class="grid2">
+    <div class="card bloom"><h3>Leafy Torrent <span class="tag bloom">Reaction · 1/turn</span></h3><p>When targeted by a melee attack, unleash three parts:</p><ul><li><b>Spin</b> — switch to Blades, whirlwind strike at everyone within 5 ft.</li><li><b>Jump</b> — leap 5 ft up, reposition anywhere within 10 ft.</li><li><b>Shoot</b> — switch to Bow, rain the trishot on one or more creatures.</li></ul></div>
+    <div class="card leaf"><h3>Thorny Approach <span class="tag leaf">Reaction</span></h3><p>When a creature enters within 20 ft, fire a thorny arrow. On hit: normal weapon damage and its <b>speed becomes 0</b> until end of the current turn.</p><ul><li><b>Uses</b> = Proficiency Bonus</li></ul></div>
+    <div class="card"><h3>Bloom &amp; Wither <span class="tag">Reaction</span></h3><ul><li><b>Bloom</b> (Blades hit): bloom a flower on the skin, max 3 per creature. Each flower gives <b>+2 hit chance</b>.</li><li><b>Wither</b> (Bow hit): wither a flower to add <b>+1d8</b> to that arrow's damage.</li></ul></div>
+  </div>
+  <h2 class="sec">Materials &amp; Quality</h2>
+  <div class="card"><ul>
+    <li><b>Reagents</b> — alchemy ingredients bought, grown via Herbology, or harvested. Three categories: <span style="color:var(--leaf)">Reactive</span>, <span style="color:var(--leaf)">Poisonous</span>, <span style="color:var(--rose)">Curative</span>.</li>
+    <li><b>Essences</b> — magical material from beasts, spellcasters, monstrosities. Categories: <span style="color:var(--soul)">Arcane, Divine, Primal, Psionic</span>.</li>
+    <li><b>Quality</b> — Common · Uncommon · Rare · Very Rare · Legendary.</li>
+  </ul></div>
+</section>
+<section class="tabpanel" id="tab-vines">
+  <h2 class="sec">Blooming Vine <span style="font-family:&#39;Fira Code&#39;,monospace;font-size:13px;color:var(--bone-faint);font-weight:400">Core Mechanic</span></h2>
+  <p class="sec-note">Plant vines, track their state &amp; HP, and roll harvested reagents each round. Set the active biome below — it drives the d100 harvest table.</p>
+  <div class="vine-toolbar">
+    <div class="biome-pick">
+      <span class="clbl">Biome</span>
+      <button class="biome-btn on" data-biome="forest">Forest</button>
+      <button class="biome-btn" data-biome="desert">Desert</button>
+      <button class="biome-btn" data-biome="grasslands">Grasslands</button>
+      <button class="biome-btn" data-biome="marsh">Marsh</button>
+      <button class="biome-btn" data-biome="mountains">Mountains</button>
+    </div>
+    <button class="bigturn" id="advRound">⟳ Advance Round</button>
+    <button class="btn" id="plantVine">+ Plant Vine</button>
+    <button class="minibtn" id="resetRounds">↺ Reset Rounds</button>
+    <span class="vine-roundcount">Round <b id="roundNum">2</b></span>
+  </div>
+  <p class="sec-note" style="margin-top:-6px">Advancing the round auto-rolls one Harvesting Vines result on each active vine, increments their field-rounds, and reactivates any vine made inactive by Overharvest.</p>
+  <div class="vine-grid" id="vineGrid"><div class="vinecard "><div class="vine-head"><input class="vname" value="Vine 1" data-vid="v1781021577330914"><span class="vstate-badge blooming" data-vid="v1781021577330914" data-act="state" title="Toggle Blooming / Verdant">Blooming</span></div><div class="vine-hp"><span class="hplbl">HP</span><button class="vstep" data-vid="v1781021577330914" data-act="hp" data-d="-5">−</button><input type="number" class="vhpin" data-vid="v1781021577330914" value="10"><button class="vstep" data-vid="v1781021577330914" data-act="hp" data-d="5">+</button><span class="hplbl">/</span><input type="number" class="vhpmaxin vmaxin" data-vid="v1781021577330914" value="10"></div><div class="vbar vinehp"><i style="width:100%"></i></div><div class="vine-meta"><span class="vm-round">Round on field: <b>1</b> <span class="rdsteps"><button data-vid="v1781021577330914" data-act="rd" data-d="-1">−</button><button data-vid="v1781021577330914" data-act="rd" data-d="1">+</button></span></span><span class="ac-pill" title="10 + INT(5)">AC 15</span></div><div class="reagent-zone"><div class="rzlbl"><span>Stored Reagents</span><span class="rztotal">2 total</span></div><div class="reagent-chips"><span class="rchip cur" data-vid="v1781021577330914" data-rk="cur_C" title="Click to remove one">Curative <span class="rq">×2</span> C</span></div></div><div class="vine-actions"><button class="va harvest" data-vid="v1781021577330914" data-act="harvest">⚄ Harvest</button><button class="va" data-vid="v1781021577330914" data-act="overharvest" title="Roll again; vine inactive until next turn">Overharvest</button><button class="va evolve disabled" data-vid="v1781021577330914" data-act="evolve">⟢ Evolve</button><button class="va" data-vid="v1781021577330914" data-act="collect" title="Move reagents to Alchemy Bag">Collect → Bag</button><button class="va intr" data-vid="v1781021577330914" data-act="interlock" title="Interlocking Roots">⚭ Interlock</button><button class="va baby" data-vid="v1781021577330914" data-act="baby" title="My Baby — keep alive at half HP">♥ My Baby</button><button class="va" data-vid="v1781021577330914" data-act="active" title="Toggle active / inactive">Active</button><button class="va del" data-vid="v1781021577330914" data-act="del" title="Remove vine">✕</button></div><div class="vine-log show">d100=16 → 1× Common Curative reagent</div></div></div>
+  <h2 class="sec">Core Rules</h2>
+  <div class="grid2">
+    <div class="card leaf"><h3>Blooming Vine <span class="tag leaf">Medium plant</span></h3><ul>
+      <li><b>Duration</b> 10 mins, or until reduced to 0 HP</li>
+      <li><b>AC</b> 10 + INT mod · <b>HP</b> 5 + INT mod + Inventor level · <b>Speed</b> 0</li>
+      <li>Can take <b>one action</b>; may use Dodge or OA reactions</li>
+      <li>Up to <b>INT modifier</b> vines · must be ≥10 ft apart</li>
+      <li>May expend a <b>1st-level+ spell slot</b> instead → +5 × SS level HP</li>
+    </ul>
+    <p style="font-size:14px;color:var(--bone-faint);margin-top:8px"><b>Tangle</b> — each foot of movement away from within 5 ft costs an extra foot. <b>Thorns</b> — melee attackers within 5 ft take 1d4 piercing.</p>
+    <ul><li><b>Lash</b> (melee, reach 10 ft): 1d8 + INT slashing</li><li><b>Thorn Launch</b> (ranged 60/180): 1d6 + INT piercing</li></ul>
+    </div>
+    <div class="card"><h3>Vine Abilities</h3>
+      <p><b>Harvesting Vines</b> (Passive) — once per round, each vine rolls the d100 Gather Reagents table; reagents store in the vine. While within reach, Beatrix may collect them as a free action.</p>
+      <p><b>Overharvest</b> (Bonus, 1/turn) — an unused vine harvests again (roll again, take rewards). That vine is inactive until the start of Beatrix's next turn.</p>
+      <p><b>Overgrown Roots</b> (Reaction) — a creature entering reach makes a Dex save or is restrained.</p>
+      <div class="enh"></div>
+      <p><b>Verdant Bloomvine</b> (Free, 1/turn) — if a vine has been out ≥3 rounds with ≥2 stored reagents, evolve it: <b>HP +20 × stored reagents</b>, harvest +1, damage die +1, AC +3, reach +10 ft. Evolving sacrifices all stored reagents.</p>
+    </div>
+  </div>
+  <h2 class="sec">Spell Slots <span style="font-family:&#39;Fira Code&#39;,monospace;font-size:13px;color:var(--bone-faint);font-weight:400">grow vines for bonus HP</span></h2>
+  <p class="sec-note">Track slots used to empower vines (+5 × spell-slot level HP). Set each level's max for your build.</p>
+  <div class="slot-grid" id="slotGrid"><div class="slot-lvl"><div class="sl-name">Level 1</div><div class="sl-val"><input type="number" class="slc" data-l="1" value="0"> / <input type="number" class="slm smx" data-l="1" value="0"></div><div class="sl-steps"><button data-l="1" data-d="-1">−</button><button data-l="1" data-d="1">+</button></div></div><div class="slot-lvl"><div class="sl-name">Level 2</div><div class="sl-val"><input type="number" class="slc" data-l="2" value="0"> / <input type="number" class="slm smx" data-l="2" value="0"></div><div class="sl-steps"><button data-l="2" data-d="-1">−</button><button data-l="2" data-d="1">+</button></div></div><div class="slot-lvl"><div class="sl-name">Level 3</div><div class="sl-val"><input type="number" class="slc" data-l="3" value="0"> / <input type="number" class="slm smx" data-l="3" value="0"></div><div class="sl-steps"><button data-l="3" data-d="-1">−</button><button data-l="3" data-d="1">+</button></div></div><div class="slot-lvl"><div class="sl-name">Level 4</div><div class="sl-val"><input type="number" class="slc" data-l="4" value="0"> / <input type="number" class="slm smx" data-l="4" value="0"></div><div class="sl-steps"><button data-l="4" data-d="-1">−</button><button data-l="4" data-d="1">+</button></div></div><div class="slot-lvl"><div class="sl-name">Level 5</div><div class="sl-val"><input type="number" class="slc" data-l="5" value="0"> / <input type="number" class="slm smx" data-l="5" value="0"></div><div class="sl-steps"><button data-l="5" data-d="-1">−</button><button data-l="5" data-d="1">+</button></div></div></div>
+</section>
+<section class="tabpanel" id="tab-harvest">
+  <h2 class="sec">Harvest &amp; Reagents</h2>
+  <p class="sec-note">Roll the d100 Gather Reagents table for the current biome (set on the Vines tab). Results can be added to your Alchemy Bag or assigned to a vine from its card.</p>
+  <div class="roller-bar">
+    <span class="rb-d100" id="rollDisplay">—</span>
+    <button class="btn" id="rollHarvest">⚄ Roll Harvest</button>
+    <span class="rb-result" id="rollResult">Current biome: <b id="biomeReadout">Forest</b></span>
+    <button class="minibtn" id="addToBag" style="display:none">+ Add to Bag</button>
+  </div>
+  <h2 class="sec">Gather Reagents — d100 Table <span style="font-family:&#39;Fira Code&#39;,monospace;font-size:13px;color:var(--bone-faint);font-weight:400">DC 10 · WIS check</span></h2>
+  <div style="overflow-x:auto">
+  <table class="gt">
+    <tbody><tr><th>d100</th><th>Forest</th><th>Desert</th><th>Grasslands</th><th>Marsh</th><th>Mountains</th></tr>
+    <tr><td>01–10</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+    <tr><td>11–20</td><td>common curative</td><td>—</td><td>—</td><td>common poisonous</td><td>—</td></tr>
+    <tr><td>21–40</td><td>common curative</td><td>common reactive</td><td>common curative</td><td>common poisonous</td><td>common reactive</td></tr>
+    <tr><td>41–50</td><td>common poisonous</td><td>common curative</td><td>common reactive</td><td>common curative</td><td>common curative</td></tr>
+    <tr><td>51–60</td><td>common reactive</td><td>common poisonous</td><td>common poisonous</td><td>common reactive</td><td>common poisonous</td></tr>
+    <tr><td>61–70</td><td>1d4 common poisonous</td><td>1d2 common reactive</td><td>1d2 common poisonous</td><td>1d4 common poisonous</td><td>1d2 common curative</td></tr>
+    <tr><td>71–80</td><td>1d4 common curative</td><td>1d2 common reactive</td><td>1d2 common curative</td><td>1d4 common reactive</td><td>1d2 common reactive</td></tr>
+    <tr><td>81–90</td><td>uncommon curative</td><td>uncommon reactive</td><td>uncommon curative</td><td>uncommon poisonous</td><td>uncommon reactive</td></tr>
+    <tr><td>91–95</td><td>uncommon poisonous</td><td>uncommon poisonous</td><td>uncommon reactive</td><td>uncommon reactive</td><td>common curative</td></tr>
+    <tr><td>96–00</td><td>common primal essence</td><td>common arcane essence</td><td>common divine essence</td><td>common primal essence</td><td>common primal essence</td></tr>
+  </tbody></table>
+  </div>
+  <h2 class="sec">Alchemy Bag — Inventory</h2>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px">
+    <button class="btn" id="resetBag" style="background:var(--gold);color:var(--void)">Reset Daily Bag</button>
+    <button class="minibtn" id="clearInv">Clear All</button>
+  </div>
+  <div class="inv-grid" id="invGrid"><div class="inv-card"><h4>Curative Reagents</h4><div class="invrow"><span class="inm dot-cur">Common</span><button data-ik="cur_C" data-d="-1">−</button><span class="iqty">1</span><button data-ik="cur_C" data-d="1">+</button></div><div class="invrow"><span class="inm dot-cur">Uncommon</span><button data-ik="cur_U" data-d="-1">−</button><span class="iqty">0</span><button data-ik="cur_U" data-d="1">+</button></div><div class="invrow"><span class="inm dot-cur">Rare</span><button data-ik="cur_R" data-d="-1">−</button><span class="iqty">0</span><button data-ik="cur_R" data-d="1">+</button></div><div class="invrow"><span class="inm dot-cur">Very Rare</span><button data-ik="cur_VR" data-d="-1">−</button><span class="iqty">0</span><button data-ik="cur_VR" data-d="1">+</button></div><div class="invrow"><span class="inm dot-cur">Legendary</span><button data-ik="cur_L" data-d="-1">−</button><span class="iqty">0</span><button data-ik="cur_L" data-d="1">+</button></div></div><div class="inv-card"><h4>Reactive Reagents</h4><div class="invrow"><span class="inm dot-rea">Common</span><button data-ik="rea_C" data-d="-1">−</button><span class="iqty">2</span><button data-ik="rea_C" data-d="1">+</button></div><div class="invrow"><span class="inm dot-rea">Uncommon</span><button data-ik="rea_U" data-d="-1">−</button><span class="iqty">0</span><button data-ik="rea_U" data-d="1">+</button></div><div class="invrow"><span class="inm dot-rea">Rare</span><button data-ik="rea_R" data-d="-1">−</button><span class="iqty">0</span><button data-ik="rea_R" data-d="1">+</button></div><div class="invrow"><span class="inm dot-rea">Very Rare</span><button data-ik="rea_VR" data-d="-1">−</button><span class="iqty">0</span><button data-ik="rea_VR" data-d="1">+</button></div><div class="invrow"><span class="inm dot-rea">Legendary</span><button data-ik="rea_L" data-d="-1">−</button><span class="iqty">0</span><button data-ik="rea_L" data-d="1">+</button></div></div><div class="inv-card"><h4>Poisonous Reagents</h4><div class="invrow"><span class="inm dot-poi">Common</span><button data-ik="poi_C" data-d="-1">−</button><span class="iqty">0</span><button data-ik="poi_C" data-d="1">+</button></div><div class="invrow"><span class="inm dot-poi">Uncommon</span><button data-ik="poi_U" data-d="-1">−</button><span class="iqty">0</span><button data-ik="poi_U" data-d="1">+</button></div><div class="invrow"><span class="inm dot-poi">Rare</span><button data-ik="poi_R" data-d="-1">−</button><span class="iqty">0</span><button data-ik="poi_R" data-d="1">+</button></div><div class="invrow"><span class="inm dot-poi">Very Rare</span><button data-ik="poi_VR" data-d="-1">−</button><span class="iqty">0</span><button data-ik="poi_VR" data-d="1">+</button></div><div class="invrow"><span class="inm dot-poi">Legendary</span><button data-ik="poi_L" data-d="-1">−</button><span class="iqty">0</span><button data-ik="poi_L" data-d="1">+</button></div></div><div class="inv-card"><h4>Essences</h4><div class="invrow"><span class="inm dot-ess">Arcane · C</span><button data-ik="arc_C" data-d="-1">−</button><span class="iqty">0</span><button data-ik="arc_C" data-d="1">+</button></div><div class="invrow"><span class="inm dot-ess">Arcane · U</span><button data-ik="arc_U" data-d="-1">−</button><span class="iqty">0</span><button data-ik="arc_U" data-d="1">+</button></div><div class="invrow"><span class="inm dot-ess">Divine · C</span><button data-ik="div_C" data-d="-1">−</button><span class="iqty">0</span><button data-ik="div_C" data-d="1">+</button></div><div class="invrow"><span class="inm dot-ess">Divine · U</span><button data-ik="div_U" data-d="-1">−</button><span class="iqty">0</span><button data-ik="div_U" data-d="1">+</button></div><div class="invrow"><span class="inm dot-ess">Primal · C</span><button data-ik="pri_C" data-d="-1">−</button><span class="iqty">0</span><button data-ik="pri_C" data-d="1">+</button></div><div class="invrow"><span class="inm dot-ess">Primal · U</span><button data-ik="pri_U" data-d="-1">−</button><span class="iqty">0</span><button data-ik="pri_U" data-d="1">+</button></div><div class="invrow"><span class="inm dot-ess">Psionic · C</span><button data-ik="psi_C" data-d="-1">−</button><span class="iqty">0</span><button data-ik="psi_C" data-d="1">+</button></div><div class="invrow"><span class="inm dot-ess">Psionic · U</span><button data-ik="psi_U" data-d="-1">−</button><span class="iqty">0</span><button data-ik="psi_U" data-d="1">+</button></div></div><div class="inv-card"><h4>Containers</h4><div class="invrow"><span class="inm dot-con">Glass Vial</span><button data-ik="vial" data-d="-1">−</button><span class="iqty">5</span><button data-ik="vial" data-d="1">+</button></div><div class="invrow"><span class="inm dot-con">Glass Flask</span><button data-ik="flask" data-d="-1">−</button><span class="iqty">5</span><button data-ik="flask" data-d="1">+</button></div><div class="invrow"><span class="inm dot-con">Crystal Vial</span><button data-ik="crystal" data-d="-1">−</button><span class="iqty">0</span><button data-ik="crystal" data-d="1">+</button></div></div></div>
+</section>
+<section class="tabpanel active" id="tab-transform">
+  <h2 class="sec">The Harvesting Princess <span style="font-family:&#39;Fira Code&#39;,monospace;font-size:14px;color:var(--soul);font-weight:400">· 80 TL · 10 TL/round</span></h2>
+  <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+    <button class="btn soul" id="enterTransform">⟡ Enter Transformation  −80 TL</button>
+    <button class="minibtn" id="transformUpkeep">Round Upkeep  −10 TL</button>
+    <button class="minibtn" id="longRest">☾ Long Rest (reset My Baby)</button>
+  </div>
+  <div class="card soul"><h3>Blooming Forest <span class="tag">Passive</span></h3><ul>
+    <li>On entering, all Blooming Vines on the field <b>evolve into Verdant Bloomvines</b> — each <b>gains +20 HP per stored reagent</b> and <b>keeps its reagents</b>.</li>
+    <li>For each vine evolved this way, Beatrix gains <b>+8 temp HP</b> (max value of the 1d8).</li>
+    <li>Beatrix can plant <b>two Blooming Vines</b> instead of one.</li>
+  </ul>
+  <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><button class="minibtn" id="bloomingForest">⟢ Evolve All Vines → Verdant</button></div>
+  </div>
+  <div class="grid2">
+    <div class="card"><h3>One with Nature <span class="tag">Passive</span></h3><ul><li>Becomes <b>vulnerable to fire</b>; <b>immune to Blinded</b>.</li><li>Can use the Vines as her sight.</li></ul></div>
+    <div class="card"><h3>Sylvan Judgement <span class="tag">Passive</span></h3><ul><li>Switch weapon states as a <b>free action</b> (1/turn).</li><li><b>Natural Cycle</b> becomes passive — always triggers on weapon switch.</li><li><b>Bloom &amp; Wither</b> becomes passive: Bloom forms every 2nd consecutive blade hit; Wither triggers on next arrow strike with reduced crit chance per active flower.</li></ul></div>
+  </div>
+  <div class="card jade"><h3>Interlocking Roots <span class="cost">10 TL</span> <span class="tag">Bonus Action</span></h3><p>Attach the roots of vines together (toggle <b>Interlock</b> on each vine card). Attached vines gain:</p><ul>
+    <li>+1 AC per vine · Reagents harvested +1</li>
+    <li>Beatrix's arrows travel through the roots (extended range)</li>
+    <li>Reagents move freely between attached vines</li>
+    <li class="sub">When one takes damage, all attached vines take half of it.</li>
+  </ul>
+  <p style="font-size:13px;color:var(--jade);font-style:italic;margin-top:6px">Toggle <b>Interlock</b> on each vine card — AC bonus and shared damage (via the HP − button) apply automatically across the linked network.</p></div>
+  <div class="card bloom"><h3>My Baby <span class="cost" id="babyCostPill">10+ TL</span> <span class="tag bloom">Reaction</span></h3><p>When a vine is about to die, sacrifice TL to keep it alive at <b>half HP</b>. First use costs <b>10 TL</b>, increasing by <b>10 per use</b>. Resets after a long rest.</p>
+  <p style="font-family:&#39;Fira Code&#39;,monospace;font-size:13px;color:var(--bone-faint);margin-top:6px">Next use cost: <b id="babyCostText" style="color:var(--rose)">10 TL</b> · used <span id="babyUses">0</span>× this rest. Trigger from a vine's <b>♥ My Baby</b> button.</p>
+  </div>
+</section>
+<section class="tabpanel" id="tab-alchemy">
+  <h2 class="sec">Alchemy List <span class="acount" id="alchCount">78 of 78 shown</span></h2>
+  <p class="sec-note">Full crafting list from the KibblesTasty Crafting Compendium. Add INT modifier to all damage &amp; healing. <b>Alchemy DC = 8 + PB + INT×2</b> · <b>Alchemy/Poison Mod = (PB×2) + (INT×2)</b>. Items Rare-and-below craft as a bonus action; above Rare require an action. Poisons are crafted with a Poisoner’s Kit and use your Poison DC.</p>
+  <div class="alch-toolbar"><input type="text" id="alchSearch" placeholder="Search creations…"></div>
+  <div class="alch-toolbar">
+    <div class="filt" id="catFilt">
+      <button data-f="all" class="on">All Types</button>
+      <button data-f="Potion">Potions</button>
+      <button data-f="Concoction">Concoctions</button>
+      <button data-f="Oil">Oils</button>
+      <button data-f="Explosive">Explosives</button>
+      <button data-f="Dust">Dusts</button>
+      <button data-f="Misc">Misc</button>
+      <button data-f="Poison">Poisons</button>
+    </div>
+  </div>
+  <div class="alch-toolbar">
+    <div class="filt" id="rarFilt">
+      <button data-r="all" class="on">All Rarities</button>
+      <button data-r="common">Common</button>
+      <button data-r="uncommon">Uncommon</button>
+      <button data-r="rare">Rare</button>
+      <button data-r="veryrare">Very Rare</button>
+      <button data-r="legendary">Legendary</button>
+    </div>
+  </div>
+  <div class="alch-list" id="alchList"><div class="acard r-common"><h3>Alchemical Acid <span class="rarity-chip r-common">Common</span> <span class="cat-chip">Concoction</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Thrown (20/60) or poured on an object. Acid damage by quality (no ability modifier; INT mod applies via Alchemy Genius).</div><div class="vary"><table><tbody><tr><td>Common (C)</td><td>4d4 acid</td></tr><tr><td>Potent (U)</td><td>6d4 acid</td></tr><tr><td>Powerful (R)</td><td>8d4 acid</td></tr></tbody></table></div><div class="mats"><div class="ml">Materials</div><ul><li>2 common reactive reagent</li><li>1 common poisonous reagent</li><li>1 glass flask</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 13</span><span><b>Value</b> 50 gp</span></div></div><div class="acard r-common"><h3>Alchemical Fire <span class="rarity-chip r-common">Common</span> <span class="cat-chip">Concoction</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Thrown (20/60) or poured on an object. Fire damage by quality.</div><div class="vary"><table><tbody><tr><td>Common (C)</td><td>2d10 fire</td></tr><tr><td>Potent (U)</td><td>3d10 fire</td></tr><tr><td>Powerful (R)</td><td>4d10 fire</td></tr></tbody></table></div><div class="mats"><div class="ml">Materials</div><ul><li>3 common reactive reagent</li><li>1 glass flask</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 13</span><span><b>Value</b> 50 gp</span></div></div><div class="acard r-common"><h3>Alchemical Napalm <span class="rarity-chip r-common">Common</span> <span class="cat-chip">Concoction</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Thrown (20/60): 3d4 fire on hit. The target keeps burning for 1 minute, taking 1d4 fire at the start of its turn until a creature uses an action to put it out.</div><div class="mats"><div class="ml">Materials</div><ul><li>3 common reactive reagent</li><li>1 common curative reagent</li><li>1 glass flask</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 14</span><span><b>Value</b> 70 gp</span></div></div><div class="acard r-common"><h3>Bottled Wind <span class="rarity-chip r-common">Common</span> <span class="cat-chip">Concoction</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Action: cast gust (no components). Or breathe from it for up to 10 minutes of air (DC 5 Athletics each turn or all air is lost as gust).</div><div class="mats"><div class="ml">Materials</div><ul><li>2 common reactive reagent</li><li>1 glass flask</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 14</span><span><b>Value</b> 40 gp</span></div></div><div class="acard r-uncommon"><h3>Potent Alchemical Acid <span class="rarity-chip r-uncommon">Uncommon</span> <span class="cat-chip">Concoction</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Thrown (20/60): 6d4 acid. See the Alchemical Acid variety.</div><div class="mats"><div class="ml">Materials</div><ul><li>2 uncommon reactive reagent</li><li>1 uncommon poisonous reagent</li><li>1 glass flask</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 15</span><span><b>Value</b> 140 gp</span></div></div><div class="acard r-uncommon"><h3>Potent Alchemical Fire <span class="rarity-chip r-uncommon">Uncommon</span> <span class="cat-chip">Concoction</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Thrown (20/60): 3d10 fire. See the Alchemical Fire variety.</div><div class="mats"><div class="ml">Materials</div><ul><li>3 uncommon reactive reagent</li><li>1 glass flask</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 15</span><span><b>Value</b> 140 gp</span></div></div><div class="acard r-uncommon"><h3>Sticky Goo Potion <span class="rarity-chip r-uncommon">Uncommon</span> <span class="cat-chip">Concoction</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Thrown reliably to a point within 30 ft; shatters and creates the web spell effect centered there.</div><div class="mats"><div class="ml">Materials</div><ul><li>1 finely shredded scroll of web OR 2 uncommon poisonous reagents</li><li>1 uncommon reactive reagent</li><li>1 glass flask</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 14</span><span><b>Value</b> 140 gp</span></div></div><div class="acard r-rare"><h3>Liquid Lightning <span class="rarity-chip r-rare">Rare</span> <span class="cat-chip">Concoction</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">For 1 minute, bonus action to become a lightning bolt and travel in a straight line to a space within 30 ft (no OA; immune to lightning in this form). Each creature in the path: DC 15 Dex save or 3d6 lightning.</div><div class="mats"><div class="ml">Materials</div><ul><li>2 rare reactive reagent</li><li>1 uncommon primal essence</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 16</span><span><b>Value</b> 640 gp</span></div></div><div class="acard r-rare"><h3>Powerful Alchemical Acid <span class="rarity-chip r-rare">Rare</span> <span class="cat-chip">Concoction</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Thrown (20/60): 8d4 acid. See the Alchemical Acid variety.</div><div class="mats"><div class="ml">Materials</div><ul><li>2 rare reactive reagent</li><li>1 rare poisonous reagent</li><li>1 glass flask</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 17</span><span><b>Value</b> 690 gp</span></div></div><div class="acard r-rare"><h3>Powerful Alchemical Fire <span class="rarity-chip r-rare">Rare</span> <span class="cat-chip">Concoction</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Thrown (20/60): 4d10 fire. See the Alchemical Fire variety.</div><div class="mats"><div class="ml">Materials</div><ul><li>3 rare reactive reagent</li><li>1 glass flask</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 17</span><span><b>Value</b> 690 gp</span></div></div><div class="acard r-uncommon"><h3>Dust of Disappearance <span class="rarity-chip r-uncommon">Uncommon</span> <span class="cat-chip">Dust</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Thrown into the air: you and everything within 10 ft become invisible for 2d4 minutes (ends early for a creature that attacks or casts a spell).</div><div class="mats"><div class="ml">Materials</div><ul><li>1 handful of sand</li><li>1 common arcane essence</li><li>2 common reactive reagent</li><li>1 common curative reagent</li></ul></div><div class="foot"><span><b>Time</b> 4 hrs</span><span><b>Checks</b> 2</span><span><b>Craft DC</b> 15</span><span><b>Value</b> 130 gp</span></div></div><div class="acard r-uncommon"><h3>Dust of Dryness <span class="rarity-chip r-uncommon">Uncommon</span> <span class="cat-chip">Dust</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">A pinch absorbs a 15-ft cube of water, becoming a marble-sized pellet that releases the water when broken.</div><div class="mats"><div class="ml">Materials</div><ul><li>1 handful of sand</li><li>1 common primal essence</li><li>1 common reactive reagent</li><li>1 common poisonous reagent</li></ul></div><div class="foot"><span><b>Time</b> 4 hrs</span><span><b>Checks</b> 2</span><span><b>Craft DC</b> 14</span><span><b>Value</b> 100 gp</span></div></div><div class="acard r-uncommon"><h3>Dust of Sneezing and Choking <span class="rarity-chip r-uncommon">Uncommon</span> <span class="cat-chip">Dust</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Released in a 30-ft cube: creatures must make a Con save or be incapacitated by sneezing/choking while in the cloud.</div><div class="mats"><div class="ml">Materials</div><ul><li>1 uncommon poisonous reagent</li><li>1 common reactive reagent</li><li>1 common poisonous reagent</li></ul></div><div class="foot"><span><b>Time</b> 4 hrs</span><span><b>Checks</b> 2</span><span><b>Craft DC</b> 14</span><span><b>Value</b> 95 gp</span></div></div><div class="acard r-common"><h3>Dwarven Alcohol <span class="rarity-chip r-common">Common</span> <span class="cat-chip">Explosive</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Splash a 5-ft square within 5 ft; once soaked it can be ignited by 1+ fire/lightning, dealing 2d4 fire to creatures within 5 ft of the square or container.</div><div class="mats"><div class="ml">Materials</div><ul><li>1 flask of alcohol</li><li>1 common reactive reagent</li><li>1 sturdy metal flask</li></ul></div><div class="foot"><span><b>Time</b> 8 hrs</span><span><b>Checks</b> 4</span><span><b>Craft DC</b> 12</span><span><b>Value</b> 20 gp</span></div></div><div class="acard r-common"><h3>Packet of Blasting Powder <span class="rarity-chip r-common">Common</span> <span class="cat-chip">Explosive</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Ignited by 1+ fire/lightning: 10-ft radius, DC 14 Dex, 1d4 fire + 1d4 thunder (half on save). Each extra packet (max 5) adds +1d4 each and +5 ft radius. Double damage to structures.</div><div class="mats"><div class="ml">Materials</div><ul><li>2 common reactive reagent</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 14</span><span><b>Value</b> 40 gp</span></div></div><div class="acard r-common"><h3>Simple Explosive <span class="rarity-chip r-common">Common</span> <span class="cat-chip">Explosive</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Thrown 20 ft; detonated by 1 fire/lightning. 10-ft radius, DC = Alchemy DC, 1d8 fire + 1d8 thunder (half on save). Can be fused for a delayed blast.</div><div class="mats"><div class="ml">Materials</div><ul><li>2 packets blasting powder</li><li>1 common reactive reagent</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 15</span><span><b>Value</b> 120 gp</span></div></div><div class="acard r-common"><h3>Smoke Powder <span class="rarity-chip r-common">Common</span> <span class="cat-chip">Explosive</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Ignited by 1+ fire/lightning: 20-ft radius heavily obscured for 2d4 rounds, then lightly obscured 1 round, then clears. Extra uses extend heavy obscurement +1d4 rounds.</div><div class="mats"><div class="ml">Materials</div><ul><li>2 common reactive reagent</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 15</span><span><b>Value</b> 40 gp</span></div></div><div class="acard r-uncommon"><h3>Grenade Casing <span class="rarity-chip r-uncommon">Uncommon</span> <span class="cat-chip">Explosive</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Two-chambered projectile. Load with an Alchemical Fire + an Explosive; thrown up to 60 ft. Deals the explosive damage + 1d4 piercing + 1d4 fire (Dex save vs the explosive DC).</div><div class="mats"><div class="ml">Materials</div><ul><li>2 parts</li><li>1 fancy parts</li><li>1 glass flask</li></ul></div><div class="foot"><span><b>Time</b> 4 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 15</span><span><b>Value</b> 50 gp</span></div></div><div class="acard r-uncommon"><h3>Nail Bomb <span class="rarity-chip r-uncommon">Uncommon</span> <span class="cat-chip">Explosive</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Thrown 20 ft; detonated by 1 fire/lightning. 20-ft radius, DC = Alchemy DC, 8d4 piercing shrapnel (half on save). Can be fused.</div><div class="mats"><div class="ml">Materials</div><ul><li>3 parts</li><li>2 uncommon reactive reagent</li><li>1 packet of blasting powder</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 17</span><span><b>Value</b> 275 gp</span></div></div><div class="acard r-uncommon"><h3>Potent Explosive <span class="rarity-chip r-uncommon">Uncommon</span> <span class="cat-chip">Explosive</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Thrown 20 ft; detonated by 1 fire/lightning. 15-ft radius, DC = Alchemy DC, 2d8 fire + 2d8 thunder (half on save).</div><div class="mats"><div class="ml">Materials</div><ul><li>4 packets blasting powder</li><li>1 common reactive reagent</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 17</span><span><b>Value</b> 250 gp</span></div></div><div class="acard r-rare"><h3>Powerful Explosive <span class="rarity-chip r-rare">Rare</span> <span class="cat-chip">Explosive</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Thrown 20 ft; detonated by 1 fire/lightning. 20-ft radius, DC = Alchemy DC, 4d8 fire + 4d8 thunder (half on save).</div><div class="mats"><div class="ml">Materials</div><ul><li>8 packets blasting powder</li><li>1 rare reactive reagent</li></ul></div><div class="foot"><span><b>Time</b> 4 hrs</span><span><b>Checks</b> 2</span><span><b>Craft DC</b> 19</span><span><b>Value</b> 750 gp</span></div></div><div class="acard r-common"><h3>Magical Ink (Variety) <span class="rarity-chip r-common">Common</span> <span class="cat-chip">Misc</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Crafting component for Enchanting (scrolls), made by rendering down alchemical reagents. Rarity matches the reagent used (Common to Legendary).</div><div class="mats"><div class="ml">Materials</div><ul><li>1 alchemical reagent of the desired rarity</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 2-8 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 10</span><span><b>Value</b> 15-5,000 gp</span></div></div><div class="acard r-uncommon"><h3>Restorative Ointment <span class="rarity-chip r-uncommon">Uncommon</span> <span class="cat-chip">Misc</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">1d4 + 1 doses. As an action, one dose: regain 2d8 + 2 HP (add INT mod), cease being poisoned, and cure any disease.</div><div class="mats"><div class="ml">Materials</div><ul><li>1 common divine essence</li><li>2 uncommon curative reagent</li><li>3 common curative reagents</li></ul></div><div class="foot"><span><b>Time</b> 8 hrs</span><span><b>Checks</b> 4</span><span><b>Craft DC</b> 15</span><span><b>Value</b> 250 gp</span></div></div><div class="acard r-legendary"><h3>Sovereign Glue <span class="rarity-chip r-legendary">Legendary</span> <span class="cat-chip">Misc</span> <span class="action-chip act">Action</span></h3><div class="eff">A permanent adhesive that bonds any two objects; only Universal Solvent can separate them.</div><div class="mats"><div class="ml">Materials</div><ul><li>1 legendary curative reagent</li><li>1 legendary reactive reagent</li><li>1 very rare divine essence</li></ul></div><div class="foot"><span><b>Time</b> 2 days</span><span><b>Checks</b> 8</span><span><b>Craft DC</b> 22</span><span><b>Value</b> 25,000 gp</span></div></div><div class="acard r-legendary"><h3>Universal Solvent <span class="rarity-chip r-legendary">Legendary</span> <span class="cat-chip">Misc</span> <span class="action-chip act">Action</span></h3><div class="eff">Dissolves any adhesive it touches, including Sovereign Glue.</div><div class="mats"><div class="ml">Materials</div><ul><li>1 legendary poisonous reagent</li><li>1 legendary reactive reagent</li><li>1 very rare primal essence</li></ul></div><div class="foot"><span><b>Time</b> 2 days</span><span><b>Checks</b> 8</span><span><b>Craft DC</b> 22</span><span><b>Value</b> 25,000 gp</span></div></div><div class="acard r-common"><h3>Burning Oil <span class="rarity-chip r-common">Common</span> <span class="cat-chip">Oil</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Action: coat &amp; ignite a weapon. For 1 minute it deals +1d4 fire and sheds bright light 20 ft / dim 20 ft.</div><div class="mats"><div class="ml">Materials</div><ul><li>2 common reactive reagent</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 13</span><span><b>Value</b> 40 gp</span></div></div><div class="acard r-common"><h3>Frost Oil <span class="rarity-chip r-common">Common</span> <span class="cat-chip">Oil</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Action: coat a weapon. For 1 minute it deals +1d6 cold damage on hit.</div><div class="mats"><div class="ml">Materials</div><ul><li>1 common reactive reagent</li><li>1 common primal essence</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 14</span><span><b>Value</b> 75 gp</span></div></div><div class="acard r-common"><h3>Silver Oil <span class="rarity-chip r-common">Common</span> <span class="cat-chip">Oil</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Coat a weapon or up to 5 pieces of ammunition (1 min to apply). For 1 hour the item counts as silvered.</div><div class="mats"><div class="ml">Materials</div><ul><li>4 silver scraps</li><li>1 common reactive reagent</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 12</span><span><b>Value</b> 20 gp</span></div></div><div class="acard r-uncommon"><h3>Flametongue Oil <span class="rarity-chip r-uncommon">Uncommon</span> <span class="cat-chip">Oil</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Action: coat &amp; ignite a weapon. For 1 minute it deals +2d6 fire and sheds bright light 20 ft / dim 20 ft.</div><div class="mats"><div class="ml">Materials</div><ul><li>2 uncommon reactive reagent</li><li>1 common arcane essence</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 16</span><span><b>Value</b> 170 gp</span></div></div><div class="acard r-veryrare"><h3>Oil of Sharpness <span class="rarity-chip r-veryrare">Very Rare</span> <span class="cat-chip">Oil</span> <span class="action-chip act">Action</span></h3><div class="eff">Coat one slashing/piercing weapon or up to 5 pieces of ammunition (1 min to apply). For 1 hour the item is magical with a +3 bonus to attack and damage rolls.</div><div class="mats"><div class="ml">Materials</div><ul><li>1 rare poisonous reagent</li><li>2 very rare reactive reagent</li><li>300 gp precious metal flakes</li><li>1 crystal vial</li></ul></div><div class="foot"><span><b>Time</b> 4 hrs</span><span><b>Checks</b> 2</span><span><b>Craft DC</b> 19</span><span><b>Value</b> 5,200 gp</span></div></div><div class="acard r-common"><h3>Dizzying Touch <span class="rarity-chip r-common">Common</span> <span class="cat-chip">Poison</span> <span class="action-chip pt">Contact</span></h3><div class="eff">Applied to an object. The first creature to touch it makes a Con save (your Poison DC) or is poisoned for 1 min; while poisoned, it must make a Wis save at the end of each turn or fall prone.</div><div class="mats"><div class="ml">Materials</div><ul><li>1 common poisonous reagent</li><li>1 common arcane essence</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 14</span><span><b>Value</b> 45 gp</span></div></div><div class="acard r-common"><h3>Simple Contact Poison <span class="rarity-chip r-common">Common</span> <span class="cat-chip">Poison</span> <span class="action-chip pt">Contact</span></h3><div class="eff">Applied to an object. The first creature to touch it makes a Con save (your Poison DC) or takes 2d4 poison, then the poison rubs off.</div><div class="mats"><div class="ml">Materials</div><ul><li>2 common poisonous reagent</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 14</span><span><b>Value</b> 40 gp</span></div></div><div class="acard r-common"><h3>Simple Ingested Poison <span class="rarity-chip r-common">Common</span> <span class="cat-chip">Poison</span> <span class="action-chip pt">Ingested</span></h3><div class="eff">In food or drink. Con save (your Poison DC) or 2d6 poison and poisoned for 1 hour.</div><div class="mats"><div class="ml">Materials</div><ul><li>2 common poisonous reagent</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 12</span><span><b>Value</b> 35 gp</span></div></div><div class="acard r-common"><h3>Simple Inhaled Poison <span class="rarity-chip r-common">Common</span> <span class="cat-chip">Poison</span> <span class="action-chip pt">Inhaled</span></h3><div class="eff">Fills a 10-ft radius (throw a vial up to 30 ft). Con save (your Poison DC) or 2d4 poison.</div><div class="mats"><div class="ml">Materials</div><ul><li>2 common poisonous reagent</li><li>1 common reactive reagent</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 14</span><span><b>Value</b> 60 gp</span></div></div><div class="acard r-common"><h3>Simple Injury Poison <span class="rarity-chip r-common">Common</span> <span class="cat-chip">Poison</span> <span class="action-chip pt">Injury</span></h3><div class="eff">Applied to a weapon or up to 5 ammo. Con save (your Poison DC) or 2d4 poison. Lasts 1 min on the weapon / up to 5 hits.</div><div class="mats"><div class="ml">Materials</div><ul><li>2 common poisonous reagent</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 14</span><span><b>Value</b> 40 gp</span></div></div><div class="acard r-uncommon"><h3>Burning Wound <span class="rarity-chip r-uncommon">Uncommon</span> <span class="cat-chip">Poison</span> <span class="action-chip pt">Injury</span></h3><div class="eff">Weapon or up to 5 ammo. Con save (your Poison DC) or poisoned for 1 min: 1d6 fire at the end of each turn and healing halved; repeat save to end. Lasts 1 min / 5 hits.</div><div class="mats"><div class="ml">Materials</div><ul><li>1 uncommon poisonous reagent</li><li>1 uncommon reactive reagent</li><li>2 common reactive reagent</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 16</span><span><b>Value</b> 150 gp</span></div></div><div class="acard r-uncommon"><h3>Old Reliable <span class="rarity-chip r-uncommon">Uncommon</span> <span class="cat-chip">Poison</span> <span class="action-chip pt">Injury</span></h3><div class="eff">Weapon or up to 5 ammo. Exceptionally durable — lasts 1 hour with unlimited hits. On hit, deals +1d4 poison damage.</div><div class="mats"><div class="ml">Materials</div><ul><li>1 uncommon poisonous reagent</li><li>1 common curative reagent</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 14</span><span><b>Value</b> 70 gp</span></div></div><div class="acard r-uncommon"><h3>Potent Contact Poison <span class="rarity-chip r-uncommon">Uncommon</span> <span class="cat-chip">Poison</span> <span class="action-chip pt">Contact</span></h3><div class="eff">Applied to an object. The first creature to touch it makes a Con save (your Poison DC) or takes 4d4 poison and is poisoned for 1 hour; repeat save to end.</div><div class="mats"><div class="ml">Materials</div><ul><li>2 uncommon poisonous reagent</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 15</span><span><b>Value</b> 100 gp</span></div></div><div class="acard r-uncommon"><h3>Potent Ingested Poison <span class="rarity-chip r-uncommon">Uncommon</span> <span class="cat-chip">Poison</span> <span class="action-chip pt">Ingested</span></h3><div class="eff">Con save (your Poison DC) or 3d6 poison and poisoned for 1 hour.</div><div class="mats"><div class="ml">Materials</div><ul><li>2 uncommon poisonous reagent</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 14</span><span><b>Value</b> 95 gp</span></div></div><div class="acard r-uncommon"><h3>Potent Inhaled Poison <span class="rarity-chip r-uncommon">Uncommon</span> <span class="cat-chip">Poison</span> <span class="action-chip pt">Inhaled</span></h3><div class="eff">10-ft radius (throw a vial up to 30 ft). Con save (your Poison DC) or 4d4 poison and poisoned for 1 hour; lingers 1d4 rounds and is cleared by strong wind.</div><div class="mats"><div class="ml">Materials</div><ul><li>2 uncommon poisonous reagent</li><li>1 uncommon reactive reagent</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 15</span><span><b>Value</b> 140 gp</span></div></div><div class="acard r-uncommon"><h3>Potent Injury Poison <span class="rarity-chip r-uncommon">Uncommon</span> <span class="cat-chip">Poison</span> <span class="action-chip pt">Injury</span></h3><div class="eff">Weapon or up to 5 ammo. Con save (your Poison DC) or 2d6 poison and poisoned for 1 hour; repeat save at end of turn to end it. Lasts 1 min / 5 hits.</div><div class="mats"><div class="ml">Materials</div><ul><li>2 uncommon poisonous reagent</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 15</span><span><b>Value</b> 100 gp</span></div></div><div class="acard r-uncommon"><h3>Withering Soul <span class="rarity-chip r-uncommon">Uncommon</span> <span class="cat-chip">Poison</span> <span class="action-chip pt">Injury</span></h3><div class="eff">Weapon or up to 5 ammo. Con save (your Poison DC) or poisoned for 1 min: 1d4 necrotic at the start of each turn and under the effect of bane; repeat save to end. Lasts 1 min / 5 hits.</div><div class="mats"><div class="ml">Materials</div><ul><li>1 uncommon poisonous reagent</li><li>1 common arcane essence</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 14</span><span><b>Value</b> 100 gp</span></div></div><div class="acard r-rare"><h3>Crawler Mucus <span class="rarity-chip r-rare">Rare</span> <span class="cat-chip">Poison</span> <span class="action-chip pt">Contact</span></h3><div class="eff">Applied to an object. The first creature to touch it makes a Con save (your Poison DC) or is poisoned for 1 min and paralyzed; repeat save to end, after which the poison rubs off.</div><div class="mats"><div class="ml">Materials</div><ul><li>1 rare poisonous reagent</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 16</span><span><b>Value</b> 250 gp</span></div></div><div class="acard r-rare"><h3>Essence of Ether <span class="rarity-chip r-rare">Rare</span> <span class="cat-chip">Poison</span> <span class="action-chip pt">Inhaled</span></h3><div class="eff">5-ft radius (throw a vial up to 30 ft). Con save (your Poison DC) or poisoned for 8 hours and unconscious; wakes on damage or being shaken awake.</div><div class="mats"><div class="ml">Materials</div><ul><li>1 rare poisonous reagent</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 17</span><span><b>Value</b> 270 gp</span></div></div><div class="acard r-rare"><h3>Fainting Fumes <span class="rarity-chip r-rare">Rare</span> <span class="cat-chip">Poison</span> <span class="action-chip pt">Inhaled</span></h3><div class="eff">10-ft radius (throw a vial up to 30 ft). Con save (your Poison DC) or poisoned for 1 hour; fail by 5 or more and the creature is also unconscious (wakes on damage or being shaken).</div><div class="mats"><div class="ml">Materials</div><ul><li>1 rare poisonous reagent</li><li>1 uncommon reactive reagent</li><li>2 uncommon poisonous reagent</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 4 hrs</span><span><b>Checks</b> 2</span><span><b>Craft DC</b> 16</span><span><b>Value</b> 415 gp</span></div></div><div class="acard r-rare"><h3>Knockout Poison <span class="rarity-chip r-rare">Rare</span> <span class="cat-chip">Poison</span> <span class="action-chip pt">Injury</span></h3><div class="eff">Weapon or up to 5 ammo. Con save (your Poison DC) or poisoned for 1 hour; fail by 5 or more and the creature is also unconscious. Lasts 1 min / 5 hits.</div><div class="mats"><div class="ml">Materials</div><ul><li>3 rare poisonous reagent</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 4 hrs</span><span><b>Checks</b> 2</span><span><b>Craft DC</b> 17</span><span><b>Value</b> 760 gp</span></div></div><div class="acard r-rare"><h3>Malice <span class="rarity-chip r-rare">Rare</span> <span class="cat-chip">Poison</span> <span class="action-chip pt">Inhaled</span></h3><div class="eff">5-ft radius (throw a vial up to 20 ft, or powder 5 ft). Con save (your Poison DC) or poisoned for 1 hour and blinded.</div><div class="mats"><div class="ml">Materials</div><ul><li>1 rare poisonous reagent</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 16</span><span><b>Value</b> 250 gp</span></div></div><div class="acard r-rare"><h3>Paralyzing Poison <span class="rarity-chip r-rare">Rare</span> <span class="cat-chip">Poison</span> <span class="action-chip pt">Injury</span></h3><div class="eff">Weapon or up to 5 ammo. Con save (your Poison DC) or poisoned for 1 min and paralyzed; repeat save to end. Lasts 1 min / 5 hits.</div><div class="mats"><div class="ml">Materials</div><ul><li>2 rare poisonous reagent</li><li>2 uncommon poisonous reagent</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 4 hrs</span><span><b>Checks</b> 2</span><span><b>Craft DC</b> 16</span><span><b>Value</b> 590 gp</span></div></div><div class="acard r-rare"><h3>Veins of Tar <span class="rarity-chip r-rare">Rare</span> <span class="cat-chip">Poison</span> <span class="action-chip pt">Ingested</span></h3><div class="eff">In food or drink. Con save (your Poison DC) or affected by the slow spell for 8 hours. Removed by effects that remove poison.</div><div class="mats"><div class="ml">Materials</div><ul><li>1 rare poisonous reagent</li><li>1 uncommon reactive reagent</li><li>1 uncommon supplies</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 4 hrs</span><span><b>Checks</b> 2</span><span><b>Craft DC</b> 15</span><span><b>Value</b> 300 gp</span></div></div><div class="acard r-rare"><h3>Whispers of Madness <span class="rarity-chip r-rare">Rare</span> <span class="cat-chip">Poison</span> <span class="action-chip pt">Contact</span></h3><div class="eff">Applied to an object. The first creature to touch it makes a Con save (your Poison DC) or is poisoned for 10 min and rolls on the short-term madness table, suffering that madness while poisoned.</div><div class="mats"><div class="ml">Materials</div><ul><li>1 rare poisonous reagent</li><li>1 uncommon psionic essence</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 4 hrs</span><span><b>Checks</b> 2</span><span><b>Craft DC</b> 16</span><span><b>Value</b> 450 gp</span></div></div><div class="acard r-veryrare"><h3>Grievous Injury Poison <span class="rarity-chip r-veryrare">Very Rare</span> <span class="cat-chip">Poison</span> <span class="action-chip pt">Injury</span></h3><div class="eff">Weapon or up to 5 ammo. Con save (your Poison DC): 6d6 poison, or half on a success. Lasts 1 min / 5 hits.</div><div class="mats"><div class="ml">Materials</div><ul><li>1 very rare poisonous reagent</li><li>1 crystal vial</li></ul></div><div class="foot"><span><b>Time</b> 4 hrs</span><span><b>Checks</b> 2</span><span><b>Craft DC</b> 18</span><span><b>Value</b> 2,380 gp</span></div></div><div class="acard r-veryrare"><h3>Midnight Tears <span class="rarity-chip r-veryrare">Very Rare</span> <span class="cat-chip">Poison</span> <span class="action-chip pt">Ingested</span></h3><div class="eff">In food or drink. No effect until the stroke of midnight; if not neutralized, Con save (your Poison DC) or 9d6 poison (half on a success).</div><div class="mats"><div class="ml">Materials</div><ul><li>1 very rare poisonous reagent</li><li>1 crystal vial</li></ul></div><div class="foot"><span><b>Time</b> 4 hrs</span><span><b>Checks</b> 2</span><span><b>Craft DC</b> 16</span><span><b>Value</b> 2,300 gp</span></div></div><div class="acard r-veryrare"><h3>Slow Death <span class="rarity-chip r-veryrare">Very Rare</span> <span class="cat-chip">Poison</span> <span class="action-chip pt">Ingested</span></h3><div class="eff">In food or drink. The victim slowly dies: HP maximum drops by 1 each long rest (dies at 0). Poisoned while below half its original maximum. Identified by magic or a DC 15 Medicine check; if cured, lost HP returns after a long rest.</div><div class="mats"><div class="ml">Materials</div><ul><li>2 very rare poisonous reagent</li><li>1 very rare curative reagent</li><li>1 crystal vial</li></ul></div><div class="foot"><span><b>Time</b> 6 hrs</span><span><b>Checks</b> 3</span><span><b>Craft DC</b> 18</span><span><b>Value</b> 6,800 gp</span></div></div><div class="acard r-legendary"><h3>Endless Dreams <span class="rarity-chip r-legendary">Legendary</span> <span class="cat-chip">Poison</span> <span class="action-chip pt">Ingested</span></h3><div class="eff">In food or drink. Con save (your Poison DC) or the next time the creature sleeps it enters an endless stasis slumber (no aging, no food/drink, cannot be roused). Ended only by greater restoration cast at 7th level or higher, or wish.</div><div class="mats"><div class="ml">Materials</div><ul><li>1 legendary poisonous reagent</li><li>2 very rare curative reagent</li><li>1 crystal vial</li></ul></div><div class="foot"><span><b>Time</b> 8 hrs</span><span><b>Checks</b> 4</span><span><b>Craft DC</b> 20</span><span><b>Value</b> 11,000 gp</span></div></div><div class="acard r-common"><h3>Antitoxin <span class="rarity-chip r-common">Common</span> <span class="cat-chip">Potion</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Neutralizes poison; advantage on saving throws against poison for 1 hour.</div><div class="mats"><div class="ml">Materials</div><ul><li>2 common curative reagent</li><li>1 common poisonous reagent</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 13</span><span><b>Value</b> 50 gp</span></div></div><div class="acard r-common"><h3>Potion of Climbing <span class="rarity-chip r-common">Common</span> <span class="cat-chip">Potion</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Climbing speed = walking speed for 1 hour; advantage on Athletics checks to climb.</div><div class="mats"><div class="ml">Materials</div><ul><li>1 common reactive reagent</li><li>1 common poisonous reagent</li><li>1 uncommon reactive reagent</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 14</span><span><b>Value</b> 85 gp</span></div></div><div class="acard r-common"><h3>Potion of Healing <span class="rarity-chip r-common">Common</span> <span class="cat-chip">Potion</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Restores HP when drunk (add INT mod). Quality scales by rarity.</div><div class="vary"><table><tbody><tr><td>Common (C)</td><td>2d4 + 2</td></tr><tr><td>Greater (U)</td><td>4d4 + 4</td></tr><tr><td>Superior (R)</td><td>8d4 + 8</td></tr><tr><td>Supreme (VR)</td><td>10d4 + 20</td></tr></tbody></table></div><div class="mats"><div class="ml">Materials</div><ul><li>3 common curative reagent</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 13</span><span><b>Value</b> 50 gp</span></div></div><div class="acard r-uncommon"><h3>Potion of Animal Friendship <span class="rarity-chip r-uncommon">Uncommon</span> <span class="cat-chip">Potion</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Cast animal friendship (save DC 13) at will for 1 hour.</div><div class="mats"><div class="ml">Materials</div><ul><li>2 common reactive reagent</li><li>1 common poisonous reagent</li><li>1 uncommon curative reagent</li><li>1 common primal essence</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 13</span><span><b>Value</b> 145 gp</span></div></div><div class="acard r-uncommon"><h3>Potion of Fire Breath <span class="rarity-chip r-uncommon">Uncommon</span> <span class="cat-chip">Potion</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Bonus action: exhale fire at a target within 30 ft. DC 13 Dex save, 4d6 fire (half on save). Ends after 3 exhales or 1 hour.</div><div class="mats"><div class="ml">Materials</div><ul><li>1 common reactive reagent</li><li>1 uncommon reactive reagent</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 15</span><span><b>Value</b> 75 gp</span></div></div><div class="acard r-uncommon"><h3>Potion of Greater Healing <span class="rarity-chip r-uncommon">Uncommon</span> <span class="cat-chip">Potion</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Restores 4d4 + 4 HP (add INT mod). See the Healing variety.</div><div class="mats"><div class="ml">Materials</div><ul><li>1 common curative reagent</li><li>2 uncommon curative reagent</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 15</span><span><b>Value</b> 120 gp</span></div></div><div class="acard r-uncommon"><h3>Potion of Growth <span class="rarity-chip r-uncommon">Uncommon</span> <span class="cat-chip">Potion</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Gain the enlarge effect of enlarge/reduce for 1d4 hours (no concentration).</div><div class="mats"><div class="ml">Materials</div><ul><li>1 common reactive reagent</li><li>1 uncommon curative reagent</li><li>1 uncommon reactive reagent</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 14</span><span><b>Value</b> 115 gp</span></div></div><div class="acard r-uncommon"><h3>Potion of Hill Giant Strength <span class="rarity-chip r-uncommon">Uncommon</span> <span class="cat-chip">Potion</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Your Strength score becomes 21 for 1 hour (no effect if your STR is already higher).</div><div class="mats"><div class="ml">Materials</div><ul><li>1 uncommon primal essence</li><li>1 uncommon reactive reagent</li><li>1 uncommon curative reagent</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 4 hrs</span><span><b>Checks</b> 2</span><span><b>Craft DC</b> 15</span><span><b>Value</b> 260 gp</span></div></div><div class="acard r-uncommon"><h3>Potion of Poison <span class="rarity-chip r-uncommon">Uncommon</span> <span class="cat-chip">Potion</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Looks beneficial but is poison. 3d6 poison damage; Con save (Alchemy DC) or Poisoned. Take 3d6 each turn while poisoned; end-of-turn save reduces it by 1d6 until it ends.</div><div class="mats"><div class="ml">Materials</div><ul><li>1 common poisonous reagent</li><li>1 uncommon poisonous reagent</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 13</span><span><b>Value</b> 65 gp</span></div></div><div class="acard r-uncommon"><h3>Potion of Resistance <span class="rarity-chip r-uncommon">Uncommon</span> <span class="cat-chip">Potion</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Resist one damage type for 1 hour. Substitute essence by type: divine (necrotic/radiant), arcane (force), psionic (psychic).</div><div class="mats"><div class="ml">Materials</div><ul><li>1 uncommon primal essence</li><li>1 uncommon reactive reagent</li><li>1 common curative reagent</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 15</span><span><b>Value</b> 240 gp</span></div></div><div class="acard r-uncommon"><h3>Potion of Water Breathing <span class="rarity-chip r-uncommon">Uncommon</span> <span class="cat-chip">Potion</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Breathe underwater for 1 hour.</div><div class="mats"><div class="ml">Materials</div><ul><li>1 common reactive reagent</li><li>1 uncommon poisonous reagent</li><li>1 uncommon reactive reagent</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 15</span><span><b>Value</b> 120 gp</span></div></div><div class="acard r-rare"><h3>Draught of Damnation <span class="rarity-chip r-rare">Rare</span> <span class="cat-chip">Potion</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Become a fiend (as shapechange) for 1 hour; CR equals your level (max 10), random form. On revert, take 1d6 necrotic per CR; if it kills you, your soul is dragged to the fiends.</div><div class="mats"><div class="ml">Materials</div><ul><li>1 rare reactive reagent</li><li>1 rare poisonous reagent</li><li>1 uncommon arcane essence</li></ul></div><div class="foot"><span><b>Time</b> 4 hrs</span><span><b>Checks</b> 2</span><span><b>Craft DC</b> 16</span><span><b>Value</b> 680 gp</span></div></div><div class="acard r-rare"><h3>Potion of Clairvoyance <span class="rarity-chip r-rare">Rare</span> <span class="cat-chip">Potion</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Gain the effect of the clairvoyance spell.</div><div class="mats"><div class="ml">Materials</div><ul><li>1 uncommon reactive reagent</li><li>1 uncommon poisonous reagent</li><li>2 rare reactive reagent</li><li>1 common arcane essence</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 16</span><span><b>Value</b> 570 gp</span></div></div><div class="acard r-rare"><h3>Potion of Diminution <span class="rarity-chip r-rare">Rare</span> <span class="cat-chip">Potion</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Gain the reduce effect of enlarge/reduce for 1d4 hours (no concentration).</div><div class="mats"><div class="ml">Materials</div><ul><li>1 uncommon curative reagent</li><li>1 rare curative reagent</li><li>1 rare poisonous reagent</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 15</span><span><b>Value</b> 480 gp</span></div></div><div class="acard r-rare"><h3>Potion of Gaseous Form <span class="rarity-chip r-rare">Rare</span> <span class="cat-chip">Potion</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Gain the effect of gaseous form for 1 hour (no concentration), or end early as a bonus action.</div><div class="mats"><div class="ml">Materials</div><ul><li>2 uncommon reactive reagent</li><li>1 rare curative reagent</li><li>1 rare reactive reagent</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 16</span><span><b>Value</b> 560 gp</span></div></div><div class="acard r-rare"><h3>Potion of Heroism <span class="rarity-chip r-rare">Rare</span> <span class="cat-chip">Potion</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Gain 10 temporary HP and the bless spell (no concentration) for 1 hour.</div><div class="mats"><div class="ml">Materials</div><ul><li>1 uncommon curative reagent</li><li>1 uncommon reactive reagent</li><li>2 rare curative reagent</li><li>1 common divine essence</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 15</span><span><b>Value</b> 480 gp</span></div></div><div class="acard r-rare"><h3>Potion of Mind Reading <span class="rarity-chip r-rare">Rare</span> <span class="cat-chip">Potion</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Gain the effect of detect thoughts (save DC 13, no concentration) for 1 hour.</div><div class="mats"><div class="ml">Materials</div><ul><li>1 uncommon poisonous reagent</li><li>1 uncommon reactive reagent</li><li>1 rare poisonous reagent</li><li>1 rare reactive reagent</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 2 hrs</span><span><b>Checks</b> 1</span><span><b>Craft DC</b> 16</span><span><b>Value</b> 550 gp</span></div></div><div class="acard r-rare"><h3>Potion of Superior Healing <span class="rarity-chip r-rare">Rare</span> <span class="cat-chip">Potion</span> <span class="action-chip ba">Bonus Action</span></h3><div class="eff">Restores 8d4 + 8 HP (add INT mod). See the Healing variety.</div><div class="mats"><div class="ml">Materials</div><ul><li>2 uncommon curative reagent</li><li>2 rare curative reagent</li><li>1 glass vial</li></ul></div><div class="foot"><span><b>Time</b> 4 hrs</span><span><b>Checks</b> 2</span><span><b>Craft DC</b> 15</span><span><b>Value</b> 525 gp</span></div></div><div class="acard r-veryrare"><h3>Potion of Flying <span class="rarity-chip r-veryrare">Very Rare</span> <span class="cat-chip">Potion</span> <span class="action-chip act">Action</span></h3><div class="eff">Flying speed = walking speed for 1 hour; can hover. Fall when it ends if still aloft.</div><div class="mats"><div class="ml">Materials</div><ul><li>2 uncommon reactive reagent</li><li>2 rare curative reagent</li><li>2 very rare reactive reagent</li><li>1 uncommon primal essence</li><li>1 uncommon arcane essence</li><li>1 crystal vial</li></ul></div><div class="foot"><span><b>Time</b> 4 hrs</span><span><b>Checks</b> 2</span><span><b>Craft DC</b> 19</span><span><b>Value</b> 5,500 gp</span></div></div><div class="acard r-veryrare"><h3>Potion of Invisibility <span class="rarity-chip r-veryrare">Very Rare</span> <span class="cat-chip">Potion</span> <span class="action-chip act">Action</span></h3><div class="eff">Become invisible for 1 hour (items carried too). Ends early if you attack or cast a spell.</div><div class="mats"><div class="ml">Materials</div><ul><li>2 uncommon reactive reagent</li><li>2 rare curative reagent</li><li>1 very rare reactive reagent</li><li>1 very rare curative reagent</li><li>1 crystal vial</li></ul></div><div class="foot"><span><b>Time</b> 4 hrs</span><span><b>Checks</b> 2</span><span><b>Craft DC</b> 19</span><span><b>Value</b> 5,200 gp</span></div></div><div class="acard r-veryrare"><h3>Potion of Speed <span class="rarity-chip r-veryrare">Very Rare</span> <span class="cat-chip">Potion</span> <span class="action-chip act">Action</span></h3><div class="eff">Gain the effect of haste for 1 minute (no concentration).</div><div class="mats"><div class="ml">Materials</div><ul><li>2 uncommon reactive reagent</li><li>2 rare reactive reagent</li><li>1 very rare reactive reagent</li><li>1 very rare curative reagent</li><li>1 rare arcane essence</li><li>1 crystal vial</li></ul></div><div class="foot"><span><b>Time</b> 4 hrs</span><span><b>Checks</b> 2</span><span><b>Craft DC</b> 20</span><span><b>Value</b> 6,150 gp</span></div></div><div class="acard r-veryrare"><h3>Potion of Supreme Healing <span class="rarity-chip r-veryrare">Very Rare</span> <span class="cat-chip">Potion</span> <span class="action-chip act">Action</span></h3><div class="eff">Restores 10d4 + 20 HP (add INT mod). See the Healing variety.</div><div class="mats"><div class="ml">Materials</div><ul><li>1 uncommon curative reagent</li><li>1 rare curative reagent</li><li>2 very rare curative reagent</li><li>1 uncommon divine essence</li><li>1 crystal vial</li></ul></div><div class="foot"><span><b>Time</b> 4 hrs</span><span><b>Checks</b> 2</span><span><b>Craft DC</b> 18</span><span><b>Value</b> 5,000 gp</span></div></div><div class="acard r-legendary"><h3>Panacea <span class="rarity-chip r-legendary">Legendary</span> <span class="cat-chip">Potion</span> <span class="action-chip act">Action</span></h3><div class="eff">Regain all HP; remove all conditions, ability reductions, missing limbs, diseases, curses, and exhaustion; cease aging 1 year. A second panacea forces a DC 30 Con save or you die.</div><div class="mats"><div class="ml">Materials</div><ul><li>1 legendary curative reagent</li><li>2 very rare curative reagent</li><li>1 legendary divine essence</li><li>1 crystal vial</li></ul></div><div class="foot"><span><b>Time</b> 8 hrs</span><span><b>Checks</b> 4</span><span><b>Craft DC</b> 24</span><span><b>Value</b> 54,000 gp</span></div></div><div class="acard r-legendary"><h3>Potion of Storm Giant Strength <span class="rarity-chip r-legendary">Legendary</span> <span class="cat-chip">Potion</span> <span class="action-chip act">Action</span></h3><div class="eff">Your Strength score becomes 29 for 1 hour (no effect if higher).</div><div class="mats"><div class="ml">Materials</div><ul><li>1 legendary reactive reagent</li><li>1 legendary curative reagent</li><li>1 very rare primal essence</li><li>1 crystal vial</li></ul></div><div class="foot"><span><b>Time</b> 8 hrs</span><span><b>Checks</b> 4</span><span><b>Craft DC</b> 23</span><span><b>Value</b> 25,000 gp</span></div></div></div>
+  <h2 class="sec">Custom Potion Reference</h2>
+  <div class="grid2">
+    <div class="card"><h3>Alchemy Modifiers</h3><p class="sec-note" style="margin:0 0 6px">Applied to a potion (GM approval). Difficulty increases by the listed amount.</p><table class="gt" style="font-size:14px"><tbody><tr><th>Mod</th><th>DC</th><th>Effect</th></tr><tr><td>Aerosol</td><td>+8</td><td>+2 reactive reagents (rarest tier). Uncork/break to affect all in 5 ft.</td></tr><tr><td>Celestial</td><td>+3</td><td>+common divine essence. Adds lesser restoration.</td></tr><tr><td>Divine</td><td>+6</td><td>+rare divine essence. Adds greater restoration.</td></tr><tr><td>Endothermic</td><td>+4</td><td>Fire damage becomes cold.</td></tr><tr><td>Expansive</td><td>+5</td><td>+common reactive. AoE +5 ft.</td></tr><tr><td>Insidious</td><td>+3</td><td>Shrouded from identify; disguise as another potion.</td></tr></tbody></table></div>
+    <div class="card gold"><h3>Additional Reagents</h3><p class="sec-note" style="margin:0 0 6px">Load more reagents to boost potency (base DC 8 for a fully custom potion).</p><table class="gt" style="font-size:14px"><tbody><tr><th>Reagent</th><th>DC</th><th>Effect</th></tr><tr><td>Curative (C/U/R/VR/L)</td><td>+2…+6</td><td>+1d4 → +5d4 HP restored</td></tr><tr><td>Reactive (C/U/R/VR/L)</td><td>+2…+6</td><td>+1d4 → +5d4 fire damage</td></tr><tr><td>Poisonous (C/U/R/VR/L)</td><td>+2…+6</td><td>+1d4 → +5d4 poison damage</td></tr></tbody></table></div>
+  </div>
+</section>
+<div class="footer">
+  Beatrix · The Harvesting Princess — interactive reference ·
+  <br><button class="reset-btn" id="resetAll">Reset all trackers</button>
+</div>
+</div>
+</div>
+
+<!-- ===== Firebase sync (added by Sync Injector) ===== -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+/* ============================ STATE ============================ */
+const SK='beatrix_v1';
+const RKEYS=['cur_C','cur_U','cur_R','cur_VR','cur_L','rea_C','rea_U','rea_R','rea_VR','rea_L','poi_C','poi_U','poi_R','poi_VR','poi_L','arc_C','arc_U','div_C','div_U','pri_C','pri_U','psi_C','psi_U'];
+const defaults={
+  tl:80,tlmax:80, hp:0,thp:0, morale:100,moralemax:100, intmod:5,pb:4, vinemax:5,
+  weapon:'bow', biome:'forest', round:0,
+  vines:[], inv:{}, slots:{1:{c:0,m:0},2:{c:0,m:0},3:{c:0,m:0},4:{c:0,m:0},5:{c:0,m:0}},
+  babyUses:0, lastRoll:null
+};
+let S=load();
+function load(){
+  try{var r=localStorage.getItem(SK);if(r){var o=JSON.parse(r);var d=JSON.parse(JSON.stringify(defaults));deepMerge(d,o);return d;}}catch(e){}
+  return JSON.parse(JSON.stringify(defaults));
+}
+function deepMerge(t,s){for(var k in s){if(s[k]&&typeof s[k]==='object'&&!Array.isArray(s[k])&&t[k]&&typeof t[k]==='object'){deepMerge(t[k],s[k]);}else{t[k]=s[k];}}}
+function save(){try{localStorage.setItem(SK,JSON.stringify(S));}catch(e){}}
+function escapeHtml(s){return (''+s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+
+/* ============================ REAGENT HELPERS ============================ */
+const CATNAME={cur:'Curative',rea:'Reactive',poi:'Poisonous',arc:'Arcane',div:'Divine',pri:'Primal',psi:'Psionic'};
+const RARNAME={C:'Common',U:'Uncommon',R:'Rare',VR:'Very Rare',L:'Legendary'};
+const ESS=['arc','div','pri','psi'];
+function isEss(cat){return ESS.indexOf(cat)>=0;}
+function chipClass(cat){if(cat==='cur')return 'cur';if(cat==='rea')return 'rea';if(cat==='poi')return 'poi';return 'ess';}
+
+/* ============================ d100 GATHER TABLE ============================ */
+const ROLLTABLE={
+  forest:[[1,10,[]],[11,20,[['cur','C','1']]],[21,40,[['cur','C','1']]],[41,50,[['poi','C','1']]],[51,60,[['rea','C','1']]],[61,70,[['poi','C','1d4']]],[71,80,[['cur','C','1d4']]],[81,90,[['cur','U','1']]],[91,95,[['poi','U','1']]],[96,100,[['pri','C','1']]]],
+  desert:[[1,10,[]],[11,20,[]],[21,40,[['rea','C','1']]],[41,50,[['cur','C','1']]],[51,60,[['poi','C','1']]],[61,70,[['rea','C','1d2']]],[71,80,[['rea','C','1d2']]],[81,90,[['rea','U','1']]],[91,95,[['poi','U','1']]],[96,100,[['arc','C','1']]]],
+  grasslands:[[1,10,[]],[11,20,[]],[21,40,[['cur','C','1']]],[41,50,[['rea','C','1']]],[51,60,[['poi','C','1']]],[61,70,[['poi','C','1d2']]],[71,80,[['cur','C','1d2']]],[81,90,[['cur','U','1']]],[91,95,[['rea','U','1']]],[96,100,[['div','C','1']]]],
+  marsh:[[1,10,[]],[11,20,[['poi','C','1']]],[21,40,[['poi','C','1']]],[41,50,[['cur','C','1']]],[51,60,[['rea','C','1']]],[61,70,[['poi','C','1d4']]],[71,80,[['rea','C','1d4']]],[81,90,[['poi','U','1']]],[91,95,[['rea','U','1']]],[96,100,[['pri','C','1']]]],
+  mountains:[[1,10,[]],[11,20,[]],[21,40,[['rea','C','1']]],[41,50,[['cur','C','1']]],[51,60,[['poi','C','1']]],[61,70,[['cur','C','1d2']]],[71,80,[['rea','C','1d2']]],[81,90,[['rea','U','1']]],[91,95,[['cur','C','1']]],[96,100,[['pri','C','1']]]]
+};
+const BIOMENAME={forest:'Forest',desert:'Desert',grasslands:'Grasslands',marsh:'Marsh',mountains:'Mountains'};
+function rollDie(d){if(d==='1')return 1;if(d==='1d2')return Math.ceil(Math.random()*2);if(d==='1d4')return Math.ceil(Math.random()*4);return 1;}
+function rollHarvest(biome){
+  var roll=Math.ceil(Math.random()*100);
+  var row=ROLLTABLE[biome].find(function(r){return roll>=r[0]&&roll<=r[1];});
+  var items=[];
+  (row?row[2]:[]).forEach(function(it){items.push({cat:it[0],rar:it[1],qty:rollDie(it[2])});});
+  return {roll:roll,items:items};
+}
+function itemsLabel(items){
+  if(!items.length)return 'Nothing found';
+  return items.map(function(it){return it.qty+'\u00d7 '+RARNAME[it.rar]+' '+CATNAME[it.cat]+(isEss(it.cat)?' essence':' reagent');}).join(', ');
+}
+
+/* ============================ VITALS ============================ */
+function renderVitals(){
+  ['tl','hp','thp','morale','intmod','pb'].forEach(function(k){var el=document.getElementById(k);if(el)el.value=S[k];});
+  ['tlmax','moralemax','vinemax'].forEach(function(k){var el=document.getElementById(k);if(el)el.value=S[k];});
+  document.getElementById('tlbar').style.width=clamp(S.tl/Math.max(S.tlmax,1)*100,0,100)+'%';
+  document.getElementById('moralebar').style.width=clamp(S.morale/Math.max(S.moralemax,1)*100,0,100)+'%';
+  var hpDen=Math.max(S.hp+S.thp,100);
+  document.getElementById('hpbar').style.width=clamp((S.hp+S.thp)/hpDen*100,0,100)+'%';
+  var dc=8+S.pb+S.intmod*2; var mod=(S.pb*2)+(S.intmod*2);
+  document.getElementById('alchDC').textContent=dc;
+  document.getElementById('alchMod').textContent=(mod>=0?'+':'')+mod;
+  var active=S.vines.filter(function(v){return v.active;}).length;
+  document.getElementById('vinecount').value=active;
+  document.getElementById('vinebar').style.width=clamp(active/Math.max(S.vinemax,1)*100,0,100)+'%';
+}
+['tl','hp','thp','morale','intmod','pb'].forEach(function(k){
+  document.getElementById(k).addEventListener('input',function(e){S[k]=parseInt(e.target.value||0);renderVitals();save();});
+});
+['tlmax','moralemax','vinemax'].forEach(function(k){
+  document.getElementById(k).addEventListener('input',function(e){S[k]=Math.max(1,parseInt(e.target.value||1));renderVitals();save();});
+});
+document.querySelectorAll('.vitals .stepbtns button[data-k]').forEach(function(b){
+  b.addEventListener('click',function(){var k=b.dataset.k,d=parseInt(b.dataset.d);S[k]=(S[k]||0)+d;if(k!=='hp'&&k!=='thp')S[k]=Math.max(k==='vinemax'?1:0,S[k]);renderVitals();save();});
+});
+function spendTL(n){S.tl=Math.max(0,S.tl-n);renderVitals();save();}
+
+/* ============================ WEAPON STATE ============================ */
+function renderWeapon(){
+  document.querySelectorAll('#weaponState .ws-btn').forEach(function(b){b.classList.toggle('on',b.dataset.w===S.weapon);});
+  var note=document.getElementById('seasonNote');
+  if(S.weapon==='bow')note.innerHTML='Cycle: <b>Spring</b> &mdash; next strike has 25% to deal double damage';
+  else note.innerHTML='Cycle: <b>Autumn</b> &mdash; next strike has 25% to heal proportional to damage';
+}
+document.querySelectorAll('#weaponState .ws-btn').forEach(function(b){
+  b.addEventListener('click',function(){S.weapon=b.dataset.w;renderWeapon();save();});
+});
+
+/* ============================ BIOME ============================ */
+function renderBiome(){
+  document.querySelectorAll('.biome-btn').forEach(function(b){b.classList.toggle('on',b.dataset.biome===S.biome);});
+  var ro=document.getElementById('biomeReadout');if(ro)ro.textContent=BIOMENAME[S.biome];
+}
+document.querySelectorAll('.biome-btn').forEach(function(b){
+  b.addEventListener('click',function(){S.biome=b.dataset.biome;renderBiome();save();});
+});
+
+/* ============================ VINES ============================ */
+function newVine(){
+  var base=5+S.intmod;
+  return {id:'v'+Date.now()+Math.floor(Math.random()*999),name:'Vine '+(S.vines.length+1),state:'blooming',
+    hp:base,hpmax:base,rounds:0,active:true,interlock:false,reagents:{},lastlog:''};
+}
+function vineReagentCount(v){var n=0;for(var k in v.reagents)n+=v.reagents[k];return n;}
+function vineBonus(v){return (v.state==='verdant'?1:0)+(v.interlock?1:0);}
+function harvestVine(v,silent){
+  var r=rollHarvest(S.biome);var bonus=vineBonus(v);
+  r.items.forEach(function(it){var key=it.cat+'_'+it.rar;v.reagents[key]=(v.reagents[key]||0)+it.qty+(it.qty>0?bonus:0);});
+  var label=r.items.length?itemsLabel(r.items.map(function(it){return {cat:it.cat,rar:it.rar,qty:it.qty+bonus};})):'Nothing found';
+  v.lastlog='d100='+r.roll+' \u2192 '+label;
+  if(!silent){renderVines();save();}
+  return v.lastlog;
+}
+function evolveVine(v){
+  if(v.state!=='blooming'||v.rounds<3||vineReagentCount(v)<2)return;
+  var cnt=vineReagentCount(v);
+  v.hpmax+=20*cnt; v.hp+=20*cnt; v.state='verdant'; v.reagents={};
+  v.lastlog='Evolved \u2192 Verdant! +'+(20*cnt)+' HP, +1 harvest, +1 dmg die, +3 AC, +10 ft reach (reagents sacrificed)';
+  renderVines();save();
+}
+function babyVine(v){
+  var cost=10+S.babyUses*10;
+  v.hp=Math.ceil(v.hpmax/2); S.babyUses++; spendTL(cost);
+  v.lastlog='My Baby! Kept alive at half HP ('+v.hp+'). Spent '+cost+' TL.';
+  renderVines();renderBaby();save();
+}
+function findVine(id){return S.vines.find(function(v){return v.id===id;});}
+function renderVines(){
+  var host=document.getElementById('vineGrid');host.innerHTML='';
+  if(!S.vines.length){host.innerHTML='<div class="vine-empty">No vines planted. Use <b>+ Plant Vine</b> to begin.</div>';renderVitals();return;}
+  var interCount=S.vines.filter(function(x){return x.interlock;}).length;
+  S.vines.forEach(function(v){
+    var card=document.createElement('div');
+    card.className='vinecard '+(v.state==='verdant'?'verdant ':'')+(v.active?'':'inactive ')+(v.interlock?'interlocked':'');
+    var rcnt=vineReagentCount(v); var bonus=vineBonus(v);
+    var acLink=(v.interlock?interCount:0);
+    var ac=10+S.intmod+(v.state==='verdant'?3:0)+acLink;
+    var evReady=(v.state==='blooming'&&v.rounds>=3&&rcnt>=2);
+    var chips='';
+    RKEYS.forEach(function(k){if(v.reagents[k]){var p=k.split('_');chips+='<span class="rchip '+chipClass(p[0])+'" data-vid="'+v.id+'" data-rk="'+k+'" title="Click to remove one">'+CATNAME[p[0]]+(isEss(p[0])?' Ess':'')+' <span class="rq">\u00d7'+v.reagents[k]+'</span> '+p[1]+'</span>';}});
+    if(!chips)chips='<span class="rchip-empty">No stored reagents</span>';
+    card.innerHTML=
+      '<div class="vine-head"><input class="vname" value="'+escapeHtml(v.name)+'" data-vid="'+v.id+'">'+
+        '<span class="vstate-badge '+v.state+'" data-vid="'+v.id+'" data-act="state" title="Toggle Blooming / Verdant">'+(v.state==='verdant'?'Verdant':'Blooming')+'</span></div>'+
+      '<div class="vine-hp"><span class="hplbl">HP</span>'+
+        '<button class="vstep" data-vid="'+v.id+'" data-act="hp" data-d="-5">\u2212</button>'+
+        '<input type="number" class="vhpin" data-vid="'+v.id+'" value="'+v.hp+'">'+
+        '<button class="vstep" data-vid="'+v.id+'" data-act="hp" data-d="5">+</button>'+
+        '<span class="hplbl">/</span><input type="number" class="vhpmaxin vmaxin" data-vid="'+v.id+'" value="'+v.hpmax+'"></div>'+
+      '<div class="vbar vinehp"><i style="width:'+clamp(v.hp/Math.max(v.hpmax,1)*100,0,100)+'%"></i></div>'+
+      '<div class="vine-meta"><span class="vm-round">Round on field: <b>'+v.rounds+'</b> <span class="rdsteps"><button data-vid="'+v.id+'" data-act="rd" data-d="-1">\u2212</button><button data-vid="'+v.id+'" data-act="rd" data-d="1">+</button></span></span>'+
+        '<span class="ac-pill'+(acLink>0?' linked':'')+'" title="'+(acLink>0?'10 + INT('+S.intmod+')'+(v.state==='verdant'?' + 3 verdant':'')+' + '+acLink+' interlock':'10 + INT('+S.intmod+')'+(v.state==='verdant'?' + 3 verdant':''))+'">AC '+ac+(acLink>0?' (+'+acLink+')':'')+'</span>'+
+        (bonus>0?'<span class="bonus-pill">+'+bonus+' harvest</span>':'')+
+        (evReady?'<span class="ev-ready">\u25cf evolve ready</span>':'')+'</div>'+
+      '<div class="reagent-zone"><div class="rzlbl"><span>Stored Reagents</span><span class="rztotal">'+rcnt+' total</span></div><div class="reagent-chips">'+chips+'</div></div>'+
+      '<div class="vine-actions">'+
+        '<button class="va harvest" data-vid="'+v.id+'" data-act="harvest">\u2684 Harvest</button>'+
+        '<button class="va" data-vid="'+v.id+'" data-act="overharvest" title="Roll again; vine inactive until next turn">Overharvest</button>'+
+        '<button class="va evolve'+(evReady?'':' disabled')+'" data-vid="'+v.id+'" data-act="evolve">\u27e2 Evolve</button>'+
+        '<button class="va" data-vid="'+v.id+'" data-act="collect" title="Move reagents to Alchemy Bag">Collect \u2192 Bag</button>'+
+        '<button class="va intr'+(v.interlock?' on':'')+'" data-vid="'+v.id+'" data-act="interlock" title="Interlocking Roots">\u26ad Interlock</button>'+
+        '<button class="va baby" data-vid="'+v.id+'" data-act="baby" title="My Baby \u2014 keep alive at half HP">\u2665 My Baby</button>'+
+        '<button class="va'+(v.active?'':' on')+'" data-vid="'+v.id+'" data-act="active" title="Toggle active / inactive">'+(v.active?'Active':'Inactive')+'</button>'+
+        '<button class="va del" data-vid="'+v.id+'" data-act="del" title="Remove vine">\u2715</button>'+
+      '</div>'+
+      '<div class="vine-log'+(v.lastlog?' show':'')+'">'+escapeHtml(v.lastlog)+'</div>';
+    host.appendChild(card);
+  });
+  wireVines();renderVitals();
+}
+function wireVines(){
+  var host=document.getElementById('vineGrid');
+  host.querySelectorAll('.vname').forEach(function(inp){inp.addEventListener('input',function(){var v=findVine(inp.dataset.vid);if(v){v.name=inp.value;save();}});});
+  host.querySelectorAll('.vhpin').forEach(function(inp){inp.addEventListener('input',function(){var v=findVine(inp.dataset.vid);if(v){v.hp=parseInt(inp.value||0);save();renderVitals();var bar=inp.closest('.vinecard').querySelector('.vinehp i');bar.style.width=clamp(v.hp/Math.max(v.hpmax,1)*100,0,100)+'%';}});});
+  host.querySelectorAll('.vhpmaxin').forEach(function(inp){inp.addEventListener('input',function(){var v=findVine(inp.dataset.vid);if(v){v.hpmax=Math.max(1,parseInt(inp.value||1));save();var bar=inp.closest('.vinecard').querySelector('.vinehp i');bar.style.width=clamp(v.hp/Math.max(v.hpmax,1)*100,0,100)+'%';}});});
+  host.querySelectorAll('.rchip[data-rk]').forEach(function(c){c.addEventListener('click',function(){var v=findVine(c.dataset.vid);if(v){var k=c.dataset.rk;v.reagents[k]=Math.max(0,(v.reagents[k]||0)-1);if(!v.reagents[k])delete v.reagents[k];renderVines();save();}});});
+  host.querySelectorAll('button[data-act]').forEach(function(b){
+    b.addEventListener('click',function(){
+      var v=findVine(b.dataset.vid);if(!v)return;var act=b.dataset.act;
+      if(act==='state'){v.state=(v.state==='verdant')?'blooming':'verdant';}
+      else if(act==='hp'){var dlt=parseInt(b.dataset.d);v.hp+=dlt;
+        if(dlt<0&&v.interlock){var half=Math.floor((-dlt)/2);if(half>0){var shared=0;S.vines.forEach(function(x){if(x.interlock&&x.id!==v.id){x.hp-=half;shared++;}});if(shared>0)v.lastlog='Took '+(-dlt)+' damage \u2014 interlocking roots shared '+half+' to each of '+shared+' linked vine(s).';}}}
+      else if(act==='rd'){v.rounds=Math.max(0,v.rounds+parseInt(b.dataset.d));}
+      else if(act==='harvest'){harvestVine(v);return;}
+      else if(act==='overharvest'){harvestVine(v,true);v.active=false;v.lastlog='Overharvest \u2014 '+v.lastlog+' (inactive until next turn)';}
+      else if(act==='evolve'){evolveVine(v);return;}
+      else if(act==='collect'){for(var k in v.reagents){S.inv[k]=(S.inv[k]||0)+v.reagents[k];}v.reagents={};v.lastlog='Reagents collected into Alchemy Bag.';renderInv();}
+      else if(act==='interlock'){v.interlock=!v.interlock;}
+      else if(act==='baby'){babyVine(v);return;}
+      else if(act==='active'){v.active=!v.active;}
+      else if(act==='del'){S.vines=S.vines.filter(function(x){return x.id!==v.id;});}
+      renderVines();save();
+    });
+  });
+}
+document.getElementById('plantVine').addEventListener('click',function(){S.vines.push(newVine());renderVines();save();});
+document.getElementById('advRound').addEventListener('click',function(){
+  S.round++;document.getElementById('roundNum').textContent=S.round;
+  S.vines.forEach(function(v){
+    if(v.active){harvestVine(v,true);v.rounds++;}
+    else {v.active=true;v.lastlog='Reactivated at start of turn.';}
+  });
+  renderVines();save();
+});
+
+/* ============================ INVENTORY ============================ */
+const INV_GROUPS=[
+  {title:'Curative Reagents',cls:'dot-cur',rows:[['cur_C','Common'],['cur_U','Uncommon'],['cur_R','Rare'],['cur_VR','Very Rare'],['cur_L','Legendary']]},
+  {title:'Reactive Reagents',cls:'dot-rea',rows:[['rea_C','Common'],['rea_U','Uncommon'],['rea_R','Rare'],['rea_VR','Very Rare'],['rea_L','Legendary']]},
+  {title:'Poisonous Reagents',cls:'dot-poi',rows:[['poi_C','Common'],['poi_U','Uncommon'],['poi_R','Rare'],['poi_VR','Very Rare'],['poi_L','Legendary']]},
+  {title:'Essences',cls:'dot-ess',rows:[['arc_C','Arcane \u00b7 C'],['arc_U','Arcane \u00b7 U'],['div_C','Divine \u00b7 C'],['div_U','Divine \u00b7 U'],['pri_C','Primal \u00b7 C'],['pri_U','Primal \u00b7 U'],['psi_C','Psionic \u00b7 C'],['psi_U','Psionic \u00b7 U']]},
+  {title:'Containers',cls:'dot-con',rows:[['vial','Glass Vial'],['flask','Glass Flask'],['crystal','Crystal Vial']]}
+];
+function renderInv(){
+  var host=document.getElementById('invGrid');host.innerHTML='';
+  INV_GROUPS.forEach(function(g){
+    var card=document.createElement('div');card.className='inv-card';
+    var rows='';
+    g.rows.forEach(function(r){
+      var key=r[0],qty=S.inv[key]||0;
+      rows+='<div class="invrow"><span class="inm '+g.cls+'">'+r[1]+'</span><button data-ik="'+key+'" data-d="-1">\u2212</button><span class="iqty">'+qty+'</span><button data-ik="'+key+'" data-d="1">+</button></div>';
+    });
+    card.innerHTML='<h4>'+g.title+'</h4>'+rows;host.appendChild(card);
+  });
+  host.querySelectorAll('button[data-ik]').forEach(function(b){
+    b.addEventListener('click',function(){var k=b.dataset.ik;S.inv[k]=Math.max(0,(S.inv[k]||0)+parseInt(b.dataset.d));renderInv();save();});
+  });
+}
+document.getElementById('resetBag').addEventListener('click',function(){
+  S.inv.vial=(S.inv.vial||0)+5; S.inv.flask=(S.inv.flask||0)+5; S.inv.rea_C=(S.inv.rea_C||0)+2; S.inv.cur_C=(S.inv.cur_C||0)+1;
+  renderInv();save();
+});
+document.getElementById('clearInv').addEventListener('click',function(){if(confirm('Clear the entire Alchemy Bag?')){S.inv={};renderInv();save();}});
+
+/* ============================ HARVEST ROLLER ============================ */
+document.getElementById('rollHarvest').addEventListener('click',function(){
+  var r=rollHarvest(S.biome);S.lastRoll=r;
+  document.getElementById('rollDisplay').textContent=r.roll;
+  document.getElementById('rollResult').innerHTML='<b>'+BIOMENAME[S.biome]+'</b> \u00b7 '+escapeHtml(itemsLabel(r.items));
+  document.getElementById('addToBag').style.display=r.items.length?'inline-block':'none';
+  save();
+});
+document.getElementById('addToBag').addEventListener('click',function(){
+  if(!S.lastRoll)return;
+  S.lastRoll.items.forEach(function(it){var key=it.cat+'_'+it.rar;S.inv[key]=(S.inv[key]||0)+it.qty;});
+  document.getElementById('addToBag').style.display='none';renderInv();save();
+});
+
+/* ============================ SPELL SLOTS ============================ */
+function renderSlots(){
+  var host=document.getElementById('slotGrid');host.innerHTML='';
+  for(var lvl=1;lvl<=5;lvl++){
+    var s=S.slots[lvl]||{c:0,m:0};
+    var cell=document.createElement('div');cell.className='slot-lvl';
+    cell.innerHTML='<div class="sl-name">Level '+lvl+'</div>'+
+      '<div class="sl-val"><input type="number" class="slc" data-l="'+lvl+'" value="'+s.c+'"> / <input type="number" class="slm smx" data-l="'+lvl+'" value="'+s.m+'"></div>'+
+      '<div class="sl-steps"><button data-l="'+lvl+'" data-d="-1">\u2212</button><button data-l="'+lvl+'" data-d="1">+</button></div>';
+    host.appendChild(cell);
+  }
+  host.querySelectorAll('.slc').forEach(function(inp){inp.addEventListener('input',function(){S.slots[inp.dataset.l].c=parseInt(inp.value||0);save();});});
+  host.querySelectorAll('.slm').forEach(function(inp){inp.addEventListener('input',function(){S.slots[inp.dataset.l].m=parseInt(inp.value||0);save();});});
+  host.querySelectorAll('.sl-steps button').forEach(function(b){b.addEventListener('click',function(){var l=b.dataset.l;S.slots[l].c=Math.max(0,S.slots[l].c+parseInt(b.dataset.d));renderSlots();save();});});
+}
+
+/* ============================ TRANSFORMATION ============================ */
+function renderBaby(){var cost=10+S.babyUses*10;document.getElementById('babyCostText').textContent=cost+' TL';document.getElementById('babyUses').textContent=S.babyUses;}
+document.getElementById('enterTransform').addEventListener('click',function(){spendTL(80);});
+document.getElementById('transformUpkeep').addEventListener('click',function(){spendTL(10);});
+document.getElementById('longRest').addEventListener('click',function(){S.babyUses=0;renderBaby();save();});
+document.getElementById('bloomingForest').addEventListener('click',function(){
+  var evolved=0,thpGain=0;
+  S.vines.forEach(function(v){
+    if(v.state==='blooming'){
+      var cnt=vineReagentCount(v);
+      v.hpmax+=20*cnt; v.hp+=20*cnt;
+      v.state='verdant';
+      evolved++; thpGain+=8;
+      v.lastlog='Blooming Forest \u2014 evolved to Verdant. +'+(20*cnt)+' HP, reagents kept. +8 temp HP to Beatrix.';
+    }
+  });
+  if(evolved){
+    S.thp=(S.thp||0)+thpGain;
+    renderVitals();renderVines();save();
+    alert('Evolved '+evolved+' vine(s) to Verdant (HP gained, reagents kept).\n+'+thpGain+' temp HP to Beatrix (8 per vine, max d8). Now '+S.thp+' temp HP.');
+  } else alert('No Blooming Vines to evolve.');
+});
+document.getElementById('resetRounds').addEventListener('click',function(){
+  if(confirm('Reset the round counter and every vine\u2019s field-rounds to 0?')){
+    S.round=0;document.getElementById('roundNum').textContent=0;
+    S.vines.forEach(function(v){v.rounds=0;});
+    renderVines();save();
+  }
+});
+/* ============================ ALCHEMY LIST ============================ */
+const RARCLASS={'common':'r-common','uncommon':'r-uncommon','rare':'r-rare','veryrare':'r-veryrare','legendary':'r-legendary'};
+const RARLABEL={'common':'Common','uncommon':'Uncommon','rare':'Rare','veryrare':'Very Rare','legendary':'Legendary'};
+const RARRANK={'common':1,'uncommon':2,'rare':3,'veryrare':4,'legendary':5};
+function actionFor(rar){return (rar==='veryrare'||rar==='legendary')?'act':'ba';}
+const ALCHEMY=[
+  {n:'Potion of Healing',c:'Potion',r:'common',t:'2 hrs',k:1,dc:13,v:'50 gp',eff:'Restores HP when drunk (add INT mod). Quality scales by rarity.',vary:[['Common (C)','2d4 + 2'],['Greater (U)','4d4 + 4'],['Superior (R)','8d4 + 8'],['Supreme (VR)','10d4 + 20']],mat:['3 common curative reagent','1 glass vial']},
+  {n:'Antitoxin',c:'Potion',r:'common',t:'2 hrs',k:1,dc:13,v:'50 gp',eff:'Neutralizes poison; advantage on saving throws against poison for 1 hour.',mat:['2 common curative reagent','1 common poisonous reagent','1 glass vial']},
+  {n:'Potion of Climbing',c:'Potion',r:'common',t:'2 hrs',k:1,dc:14,v:'85 gp',eff:'Climbing speed = walking speed for 1 hour; advantage on Athletics checks to climb.',mat:['1 common reactive reagent','1 common poisonous reagent','1 uncommon reactive reagent','1 glass vial']},
+  {n:'Potion of Animal Friendship',c:'Potion',r:'uncommon',t:'2 hrs',k:1,dc:13,v:'145 gp',eff:'Cast animal friendship (save DC 13) at will for 1 hour.',mat:['2 common reactive reagent','1 common poisonous reagent','1 uncommon curative reagent','1 common primal essence','1 glass vial']},
+  {n:'Potion of Fire Breath',c:'Potion',r:'uncommon',t:'2 hrs',k:1,dc:15,v:'75 gp',eff:'Bonus action: exhale fire at a target within 30 ft. DC 13 Dex save, 4d6 fire (half on save). Ends after 3 exhales or 1 hour.',mat:['1 common reactive reagent','1 uncommon reactive reagent','1 glass vial']},
+  {n:'Potion of Growth',c:'Potion',r:'uncommon',t:'2 hrs',k:1,dc:14,v:'115 gp',eff:'Gain the enlarge effect of enlarge/reduce for 1d4 hours (no concentration).',mat:['1 common reactive reagent','1 uncommon curative reagent','1 uncommon reactive reagent','1 glass vial']},
+  {n:'Potion of Greater Healing',c:'Potion',r:'uncommon',t:'2 hrs',k:1,dc:15,v:'120 gp',eff:'Restores 4d4 + 4 HP (add INT mod). See the Healing variety.',mat:['1 common curative reagent','2 uncommon curative reagent','1 glass vial']},
+  {n:'Potion of Poison',c:'Potion',r:'uncommon',t:'2 hrs',k:1,dc:13,v:'65 gp',eff:'Looks beneficial but is poison. 3d6 poison damage; Con save (Alchemy DC) or Poisoned. Take 3d6 each turn while poisoned; end-of-turn save reduces it by 1d6 until it ends.',mat:['1 common poisonous reagent','1 uncommon poisonous reagent','1 glass vial']},
+  {n:'Potion of Resistance',c:'Potion',r:'uncommon',t:'2 hrs',k:1,dc:15,v:'240 gp',eff:'Resist one damage type for 1 hour. Substitute essence by type: divine (necrotic/radiant), arcane (force), psionic (psychic).',mat:['1 uncommon primal essence','1 uncommon reactive reagent','1 common curative reagent','1 glass vial']},
+  {n:'Potion of Water Breathing',c:'Potion',r:'uncommon',t:'2 hrs',k:1,dc:15,v:'120 gp',eff:'Breathe underwater for 1 hour.',mat:['1 common reactive reagent','1 uncommon poisonous reagent','1 uncommon reactive reagent','1 glass vial']},
+  {n:'Potion of Hill Giant Strength',c:'Potion',r:'uncommon',t:'4 hrs',k:2,dc:15,v:'260 gp',eff:'Your Strength score becomes 21 for 1 hour (no effect if your STR is already higher).',mat:['1 uncommon primal essence','1 uncommon reactive reagent','1 uncommon curative reagent','1 glass vial']},
+  {n:'Potion of Clairvoyance',c:'Potion',r:'rare',t:'2 hrs',k:1,dc:16,v:'570 gp',eff:'Gain the effect of the clairvoyance spell.',mat:['1 uncommon reactive reagent','1 uncommon poisonous reagent','2 rare reactive reagent','1 common arcane essence','1 glass vial']},
+  {n:'Potion of Gaseous Form',c:'Potion',r:'rare',t:'2 hrs',k:1,dc:16,v:'560 gp',eff:'Gain the effect of gaseous form for 1 hour (no concentration), or end early as a bonus action.',mat:['2 uncommon reactive reagent','1 rare curative reagent','1 rare reactive reagent','1 glass vial']},
+  {n:'Potion of Diminution',c:'Potion',r:'rare',t:'2 hrs',k:1,dc:15,v:'480 gp',eff:'Gain the reduce effect of enlarge/reduce for 1d4 hours (no concentration).',mat:['1 uncommon curative reagent','1 rare curative reagent','1 rare poisonous reagent','1 glass vial']},
+  {n:'Potion of Heroism',c:'Potion',r:'rare',t:'2 hrs',k:1,dc:15,v:'480 gp',eff:'Gain 10 temporary HP and the bless spell (no concentration) for 1 hour.',mat:['1 uncommon curative reagent','1 uncommon reactive reagent','2 rare curative reagent','1 common divine essence','1 glass vial']},
+  {n:'Potion of Mind Reading',c:'Potion',r:'rare',t:'2 hrs',k:1,dc:16,v:'550 gp',eff:'Gain the effect of detect thoughts (save DC 13, no concentration) for 1 hour.',mat:['1 uncommon poisonous reagent','1 uncommon reactive reagent','1 rare poisonous reagent','1 rare reactive reagent','1 glass vial']},
+  {n:'Potion of Superior Healing',c:'Potion',r:'rare',t:'4 hrs',k:2,dc:15,v:'525 gp',eff:'Restores 8d4 + 8 HP (add INT mod). See the Healing variety.',mat:['2 uncommon curative reagent','2 rare curative reagent','1 glass vial']},
+  {n:'Draught of Damnation',c:'Potion',r:'rare',t:'4 hrs',k:2,dc:16,v:'680 gp',eff:'Become a fiend (as shapechange) for 1 hour; CR equals your level (max 10), random form. On revert, take 1d6 necrotic per CR; if it kills you, your soul is dragged to the fiends.',mat:['1 rare reactive reagent','1 rare poisonous reagent','1 uncommon arcane essence']},
+  {n:'Potion of Supreme Healing',c:'Potion',r:'veryrare',t:'4 hrs',k:2,dc:18,v:'5,000 gp',eff:'Restores 10d4 + 20 HP (add INT mod). See the Healing variety.',mat:['1 uncommon curative reagent','1 rare curative reagent','2 very rare curative reagent','1 uncommon divine essence','1 crystal vial']},
+  {n:'Potion of Flying',c:'Potion',r:'veryrare',t:'4 hrs',k:2,dc:19,v:'5,500 gp',eff:'Flying speed = walking speed for 1 hour; can hover. Fall when it ends if still aloft.',mat:['2 uncommon reactive reagent','2 rare curative reagent','2 very rare reactive reagent','1 uncommon primal essence','1 uncommon arcane essence','1 crystal vial']},
+  {n:'Potion of Invisibility',c:'Potion',r:'veryrare',t:'4 hrs',k:2,dc:19,v:'5,200 gp',eff:'Become invisible for 1 hour (items carried too). Ends early if you attack or cast a spell.',mat:['2 uncommon reactive reagent','2 rare curative reagent','1 very rare reactive reagent','1 very rare curative reagent','1 crystal vial']},
+  {n:'Potion of Speed',c:'Potion',r:'veryrare',t:'4 hrs',k:2,dc:20,v:'6,150 gp',eff:'Gain the effect of haste for 1 minute (no concentration).',mat:['2 uncommon reactive reagent','2 rare reactive reagent','1 very rare reactive reagent','1 very rare curative reagent','1 rare arcane essence','1 crystal vial']},
+  {n:'Panacea',c:'Potion',r:'legendary',t:'8 hrs',k:4,dc:24,v:'54,000 gp',eff:'Regain all HP; remove all conditions, ability reductions, missing limbs, diseases, curses, and exhaustion; cease aging 1 year. A second panacea forces a DC 30 Con save or you die.',mat:['1 legendary curative reagent','2 very rare curative reagent','1 legendary divine essence','1 crystal vial']},
+  {n:'Potion of Storm Giant Strength',c:'Potion',r:'legendary',t:'8 hrs',k:4,dc:23,v:'25,000 gp',eff:'Your Strength score becomes 29 for 1 hour (no effect if higher).',mat:['1 legendary reactive reagent','1 legendary curative reagent','1 very rare primal essence','1 crystal vial']},
+  {n:'Alchemical Acid',c:'Concoction',r:'common',t:'2 hrs',k:1,dc:13,v:'50 gp',eff:'Thrown (20/60) or poured on an object. Acid damage by quality (no ability modifier; INT mod applies via Alchemy Genius).',vary:[['Common (C)','4d4 acid'],['Potent (U)','6d4 acid'],['Powerful (R)','8d4 acid']],mat:['2 common reactive reagent','1 common poisonous reagent','1 glass flask']},
+  {n:'Alchemical Fire',c:'Concoction',r:'common',t:'2 hrs',k:1,dc:13,v:'50 gp',eff:'Thrown (20/60) or poured on an object. Fire damage by quality.',vary:[['Common (C)','2d10 fire'],['Potent (U)','3d10 fire'],['Powerful (R)','4d10 fire']],mat:['3 common reactive reagent','1 glass flask']},
+  {n:'Alchemical Napalm',c:'Concoction',r:'common',t:'2 hrs',k:1,dc:14,v:'70 gp',eff:'Thrown (20/60): 3d4 fire on hit. The target keeps burning for 1 minute, taking 1d4 fire at the start of its turn until a creature uses an action to put it out.',mat:['3 common reactive reagent','1 common curative reagent','1 glass flask']},
+  {n:'Bottled Wind',c:'Concoction',r:'common',t:'2 hrs',k:1,dc:14,v:'40 gp',eff:'Action: cast gust (no components). Or breathe from it for up to 10 minutes of air (DC 5 Athletics each turn or all air is lost as gust).',mat:['2 common reactive reagent','1 glass flask']},
+  {n:'Potent Alchemical Acid',c:'Concoction',r:'uncommon',t:'2 hrs',k:1,dc:15,v:'140 gp',eff:'Thrown (20/60): 6d4 acid. See the Alchemical Acid variety.',mat:['2 uncommon reactive reagent','1 uncommon poisonous reagent','1 glass flask']},
+  {n:'Potent Alchemical Fire',c:'Concoction',r:'uncommon',t:'2 hrs',k:1,dc:15,v:'140 gp',eff:'Thrown (20/60): 3d10 fire. See the Alchemical Fire variety.',mat:['3 uncommon reactive reagent','1 glass flask']},
+  {n:'Sticky Goo Potion',c:'Concoction',r:'uncommon',t:'2 hrs',k:1,dc:14,v:'140 gp',eff:'Thrown reliably to a point within 30 ft; shatters and creates the web spell effect centered there.',mat:['1 finely shredded scroll of web OR 2 uncommon poisonous reagents','1 uncommon reactive reagent','1 glass flask']},
+  {n:'Powerful Alchemical Acid',c:'Concoction',r:'rare',t:'2 hrs',k:1,dc:17,v:'690 gp',eff:'Thrown (20/60): 8d4 acid. See the Alchemical Acid variety.',mat:['2 rare reactive reagent','1 rare poisonous reagent','1 glass flask']},
+  {n:'Powerful Alchemical Fire',c:'Concoction',r:'rare',t:'2 hrs',k:1,dc:17,v:'690 gp',eff:'Thrown (20/60): 4d10 fire. See the Alchemical Fire variety.',mat:['3 rare reactive reagent','1 glass flask']},
+  {n:'Liquid Lightning',c:'Concoction',r:'rare',t:'2 hrs',k:1,dc:16,v:'640 gp',eff:'For 1 minute, bonus action to become a lightning bolt and travel in a straight line to a space within 30 ft (no OA; immune to lightning in this form). Each creature in the path: DC 15 Dex save or 3d6 lightning.',mat:['2 rare reactive reagent','1 uncommon primal essence','1 glass vial']},
+  {n:'Burning Oil',c:'Oil',r:'common',t:'2 hrs',k:1,dc:13,v:'40 gp',eff:'Action: coat & ignite a weapon. For 1 minute it deals +1d4 fire and sheds bright light 20 ft / dim 20 ft.',mat:['2 common reactive reagent','1 glass vial']},
+  {n:'Frost Oil',c:'Oil',r:'common',t:'2 hrs',k:1,dc:14,v:'75 gp',eff:'Action: coat a weapon. For 1 minute it deals +1d6 cold damage on hit.',mat:['1 common reactive reagent','1 common primal essence','1 glass vial']},
+  {n:'Silver Oil',c:'Oil',r:'common',t:'2 hrs',k:1,dc:12,v:'20 gp',eff:'Coat a weapon or up to 5 pieces of ammunition (1 min to apply). For 1 hour the item counts as silvered.',mat:['4 silver scraps','1 common reactive reagent','1 glass vial']},
+  {n:'Flametongue Oil',c:'Oil',r:'uncommon',t:'2 hrs',k:1,dc:16,v:'170 gp',eff:'Action: coat & ignite a weapon. For 1 minute it deals +2d6 fire and sheds bright light 20 ft / dim 20 ft.',mat:['2 uncommon reactive reagent','1 common arcane essence','1 glass vial']},
+  {n:'Oil of Sharpness',c:'Oil',r:'veryrare',t:'4 hrs',k:2,dc:19,v:'5,200 gp',eff:'Coat one slashing/piercing weapon or up to 5 pieces of ammunition (1 min to apply). For 1 hour the item is magical with a +3 bonus to attack and damage rolls.',mat:['1 rare poisonous reagent','2 very rare reactive reagent','300 gp precious metal flakes','1 crystal vial']},
+  {n:'Dwarven Alcohol',c:'Explosive',r:'common',t:'8 hrs',k:4,dc:12,v:'20 gp',eff:'Splash a 5-ft square within 5 ft; once soaked it can be ignited by 1+ fire/lightning, dealing 2d4 fire to creatures within 5 ft of the square or container.',mat:['1 flask of alcohol','1 common reactive reagent','1 sturdy metal flask']},
+  {n:'Packet of Blasting Powder',c:'Explosive',r:'common',t:'2 hrs',k:1,dc:14,v:'40 gp',eff:'Ignited by 1+ fire/lightning: 10-ft radius, DC 14 Dex, 1d4 fire + 1d4 thunder (half on save). Each extra packet (max 5) adds +1d4 each and +5 ft radius. Double damage to structures.',mat:['2 common reactive reagent']},
+  {n:'Smoke Powder',c:'Explosive',r:'common',t:'2 hrs',k:1,dc:15,v:'40 gp',eff:'Ignited by 1+ fire/lightning: 20-ft radius heavily obscured for 2d4 rounds, then lightly obscured 1 round, then clears. Extra uses extend heavy obscurement +1d4 rounds.',mat:['2 common reactive reagent']},
+  {n:'Simple Explosive',c:'Explosive',r:'common',t:'2 hrs',k:1,dc:15,v:'120 gp',eff:'Thrown 20 ft; detonated by 1 fire/lightning. 10-ft radius, DC = Alchemy DC, 1d8 fire + 1d8 thunder (half on save). Can be fused for a delayed blast.',mat:['2 packets blasting powder','1 common reactive reagent']},
+  {n:'Grenade Casing',c:'Explosive',r:'uncommon',t:'4 hrs',k:1,dc:15,v:'50 gp',eff:'Two-chambered projectile. Load with an Alchemical Fire + an Explosive; thrown up to 60 ft. Deals the explosive damage + 1d4 piercing + 1d4 fire (Dex save vs the explosive DC).',mat:['2 parts','1 fancy parts','1 glass flask']},
+  {n:'Potent Explosive',c:'Explosive',r:'uncommon',t:'2 hrs',k:1,dc:17,v:'250 gp',eff:'Thrown 20 ft; detonated by 1 fire/lightning. 15-ft radius, DC = Alchemy DC, 2d8 fire + 2d8 thunder (half on save).',mat:['4 packets blasting powder','1 common reactive reagent']},
+  {n:'Nail Bomb',c:'Explosive',r:'uncommon',t:'2 hrs',k:1,dc:17,v:'275 gp',eff:'Thrown 20 ft; detonated by 1 fire/lightning. 20-ft radius, DC = Alchemy DC, 8d4 piercing shrapnel (half on save). Can be fused.',mat:['3 parts','2 uncommon reactive reagent','1 packet of blasting powder']},
+  {n:'Powerful Explosive',c:'Explosive',r:'rare',t:'4 hrs',k:2,dc:19,v:'750 gp',eff:'Thrown 20 ft; detonated by 1 fire/lightning. 20-ft radius, DC = Alchemy DC, 4d8 fire + 4d8 thunder (half on save).',mat:['8 packets blasting powder','1 rare reactive reagent']},
+  {n:'Dust of Disappearance',c:'Dust',r:'uncommon',t:'4 hrs',k:2,dc:15,v:'130 gp',eff:'Thrown into the air: you and everything within 10 ft become invisible for 2d4 minutes (ends early for a creature that attacks or casts a spell).',mat:['1 handful of sand','1 common arcane essence','2 common reactive reagent','1 common curative reagent']},
+  {n:'Dust of Dryness',c:'Dust',r:'uncommon',t:'4 hrs',k:2,dc:14,v:'100 gp',eff:'A pinch absorbs a 15-ft cube of water, becoming a marble-sized pellet that releases the water when broken.',mat:['1 handful of sand','1 common primal essence','1 common reactive reagent','1 common poisonous reagent']},
+  {n:'Dust of Sneezing and Choking',c:'Dust',r:'uncommon',t:'4 hrs',k:2,dc:14,v:'95 gp',eff:'Released in a 30-ft cube: creatures must make a Con save or be incapacitated by sneezing/choking while in the cloud.',mat:['1 uncommon poisonous reagent','1 common reactive reagent','1 common poisonous reagent']},
+  {n:'Restorative Ointment',c:'Misc',r:'uncommon',t:'8 hrs',k:4,dc:15,v:'250 gp',eff:'1d4 + 1 doses. As an action, one dose: regain 2d8 + 2 HP (add INT mod), cease being poisoned, and cure any disease.',mat:['1 common divine essence','2 uncommon curative reagent','3 common curative reagents']},
+  {n:'Magical Ink (Variety)',c:'Misc',r:'common',t:'2-8 hrs',k:1,dc:10,v:'15-5,000 gp',eff:'Crafting component for Enchanting (scrolls), made by rendering down alchemical reagents. Rarity matches the reagent used (Common to Legendary).',mat:['1 alchemical reagent of the desired rarity','1 glass vial']},
+  {n:'Sovereign Glue',c:'Misc',r:'legendary',t:'2 days',k:8,dc:22,v:'25,000 gp',eff:'A permanent adhesive that bonds any two objects; only Universal Solvent can separate them.',mat:['1 legendary curative reagent','1 legendary reactive reagent','1 very rare divine essence']},
+  {n:'Universal Solvent',c:'Misc',r:'legendary',t:'2 days',k:8,dc:22,v:'25,000 gp',eff:'Dissolves any adhesive it touches, including Sovereign Glue.',mat:['1 legendary poisonous reagent','1 legendary reactive reagent','1 very rare primal essence']},
+  {n:'Simple Injury Poison',c:'Poison',pt:'Injury',r:'common',t:'2 hrs',k:1,dc:14,v:'40 gp',eff:'Applied to a weapon or up to 5 ammo. Con save (your Poison DC) or 2d4 poison. Lasts 1 min on the weapon / up to 5 hits.',mat:['2 common poisonous reagent','1 glass vial']},
+  {n:'Simple Contact Poison',c:'Poison',pt:'Contact',r:'common',t:'2 hrs',k:1,dc:14,v:'40 gp',eff:'Applied to an object. The first creature to touch it makes a Con save (your Poison DC) or takes 2d4 poison, then the poison rubs off.',mat:['2 common poisonous reagent','1 glass vial']},
+  {n:'Simple Inhaled Poison',c:'Poison',pt:'Inhaled',r:'common',t:'2 hrs',k:1,dc:14,v:'60 gp',eff:'Fills a 10-ft radius (throw a vial up to 30 ft). Con save (your Poison DC) or 2d4 poison.',mat:['2 common poisonous reagent','1 common reactive reagent','1 glass vial']},
+  {n:'Simple Ingested Poison',c:'Poison',pt:'Ingested',r:'common',t:'2 hrs',k:1,dc:12,v:'35 gp',eff:'In food or drink. Con save (your Poison DC) or 2d6 poison and poisoned for 1 hour.',mat:['2 common poisonous reagent','1 glass vial']},
+  {n:'Dizzying Touch',c:'Poison',pt:'Contact',r:'common',t:'2 hrs',k:1,dc:14,v:'45 gp',eff:'Applied to an object. The first creature to touch it makes a Con save (your Poison DC) or is poisoned for 1 min; while poisoned, it must make a Wis save at the end of each turn or fall prone.',mat:['1 common poisonous reagent','1 common arcane essence','1 glass vial']},
+  {n:'Potent Injury Poison',c:'Poison',pt:'Injury',r:'uncommon',t:'2 hrs',k:1,dc:15,v:'100 gp',eff:'Weapon or up to 5 ammo. Con save (your Poison DC) or 2d6 poison and poisoned for 1 hour; repeat save at end of turn to end it. Lasts 1 min / 5 hits.',mat:['2 uncommon poisonous reagent','1 glass vial']},
+  {n:'Potent Contact Poison',c:'Poison',pt:'Contact',r:'uncommon',t:'2 hrs',k:1,dc:15,v:'100 gp',eff:'Applied to an object. The first creature to touch it makes a Con save (your Poison DC) or takes 4d4 poison and is poisoned for 1 hour; repeat save to end.',mat:['2 uncommon poisonous reagent','1 glass vial']},
+  {n:'Potent Inhaled Poison',c:'Poison',pt:'Inhaled',r:'uncommon',t:'2 hrs',k:1,dc:15,v:'140 gp',eff:'10-ft radius (throw a vial up to 30 ft). Con save (your Poison DC) or 4d4 poison and poisoned for 1 hour; lingers 1d4 rounds and is cleared by strong wind.',mat:['2 uncommon poisonous reagent','1 uncommon reactive reagent','1 glass vial']},
+  {n:'Potent Ingested Poison',c:'Poison',pt:'Ingested',r:'uncommon',t:'2 hrs',k:1,dc:14,v:'95 gp',eff:'Con save (your Poison DC) or 3d6 poison and poisoned for 1 hour.',mat:['2 uncommon poisonous reagent','1 glass vial']},
+  {n:'Old Reliable',c:'Poison',pt:'Injury',r:'uncommon',t:'2 hrs',k:1,dc:14,v:'70 gp',eff:'Weapon or up to 5 ammo. Exceptionally durable \u2014 lasts 1 hour with unlimited hits. On hit, deals +1d4 poison damage.',mat:['1 uncommon poisonous reagent','1 common curative reagent','1 glass vial']},
+  {n:'Burning Wound',c:'Poison',pt:'Injury',r:'uncommon',t:'2 hrs',k:1,dc:16,v:'150 gp',eff:'Weapon or up to 5 ammo. Con save (your Poison DC) or poisoned for 1 min: 1d6 fire at the end of each turn and healing halved; repeat save to end. Lasts 1 min / 5 hits.',mat:['1 uncommon poisonous reagent','1 uncommon reactive reagent','2 common reactive reagent','1 glass vial']},
+  {n:'Withering Soul',c:'Poison',pt:'Injury',r:'uncommon',t:'2 hrs',k:1,dc:14,v:'100 gp',eff:'Weapon or up to 5 ammo. Con save (your Poison DC) or poisoned for 1 min: 1d4 necrotic at the start of each turn and under the effect of bane; repeat save to end. Lasts 1 min / 5 hits.',mat:['1 uncommon poisonous reagent','1 common arcane essence','1 glass vial']},
+  {n:'Crawler Mucus',c:'Poison',pt:'Contact',r:'rare',t:'2 hrs',k:1,dc:16,v:'250 gp',eff:'Applied to an object. The first creature to touch it makes a Con save (your Poison DC) or is poisoned for 1 min and paralyzed; repeat save to end, after which the poison rubs off.',mat:['1 rare poisonous reagent','1 glass vial']},
+  {n:'Essence of Ether',c:'Poison',pt:'Inhaled',r:'rare',t:'2 hrs',k:1,dc:17,v:'270 gp',eff:'5-ft radius (throw a vial up to 30 ft). Con save (your Poison DC) or poisoned for 8 hours and unconscious; wakes on damage or being shaken awake.',mat:['1 rare poisonous reagent','1 glass vial']},
+  {n:'Malice',c:'Poison',pt:'Inhaled',r:'rare',t:'2 hrs',k:1,dc:16,v:'250 gp',eff:'5-ft radius (throw a vial up to 20 ft, or powder 5 ft). Con save (your Poison DC) or poisoned for 1 hour and blinded.',mat:['1 rare poisonous reagent']},
+  {n:'Fainting Fumes',c:'Poison',pt:'Inhaled',r:'rare',t:'4 hrs',k:2,dc:16,v:'415 gp',eff:'10-ft radius (throw a vial up to 30 ft). Con save (your Poison DC) or poisoned for 1 hour; fail by 5 or more and the creature is also unconscious (wakes on damage or being shaken).',mat:['1 rare poisonous reagent','1 uncommon reactive reagent','2 uncommon poisonous reagent','1 glass vial']},
+  {n:'Knockout Poison',c:'Poison',pt:'Injury',r:'rare',t:'4 hrs',k:2,dc:17,v:'760 gp',eff:'Weapon or up to 5 ammo. Con save (your Poison DC) or poisoned for 1 hour; fail by 5 or more and the creature is also unconscious. Lasts 1 min / 5 hits.',mat:['3 rare poisonous reagent','1 glass vial']},
+  {n:'Paralyzing Poison',c:'Poison',pt:'Injury',r:'rare',t:'4 hrs',k:2,dc:16,v:'590 gp',eff:'Weapon or up to 5 ammo. Con save (your Poison DC) or poisoned for 1 min and paralyzed; repeat save to end. Lasts 1 min / 5 hits.',mat:['2 rare poisonous reagent','2 uncommon poisonous reagent','1 glass vial']},
+  {n:'Veins of Tar',c:'Poison',pt:'Ingested',r:'rare',t:'4 hrs',k:2,dc:15,v:'300 gp',eff:'In food or drink. Con save (your Poison DC) or affected by the slow spell for 8 hours. Removed by effects that remove poison.',mat:['1 rare poisonous reagent','1 uncommon reactive reagent','1 uncommon supplies','1 glass vial']},
+  {n:'Whispers of Madness',c:'Poison',pt:'Contact',r:'rare',t:'4 hrs',k:2,dc:16,v:'450 gp',eff:'Applied to an object. The first creature to touch it makes a Con save (your Poison DC) or is poisoned for 10 min and rolls on the short-term madness table, suffering that madness while poisoned.',mat:['1 rare poisonous reagent','1 uncommon psionic essence','1 glass vial']},
+  {n:'Midnight Tears',c:'Poison',pt:'Ingested',r:'veryrare',t:'4 hrs',k:2,dc:16,v:'2,300 gp',eff:'In food or drink. No effect until the stroke of midnight; if not neutralized, Con save (your Poison DC) or 9d6 poison (half on a success).',mat:['1 very rare poisonous reagent','1 crystal vial']},
+  {n:'Grievous Injury Poison',c:'Poison',pt:'Injury',r:'veryrare',t:'4 hrs',k:2,dc:18,v:'2,380 gp',eff:'Weapon or up to 5 ammo. Con save (your Poison DC): 6d6 poison, or half on a success. Lasts 1 min / 5 hits.',mat:['1 very rare poisonous reagent','1 crystal vial']},
+  {n:'Slow Death',c:'Poison',pt:'Ingested',r:'veryrare',t:'6 hrs',k:3,dc:18,v:'6,800 gp',eff:'In food or drink. The victim slowly dies: HP maximum drops by 1 each long rest (dies at 0). Poisoned while below half its original maximum. Identified by magic or a DC 15 Medicine check; if cured, lost HP returns after a long rest.',mat:['2 very rare poisonous reagent','1 very rare curative reagent','1 crystal vial']},
+  {n:'Endless Dreams',c:'Poison',pt:'Ingested',r:'legendary',t:'8 hrs',k:4,dc:20,v:'11,000 gp',eff:'In food or drink. Con save (your Poison DC) or the next time the creature sleeps it enters an endless stasis slumber (no aging, no food/drink, cannot be roused). Ended only by greater restoration cast at 7th level or higher, or wish.',mat:['1 legendary poisonous reagent','2 very rare curative reagent','1 crystal vial']}
+];
+let alchCat='all', alchRar='all', alchQuery='';
+function renderAlchemy(){
+  var host=document.getElementById('alchList');host.innerHTML='';
+  var list=ALCHEMY.filter(function(a){
+    if(alchCat!=='all'&&a.c!==alchCat)return false;
+    if(alchRar!=='all'&&a.r!==alchRar)return false;
+    if(alchQuery&&(a.n+' '+a.eff+' '+a.c+' '+(a.pt||'')).toLowerCase().indexOf(alchQuery)<0)return false;
+    return true;
+  });
+  list.sort(function(a,b){if(a.c!==b.c)return a.c.localeCompare(b.c);if(RARRANK[a.r]!==RARRANK[b.r])return RARRANK[a.r]-RARRANK[b.r];return a.n.localeCompare(b.n);});
+  document.getElementById('alchCount').textContent=list.length+' of '+ALCHEMY.length+' shown';
+  list.forEach(function(a){
+    var card=document.createElement('div');card.className='acard '+RARCLASS[a.r];
+    var vary='';
+    if(a.vary){vary='<div class="vary"><table>'+a.vary.map(function(row){return '<tr><td>'+escapeHtml(row[0])+'</td><td>'+escapeHtml(row[1])+'</td></tr>';}).join('')+'</table></div>';}
+    var mats='<div class="mats"><div class="ml">Materials</div><ul>'+a.mat.map(function(m){return '<li>'+escapeHtml(m)+'</li>';}).join('')+'</ul></div>';
+    var ac=actionFor(a.r);
+    var rightChip=a.pt?'<span class="action-chip pt">'+escapeHtml(a.pt)+'</span>':'<span class="action-chip '+ac+'">'+(ac==='ba'?'Bonus Action':'Action')+'</span>';
+    card.innerHTML='<h3>'+escapeHtml(a.n)+' <span class="rarity-chip '+RARCLASS[a.r]+'">'+RARLABEL[a.r]+'</span> <span class="cat-chip">'+escapeHtml(a.c)+'</span> '+rightChip+'</h3>'+
+      '<div class="eff">'+escapeHtml(a.eff)+'</div>'+vary+mats+
+      '<div class="foot"><span><b>Time</b> '+escapeHtml(a.t)+'</span><span><b>Checks</b> '+a.k+'</span><span><b>Craft DC</b> '+a.dc+'</span><span><b>Value</b> '+escapeHtml(a.v)+'</span></div>';
+    host.appendChild(card);
+  });
+}
+document.getElementById('alchSearch').addEventListener('input',function(e){alchQuery=e.target.value.toLowerCase().trim();renderAlchemy();});
+document.querySelectorAll('#catFilt button').forEach(function(b){b.addEventListener('click',function(){alchCat=b.dataset.f;document.querySelectorAll('#catFilt button').forEach(function(x){x.classList.toggle('on',x===b);});renderAlchemy();});});
+document.querySelectorAll('#rarFilt button').forEach(function(b){b.addEventListener('click',function(){alchRar=b.dataset.r;document.querySelectorAll('#rarFilt button').forEach(function(x){x.classList.toggle('on',x===b);});renderAlchemy();});});
+
+/* ============================ TABS ============================ */
+document.querySelectorAll('#tabnav button').forEach(function(b){
+  b.addEventListener('click',function(){
+    document.querySelectorAll('#tabnav button').forEach(function(x){x.classList.remove('active');});b.classList.add('active');
+    document.querySelectorAll('.tabpanel').forEach(function(p){p.classList.remove('active');});
+    document.getElementById('tab-'+b.dataset.tab).classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+});
+
+/* ============================ RESET ============================ */
+document.getElementById('resetAll').addEventListener('click',function(){
+  if(confirm('Reset all trackers, vines, inventory, and spell slots to defaults?')){
+    try{localStorage.removeItem(SK);}catch(e){}S=load();renderAll();
+  }
+});
+
+/* ============================ INIT ============================ */
+function renderAll(){
+  renderVitals();renderWeapon();renderBiome();
+  document.getElementById('roundNum').textContent=S.round;
+  renderVines();renderInv();renderSlots();renderBaby();renderAlchemy();
+}
+renderAll();
+
+
+/* ======================= CLOUD SYNC (Firebase) ======================= */
+/* Inserted by the Sync Injector. Wraps save() + subscribes once.        */
+/* Config + campaign come from firebase-config.js (window.FIREBASE_CONFIG).*/
+/* CHAR_ID is derived from this sheet's own SK key. Local-only until the  */
+/* shared config is filled in. Remote applies reuse the sheet's own load(). */
+(function(){
+  var CFG = window.FIREBASE_CONFIG || {};
+  var CAMPAIGN_ID = window.CAMPAIGN_ID || "astrology-club";
+  var CHAR_ID = (typeof SK === "string" ? SK.replace(/_v[0-9]+$/, "") : "unknown");
+  var configured = CFG && CFG.apiKey && CFG.apiKey.indexOf("PASTE") !== 0;
+
+  var pill = document.createElement("div");
+  pill.style.cssText = "position:fixed;bottom:10px;right:12px;z-index:99999;font:600 11px/1 monospace;padding:5px 9px;border-radius:20px;background:rgba(0,0,0,.55);color:#bbb;letter-spacing:.05em;pointer-events:none;";
+  pill.textContent = configured ? "○ connecting" : "○ local only";
+  document.body.appendChild(pill);
+  function setPill(t,c){ pill.textContent=t; pill.style.color=c; }
+  if(!configured) return;
+
+  var docRef=null, applyingRemote=false, pushT=null;
+  try{
+    firebase.initializeApp(CFG);
+    var db = firebase.firestore();
+    db.enablePersistence({synchronizeTabs:true}).catch(function(){});
+    docRef = db.collection("campaigns").doc(CAMPAIGN_ID).collection("characters").doc(CHAR_ID);
+  }catch(e){ setPill("○ sync error","#e08"); return; }
+
+  var _origSave = save;
+  save = function(){
+    _origSave();
+    if(applyingRemote) return;
+    clearTimeout(pushT);
+    pushT = setTimeout(pushRemote, 400);
+  };
+  function pushRemote(){
+    if(!docRef) return;
+    docRef.set(JSON.parse(JSON.stringify(S)))
+      .then(function(){ setPill("● synced","#7c7"); })
+      .catch(function(){ setPill("○ offline","#c96"); });
+  }
+  var rb = document.getElementById("resetAll");
+  if(rb) rb.addEventListener("click", function(){ setTimeout(function(){ if(!applyingRemote) pushRemote(); },0); });
+
+  docRef.onSnapshot(function(snap){
+    if(snap.metadata.hasPendingWrites) return;
+    if(!snap.exists){ pushRemote(); setPill("● synced","#7c7"); return; }
+    var data = snap.data(); if(!data) return;
+    applyingRemote = true;
+    try{ localStorage.setItem(SK, JSON.stringify(data)); }catch(e){}
+    try{ S = load(); }catch(e){}
+    try{ renderAll(); }catch(e){}
+    applyingRemote = false;
+    setPill("● synced","#7c7");
+  }, function(){ setPill("○ offline","#c96"); });
+})();
+
+</script>
+
+
+</div></body></html>

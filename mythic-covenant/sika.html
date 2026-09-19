@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sika's Hymns Defy Despair — Sika</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus+SC&family=Marcellus&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#07060c;--char:#0d0b16;--char2:#13101f;--panel:#191427;--panel2:#211a33;
+  --line:#2c2640;--line2:#3f3658;--bone:#efe9dd;--bone-dim:#c4bccf;--bone-faint:#8a8398;
+  --gold:#e0b659;--gold-soft:#f1d692;--gold-deep:#9c7a24;
+  --psy:#b794f6;--psy-deep:#6b4bbd;--psy-soft:#d3bdff;
+  --emerald:#5fd6a0;--emerald-deep:#2a8f66;
+  --wine:#cf4d6a;--wine-deep:#92263e;--wine-soft:#ff8ba2;
+  --shadow:0 8px 30px rgba(0,0,0,.62);
+  --glow-gold:0 0 18px rgba(224,182,89,.28);--glow-psy:0 0 16px rgba(183,148,246,.3);--glow-wine:0 0 16px rgba(207,77,106,.28);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Cormorant Garamond',serif;background:radial-gradient(1200px 620px at 82% -12%, rgba(183,148,246,.08), transparent 60%),radial-gradient(900px 520px at -8% 108%, rgba(224,182,89,.05), transparent 60%),var(--void);color:var(--bone);font-size:18px;line-height:1.5;min-height:100vh;letter-spacing:.2px}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.022'/%3E%3C/svg%3E");mix-blend-mode:overlay;opacity:.6}
+.wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:0 18px 90px}
+header.top{text-align:center;padding:34px 0 18px;position:relative}
+.eyebrow{font-family:'Marcellus SC',serif;letter-spacing:7px;font-size:12px;text-transform:uppercase;color:var(--gold);opacity:.9;margin-bottom:8px}
+h1.title{font-family:'Marcellus SC',serif;font-weight:400;font-size:clamp(30px,6vw,56px);line-height:1;background:linear-gradient(180deg,#fff,var(--bone) 30%,var(--gold) 135%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 2px 40px rgba(224,182,89,.16);letter-spacing:2px}
+.subtitle{font-family:'Marcellus',serif;color:var(--bone-dim);margin-top:12px;font-size:16px;letter-spacing:1.5px}
+.tagline{color:var(--gold-soft);font-style:italic;margin-top:6px;font-size:18px;opacity:.9}
+.idline{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 22px;margin-top:16px;font-size:14px;color:var(--bone-faint);font-family:'Fira Code',monospace}
+.idline b{color:var(--bone-dim);font-weight:500}
+.idline .star{color:var(--gold)}
+
+/* ---------- VITALS ---------- */
+.vitals{position:sticky;top:0;z-index:40;margin:18px 0 8px;background:linear-gradient(180deg,rgba(13,11,22,.97),rgba(13,11,22,.9));border:1px solid var(--line);border-radius:14px;backdrop-filter:blur(8px);box-shadow:var(--shadow);padding:12px 14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:10px}
+.vital{background:var(--char2);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.vital .vlabel{font-family:'Marcellus',serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--bone-faint);display:flex;justify-content:space-between;align-items:center}
+.vital .vval{font-family:'Fira Code',monospace;font-size:20px;font-weight:600;margin-top:2px;display:flex;align-items:baseline;gap:4px}
+.vital .vval input{width:58px;background:transparent;border:none;border-bottom:1px solid var(--line2);color:var(--psy);font-family:'Fira Code',monospace;font-size:20px;font-weight:600;text-align:right}
+.vital .vval input:focus{outline:none;border-color:var(--psy)}
+.vital .vval input.maxinput{width:44px;color:var(--bone-faint);font-size:15px;border-bottom:1px dotted var(--line2);text-align:left}
+.vital .vval input.maxinput:focus{color:var(--bone-dim);border-color:var(--bone-dim)}
+.vital .vval.hpval input{color:var(--wine)}
+.vital .vval.hpval input:focus{border-color:var(--wine)}
+.vital .vmax{color:var(--bone-faint);font-size:14px}
+.vbar{height:5px;border-radius:3px;background:var(--char);margin-top:6px;overflow:hidden}
+.vbar i{display:block;height:100%;border-radius:3px;transition:width .35s ease}
+.vbar.mp i{background:linear-gradient(90deg,var(--psy-deep),var(--psy))}
+.vbar.hp i{background:linear-gradient(90deg,var(--wine-deep),var(--wine))}
+.vbar.morale i{background:linear-gradient(90deg,var(--gold-deep),var(--gold-soft))}
+.stepbtns{display:flex;gap:3px}
+.stepbtns button{background:var(--panel);border:1px solid var(--line2);color:var(--bone-dim);width:20px;height:18px;border-radius:5px;cursor:pointer;font-size:13px;line-height:1;font-family:'Fira Code',monospace}
+.stepbtns button:hover{background:var(--psy);color:var(--void);border-color:var(--psy)}
+.factor-stat{display:flex;gap:10px;align-items:baseline;font-family:'Fira Code',monospace;margin-top:2px}
+.factor-stat .fs-big{font-size:22px;font-weight:600;color:var(--gold-soft)}
+.factor-stat .fs-lbl{font-size:9.5px;color:var(--bone-faint);letter-spacing:1px;text-transform:uppercase}
+.factor-inputs{display:flex;gap:7px;margin-top:5px;font-size:11px;color:var(--bone-faint);font-family:'Fira Code',monospace}
+.factor-inputs label{display:flex;align-items:center;gap:3px}
+.factor-inputs input{width:30px;background:transparent;border:none;border-bottom:1px solid var(--line2);color:var(--bone);font-family:'Fira Code',monospace;font-size:13px;text-align:center}
+.factor-inputs input:focus{outline:none;border-color:var(--gold)}
+.wasted-vital{cursor:pointer;transition:.18s}
+.wasted-vital.lit{border-color:var(--wine);background:rgba(207,77,106,.08);box-shadow:var(--glow-wine)}
+.wasted-vital .ws-line{font-family:'Fira Code',monospace;font-size:14px;margin-top:3px;color:var(--bone-dim);display:flex;gap:8px;align-items:baseline}
+.wasted-vital .ws-line b{color:var(--wine-soft);font-size:18px}
+.wasted-vital .ws-flag{font-size:10px;color:var(--wine-soft);letter-spacing:1px;text-transform:uppercase;margin-top:3px;display:none}
+.wasted-vital.lit .ws-flag{display:block}
+
+/* ---------- LAYOUT ---------- */
+.layout{display:flex;gap:22px;margin-top:18px;align-items:flex-start}
+.content{flex:1;min-width:0}
+nav.tabs{flex:0 0 218px;display:flex;flex-direction:column;gap:6px;position:sticky;top:14px;align-self:flex-start;border:1px solid var(--line);border-radius:14px;padding:12px 10px;background:linear-gradient(180deg,var(--panel),var(--char2));box-shadow:var(--shadow)}
+nav.tabs button{font-family:'Marcellus',serif;font-size:13.5px;letter-spacing:1px;text-align:left;background:transparent;border:1px solid transparent;color:var(--bone-faint);padding:11px 14px;border-radius:8px;cursor:pointer;transition:.18s;text-transform:uppercase;position:relative}
+nav.tabs button:hover{color:var(--bone);background:var(--panel2)}
+nav.tabs button.active{color:var(--gold);border-color:var(--gold-deep);background:rgba(224,182,89,.08);box-shadow:var(--glow-gold)}
+nav.tabs button.active::before{content:"";position:absolute;left:-1px;top:8px;bottom:8px;width:3px;background:var(--gold);border-radius:3px;box-shadow:var(--glow-gold)}
+@media(max-width:760px){.layout{flex-direction:column}nav.tabs{flex:none;width:100%;position:static;flex-direction:row;flex-wrap:wrap;justify-content:center}nav.tabs button{text-align:center}nav.tabs button.active::before{display:none}}
+.tabpanel{display:none;animation:fade .4s ease}
+.tabpanel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ---------- SECTIONS / CARDS ---------- */
+h2.sec{font-family:'Marcellus',serif;font-weight:400;font-size:26px;color:var(--bone);margin:30px 0 4px;display:flex;align-items:center;gap:12px;letter-spacing:.5px}
+h2.sec::before{content:"";width:26px;height:2px;background:var(--gold);box-shadow:var(--glow-gold)}
+.sec-note{color:var(--bone-faint);font-style:italic;font-size:15px;margin-bottom:14px}
+.card{background:linear-gradient(180deg,var(--panel),var(--char2));border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:14px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--gold);opacity:.65}
+.card.psy::before{background:var(--psy)}.card.wine::before{background:var(--wine)}.card.emerald::before{background:var(--emerald)}
+.card h3{font-family:'Marcellus',serif;font-size:19px;color:var(--gold-soft);margin-bottom:3px;display:flex;flex-wrap:wrap;align-items:center;gap:8px;letter-spacing:.3px}
+.card h3 .tag{font-family:'Fira Code',monospace;font-size:11px;color:var(--bone-faint);background:var(--char);border:1px solid var(--line2);padding:2px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:.5px}
+.card h3 .tag.psy{color:var(--psy-soft);border-color:var(--psy-deep)}
+.card h3 .tag.gold{color:var(--gold-soft);border-color:var(--gold-deep)}
+.card h3 .tag.wine{color:var(--wine-soft);border-color:var(--wine-deep)}
+.card h3 .tag.emerald{color:var(--emerald);border-color:var(--emerald-deep)}
+.card p{margin:6px 0;color:var(--bone-dim)}
+.card ul{list-style:none;margin:6px 0}
+.card ul li{position:relative;padding-left:18px;margin:5px 0;color:var(--bone-dim)}
+.card ul li::before{content:"\266A";position:absolute;left:0;color:var(--gold);font-size:13px;top:2px}
+.card ul li.sub{padding-left:34px;font-size:.96em;color:var(--bone-faint)}
+.card ul li.sub::before{content:"\203A";left:20px;color:var(--bone-faint)}
+.card ul li.sub2{padding-left:50px;font-size:.93em;color:var(--bone-faint)}
+.card ul li.sub2::before{content:"\2219";left:36px;color:var(--bone-faint)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:14px}
+.quote{font-style:italic;color:var(--gold-soft);text-align:center;font-size:20px;margin:6px 0 20px;opacity:.9}
+.btn{font-family:'Marcellus',serif;font-size:13px;letter-spacing:.5px;background:var(--gold);color:var(--void);border:none;padding:9px 16px;border-radius:8px;cursor:pointer;transition:.15s;font-weight:400}
+.btn:hover{background:var(--gold-deep);color:#fff}
+.btn.ghost{background:transparent;border:1px solid var(--line2);color:var(--bone-dim)}
+.btn.ghost:hover{border-color:var(--gold);color:var(--gold);background:transparent}
+.btn.psy{background:var(--psy)}.btn.psy:hover{background:var(--psy-deep);color:#fff}
+.btn.wine{background:var(--wine)}.btn.wine:hover{background:var(--wine-deep);color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed;filter:grayscale(.3)}
+.btn:disabled:hover{background:transparent}
+.footer{text-align:center;margin-top:40px;padding-top:18px;border-top:1px solid var(--line);color:var(--bone-faint);font-size:13px;font-family:'Fira Code',monospace}
+.reset-btn{background:transparent;border:1px solid var(--line2);color:var(--bone-faint);font-family:'Marcellus',serif;font-size:11px;padding:5px 12px;border-radius:6px;cursor:pointer;margin-top:10px}
+.reset-btn:hover{border-color:var(--wine);color:var(--wine)}
+.callout{border:1px dashed var(--line2);background:var(--char);border-radius:10px;padding:11px 14px;margin:10px 0;font-size:15px;color:var(--bone-dim)}
+.callout b{color:var(--gold-soft)}
+.warnflag{color:var(--wine-soft);font-family:'Fira Code',monospace;font-size:12px}
+
+/* ---------- MELODY CONSOLE ---------- */
+.console-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:linear-gradient(180deg,var(--panel2),var(--char2));border:1px solid var(--line2);border-radius:14px;padding:13px 15px;margin-bottom:16px;box-shadow:var(--shadow)}
+.turn-pill{font-family:'Fira Code',monospace;font-size:13px;color:var(--bone-faint);display:flex;align-items:center;gap:8px}
+.turn-pill .freedot{font-size:16px}
+.turn-pill .freedot.ready{color:var(--emerald)}
+.turn-pill .freedot.used{color:var(--bone-faint)}
+.bigturn{font-family:'Marcellus',serif;font-size:14px;letter-spacing:.5px;font-weight:400;background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:var(--void);border:none;padding:11px 18px;border-radius:10px;cursor:pointer;box-shadow:var(--glow-gold);transition:.15s}
+.bigturn:hover{transform:translateY(-2px);filter:brightness(1.08)}
+.melody-pick{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px}
+.mel-chip{font-family:'Marcellus',serif;font-size:13px;letter-spacing:.4px;background:var(--char);border:1px solid var(--line2);color:var(--bone-dim);padding:9px 13px;border-radius:9px;cursor:pointer;transition:.15s;display:flex;flex-direction:column;gap:1px;min-width:120px}
+.mel-chip .mc-sub{font-family:'Fira Code',monospace;font-size:9.5px;letter-spacing:.5px;text-transform:uppercase;color:var(--bone-faint)}
+.mel-chip:hover{border-color:var(--gold);color:var(--bone)}
+.mel-chip.active{border-color:var(--gold);color:var(--gold-soft);background:rgba(224,182,89,.1);box-shadow:var(--glow-gold)}
+.mel-chip.active .mc-sub{color:var(--gold)}
+.mel-chip.wlock{opacity:.38;cursor:not-allowed}
+.melody-head{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:6px}
+.melody-head h3{font-family:'Marcellus',serif;font-size:24px;color:var(--gold-soft);letter-spacing:.5px}
+.perform-badge{font-family:'Fira Code',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:3px 10px;border-radius:20px;border:1px solid var(--line2);color:var(--bone-faint);cursor:pointer}
+.perform-badge.on{color:var(--emerald);border-color:var(--emerald-deep);background:rgba(95,214,160,.08);box-shadow:0 0 12px rgba(95,214,160,.25)}
+.melody-effect{background:var(--char);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:10px;padding:12px 15px;margin-bottom:14px;color:var(--bone-dim);font-size:16px}
+.melody-effect b{color:var(--gold-soft)}
+.hymn-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:13px}
+.hymn{background:linear-gradient(180deg,var(--panel),var(--char2));border:1px solid var(--line);border-radius:12px;padding:14px 15px;position:relative;overflow:hidden}
+.hymn::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--psy);opacity:.55}
+.hymn h4{font-family:'Marcellus',serif;font-size:17px;color:var(--bone);margin-bottom:4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.cost-chip{font-family:'Fira Code',monospace;font-size:11px;color:var(--psy-soft);background:rgba(183,148,246,.1);border:1px solid var(--psy-deep);padding:2px 8px;border-radius:20px;letter-spacing:.5px}
+.hymn .heff{color:var(--bone-dim);font-size:15px;margin:6px 0 12px}
+.hymn .playrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.playbtn{font-family:'Marcellus',serif;font-size:12.5px;letter-spacing:.4px;background:var(--psy);color:var(--void);border:none;padding:8px 14px;border-radius:8px;cursor:pointer;transition:.15s}
+.playbtn:hover{background:var(--psy-deep);color:#fff}
+.playbtn.free{background:var(--emerald);color:var(--void)}
+.playbtn.free:hover{background:var(--emerald-deep);color:#fff}
+.playbtn.wasted{background:var(--wine);color:#fff}
+.playbtn:disabled{background:var(--line2);color:var(--bone-faint);cursor:not-allowed}
+.play-note{font-family:'Fira Code',monospace;font-size:11px;color:var(--bone-faint)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--char2);border:1px solid var(--gold-deep);color:var(--gold-soft);font-family:'Fira Code',monospace;font-size:14px;padding:11px 20px;border-radius:10px;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.3s;z-index:200}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.bad{border-color:var(--wine-deep);color:var(--wine-soft)}
+
+/* ---------- MYSTIC SONGS ---------- */
+.song-pick-note{font-family:'Fira Code',monospace;font-size:13px;color:var(--bone-faint);margin-bottom:10px}
+.song-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:13px}
+.song{background:linear-gradient(180deg,var(--panel),var(--char2));border:1px solid var(--line);border-radius:12px;padding:14px 15px;cursor:pointer;transition:.15s;position:relative;overflow:hidden}
+.song::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--emerald);opacity:.5}
+.song:hover{border-color:var(--emerald-deep)}
+.song.paired{border-color:var(--emerald);box-shadow:0 0 0 1px var(--emerald-deep),var(--shadow)}
+.song.paired::before{opacity:1}
+.song h4{font-family:'Marcellus',serif;font-size:18px;color:var(--bone);margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.song .pairmark{font-family:'Fira Code',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--emerald);border:1px solid var(--emerald-deep);padding:2px 8px;border-radius:20px;margin-left:auto;display:none}
+.song.paired .pairmark{display:inline-block}
+.song p{color:var(--bone-dim);font-size:15px;margin-top:4px}
+
+/* ---------- WASTED CONSOLE ---------- */
+.wasted-shell{border:1px solid var(--wine-deep);border-radius:14px;padding:0;overflow:hidden;margin-bottom:18px;box-shadow:var(--shadow)}
+.wasted-banner{background:linear-gradient(135deg,rgba(146,38,62,.5),rgba(33,26,51,.5));padding:16px 18px;display:flex;flex-wrap:wrap;align-items:center;gap:14px;border-bottom:1px solid var(--wine-deep)}
+.wasted-banner .wb-state{font-family:'Marcellus SC',serif;font-size:20px;letter-spacing:1.5px;color:var(--bone-dim)}
+.wasted-banner .wb-state.on{color:var(--wine-soft);text-shadow:var(--glow-wine)}
+.wasted-banner .wb-toggle{margin-left:auto}
+.wasted-body{padding:16px 18px;background:linear-gradient(180deg,var(--panel),var(--char2))}
+.meter-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:14px}
+.meter{background:var(--char2);border:1px solid var(--line);border-radius:11px;padding:11px 13px;text-align:center}
+.meter .m-lbl{font-family:'Marcellus',serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--bone-faint)}
+.meter .m-val{font-family:'Fira Code',monospace;font-size:26px;font-weight:600;color:var(--wine-soft);margin:4px 0}
+.meter .m-val.gold{color:var(--gold-soft)}
+.meter .m-val.psy{color:var(--psy-soft)}
+.meter .m-sub{font-family:'Fira Code',monospace;font-size:11px;color:var(--bone-faint)}
+.meter .m-steps{display:flex;gap:4px;justify-content:center;margin-top:6px}
+.meter .m-steps button{background:var(--panel);border:1px solid var(--line2);color:var(--bone-dim);width:26px;height:22px;border-radius:5px;cursor:pointer;font-size:13px;font-family:'Fira Code',monospace}
+.meter .m-steps button:hover{background:var(--wine);color:#fff;border-color:var(--wine)}
+.drink-track{display:flex;gap:8px;justify-content:center;margin:10px 0 4px}
+.drink-pip{width:30px;height:30px;border-radius:50%;border:2px solid var(--line2);background:var(--char);display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--bone-faint)}
+.drink-pip.filled{border-color:var(--wine);background:rgba(207,77,106,.18);color:var(--wine-soft)}
+.drink-pip.over{border-color:var(--wine);background:var(--wine-deep);color:#fff}
+.flag-row{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.statflag{font-family:'Fira Code',monospace;font-size:11px;letter-spacing:.5px;text-transform:uppercase;padding:4px 11px;border-radius:20px;border:1px solid var(--line2);color:var(--bone-faint);background:var(--char)}
+.statflag.on{border-color:var(--wine);color:var(--wine-soft);background:rgba(207,77,106,.1)}
+.statflag.on.emerald{border-color:var(--emerald-deep);color:var(--emerald);background:rgba(95,214,160,.08)}
+.statflag.on.gold{border-color:var(--gold-deep);color:var(--gold-soft);background:rgba(224,182,89,.1)}
+.wasted-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:6px}
+.dc-config{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:12px;padding-top:12px;border-top:1px dashed var(--line2);font-family:'Fira Code',monospace;font-size:13px;color:var(--bone-dim)}
+.dc-config label{display:flex;align-items:center;gap:5px}
+.dc-config input{width:42px;background:var(--char);border:1px solid var(--line2);border-radius:6px;color:var(--bone);font-family:'Fira Code',monospace;font-size:14px;text-align:center;padding:3px 4px}
+.dc-config input:focus{outline:none;border-color:var(--wine)}
+.dc-big{font-family:'Fira Code',monospace;font-size:22px;color:var(--wine-soft);font-weight:600}
+
+/* switch */
+.switch{position:relative;display:inline-flex;align-items:center;cursor:pointer;gap:9px;font-family:'Marcellus',serif;font-size:13px;letter-spacing:.5px;color:var(--bone-dim)}
+.switch input{display:none}
+.switch .track{width:46px;height:24px;border-radius:14px;background:var(--char);border:1px solid var(--line2);transition:.2s;position:relative}
+.switch .track::after{content:"";position:absolute;left:3px;top:2px;width:18px;height:18px;border-radius:50%;background:var(--bone-faint);transition:.2s}
+.switch input:checked + .track{background:rgba(207,77,106,.25);border-color:var(--wine)}
+.switch input:checked + .track::after{transform:translateX(22px);background:var(--wine-soft)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <div class="eyebrow">A Living Concert</div>
+  <h1 class="title">Sika's Hymns Defy Despair</h1>
+  <div class="subtitle">Sika &middot; Bard of the Sephopine Flute</div>
+  <div class="tagline">"Sometimes a good tune heals more than words."</div>
+  <div class="idline">
+    <span><b>Resource</b> Mental Power (MP)</span>
+    <span><b>Instrument</b> The Sephopine Flute</span>
+    <span><b>System</b> Mythic Covenant</span>
+    <span><b>Difficulty</b> <span class="star">&#9733;</span></span>
+  </div>
+</header>
+
+<section class="vitals" id="vitals">
+  <div class="vital">
+    <div class="vlabel">Mental Power (MP) <span class="stepbtns"><button data-k="mp" data-d="-3">&minus;</button><button data-k="mp" data-d="3">+</button></span></div>
+    <div class="vval"><input id="mp" type="number" value="50"> <span class="vmax">/ <input id="mpmax" type="number" value="50" class="maxinput"></span></div>
+    <div class="vbar mp"><i id="mpbar"></i></div>
+  </div>
+  <div class="vital">
+    <div class="vlabel">HP / Temp HP <span class="stepbtns"><button data-k="hp" data-d="-5">&minus;</button><button data-k="hp" data-d="5">+</button></span></div>
+    <div class="vval hpval"><input id="hp" type="number" value="0"><span class="vmax"> + </span><input id="thp" type="number" value="0" style="color:var(--gold-soft)"></div>
+    <div class="vbar hp"><i id="hpbar"></i></div>
+  </div>
+  <div class="vital">
+    <div class="vlabel">Morale <span class="stepbtns"><button data-k="morale" data-d="-5">&minus;</button><button data-k="morale" data-d="5">+</button></span></div>
+    <div class="vval"><input id="morale" type="number" value="100" style="color:var(--gold-soft)"> <span class="vmax">/ <input id="moralemax" type="number" value="100" class="maxinput"></span></div>
+    <div class="vbar morale"><i id="moralebar"></i></div>
+  </div>
+  <div class="vital">
+    <div class="vlabel">Melody Factor</div>
+    <div class="factor-stat"><span class="fs-big" id="factorVal">44</span><span class="fs-lbl">(PB+CHA+WIS)&times;2</span></div>
+    <div class="factor-inputs"><label>PB <input id="pb" type="number" value="4"></label><label>CHA <input id="cha" type="number" value="12"></label><label>WIS <input id="wis" type="number" value="6"></label></div>
+  </div>
+  <div class="vital wasted-vital" id="wastedVital">
+    <div class="vlabel">Alcohol / Dizzy</div>
+    <div class="ws-line"><b id="drinkCount">0</b><span>drinks</span><span style="color:var(--bone-faint)">&middot;</span><span id="wastedShort" style="color:var(--bone-faint)">sober</span></div>
+    <div class="ws-flag">&#9888; Dizzy &mdash; round <span id="wastedRoundShort">1</span> of 3</div>
+  </div>
+</section>
+
+<div class="layout">
+  <nav class="tabs" id="tabnav">
+    <button class="active" data-tab="overview">Overview</button>
+    <button data-tab="melodies">Melodies &amp; Hymns</button>
+    <button data-tab="songs">Mystic Songs</button>
+    <button data-tab="wasted">Wasted State</button>
+  </nav>
+
+  <div class="content">
+
+  <!-- ===================== OVERVIEW ===================== -->
+  <section class="tabpanel active" id="tab-overview">
+    <div class="quote">"Choosing the proper melody and hymns allows Sika to turn the battlefield into a living concert."</div>
+
+    <h2 class="sec">The Sephopine Flute</h2>
+    <p class="sec-note">A family heirloom that lets Sika influence others through song &mdash; at the cost of her mental fortitude.</p>
+    <div class="card psy">
+      <h3>Mental Power &mdash; MP <span class="tag psy">Resource</span></h3>
+      <p>Instead of TL, Sika uses <b>Mental Power (MP)</b>: her capacity to channel her melodies without her mind shattering.</p>
+      <ul>
+        <li>Regain <b>all MP</b> on a long rest, and <b>half MP</b> on a short rest.</li>
+        <li>Certain events may restore bonus MP.</li>
+        <li>Starting or switching a Melody costs <b>5 MP</b>.</li>
+      </ul>
+      <div class="callout"><b>Melody Factor = (PB + CHA + WIS) &times; 2.</b> The guide lists Sika's current Factor as <b>44</b>. The PB / CHA / WIS split in the vitals bar is editable &mdash; set it to her true stats so every Factor-based effect scales correctly.</div>
+    </div>
+
+    <h2 class="sec">Mindful Melodies</h2>
+    <p class="sec-note">Bonus Action &mdash; begin performing a Melody targeting creatures of her choice within 30 ft.</p>
+    <div class="card">
+      <h3>Melody Rules</h3>
+      <ul>
+        <li>A creature stops being a target when it leaves range; when one enters the Melody's area she may make it a target (no action).</li>
+        <li>A Melody lasts <b>1 minute</b>, though she can stop at any time (no action).</li>
+        <li>Melodies automatically stop if Sika is incapacitated or unable to speak.</li>
+        <li>Starting / switching a Melody is the <b>Mindful Melodies bonus action</b> and costs <b>5 MP</b>.</li>
+        <li>She may start or switch a Melody <b>at most once per turn</b> (refreshed by <b>New Turn</b> on the console).</li>
+        <li>Because <b>Alcoholic</b> is also a bonus action, she can't drink and switch Melodies on the same turn &mdash; set the stance before she starts drinking.</li>
+        <li class="sub">Switching while <b>Hymn of the Guardian</b> temp HP is out causes that temp HP to decay by the Melody Factor each round.</li>
+      </ul>
+      <div class="callout"><b>While Wasted:</b> her Melody is <b>locked</b> &mdash; she rides whatever tune she was performing and cannot switch. If it ends from a failed CON save she has <b>no Melody and no hymns</b> until Wasted passes. Pick her stance <b>before the 4th drink</b>.</div>
+    </div>
+    <div class="card">
+      <h3>Hymns <span class="tag">Free Action / Reaction</span></h3>
+      <ul>
+        <li>Each Melody grants access to different hymns (religious prayers).</li>
+        <li>Once per turn, Sika can play one hymn as a <b>free action</b>.</li>
+        <li>Playing additional hymns the same turn, or playing one as a <b>reaction</b>, costs <b>+3 MP</b>.</li>
+        <li>She chooses who each hymn affects within the Melody's range.</li>
+      </ul>
+      <div class="callout"><b>How the console charges MP:</b> the first hymn each turn spends only its listed cost; every extra hymn that turn adds +3 MP on top. Use <b>New Turn</b> on the Melodies tab to refresh the free hymn. <span class="warnflag">(Interpretation of the +3 rule &mdash; confirm with your DM if you read it differently.)</span></div>
+    </div>
+
+    <h2 class="sec">Abilities</h2>
+    <div class="grid2">
+      <div class="card emerald">
+        <h3>Psychic Linguist <span class="tag emerald">Passive</span></h3>
+        <p>Sika can understand ANY creature while it is speaking &mdash; as if a text bubble pops up next to its head.</p>
+      </div>
+      <div class="card gold" style="--c:gold">
+        <h3>Masterful Performer <span class="tag gold">Passive</span></h3>
+        <p>When Sika performs a Melody she may also choose a <b>Mystic Song</b> to combine with it. The Mystic Song's effect happens simultaneously with the Melody.</p>
+      </div>
+      <div class="card psy">
+        <h3>Alcoholic <span class="tag psy">Bonus Action</span></h3>
+        <p>Sika takes a little alcohol, gaining:</p>
+        <ul>
+          <li>+5 MP</li>
+          <li>Her CHA modifier is <b>doubled</b> for one round</li>
+          <li>An extra free hymn, lasting one round</li>
+        </ul>
+        <p>Drinking <b>more than three times</b> sends her into the <b>Wasted</b> state (Dizzy). Her drink tally <b>persists until a short or long rest</b> &mdash; sobering up from Dizzy doesn't clear it, so she can't keep stacking fresh drinks without resting.</p>
+      </div>
+      <div class="card psy">
+        <h3>Resonant Mindpower <span class="tag psy">Reaction</span></h3>
+        <p>Sika lends her mental power to bolster others:</p>
+        <ul>
+          <li>If a creature spends MP, she may give up to <b>10 of hers</b> to that creature, <b>or</b></li>
+          <li>Spend <b>3 MP</b> to add her PB to a morale, fear, or sanity check.</li>
+        </ul>
+      </div>
+      <div class="card wine">
+        <h3>Wasted <span class="tag wine">Passive &middot; High Risk / High Reward</span></h3>
+        <p>After too much alcohol Sika becomes drunk:</p>
+        <ul>
+          <li>She gains the <b>Dizzy</b> status effect.</li>
+          <li><b>Hymns cost no MP.</b></li>
+          <li>She can barely keep concentration: roll a <b>CON save every round</b> (DC 20, rising per hymn used). On a failure the Melody ends and she can't start another until the state ends.</li>
+          <li>Lasts <b>3 rounds</b>. If she rides it out, Dizzy fades cleanly; if she drinks to <b>extend</b> it, the comedown is the <b>Nauseous</b> status &mdash; lasting as long as the bender.</li>
+        </ul>
+        <p style="margin-top:8px"><a href="#" onclick="goTab('wasted');return false;" style="color:var(--wine-soft)">Open the Wasted console &rarr;</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== MELODIES ===================== -->
+  <section class="tabpanel" id="tab-melodies">
+    <h2 class="sec">Melody Console</h2>
+    <p class="sec-note">Select a Melody, then play its hymns. Playing a hymn spends MP from the vitals bar.</p>
+
+    <div class="console-bar">
+      <button class="bigturn" id="newTurnBtn">&#10227; New Turn</button>
+      <div class="turn-pill">Free hymn this turn: <span class="freedot ready" id="freeDot">&#9679;</span> <span id="freeTxt">available</span></div>
+      <div class="turn-pill" id="extraFreePill" style="display:none;color:var(--emerald)">&#9733; Bonus free hymn ready (Alcoholic)</div>
+      <div class="turn-pill" id="wastedPill" style="display:none;color:var(--wine-soft)">&#9888; Dizzy &mdash; hymns are FREE, concentration at risk</div>
+    </div>
+
+    <div class="melody-pick" id="melodyPick"></div>
+
+    <div class="melody-head">
+      <h3 id="melTitle">Melody of Triumph</h3>
+      <span class="perform-badge" id="performBadge">Not performing</span>
+      <button class="btn ghost" id="switchBtn" style="margin-left:auto">Start / Switch Melody (&minus;5 MP)</button>
+    </div>
+    <div class="melody-effect" id="melEffect"></div>
+
+    <div class="hymn-grid" id="hymnGrid"></div>
+  </section>
+
+  <!-- ===================== MYSTIC SONGS ===================== -->
+  <section class="tabpanel" id="tab-songs">
+    <h2 class="sec">Mystic Songs</h2>
+    <p class="sec-note">Class Feature &mdash; via <b>Masterful Performer</b>, one Mystic Song can be paired with the active Melody to resolve simultaneously.</p>
+    <div class="song-pick-note">Tap a song to pair it with the current Melody (<span id="pairedName">none paired</span>).</div>
+    <div class="song-grid" id="songGrid"></div>
+  </section>
+
+  <!-- ===================== WASTED ===================== -->
+  <section class="tabpanel" id="tab-wasted">
+    <h2 class="sec">Wasted &mdash; Dizzy &amp; Nauseous</h2>
+    <p class="sec-note">Her <b>Wasted</b> feat: drinking 4+ times makes her <b>Dizzy</b> (free hymns, but her grip on the song may slip). Dizzy lasting past 3 rounds turns to <b>Nauseous</b>.</p>
+
+    <div class="wasted-shell">
+      <div class="wasted-banner">
+        <span class="wb-state" id="wbState">SOBER</span>
+        <label class="switch wb-toggle">
+          <input type="checkbox" id="wastedToggle">
+          <span class="track"></span>
+          <span id="wastedToggleLbl">Enter Dizzy</span>
+        </label>
+      </div>
+      <div class="wasted-body">
+
+        <div class="drink-track" id="drinkTrack"></div>
+        <p style="text-align:center;font-family:'Fira Code',monospace;font-size:12px;color:var(--bone-faint);margin-bottom:6px">4th drink in one combat &rarr; Dizzy &middot; the tally clears only on a rest</p>
+        <div class="wasted-actions" style="justify-content:center">
+          <button class="btn psy" id="drinkBtn">&#127862; Alcoholic (Bonus Action): +5 MP</button>
+          <button class="btn ghost" id="s-drink">&minus; Remove drink</button>
+          <button class="btn ghost" id="shortRestBtn">&#9788; Short Rest</button>
+          <button class="btn ghost" id="longRestBtn">&#127769; Long Rest</button>
+        </div>
+
+        <div class="meter-row" style="margin-top:16px">
+          <div class="meter">
+            <div class="m-lbl">Dizzy Round</div>
+            <div class="m-val" id="wRound">&mdash;</div>
+            <div class="m-sub">ride out 3 = clean</div>
+            <div class="m-steps"><button id="wr-minus">&minus;</button><button id="wr-plus">+</button></div>
+          </div>
+          <div class="meter">
+            <div class="m-lbl">Bender (extensions)</div>
+            <div class="m-val" id="wBender">0</div>
+            <div class="m-sub">extend &rarr; Nauseous</div>
+          </div>
+          <div class="meter">
+            <div class="m-lbl">Hymns Used (Dizzy)</div>
+            <div class="m-val psy" id="wHymns">0</div>
+            <div class="m-sub">raises the CON DC</div>
+            <div class="m-steps"><button id="wh-minus">&minus;</button><button id="wh-plus">+</button></div>
+          </div>
+          <div class="meter">
+            <div class="m-lbl">CON Save DC</div>
+            <div class="m-val gold" id="wDC">20</div>
+            <div class="m-sub">to hold the Melody</div>
+          </div>
+        </div>
+
+        <div class="flag-row">
+          <span class="statflag" id="flagDizzy">Dizzy</span>
+          <span class="statflag emerald" id="flagFreeHymns">Hymns Free (0 MP)</span>
+          <span class="statflag" id="flagNauseous">Nauseous (no reactions)</span>
+        </div>
+
+        <div class="dc-config">
+          <label>CON modifier <input type="number" id="conMod" value="0"></label>
+          <span style="color:var(--bone-faint)">CON save = d20 + CON mod vs DC</span>
+        </div>
+        <div class="dc-config">
+          <label>Base DC <input type="number" id="dcBase" value="20"></label>
+          <label>+ DC per hymn <input type="number" id="dcPerHymn" value="2"></label>
+          <label>+ DC per extension <input type="number" id="dcPerExtend" value="2"></label>
+          <span style="color:var(--bone-faint)">deeper bender = harder to hold the tune</span>
+        </div>
+
+        <div class="wasted-actions" style="margin-top:14px">
+          <button class="btn wine" id="advRoundBtn">Advance Dizzy Round</button>
+          <button class="btn ghost" id="conSaveBtn">Roll CON Save (d20)</button>
+          <button class="btn ghost" id="sustainBtn">&#127862; Sustain (drink again)</button>
+          <button class="btn ghost" id="endWastedBtn">End Wasted &amp; Sober Up</button>
+        </div>
+        <div id="conResult" style="margin-top:12px;font-family:'Fira Code',monospace;font-size:15px;color:var(--bone-dim);display:none"></div>
+      </div>
+    </div>
+
+    <h2 class="sec">Status Effects</h2>
+    <p class="sec-note">The drunk progression is one ladder: <b>Dizzy</b> (Tier I) climbs to <b>Nauseous</b> (Tier II). Both are now in the handbook.</p>
+    <div class="grid2">
+      <div class="card emerald">
+        <h3>Dizzy <span class="tag emerald">Tier I &middot; while drunk</span></h3>
+        <p>Sika gains this on her <b>4th drink</b> and it runs for <b>3 rounds</b>:</p>
+        <ul>
+          <li>The world tilts &mdash; disadvantage on Dexterity checks and on attacks made after moving over half her speed; speed reduced.</li>
+          <li>She can still take reactions.</li>
+          <li><b>Ride it out</b> &mdash; if she lets the 3 rounds lapse without drinking again, Dizzy <b>fades cleanly</b>, no hangover.</li>
+          <li class="sub"><b>Extend it</b> &mdash; each drink she takes to stay drunk refreshes the 3-round clock and racks up a <b>bender</b>. Any bender means the comedown will be <b>Nauseous</b>, and each extension also raises the CON DC to hold her tune.</li>
+        </ul>
+        <p class="sec-note" style="margin:6px 0 0">Refer to the handbook entry for the exact figures.</p>
+      </div>
+      <div class="card wine">
+        <h3>Nauseous <span class="tag wine">Tier II &middot; the hangover</span></h3>
+        <p>Only an <b>extended</b> Dizzy turns to <b>Nauseous</b> when it ends &mdash; a hangover, not venom:</p>
+        <ul>
+          <li><b>Cannot take reactions.</b> Resonant Mindpower and Stunning Solo both go offline.</li>
+          <li>Speed halved; disadvantage on attacks and STR/DEX saves; the pounding head leaves her <b>vulnerable to thunder &amp; psychic</b> (this replaces any poison tick &mdash; sensitivity, not toxin).</li>
+          <li>Healing received is halved while she can't keep anything down.</li>
+          <li><b>Lasts as long as the bender</b> &mdash; the Nauseous duration equals the number of times she extended the Dizzy. A quick top-up is a short hangover; a long bender lingers. A rest clears it instantly.</li>
+          <li class="sub">No ongoing poison damage &mdash; the sick feeling is the cost, not a venom DOT.</li>
+        </ul>
+        <div class="callout"><b>Dial:</b> halved healing bites a self-healer hardest &mdash; if it's too rough, limit it to potions/consumables and let her hymn-healing through. Match whatever you locked into the handbook.</div>
+      </div>
+    </div>
+  </section>
+
+  </div><!-- /content -->
+</div><!-- /layout -->
+
+<div class="footer">
+  Sika &mdash; The Sephopine Flute &middot; Mythic Covenant &middot; Reference v1.0<br>
+  <button class="reset-btn" id="resetAll">Reset all trackers to defaults</button>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+
+<!-- ===== Firebase sync (added by Sync Injector) ===== -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+/* ============================ STATE ============================ */
+const SK='sika_v3';
+const defaults={
+  mp:50, mpmax:50,
+  hp:0, thp:0,
+  morale:100, moralemax:100,
+  pb:4, cha:12, wis:6,
+  activeMelody:'triumph', performing:false, performedMelody:null, switchedThisTurn:false,
+  pairedSong:'none',
+  freeHymnUsed:false, extraFreeHymn:false, chaDoubled:false,
+  drinks:0, wasted:false, wastedRound:0, hymnsWasted:0,
+  dizzyExtended:false, benders:0, nauseousRounds:0,
+  dcBase:20, dcPerHymn:2, dcPerExtend:2, conMod:0, nauseous:false
+};
+let S=load();
+function load(){
+  try{var r=localStorage.getItem(SK);if(r){var o=JSON.parse(r);var d=JSON.parse(JSON.stringify(defaults));deepMerge(d,o);return d;}}catch(e){}
+  return JSON.parse(JSON.stringify(defaults));
+}
+function deepMerge(t,s){for(var k in s){if(s[k]&&typeof s[k]==='object'&&!Array.isArray(s[k])&&t[k]&&typeof t[k]==='object'){deepMerge(t[k],s[k]);}else{t[k]=s[k];}}}
+function save(){try{localStorage.setItem(SK,JSON.stringify(S));}catch(e){}}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+function factor(){return (S.pb+S.cha+S.wis)*2;}
+
+/* ============================ DATA ============================ */
+const MELODIES={
+  triumph:{name:'Melody of Triumph',kind:'Buffs',eff:'Creatures gain <b>+PB</b> to attack rolls and saving throws.',
+    hymns:[
+      {n:'Hymn of Rising Valor',c:3,e:'Morale +5 on a successful hit.'},
+      {n:'Hymn of the Hero',c:5,e:'Choose one creature \u2014 their next hit deals extra damage equal to the Melody Factor.'},
+      {n:'Hymn of Relentlessness',c:8,e:'Choose one creature \u2014 they gain an extra action on their next turn.'}
+    ]},
+  serenity:{name:'Melody of Serenity',kind:'Defense',eff:'Creatures gain <b>+PB AC</b> and advantage on all defensive actions (Dodge, Block, etc.).',
+    hymns:[
+      {n:'Hymn of Tranquility',c:3,e:'One creature gains resistance to all attacks for one round.'},
+      {n:'Hymn of Purification',c:5,e:'Cleanse all status effects by one tier for chosen creatures.'},
+      {n:'Hymn of the Guardian',c:8,e:'Choose one creature \u2014 whenever hit this round they gain temp HP equal to the Melody Factor. If the Melody changes, this temp HP decays by the Melody Factor per round.'}
+    ]},
+  mysticism:{name:'Melody of Mysticism',kind:'Magical',eff:'Creatures gain <b>+PB</b> to spell attack rolls and spell save DCs.',
+    hymns:[
+      {n:'Hymn of Arcane Seal',c:3,e:'On a failed Wisdom save, creatures cannot cast spells until the end of their next turn.'},
+      {n:'Hymn of Casting',c:5,e:"Choose one creature \u2014 that creature's next spell is cast at +1 spell slot."},
+      {n:'Hymn of Resonance',c:8,e:'Choose one creature \u2014 after they cast a spell they may reroll one damage die from it.'}
+    ]},
+  harmony:{name:'Melody of Harmony',kind:'Healing',eff:'All creatures in range <b>heal up to the Melody Factor</b> once per round.',
+    hymns:[
+      {n:'Hymn of Ascendant Restoration',c:3,e:'Choose one creature \u2014 that creature regains TL up to the Melody Factor.'},
+      {n:'Hymn of Renewal',c:5,e:'Each creature regains HP equal to half the Melody Factor.'},
+      {n:'Hymn of Lifebloom',c:8,e:'Choose one creature \u2014 for one round, whenever they deal damage they heal for half the damage dealt.'}
+    ]},
+  sorrow:{name:'Melody of Sorrow',kind:'Drain',eff:'Enemies suffer <b>\u2212PB</b> to attack rolls and lose 5 morale when struck.',
+    hymns:[
+      {n:'Hymn of Weeping',c:3,e:'On a failed Wisdom save, a creature falls asleep and is unconscious until damaged.'},
+      {n:'Hymn of Withering',c:5,e:'Creatures take psychic damage equal to the Melody Factor and lose 10 morale.'},
+      {n:'Hymn of Suffering',c:8,e:'When an affected enemy deals damage, they take psychic damage equal to half the damage dealt.'}
+    ]},
+  madness:{name:'Melody of Madness',kind:'Sanity',eff:'Enemies have <b>disadvantage on Wisdom saves</b> and <b>\u2212PB</b> to saving throws.',
+    hymns:[
+      {n:'Hymn of Twisted Perception',c:3,e:'Until the start of your next turn, creatures have disadvantage on attack rolls against creatures other than themselves.'},
+      {n:'Hymn of Dread',c:5,e:'On a failed Wisdom save, creatures are Frightened and vulnerable to psychic damage.'},
+      {n:'Hymn of the Berserker',c:8,e:'Choose one creature \u2014 on a failed Wisdom save they go berserk, attacking the nearest creature and dealing double damage until the end of their next turn.'}
+    ]}
+};
+const MELORDER=['triumph','serenity','mysticism','harmony','sorrow','madness'];
+const SONGS=[
+  {id:'air',n:'Armoring Air',e:'Targeted creatures gain temporary HP equal to <b>2 + CHA</b> each round.'},
+  {id:'fandango',n:'Fortifying Fandango',e:"Targeted creatures may use Sika's CHA in place of their STR or DEX ability checks and saving throws."},
+  {id:'waltz',n:'Withering Waltz',e:'Creatures make Wisdom saves at the start of their turns. On a failure their speed drops by 15 ft (min 5) until the start of their next turn.'},
+  {id:'solo',n:'Stunning Solo',e:'When a creature takes damage from a concordant note, you may use your reaction to force a Con save. On a failure it is dazed until the end of its next turn \u2014 movement halved and disadvantage on attack rolls.'}
+];
+
+/* ============================ TOAST ============================ */
+let toastTimer=null;
+function toast(msg,bad){
+  var t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(bad?' bad':'');
+  clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.className='toast'+(bad?' bad':'');},1900);
+}
+
+/* ============================ VITALS ============================ */
+function renderVitals(){
+  ['mp','hp','thp','morale','pb','cha','wis'].forEach(function(k){var el=document.getElementById(k);if(el&&document.activeElement!==el)el.value=S[k];});
+  ['mpmax','moralemax'].forEach(function(k){var el=document.getElementById(k);if(el&&document.activeElement!==el)el.value=S[k];});
+  document.getElementById('mpbar').style.width=clamp(S.mp/Math.max(S.mpmax,1)*100,0,100)+'%';
+  document.getElementById('moralebar').style.width=clamp(S.morale/Math.max(S.moralemax,1)*100,0,100)+'%';
+  var hpDen=Math.max(S.hp+S.thp,1);
+  document.getElementById('hpbar').style.width=clamp((S.hp+S.thp)/Math.max(hpDen,100)*100,0,100)+'%';
+  document.getElementById('factorVal').textContent=factor();
+  document.getElementById('drinkCount').textContent=S.drinks;
+  document.getElementById('wastedShort').textContent=S.wasted?'DIZZY':(S.nauseous?'nauseous':'sober');
+  document.getElementById('wastedShort').style.color=S.wasted?'var(--wine-soft)':'var(--bone-faint)';
+  document.getElementById('wastedRoundShort').textContent=S.wastedRound;
+  document.getElementById('wastedVital').classList.toggle('lit',S.wasted);
+}
+['mp','hp','thp','morale'].forEach(function(k){
+  document.getElementById(k).addEventListener('input',function(e){S[k]=parseInt(e.target.value||0);renderVitals();save();});
+});
+['mpmax','moralemax'].forEach(function(k){
+  document.getElementById(k).addEventListener('input',function(e){S[k]=Math.max(1,parseInt(e.target.value||1));renderVitals();save();});
+});
+['pb','cha','wis'].forEach(function(k){
+  document.getElementById(k).addEventListener('input',function(e){S[k]=parseInt(e.target.value||0);renderVitals();save();});
+});
+document.querySelectorAll('.vitals .stepbtns button[data-k]').forEach(function(b){
+  b.addEventListener('click',function(){var k=b.dataset.k,d=parseInt(b.dataset.d);S[k]=(S[k]||0)+d;if(k==='mp')S[k]=clamp(S[k],0,S.mpmax);else if(k!=='hp'&&k!=='thp')S[k]=Math.max(0,S[k]);renderVitals();save();});
+});
+function spendMP(n){S.mp=clamp(S.mp-n,0,S.mpmax);}
+function gainMP(n){S.mp=clamp(S.mp+n,0,S.mpmax);}
+
+document.getElementById('wastedVital').addEventListener('click',function(){goTab('wasted');});
+
+/* ============================ MELODY CONSOLE ============================ */
+function renderMelodyPick(){
+  var host=document.getElementById('melodyPick');host.innerHTML='';
+  MELORDER.forEach(function(id){
+    var m=MELODIES[id];
+    var b=document.createElement('button');
+    b.className='mel-chip'+(S.activeMelody===id?' active':'')+(S.wasted&&S.activeMelody!==id?' wlock':'');
+    b.innerHTML='<span>'+m.name.replace('Melody of ','')+'</span><span class="mc-sub">'+m.kind+'</span>';
+    b.addEventListener('click',function(){
+      if(S.wasted){toast('Locked while Dizzy \u2014 riding '+MELODIES[S.activeMelody].name,true);return;}
+      S.activeMelody=id;save();renderMelody();renderMelodyPick();
+    });
+    host.appendChild(b);
+  });
+}
+function renderMelody(){
+  var m=MELODIES[S.activeMelody];
+  var onActive=S.performing&&!!MELODIES[S.performedMelody]&&S.activeMelody===S.performedMelody;
+  document.getElementById('melTitle').textContent=m.name;
+  document.getElementById('melEffect').innerHTML='<b>'+m.kind+'.</b> '+m.eff;
+  var pb=document.getElementById('performBadge');
+  if(!S.performing){pb.textContent=S.wasted?'Melody ended':'Not performing';}
+  else if(onActive){pb.textContent='Performing';}
+  else if(MELODIES[S.performedMelody]){pb.textContent='Performing: '+MELODIES[S.performedMelody].name.replace('Melody of ','');}
+  else{pb.textContent='Not performing';}
+  pb.classList.toggle('on',onActive);
+  var sb=document.getElementById('switchBtn');
+  if(S.wasted){sb.disabled=true;sb.textContent='\uD83D\uDD12 Locked while Dizzy';}
+  else if(onActive){sb.disabled=true;sb.textContent='Performing this Melody';}
+  else if(S.switchedThisTurn){sb.disabled=true;sb.textContent='Switched this turn \u2014 New Turn to reset';}
+  else{sb.disabled=false;sb.textContent=S.performing?'Switch to this Melody (\u22125 MP)':'Start this Melody (\u22125 MP)';}
+  var grid=document.getElementById('hymnGrid');grid.innerHTML='';
+  m.hymns.forEach(function(h){
+    var card=document.createElement('div');card.className='hymn';
+    var free=!S.freeHymnUsed||S.extraFreeHymn;
+    var label,cls,note,locked=false;
+    if(!S.performing){locked=true;label='Start a Melody first';cls='';note=S.wasted?'Melody ended \u2014 Dizzy':'no active Melody';}
+    else if(!onActive){locked=true;label='Not the active Melody';cls='';note='switch here to play these';}
+    else if(S.wasted){label='Play (0 MP)';cls='wasted';note='Dizzy \u2014 free, +1 hymn to DC';}
+    else if(free){label='Play (free \u2022 '+h.c+' MP)';cls='free';note='first hymn this turn';}
+    else{label='Play (+3 \u2022 '+(h.c+3)+' MP)';cls='';note='extra hymn this turn';}
+    card.innerHTML='<h4>'+h.n+' <span class="cost-chip">'+h.c+' MP</span></h4>'+
+      '<div class="heff">'+h.e+'</div>'+
+      '<div class="playrow"><button class="playbtn '+cls+'"'+(locked?' disabled':'')+'>'+label+'</button><span class="play-note">'+note+'</span></div>';
+    if(!locked)card.querySelector('.playbtn').addEventListener('click',function(){playHymn(h);});
+    grid.appendChild(card);
+  });
+  renderTurnBar();
+}
+function renderTurnBar(){
+  var fd=document.getElementById('freeDot'),ft=document.getElementById('freeTxt');
+  var avail=!S.freeHymnUsed||S.extraFreeHymn;
+  fd.className='freedot '+(avail?'ready':'used');
+  fd.innerHTML=avail?'&#9679;':'&#9675;';
+  ft.textContent=avail?'available':'used';
+  document.getElementById('extraFreePill').style.display=S.extraFreeHymn?'flex':'none';
+  document.getElementById('wastedPill').style.display=S.wasted?'flex':'none';
+}
+function playHymn(h){
+  if(!S.performing||!MELODIES[S.performedMelody]){toast(S.wasted?'Melody ended \u2014 no hymns until Dizzy passes':'Start a Melody to play its hymns',true);return;}
+  if(S.activeMelody!==S.performedMelody){toast('You\u2019re performing '+MELODIES[S.performedMelody].name+' \u2014 switch here to play these',true);return;}
+  if(S.wasted){
+    S.hymnsWasted++;
+    toast('\u266B '+h.n+' \u2014 free (Dizzy). CON DC now '+wastedDC());
+    renderWasted();
+  }else{
+    var free=!S.freeHymnUsed||S.extraFreeHymn;
+    var cost=h.c+(free?0:3);
+    if(S.mp<cost){toast('Not enough MP for '+h.n+' ('+cost+' MP)',true);return;}
+    spendMP(cost);
+    if(S.extraFreeHymn&&!S.freeHymnUsed){S.freeHymnUsed=true;}      // bonus free hymn consumed first
+    else if(S.extraFreeHymn){S.extraFreeHymn=false;}
+    else{S.freeHymnUsed=true;}
+    toast('\u266B '+h.n+' \u2014 spent '+cost+' MP'+(free?' (free action)':' (+3 extra)'));
+  }
+  save();renderVitals();renderMelody();
+}
+document.getElementById('newTurnBtn').addEventListener('click',function(){
+  S.freeHymnUsed=false;S.extraFreeHymn=false;S.chaDoubled=false;S.switchedThisTurn=false;save();renderMelody();renderVitals();toast('New turn \u2014 free hymn & melody switch refreshed');
+});
+document.getElementById('switchBtn').addEventListener('click',function(){
+  if(S.wasted){toast('Melody locked while Dizzy \u2014 she rides the tune she\u2019s on',true);return;}
+  if(S.performing&&S.activeMelody===S.performedMelody){return;}
+  if(S.switchedThisTurn){toast('Already switched this turn \u2014 use New Turn to reset',true);return;}
+  if(S.mp<5){toast('Not enough MP to start / switch (5 MP)',true);return;}
+  spendMP(5);S.performing=true;S.performedMelody=S.activeMelody;S.switchedThisTurn=true;save();renderVitals();renderMelody();
+  toast('Performing '+MELODIES[S.activeMelody].name+' \u2014 spent 5 MP');
+});
+document.getElementById('performBadge').addEventListener('click',function(){
+  if(S.wasted)return;
+  if(S.performing&&S.activeMelody===S.performedMelody){S.performing=false;S.performedMelody=null;}
+  else{S.performing=true;S.performedMelody=S.activeMelody;}
+  save();renderMelody();
+});
+
+/* ============================ MYSTIC SONGS ============================ */
+function renderSongs(){
+  var host=document.getElementById('songGrid');host.innerHTML='';
+  SONGS.forEach(function(s){
+    var card=document.createElement('div');card.className='song'+(S.pairedSong===s.id?' paired':'');
+    card.innerHTML='<h4>'+s.n+'<span class="pairmark">Paired</span></h4><p>'+s.e+'</p>';
+    card.addEventListener('click',function(){
+      S.pairedSong=(S.pairedSong===s.id)?'none':s.id;save();renderSongs();
+    });
+    host.appendChild(card);
+  });
+  var pn=document.getElementById('pairedName');
+  var found=SONGS.find(function(x){return x.id===S.pairedSong;});
+  pn.textContent=found?found.n:'none paired';
+}
+
+/* ============================ WASTED ============================ */
+function wastedDC(){return S.dcBase+S.dcPerHymn*S.hymnsWasted+S.dcPerExtend*S.benders;}
+function renderWasted(){
+  document.getElementById('wbState').textContent=S.wasted?'DIZZY':(S.nauseous?'NAUSEOUS':'SOBER');
+  document.getElementById('wbState').classList.toggle('on',S.wasted);
+  var tog=document.getElementById('wastedToggle');tog.checked=S.wasted;
+  document.getElementById('wastedToggleLbl').textContent=S.wasted?'Dizzy (on)':'Enter Dizzy';
+  // drink pips
+  var dt=document.getElementById('drinkTrack');dt.innerHTML='';
+  var pips=Math.max(3,S.drinks);
+  for(var i=1;i<=pips;i++){
+    var p=document.createElement('div');
+    p.className='drink-pip'+(i<=S.drinks?(i>3?' over':' filled'):'');
+    p.innerHTML='&#127862;';
+    dt.appendChild(p);
+  }
+  document.getElementById('wRound').textContent=S.wasted?S.wastedRound:'\u2014';
+  document.getElementById('wHymns').textContent=S.hymnsWasted;
+  document.getElementById('wBender').textContent=S.benders;
+  document.getElementById('wDC').textContent=wastedDC();
+  document.getElementById('dcBase').value=S.dcBase;
+  document.getElementById('dcPerHymn').value=S.dcPerHymn;
+  document.getElementById('dcPerExtend').value=S.dcPerExtend;
+  var cm=document.getElementById('conMod');if(cm&&document.activeElement!==cm)cm.value=S.conMod;
+  document.getElementById('flagDizzy').classList.toggle('on',S.wasted);
+  document.getElementById('flagFreeHymns').classList.toggle('on',S.wasted);
+  document.getElementById('flagFreeHymns').classList.add('emerald');
+  var fn=document.getElementById('flagNauseous');
+  fn.classList.toggle('on',S.nauseous);
+  fn.textContent=S.nauseous?('Nauseous \u2014 '+S.nauseousRounds+' round(s) left'):'Nauseous (no reactions)';
+  var arb=document.getElementById('advRoundBtn');
+  arb.textContent=S.wasted?'Advance Dizzy Round':(S.nauseous?'Advance Hangover Round':'Advance Round');
+  renderVitals();renderTurnBar();
+}
+function enterWasted(){
+  S.wasted=true;S.nauseous=false;S.nauseousRounds=0;S.wastedRound=1;S.hymnsWasted=0;
+  S.dizzyExtended=false;S.benders=0;
+  if(S.performing&&S.performedMelody){S.activeMelody=S.performedMelody;}
+}
+function extendDizzy(){
+  // drinking to maintain Dizzy: refreshes the clock and locks in a Nauseous comedown
+  S.dizzyExtended=true;S.benders++;S.wastedRound=1;
+}
+function endWasted(makeNauseous){
+  S.wasted=false;S.wastedRound=0;S.hymnsWasted=0;
+  S.nauseous=!!makeNauseous;
+  S.nauseousRounds=makeNauseous?Math.max(1,S.benders):0;
+  S.dizzyExtended=false;S.benders=0;
+}
+function rest(full){
+  // a rest is the only thing that clears the alcohol tally
+  S.drinks=0;S.wasted=false;S.nauseous=false;S.nauseousRounds=0;S.wastedRound=0;S.hymnsWasted=0;
+  S.dizzyExtended=false;S.benders=0;
+  S.performing=false;S.performedMelody=null;
+  S.freeHymnUsed=false;S.extraFreeHymn=false;S.chaDoubled=false;S.switchedThisTurn=false;
+  S.mp=full?S.mpmax:clamp(S.mp+Math.floor(S.mpmax/2),0,S.mpmax);
+  save();renderWasted();renderMelody();renderVitals();
+}
+document.getElementById('drinkBtn').addEventListener('click',function(){
+  S.drinks++;gainMP(5);S.chaDoubled=true;S.extraFreeHymn=true;
+  var msg='\uD83C\uDF77 Drink #'+S.drinks+' \u2014 +5 MP, CHA doubled, bonus free hymn';
+  if(S.drinks>3&&!S.wasted){enterWasted();msg='\u26A0 Dizzy! 4th drink \u2014 hymns now free, concentration at risk';}
+  else if(S.wasted){extendDizzy();msg='\uD83C\uDF77 Drink #'+S.drinks+' \u2014 Dizzy extended (bender \u00D7'+S.benders+'). The comedown is now Nauseous.';}
+  else if(S.drinks===3){msg='Drink #3 \u2014 one more drink tips her into Dizzy';}
+  save();renderWasted();renderMelody();toast(msg);
+});
+document.getElementById('s-drink').addEventListener('click',function(){
+  if(S.drinks>0)S.drinks--;if(S.drinks<=3&&S.wasted){/* keep wasted unless toggled */}save();renderWasted();
+});
+document.getElementById('wastedToggle').addEventListener('change',function(e){
+  if(e.target.checked){if(S.drinks<4)S.drinks=4;enterWasted();}
+  else{endWasted(false);}
+  save();renderWasted();renderMelody();
+});
+document.getElementById('wr-plus').addEventListener('click',function(){S.wastedRound++;save();renderWasted();});
+document.getElementById('wr-minus').addEventListener('click',function(){S.wastedRound=Math.max(0,S.wastedRound-1);save();renderWasted();});
+document.getElementById('wh-plus').addEventListener('click',function(){S.hymnsWasted++;save();renderWasted();});
+document.getElementById('wh-minus').addEventListener('click',function(){S.hymnsWasted=Math.max(0,S.hymnsWasted-1);save();renderWasted();});
+document.getElementById('dcBase').addEventListener('input',function(e){S.dcBase=parseInt(e.target.value||0);save();renderWasted();});
+document.getElementById('dcPerHymn').addEventListener('input',function(e){S.dcPerHymn=parseInt(e.target.value||0);save();renderWasted();});
+document.getElementById('dcPerExtend').addEventListener('input',function(e){S.dcPerExtend=parseInt(e.target.value||0);save();renderWasted();});
+document.getElementById('conMod').addEventListener('input',function(e){S.conMod=parseInt(e.target.value||0);save();});
+document.getElementById('advRoundBtn').addEventListener('click',function(){
+  if(S.wasted){
+    S.wastedRound++;
+    if(S.wastedRound>3){
+      if(S.dizzyExtended){endWasted(true);toast('Extended Dizzy ends \u2014 Nauseous for '+S.nauseousRounds+' round(s)',true);}
+      else{endWasted(false);toast('Dizzy faded after 3 rounds \u2014 no hangover');}
+    }else{toast('Dizzy round '+S.wastedRound+' of 3');}
+  }else if(S.nauseous){
+    S.nauseousRounds=Math.max(0,S.nauseousRounds-1);
+    if(S.nauseousRounds<=0){S.nauseous=false;toast('The hangover passes \u2014 Sika recovers');}
+    else{toast('Nauseous \u2014 '+S.nauseousRounds+' round(s) left');}
+  }else{toast('Not currently Dizzy or Nauseous',true);return;}
+  save();renderWasted();renderMelody();
+});
+document.getElementById('sustainBtn').addEventListener('click',function(){
+  if(!S.wasted){toast('Not currently Dizzy \u2014 nothing to extend',true);return;}
+  S.drinks++;gainMP(5);extendDizzy();
+  save();renderWasted();renderVitals();renderMelody();toast('\uD83C\uDF77 Sustained \u2014 drink #'+S.drinks+', Dizzy extended (bender \u00D7'+S.benders+'). Comedown will be Nauseous.');
+});
+document.getElementById('conSaveBtn').addEventListener('click',function(){
+  var d=Math.ceil(Math.random()*20);var dc=wastedDC();var total=d+S.conMod;var ok=total>=dc;
+  var modTxt=(S.conMod>=0?'+':'')+S.conMod;
+  var box=document.getElementById('conResult');box.style.display='block';
+  box.innerHTML='CON save: d20 <b style="color:var(--gold-soft)">'+d+'</b> '+modTxt+' = <b style="color:var(--gold-soft)">'+total+'</b> vs DC '+dc+' &mdash; '+
+    (ok?'<b style="color:var(--emerald)">held the Melody</b>':'<b style="color:var(--wine-soft)">FAILED &mdash; Melody ends; no new Melody until Dizzy passes</b>');
+  if(!ok){S.performing=false;S.performedMelody=null;renderMelody();}
+  toast(ok?'CON save passed ('+total+' vs '+dc+')':'CON save FAILED ('+total+' vs '+dc+')',!ok);
+});
+document.getElementById('endWastedBtn').addEventListener('click',function(){
+  var ext=S.dizzyExtended;endWasted(ext);save();renderWasted();renderMelody();
+  toast(ext?'Dizzy ends \u2014 the bender leaves her Nauseous for '+S.nauseousRounds+' round(s)':'Sobered up \u2014 Dizzy ends clean (drinks stay until a rest)');
+});
+document.getElementById('shortRestBtn').addEventListener('click',function(){
+  rest(false);toast('\u2618 Short rest \u2014 alcohol cleared, MP restored to half');
+});
+document.getElementById('longRestBtn').addEventListener('click',function(){
+  rest(true);toast('\uD83C\uDF19 Long rest \u2014 alcohol cleared, MP fully restored');
+});
+
+/* ============================ TABS ============================ */
+function goTab(tab){
+  document.querySelectorAll('#tabnav button').forEach(function(x){x.classList.toggle('active',x.dataset.tab===tab);});
+  document.querySelectorAll('.tabpanel').forEach(function(p){p.classList.remove('active');});
+  document.getElementById('tab-'+tab).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('#tabnav button').forEach(function(b){
+  b.addEventListener('click',function(){goTab(b.dataset.tab);});
+});
+
+/* ============================ RESET ============================ */
+document.getElementById('resetAll').addEventListener('click',function(){
+  if(confirm('Reset MP, melody, songs, alcohol and Wasted trackers to defaults?')){
+    try{localStorage.removeItem(SK);}catch(e){}S=load();renderAll();toast('Reset to defaults');
+  }
+});
+
+/* ============================ INIT ============================ */
+function renderAll(){
+  renderVitals();renderMelodyPick();renderMelody();renderSongs();renderWasted();
+}
+renderAll();
+
+
+/* ======================= CLOUD SYNC (Firebase) ======================= */
+/* Inserted by the Sync Injector. Wraps save() + subscribes once.        */
+/* Config + campaign come from firebase-config.js (window.FIREBASE_CONFIG).*/
+/* CHAR_ID is derived from this sheet's own SK key. Local-only until the  */
+/* shared config is filled in. Remote applies reuse the sheet's own load(). */
+(function(){
+  var CFG = window.FIREBASE_CONFIG || {};
+  var CAMPAIGN_ID = window.CAMPAIGN_ID || "astrology-club";
+  var CHAR_ID = (typeof SK === "string" ? SK.replace(/_v[0-9]+$/, "") : "unknown");
+  var configured = CFG && CFG.apiKey && CFG.apiKey.indexOf("PASTE") !== 0;
+
+  var pill = document.createElement("div");
+  pill.style.cssText = "position:fixed;bottom:10px;right:12px;z-index:99999;font:600 11px/1 monospace;padding:5px 9px;border-radius:20px;background:rgba(0,0,0,.55);color:#bbb;letter-spacing:.05em;pointer-events:none;";
+  pill.textContent = configured ? "○ connecting" : "○ local only";
+  document.body.appendChild(pill);
+  function setPill(t,c){ pill.textContent=t; pill.style.color=c; }
+  if(!configured) return;
+
+  var docRef=null, applyingRemote=false, pushT=null;
+  try{
+    firebase.initializeApp(CFG);
+    var db = firebase.firestore();
+    db.enablePersistence({synchronizeTabs:true}).catch(function(){});
+    docRef = db.collection("campaigns").doc(CAMPAIGN_ID).collection("characters").doc(CHAR_ID);
+  }catch(e){ setPill("○ sync error","#e08"); return; }
+
+  var _origSave = save;
+  save = function(){
+    _origSave();
+    if(applyingRemote) return;
+    clearTimeout(pushT);
+    pushT = setTimeout(pushRemote, 400);
+  };
+  function pushRemote(){
+    if(!docRef) return;
+    docRef.set(JSON.parse(JSON.stringify(S)))
+      .then(function(){ setPill("● synced","#7c7"); })
+      .catch(function(){ setPill("○ offline","#c96"); });
+  }
+  var rb = document.getElementById("resetAll");
+  if(rb) rb.addEventListener("click", function(){ setTimeout(function(){ if(!applyingRemote) pushRemote(); },0); });
+
+  docRef.onSnapshot(function(snap){
+    if(snap.metadata.hasPendingWrites) return;
+    if(!snap.exists){ pushRemote(); setPill("● synced","#7c7"); return; }
+    var data = snap.data(); if(!data) return;
+    applyingRemote = true;
+    try{ localStorage.setItem(SK, JSON.stringify(data)); }catch(e){}
+    try{ S = load(); }catch(e){}
+    try{ renderAll(); }catch(e){}
+    applyingRemote = false;
+    setPill("● synced","#7c7");
+  }, function(){ setPill("○ offline","#c96"); });
+})();
+
+</script>
+</body>
+</html>

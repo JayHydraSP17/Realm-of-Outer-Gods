@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Radiant Tempest — Magnolia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#0a060a;--char:#160c14;--char2:#1d1019;--panel:#241420;--panel2:#2c1827;
+  --line:#3a2230;--line2:#523044;--bone:#f1e7ec;--bone-dim:#c9b3bf;--bone-faint:#8d7682;
+  --wine:#a02f5a;--wine-deep:#6e1d3c;--magenta:#d8487e;--rose:#ff8fb5;
+  --gold:#e0b85a;--gold-soft:#f2d894;--gold-deep:#9c7a26;
+  --wind:#6fd6e0;--wind-deep:#2a8a9a;--sky:#a4ecf4;
+  --psy:#b58cff;--psy-deep:#7d5cc4;
+  --shadow:0 8px 30px rgba(0,0,0,.62);
+  --glow-wine:0 0 18px rgba(216,72,126,.32);--glow-gold:0 0 16px rgba(224,184,90,.3);--glow-wind:0 0 16px rgba(111,214,224,.3);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Cormorant Garamond',serif;background:radial-gradient(1200px 600px at 78% -10%, rgba(216,72,126,.08), transparent 60%),radial-gradient(900px 500px at -8% 108%, rgba(111,214,224,.06), transparent 60%),radial-gradient(700px 400px at 50% 50%, rgba(224,184,90,.03), transparent 70%),var(--void);color:var(--bone);font-size:18px;line-height:1.5;min-height:100vh;letter-spacing:.2px}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.025'/%3E%3C/svg%3E");mix-blend-mode:overlay;opacity:.6}
+.wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:0 18px 90px}
+header.top{text-align:center;padding:34px 0 18px;position:relative}
+.eyebrow{font-family:'Cinzel',serif;letter-spacing:6px;font-size:12px;text-transform:uppercase;color:var(--magenta);opacity:.9;margin-bottom:8px}
+h1.title{font-family:'Cinzel Decorative',serif;font-weight:900;font-size:clamp(30px,6vw,58px);line-height:1;background:linear-gradient(180deg,#fff,var(--gold-soft) 30%,var(--magenta) 130%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 2px 40px rgba(216,72,126,.2)}
+.subtitle{font-family:'Cinzel',serif;font-style:italic;color:var(--bone-dim);margin-top:10px;font-size:16px;letter-spacing:1px}
+.tagline{color:var(--gold-soft);font-style:italic;margin-top:6px;font-size:17px;opacity:.9}
+.idline{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 22px;margin-top:16px;font-size:14px;color:var(--bone-faint);font-family:'Fira Code',monospace}
+.idline b{color:var(--bone-dim);font-weight:500}
+.vitals{position:sticky;top:0;z-index:40;margin:18px 0 8px;background:linear-gradient(180deg,rgba(22,12,20,.97),rgba(22,12,20,.9));border:1px solid var(--line);border-radius:14px;backdrop-filter:blur(8px);box-shadow:var(--shadow);padding:12px 14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.vital{background:var(--char2);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.vital .vlabel{font-family:'Cinzel',serif;font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--bone-faint);display:flex;justify-content:space-between;align-items:center}
+.vital .vval{font-family:'Fira Code',monospace;font-size:20px;font-weight:600;margin-top:2px;display:flex;align-items:baseline;gap:4px}
+.vital .vval input{width:62px;background:transparent;border:none;border-bottom:1px solid var(--line2);color:var(--magenta);font-family:'Fira Code',monospace;font-size:20px;font-weight:600;text-align:right}
+.vital .vval input:focus{outline:none;border-color:var(--magenta)}
+.vital .vval input.maxinput{width:46px;color:var(--bone-faint);font-size:15px;border-bottom:1px dotted var(--line2);text-align:left}
+.vital .vval input.maxinput:focus{color:var(--bone-dim);border-color:var(--bone-dim)}
+.vital .vmax{color:var(--bone-faint);font-size:14px}
+.vbar{height:5px;border-radius:3px;background:var(--char);margin-top:6px;overflow:hidden}
+.vbar i{display:block;height:100%;border-radius:3px;transition:width .35s ease}
+.vbar.tl i{background:linear-gradient(90deg,var(--psy-deep),var(--psy))}
+.vbar.hp i{background:linear-gradient(90deg,var(--wine-deep),var(--magenta))}
+.vbar.fan i{background:linear-gradient(90deg,var(--wind-deep),var(--wind))}
+.stepbtns{display:flex;gap:3px}
+.stepbtns button{background:var(--panel);border:1px solid var(--line2);color:var(--bone-dim);width:20px;height:18px;border-radius:5px;cursor:pointer;font-size:13px;line-height:1;font-family:'Fira Code',monospace}
+.stepbtns button:hover{background:var(--magenta);color:var(--void);border-color:var(--magenta)}
+.castbox{display:flex;gap:12px;align-items:baseline;font-family:'Fira Code',monospace;margin-top:2px;flex-wrap:wrap}
+.castbox .cb{display:flex;flex-direction:column;align-items:flex-start}
+.castbox .cb-big{font-size:19px;font-weight:600;color:var(--gold-soft)}
+.castbox .cb-big input{width:46px;background:transparent;border:none;border-bottom:1px solid var(--line2);color:var(--gold-soft);font-family:'Fira Code',monospace;font-size:19px;font-weight:600;text-align:center}
+.castbox .cb-big input:focus{outline:none;border-color:var(--gold)}
+.castbox .cb-lbl{font-size:9px;color:var(--bone-faint);letter-spacing:1px;text-transform:uppercase}
+.castmini{display:flex;gap:8px;margin-top:5px;font-size:11px;color:var(--bone-faint);font-family:'Fira Code',monospace}
+.castmini label{display:flex;align-items:center;gap:3px}
+.castmini input{width:34px;background:transparent;border:none;border-bottom:1px solid var(--line2);color:var(--bone);font-family:'Fira Code',monospace;font-size:13px;text-align:center}
+.castmini input:focus{outline:none;border-color:var(--gold)}
+.layout{display:flex;gap:22px;margin-top:18px;align-items:flex-start}
+.content{flex:1;min-width:0}
+nav.tabs{flex:0 0 210px;display:flex;flex-direction:column;gap:6px;position:sticky;top:14px;align-self:flex-start;border:1px solid var(--line);border-radius:14px;padding:12px 10px;background:linear-gradient(180deg,var(--panel),var(--char2));box-shadow:var(--shadow)}
+nav.tabs button{font-family:'Cinzel',serif;font-size:13px;letter-spacing:1px;text-align:left;background:transparent;border:1px solid transparent;color:var(--bone-faint);padding:10px 14px;border-radius:8px;cursor:pointer;transition:.18s;text-transform:uppercase;position:relative}
+nav.tabs button:hover{color:var(--bone);background:var(--panel2)}
+nav.tabs button.active{color:var(--magenta);border-color:var(--magenta);background:rgba(216,72,126,.08);box-shadow:var(--glow-wine)}
+nav.tabs button.active::before{content:"";position:absolute;left:-1px;top:8px;bottom:8px;width:3px;background:var(--magenta);border-radius:3px;box-shadow:var(--glow-wine)}
+@media(max-width:760px){.layout{flex-direction:column}nav.tabs{flex:none;width:100%;position:static;flex-direction:row;flex-wrap:wrap;justify-content:center}nav.tabs button{text-align:center}nav.tabs button.active::before{display:none}}
+.tabpanel{display:none;animation:fade .4s ease}
+.tabpanel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h2.sec{font-family:'Cinzel',serif;font-weight:700;font-size:26px;color:var(--bone);margin:30px 0 4px;display:flex;align-items:center;gap:12px}
+h2.sec::before{content:"";width:26px;height:2px;background:var(--magenta);box-shadow:var(--glow-wine)}
+.sec-note{color:var(--bone-faint);font-style:italic;font-size:15px;margin-bottom:14px}
+.card{background:linear-gradient(180deg,var(--panel),var(--char2));border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:14px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--magenta);opacity:.6}
+.card.gold::before{background:var(--gold)}.card.wind::before{background:var(--wind)}.card.psy::before{background:var(--psy)}.card.locked::before{background:var(--bone-faint)}
+.card h3{font-family:'Cinzel',serif;font-size:18px;color:var(--gold-soft);margin-bottom:2px;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.card h3 .cost{font-family:'Fira Code',monospace;font-size:12px;color:var(--psy);background:rgba(181,140,255,.1);border:1px solid var(--psy-deep);padding:2px 8px;border-radius:20px;letter-spacing:.5px}
+.card h3 .tag{font-family:'Fira Code',monospace;font-size:11px;color:var(--bone-faint);background:var(--char);border:1px solid var(--line2);padding:2px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:.5px}
+.card h3 .tag.wind{color:var(--wind);border-color:var(--wind-deep)}.card h3 .tag.wine{color:var(--rose);border-color:var(--wine-deep)}.card h3 .tag.gold{color:var(--gold-soft);border-color:var(--gold)}
+.card p{margin:6px 0;color:var(--bone-dim)}
+.card ul{list-style:none;margin:6px 0}
+.card ul li{position:relative;padding-left:18px;margin:4px 0;color:var(--bone-dim)}
+.card ul li::before{content:"\2756";position:absolute;left:0;color:var(--wine);font-size:12px;top:3px}
+.card ul li.sub{padding-left:34px;font-size:.96em;color:var(--bone-faint)}
+.card ul li.sub::before{content:"\203A";left:20px;color:var(--bone-faint)}
+.enh{border-top:1px dashed var(--line2);margin-top:10px;padding-top:8px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.enh .etxt{flex:1;min-width:200px;color:var(--bone-dim)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.quote{font-style:italic;color:var(--magenta);text-align:center;font-size:20px;margin:6px 0 20px;opacity:.9}
+table.gt{width:100%;border-collapse:collapse;margin:8px 0;font-size:14.5px}
+table.gt th,table.gt td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+table.gt th{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.5px;text-transform:uppercase;color:var(--gold-soft);background:var(--char);font-weight:600}
+table.gt td{color:var(--bone-dim)}
+table.gt tr:nth-child(even) td{background:rgba(255,255,255,.012)}
+table.gt td.tlc{font-family:'Fira Code',monospace;color:var(--psy);white-space:nowrap;font-weight:600}
+table.gt tr.school-mod td:first-child{color:var(--rose)}
+.btn{font-family:'Cinzel',serif;font-size:13px;letter-spacing:.5px;background:var(--magenta);color:var(--void);border:none;padding:9px 16px;border-radius:8px;cursor:pointer;transition:.15s;font-weight:600}
+.btn:hover{background:var(--wine);color:#fff}
+.btn.ghost{background:transparent;border:1px solid var(--line2);color:var(--bone-dim)}
+.btn.ghost:hover{border-color:var(--magenta);color:var(--magenta);background:transparent}
+.btn.gold{background:var(--gold)}.btn.gold:hover{background:var(--gold-deep);color:#fff}
+.btn.wind{background:var(--wind);color:var(--void)}.btn.wind:hover{background:var(--wind-deep);color:#fff}
+.btn.psy{background:var(--psy)}.btn.psy:hover{background:var(--psy-deep);color:#fff}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.minibtn{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.5px;background:var(--char);border:1px solid var(--line2);color:var(--bone-dim);padding:7px 12px;border-radius:8px;cursor:pointer;transition:.15s}
+.minibtn:hover{border-color:var(--magenta);color:var(--magenta)}
+.footer{text-align:center;margin-top:40px;padding-top:18px;border-top:1px solid var(--line);color:var(--bone-faint);font-size:13px;font-family:'Fira Code',monospace}
+.reset-btn{background:transparent;border:1px solid var(--line2);color:var(--bone-faint);font-family:'Cinzel',serif;font-size:11px;padding:5px 12px;border-radius:6px;cursor:pointer;margin-top:10px}
+.reset-btn:hover{border-color:var(--wine);color:var(--rose)}
+/* ===== fan tracker on overview ===== */
+.fanrow{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:14px;background:var(--char2);border:1px solid var(--line2);border-radius:12px;padding:14px 16px}
+.fanrow .fl{font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--bone-faint)}
+.fanpips{display:flex;gap:8px}
+.fanpip{width:34px;height:34px;border-radius:50%;border:2px solid var(--line2);background:var(--char);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--bone-faint);transition:.15s}
+.fanpip.held{border-color:var(--wind);color:var(--wind);background:rgba(111,214,224,.12);box-shadow:var(--glow-wind)}
+.fan-actions{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+/* ===== perfect casting builder ===== */
+.pc-builder{background:linear-gradient(180deg,var(--panel2),var(--char2));border:1px solid var(--line2);border-radius:14px;padding:16px;box-shadow:var(--shadow);margin-bottom:16px}
+.pc-top{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-bottom:12px}
+.pc-meter{background:var(--char);border:1px solid var(--line);border-radius:10px;padding:8px 14px;font-family:'Fira Code',monospace;text-align:center}
+.pc-meter .m-big{font-size:22px;font-weight:600}
+.pc-meter .m-lbl{font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:var(--bone-faint)}
+.pc-meter.tl .m-big{color:var(--psy)}.pc-meter.tl.over .m-big{color:var(--rose)}
+.pc-meter.mods .m-big{color:var(--gold-soft)}.pc-meter.mods.over .m-big{color:var(--rose)}
+.pc-school{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.pc-school .sl{font-family:'Cinzel',serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--bone-faint)}
+.pc-school select{background:var(--char);border:1px solid var(--line2);color:var(--bone);font-family:'Cormorant Garamond',serif;font-size:15px;padding:6px 10px;border-radius:8px}
+.pc-warn{color:var(--rose);font-size:14px;font-style:italic;margin-bottom:10px;min-height:1px}
+.modgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
+.modcard{background:var(--char);border:1px solid var(--line);border-radius:11px;padding:11px 13px;cursor:pointer;transition:.14s;position:relative}
+.modcard:hover{border-color:var(--line2)}
+.modcard.on{border-color:var(--magenta);background:rgba(216,72,126,.08);box-shadow:var(--glow-wine)}
+.modcard.disabled{opacity:.35;cursor:not-allowed}
+.modcard .mh{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.modcard .mn{font-family:'Cinzel',serif;font-size:15px;color:var(--bone)}
+.modcard.on .mn{color:var(--rose)}
+.modcard .mc{font-family:'Fira Code',monospace;font-size:12px;color:var(--psy);white-space:nowrap}
+.modcard .ms{font-family:'Fira Code',monospace;font-size:9.5px;letter-spacing:.5px;text-transform:uppercase;color:var(--gold-soft);margin-top:2px}
+.modcard .me{font-size:13.5px;color:var(--bone-dim);margin-top:5px;line-height:1.4}
+/* ===== spell list ===== */
+.slot-board{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:10px;margin-bottom:8px}
+.slot-cell{background:var(--char2);border:1px solid var(--line);border-radius:11px;padding:9px 10px;text-align:center}
+.slot-cell.empty{opacity:.45}
+.slot-cell .sl-name{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:var(--bone-faint)}
+.slot-pips{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin:7px 0 6px;min-height:14px}
+.spip{width:13px;height:13px;border-radius:50%;border:1px solid var(--wine);background:rgba(216,72,126,.85);cursor:pointer;transition:.12s}
+.spip.spent{background:transparent;border-color:var(--line2)}
+.slot-cell .sl-val{font-family:'Fira Code',monospace;font-size:13px;color:var(--bone-dim)}
+.slot-cell .sl-val input{width:30px;background:transparent;border:none;border-bottom:1px dotted var(--line2);color:var(--gold-soft);font-family:'Fira Code',monospace;font-size:13px;text-align:center}
+.slot-cell .sl-val input:focus{outline:none;border-color:var(--gold)}
+.spell-toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:8px 0 14px}
+.spell-toolbar input[type=text]{background:var(--char2);border:1px solid var(--line);color:var(--bone);padding:8px 12px;border-radius:8px;font-family:'Cormorant Garamond',serif;font-size:16px;flex:1;min-width:180px}
+.spell-toolbar input:focus{outline:none;border-color:var(--magenta)}
+.filt{display:flex;gap:5px;flex-wrap:wrap}
+.filt button{font-family:'Cinzel',serif;background:var(--char2);border:1px solid var(--line);color:var(--bone-faint);padding:6px 11px;border-radius:7px;cursor:pointer;font-size:11.5px;letter-spacing:.3px;transition:.12s}
+.filt button.on{border-color:var(--magenta);color:var(--magenta);background:rgba(216,72,126,.08)}
+.filt button.on[data-f="fan"]{border-color:var(--wind);color:var(--wind);background:rgba(111,214,224,.08)}
+.filt button.on[data-f="sb"]{border-color:var(--gold);color:var(--gold-soft);background:rgba(224,184,90,.08)}
+.lvl-head{font-family:'Cinzel',serif;font-size:17px;color:var(--gold-soft);margin:22px 0 6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.lvl-head .lvc{font-family:'Fira Code',monospace;font-size:12px;color:var(--bone-faint)}
+.spell-rows{display:flex;flex-direction:column;gap:8px}
+.scard{background:linear-gradient(180deg,var(--panel),var(--char2));border:1px solid var(--line);border-radius:11px;padding:11px 13px;position:relative;overflow:hidden}
+.scard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--line2)}
+.scard.sc-abjur::before{background:#5b9bff}.scard.sc-conj::before{background:var(--gold)}.scard.sc-divin::before{background:#dfe6ee}
+.scard.sc-evoc::before{background:#ff6a4d}.scard.sc-illus::before{background:var(--psy)}.scard.sc-trans::before{background:var(--wind)}
+.scard.sc-custom::before{background:linear-gradient(180deg,var(--magenta),var(--wind))}
+.scard.notprep{opacity:.62}
+.sc-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.sc-prep{width:24px;height:24px;flex:none;border-radius:6px;border:1px solid var(--line2);background:var(--char);cursor:pointer;color:var(--bone-faint);font-size:14px;line-height:1;transition:.13s}
+.sc-prep.on{background:rgba(224,184,90,.16);border-color:var(--gold);color:var(--gold-soft)}
+.sc-name{font-family:'Cinzel',serif;font-size:16px;color:var(--bone)}
+.chip{font-family:'Fira Code',monospace;font-size:9.5px;letter-spacing:.4px;text-transform:uppercase;padding:2px 7px;border-radius:20px;border:1px solid;white-space:nowrap}
+.chip.school{color:var(--bone-dim);border-color:var(--line2);background:var(--char)}
+.chip.kcc{color:var(--sky);border-color:var(--wind-deep);background:rgba(111,214,224,.08)}
+.chip.sb{color:var(--gold-soft);border-color:var(--gold);background:rgba(224,184,90,.1)}
+.chip.toggle{cursor:pointer;opacity:.4}
+.chip.toggle.on{opacity:1}
+.chip.fan{color:var(--wind);border-color:var(--wind-deep);background:rgba(111,214,224,.1)}
+.chip.aero{color:var(--rose);border-color:var(--wine-deep);background:rgba(216,72,126,.08)}
+.chip.custom{color:var(--magenta);border-color:var(--wine-deep);background:rgba(216,72,126,.08)}
+.sc-meta{display:flex;flex-wrap:wrap;gap:4px 16px;margin:7px 0 5px;font-family:'Fira Code',monospace;font-size:11.5px;color:var(--bone-faint)}
+.sc-meta b{color:var(--bone-dim);font-weight:500}
+.sc-eff{font-size:15px;color:var(--bone-dim);line-height:1.45}
+.sc-eff.tbd{font-style:italic;color:var(--bone-faint)}
+.legend{display:flex;flex-wrap:wrap;gap:10px 18px;font-family:'Fira Code',monospace;font-size:12px;color:var(--bone-faint);background:var(--char2);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-bottom:6px}
+.legend .li{display:flex;align-items:center;gap:6px}
+.locked-wrap{text-align:center;padding:40px 20px;border:1px dashed var(--line2);border-radius:14px;background:var(--char2)}
+.locked-wrap .lk-icon{font-size:42px;opacity:.5}
+.locked-wrap h3{font-family:'Cinzel',serif;font-size:22px;color:var(--bone-dim);margin:10px 0 4px}
+.locked-wrap p{color:var(--bone-faint);font-style:italic}
+.locked-wrap .quest{font-family:'Cinzel',serif;color:var(--magenta);margin-top:10px;letter-spacing:1px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <div class="eyebrow">Radiance From The Dark</div>
+  <h1 class="title">The Radiant Tempest</h1>
+  <div class="subtitle">Magnolia DuBois &mdash; Divine Battle Mage &middot; Aeromancer</div>
+  <div class="tagline">"Radiance can spawn from anyone, even the Dark."</div>
+  <div class="idline">
+    <span><b>Focus</b> Twin Gales (Fans)</span>
+    <span><b>Class</b> Spellblade &middot; Aeromancer</span>
+    <span><b>Cast Stat</b> INT</span>
+    <span><b>CLvl</b> 24</span>
+    <span><b>Difficulty</b> &#9733;&#9733;&#9733;</span>
+  </div>
+</header>
+<section class="vitals" id="vitals">
+  <div class="vital">
+    <div class="vlabel">Thread Link (TL) <span class="stepbtns"><button data-k="tl" data-d="-10">&minus;</button><button data-k="tl" data-d="10">+</button></span></div>
+    <div class="vval"><input id="tl" type="number" value="140"> <span class="vmax">/ <input id="tlmax" type="number" value="140" class="maxinput"></span></div>
+    <div class="vbar tl"><i id="tlbar"></i></div>
+  </div>
+  <div class="vital">
+    <div class="vlabel">HP / Temp HP <span class="stepbtns"><button data-k="hp" data-d="-5">&minus;</button><button data-k="hp" data-d="5">+</button></span></div>
+    <div class="vval"><input id="hp" type="number" value="0"><span class="vmax"> + </span><input id="thp" type="number" value="0" style="color:var(--gold-soft)"></div>
+    <div class="vbar hp"><i id="hpbar"></i></div>
+  </div>
+  <div class="vital">
+    <div class="vlabel">Fans Held <span class="stepbtns"><button data-k="fans" data-d="-1">&minus;</button><button data-k="fans" data-d="1">+</button></span></div>
+    <div class="vval"><input id="fans" type="number" value="2" readonly style="color:var(--wind)"> <span class="vmax">/ <input id="fansmax" type="number" value="2" class="maxinput"></span></div>
+    <div class="vbar fan"><i id="fanbar"></i></div>
+  </div>
+  <div class="vital">
+    <div class="vlabel">Spellcasting</div>
+    <div class="castbox">
+      <span class="cb"><span class="cb-big"><input id="spellDC" type="number" value="23"></span><span class="cb-lbl">Save DC</span></span>
+      <span class="cb"><span class="cb-big"><input id="spellAtk" type="number" value="15"></span><span class="cb-lbl">Atk +</span></span>
+    </div>
+    <div class="castmini"><label>INT <input id="intmod" type="number" value="8"></label><label>PB <input id="pb" type="number" value="7"></label></div>
+  </div>
+  <div class="vital">
+    <div class="vlabel">Prepared</div>
+    <div class="castbox"><span class="cb"><span class="cb-big" id="prepCount" style="color:var(--magenta)">0</span><span class="cb-lbl">spells</span></span><span class="cb"><span class="cb-big"><input id="prepMax" type="number" value="35"></span><span class="cb-lbl">max</span></span></div>
+  </div>
+</section>
+<div class="layout">
+<nav class="tabs" id="tabnav">
+  <button data-tab="overview" class="active">Overview</button>
+  <button data-tab="perfect">Perfect Casting</button>
+  <button data-tab="spells">Spell List</button>
+  <button data-tab="transform">Transformation</button>
+</nav>
+<div class="content">
+
+<!-- ========== OVERVIEW ========== -->
+<section class="tabpanel active" id="tab-overview">
+  <div class="quote">"Magnolia brings perfection to battle."</div>
+
+  <h2 class="sec">Twin Gales &mdash; The Fans</h2>
+  <p class="sec-note">Her paired fans. Track how many she currently holds &mdash; several abilities require at least one, and Deafening Winds sacrifices them.</p>
+  <div class="fanrow" id="fanRow">
+    <span class="fl">Fans Held</span>
+    <div class="fanpips" id="fanPips"></div>
+    <div class="fan-actions">
+      <button class="minibtn" data-fan="sac1">Sacrifice 1</button>
+      <button class="minibtn" data-fan="sac2">Sacrifice Both</button>
+      <button class="minibtn" data-fan="recall">Recall Fans</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Twin Gales <span class="tag wind">Dual-Weapon</span> <span class="tag">Thrown 30 ft</span></h3>
+    <ul>
+      <li><b>Conduit.</b> Used as her spellcasting focus, and usable for Spell Strikes.</li>
+      <li><b>Thrown.</b> Range 30 ft.</li>
+      <li><b>Dual-Nature.</b> For Spellstrikes, Magnolia can choose to infuse the spell in one or both fans.</li>
+    </ul>
+  </div>
+
+  <h2 class="sec">Abilities</h2>
+  <div class="grid2">
+    <div class="card gold">
+      <h3>Aeromancer <span class="tag gold">Passive</span></h3>
+      <p>When using the Twin Gales to cast a spell using <b>Wind or Air</b>, choose one effect:</p>
+      <ul>
+        <li>Increase spell save DC by <b>PB</b> (<span id="aeroDC">+7</span>)</li>
+        <li>Increase damage roll by <b>PB</b> (<span id="aeroDmg">+7</span>)</li>
+        <li>Increase range by <b>5 ft &times; PB</b> (<span id="aeroRange">+35 ft</span>)</li>
+      </ul>
+      <p class="sec-note" style="margin:8px 0 0">Wind/Air spells are flagged with the <b style="color:var(--rose)">&#8776; Aero</b> badge on the Spell List.</p>
+    </div>
+    <div class="card wind">
+      <h3>Winds of Change <span class="tag wind">Reaction</span></h3>
+      <p>When a creature attacks Magnolia (or another creature within 5 ft), the attacker makes a <b>Str</b> saving throw.</p>
+      <ul>
+        <li>On a failure, the attacker must change their target to another within 5 ft, or miss entirely.</li>
+        <li class="sub">Requires at least one fan.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Flirtatious <span class="tag wine">Reaction</span></h3>
+      <p>When a creature she can see (and that can be Charmed) tries to attack her, roll <b>Persuasion</b> vs the creature's <b>Wis</b> save.</p>
+      <ul><li>On a failure, it cannot target nor move closer to Magnolia until the start of its next turn.</li></ul>
+    </div>
+    <div class="card wind">
+      <h3>Deafening Winds <span class="tag wind">Bonus Action</span></h3>
+      <p>Hurl one or both fans at creatures within 60 ft. Each target makes a <b>Con</b> save or is wrapped in swirling winds until the start of Magnolia's next turn.</p>
+      <ul>
+        <li>Silenced &mdash; cannot speak or provide verbal components.</li>
+        <li>Disadvantage on Con saves to maintain concentration.</li>
+        <li>A 5 ft area around the target fills with roaring wind; outside sound is muffled to those within.</li>
+        <li class="sub">Must sacrifice one or both fans to use.</li>
+      </ul>
+      <div class="enh">
+        <span class="etxt">Throwing fans? Update the fan tracker:</span>
+        <button class="minibtn" data-fan="sac1">Throw 1 Fan</button>
+        <button class="minibtn" data-fan="sac2">Throw Both</button>
+      </div>
+    </div>
+    <div class="card wind">
+      <h3>Ride the Winds <span class="tag wind">Bonus Action</span></h3>
+      <p>Reposition anywhere within 30 ft as if flying with the wind. Requires at least one fan.</p>
+      <div class="enh">
+        <span class="etxt"><b style="color:var(--psy)">Enhancement (10 TL):</b> Increases to 60 ft and can take one willing creature.</span>
+        <button class="btn psy" id="rideEnh">Spend 10 TL</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== PERFECT CASTING ========== -->
+<section class="tabpanel" id="tab-perfect">
+  <div class="quote">"My spell won't reach far enough? Now it can."</div>
+  <h2 class="sec">Perfect Casting &mdash; Divine Modifications</h2>
+  <p class="sec-note">Magnolia spends TL to layer divine modifications onto a spell. Max <b id="pcMaxModsTxt">3</b> modifications per spell (PB &divide; 2), and up to <b>140 TL</b> total. School-change modifications can't be combined with each other, and can't match the spell's original school.</p>
+
+  <div class="pc-builder">
+    <div class="pc-top">
+      <div class="pc-meter tl" id="pcTLmeter"><div class="m-big"><span id="pcTL">0</span><span style="font-size:13px;color:var(--bone-faint)"> / 140</span></div><div class="m-lbl">TL Spent</div></div>
+      <div class="pc-meter mods" id="pcModMeter"><div class="m-big"><span id="pcMods">0</span><span style="font-size:13px;color:var(--bone-faint)"> / <span id="pcMaxMods">3</span></span></div><div class="m-lbl">Modifications</div></div>
+      <div class="pc-school">
+        <span class="sl">Original School</span>
+        <select id="origSchool">
+          <option value="">— any / none —</option>
+          <option value="Abjuration">Abjuration</option>
+          <option value="Conjuration">Conjuration</option>
+          <option value="Divination">Divination</option>
+          <option value="Enchantment">Enchantment</option>
+          <option value="Evocation">Evocation</option>
+          <option value="Illusion">Illusion</option>
+          <option value="Necromancy">Necromancy</option>
+          <option value="Transmutation">Transmutation</option>
+        </select>
+      </div>
+      <button class="btn psy" id="pcSpend" style="margin-left:auto">Deduct from TL</button>
+      <button class="minibtn" id="pcClear">Clear</button>
+    </div>
+    <div class="pc-warn" id="pcWarn"></div>
+    <div class="modgrid" id="modGrid"></div>
+  </div>
+
+  <h2 class="sec">Modification Reference</h2>
+  <div class="card"><table class="gt"><thead><tr><th>Modification</th><th>TL</th><th>School</th><th>Effect</th></tr></thead><tbody id="modRefBody"></tbody></table></div>
+</section>
+
+<!-- ========== SPELL LIST ========== -->
+<section class="tabpanel" id="tab-spells">
+  <div class="quote">"She utilizes her fans for more coverage and range."</div>
+  <h2 class="sec">Spell Slots</h2>
+  <p class="sec-note">Tap a pip to spend / restore a slot. Edit the max with the number field. Spellblade regains all slots on a long rest.</p>
+  <div class="slot-board" id="slotBoard"></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 2px">
+    <button class="btn gold" id="longRest">Long Rest &mdash; Restore All Slots</button>
+    <button class="minibtn" id="spendNone"></button>
+  </div>
+
+  <h2 class="sec">Spell List</h2>
+  <div class="legend">
+    <span class="li"><span class="chip sb">SB</span> on the Spellblade list</span>
+    <span class="li"><span class="chip fan on">&#9876; Fan</span> can be infused via Spellstrike</span>
+    <span class="li"><span class="chip aero on">&#8776; Aero</span> Wind/Air &mdash; Aeromancer applies</span>
+    <span class="li"><span class="chip kcc">KCC</span> Kibbles' Casting Compendium</span>
+    <span class="li">Tap the <b>&#9876; Fan</b> / <b>&#8776; Aero</b> badges to toggle &middot; tap the box to mark prepared</span>
+  </div>
+  <p class="sec-note" style="margin-top:10px">Fan default = on the Spellblade list (SB) and cast as an Action. With <b>Empowered Strike</b> (CLvl 5+) her SB cantrips qualify too, so they're flagged. Toggle any badge if your call differs.</p>
+  <div class="spell-toolbar">
+    <input type="text" id="spellSearch" placeholder="Search spells, effects, schools&hellip;">
+    <div class="filt" id="spellFilt">
+      <button data-f="all" class="on">All</button>
+      <button data-f="prep">Prepared</button>
+      <button data-f="sb">Spellblade</button>
+      <button data-f="fan">Fan-infusable</button>
+      <button data-f="aero">Wind / Air</button>
+      <button data-f="kcc">KCC</button>
+    </div>
+  </div>
+  <div id="spellHost"></div>
+</section>
+
+<!-- ========== TRANSFORMATION ========== -->
+<section class="tabpanel" id="tab-transform">
+  <h2 class="sec">Transformation</h2>
+  <div class="locked-wrap">
+    <div class="lk-icon">&#128274;</div>
+    <h3>Locked</h3>
+    <p>This power has not yet awakened.</p>
+    <div class="quest">To unlock: complete <b>Imperfect Homage</b> &mdash; Magnolia's Paralogue Mission.</div>
+  </div>
+</section>
+
+</div>
+</div>
+<div class="footer">
+  Magnolia DuBois &middot; The Radiant Tempest &mdash; interactive reference &middot; Mythic Covenant
+  <br><button class="reset-btn" id="resetAll">Reset all trackers</button>
+</div>
+</div>
+
+<!-- ===== Firebase sync (added by Sync Injector) ===== -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+/* ============================ STATE ============================ */
+const SK='magnolia_v1';
+const defaults={
+  tl:140,tlmax:140, hp:0,thp:0, fans:2,fansmax:2,
+  spellDC:23,spellAtk:15,intmod:8,pb:7, prepMax:35,
+  slots:{1:{c:8,m:8},2:{c:6,m:6},3:{c:5,m:6},4:{c:3,m:3},5:{c:2,m:2},6:{c:1,m:1},7:{c:0,m:0},8:{c:0,m:0},9:{c:0,m:0}},
+  spellState:{},   /* per-spell: {prep:bool, fan:bool, aero:bool} keyed by spell id */
+  pcMods:[], pcSchool:''
+};
+let S=load();
+function load(){
+  try{var r=localStorage.getItem(SK);if(r){var o=JSON.parse(r);var d=JSON.parse(JSON.stringify(defaults));deepMerge(d,o);return d;}}catch(e){}
+  return JSON.parse(JSON.stringify(defaults));
+}
+function deepMerge(t,s){for(var k in s){if(s[k]&&typeof s[k]==='object'&&!Array.isArray(s[k])&&t[k]&&typeof t[k]==='object'){deepMerge(t[k],s[k]);}else{t[k]=s[k];}}}
+function save(){try{localStorage.setItem(SK,JSON.stringify(S));}catch(e){}}
+function escapeHtml(s){return (''+s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+function sid(n){return n.toLowerCase().replace(/[^a-z0-9]+/g,'_');}
+
+/* ============================ VITALS ============================ */
+function renderVitals(){
+  ['tl','hp','thp','fans','intmod','pb','spellDC','spellAtk','prepMax'].forEach(function(k){var el=document.getElementById(k);if(el)el.value=S[k];});
+  ['tlmax','fansmax'].forEach(function(k){var el=document.getElementById(k);if(el)el.value=S[k];});
+  document.getElementById('tlbar').style.width=clamp(S.tl/Math.max(S.tlmax,1)*100,0,100)+'%';
+  var hpDen=Math.max(S.hp+S.thp,100);
+  document.getElementById('hpbar').style.width=clamp((S.hp+S.thp)/hpDen*100,0,100)+'%';
+  document.getElementById('fanbar').style.width=clamp(S.fans/Math.max(S.fansmax,1)*100,0,100)+'%';
+  document.getElementById('aeroDC').textContent='+'+S.pb;
+  document.getElementById('aeroDmg').textContent='+'+S.pb;
+  document.getElementById('aeroRange').textContent='+'+(5*S.pb)+' ft';
+  var mm=Math.floor(S.pb/2);
+  document.getElementById('pcMaxMods').textContent=mm;
+  document.getElementById('pcMaxModsTxt').textContent=mm;
+  renderFanPips();
+}
+['tl','hp','thp','intmod','pb','spellDC','spellAtk','prepMax'].forEach(function(k){
+  document.getElementById(k).addEventListener('input',function(e){S[k]=parseInt(e.target.value||0);renderVitals();if(k==='pb')renderPC();save();});
+});
+['tlmax','fansmax'].forEach(function(k){
+  document.getElementById(k).addEventListener('input',function(e){S[k]=Math.max(k==='fansmax'?0:1,parseInt(e.target.value||0));renderVitals();save();});
+});
+document.querySelectorAll('.vitals .stepbtns button[data-k]').forEach(function(b){
+  b.addEventListener('click',function(){var k=b.dataset.k,d=parseInt(b.dataset.d);
+    if(k==='fans'){S.fans=clamp(S.fans+d,0,S.fansmax);}else{S[k]=(S[k]||0)+d;if(k==='tl')S[k]=Math.max(0,S[k]);}
+    renderVitals();save();});
+});
+function spendTL(n){S.tl=Math.max(0,S.tl-n);renderVitals();save();}
+
+/* ============================ FANS ============================ */
+function renderFanPips(){
+  var host=document.getElementById('fanPips');host.innerHTML='';
+  for(var i=0;i<S.fansmax;i++){
+    var p=document.createElement('div');p.className='fanpip'+(i<S.fans?' held':'');p.innerHTML=i<S.fans?'&#9992;':'&#183;';p.dataset.i=i;
+    host.appendChild(p);
+  }
+  host.querySelectorAll('.fanpip').forEach(function(p){
+    p.addEventListener('click',function(){var i=parseInt(p.dataset.i);S.fans=(i<S.fans)?i:i+1;renderVitals();save();});
+  });
+}
+document.querySelectorAll('[data-fan]').forEach(function(b){
+  b.addEventListener('click',function(){
+    var a=b.dataset.fan;
+    if(a==='sac1')S.fans=Math.max(0,S.fans-1);
+    else if(a==='sac2')S.fans=0;
+    else if(a==='recall')S.fans=S.fansmax;
+    renderVitals();save();
+  });
+});
+document.getElementById('rideEnh').addEventListener('click',function(){spendTL(10);});
+
+/* ============================ MODIFICATIONS (Perfect Casting) ============================ */
+const MODS=[
+  {id:'mirage',n:'Mirage of Perfection',tl:25,sch:'Illusion',e:'Spell becomes Illusion. Looks real but is an illusion; Wis save \u2014 on a failure creatures believe it and take Psychic damage based on the spell, on a success it visually occurs with no effect. Good for baiting reactions.'},
+  {id:'manifest',n:'Manifest Spell',tl:30,sch:'Conjuration',e:'Spell becomes Conjuration. Summon a construct, object, or creature. Delayed one round; triggers when destroyed or commanded.'},
+  {id:'grave',n:'Grave Ideal',tl:25,sch:'Necromancy',e:'Spell becomes Necromancy. Damage converts to necrotic and drains life; caster heals \u00bd damage dealt (AoE: allies heal the same). Non-damage effects become draining fields.'},
+  {id:'cataclysm',n:'Cataclysmic Arcana',tl:30,sch:'Evocation',e:'Spell becomes Evocation. Choose acid, cold, lightning, fire, or poison. Gains 10 ft AoE radius and +PB damage per target.'},
+  {id:'aegis',n:'Aegis Reversal',tl:25,sch:'Abjuration',e:'Spell becomes Abjuration. Damage instead grants temp HP. Effects become barriers or wards granting resistances.'},
+  {id:'absolute',n:'Absolute Form',tl:30,sch:'Transmutation',e:'Spell becomes Transmutation, manipulating physical properties of items and people. Con save \u2014 on a failure the effect lasts full duration as a physical alteration. Damage becomes damage over time.'},
+  {id:'sovereign',n:'Sovereign Will',tl:30,sch:'Enchantment',e:'Spell becomes Enchantment. Wis save \u2014 on a failure apply Frightened or Charmed. If it deals damage, that damage becomes Psychic.'},
+  {id:'reach',n:'Extended Reach',tl:20,sch:'',e:'Increase the range of the spell by 30 ft.'},
+  {id:'multiplicity',n:'Divine Multiplicity',tl:20,sch:'',e:'Target up to PB creatures instead of one. Targets must be in the initial range.'},
+  {id:'adaptation',n:'Adaptation',tl:20,sch:'',e:'Roll a d6 for a stat; change the saving throw to whatever was rolled.'},
+  {id:'unbound',n:'Unbound Scale',tl:15,sch:'',e:'If a spell is limited by creature size, it scales up \u2014 affect Larger creatures as if normal.'},
+  {id:'swift',n:'Swift Performance',tl:20,sch:'',e:'Reduce cast time by 1 step.'},
+  {id:'piercing',n:'Piercing Fate',tl:15,sch:'',e:'Spell ignores resistance and half cover.'},
+  {id:'recurrence',n:'Recurrence',tl:40,sch:'',e:'The spell repeats at the start of your next turn at half effectiveness.'},
+  {id:'convergence',n:'Convergence',tl:45,sch:'',e:'Merge two spells into one cast. They must share spell slots, target / area.'},
+  {id:'immutable',n:'Immutable',tl:35,sch:'',e:'On a failed save, the target automatically fails its next saving throw against this spell.'},
+  {id:'correction',n:'Divine Correction',tl:25,sch:'',e:'If the spell misses, it tries again \u2014 reroll the spell with disadvantage.'},
+  {id:'reflection',n:'Reflection',tl:25,sch:'',e:'If the spell only targets Self, choose one additional creature of choice.'}
+];
+function renderModRef(){
+  var b=document.getElementById('modRefBody');b.innerHTML='';
+  MODS.forEach(function(m){
+    var tr=document.createElement('tr');if(m.sch)tr.className='school-mod';
+    tr.innerHTML='<td>'+escapeHtml(m.n)+'</td><td class="tlc">'+m.tl+'</td><td>'+(m.sch?escapeHtml(m.sch):'\u2014')+'</td><td>'+escapeHtml(m.e)+'</td>';
+    b.appendChild(tr);
+  });
+}
+function pcSchoolConflict(m){
+  /* a school-change mod conflicts if its school matches the chosen original school */
+  return m.sch && S.pcSchool && m.sch===S.pcSchool;
+}
+function pcSchoolModSelected(){
+  return S.pcMods.some(function(id){var m=MODS.find(function(x){return x.id===id;});return m&&m.sch;});
+}
+function renderPC(){
+  var grid=document.getElementById('modGrid');grid.innerHTML='';
+  var maxMods=Math.floor(S.pb/2);
+  var totalTL=0,sel=S.pcMods.slice();
+  sel.forEach(function(id){var m=MODS.find(function(x){return x.id===id;});if(m)totalTL+=m.tl;});
+  var schoolSelected=pcSchoolModSelected();
+  MODS.forEach(function(m){
+    var on=S.pcMods.indexOf(m.id)>=0;
+    var disabled=false,reason='';
+    if(!on){
+      if(S.pcMods.length>=maxMods){disabled=true;}
+      if(m.sch && pcSchoolConflict(m)){disabled=true;reason='same school';}
+      if(m.sch && schoolSelected){disabled=true;reason='one school only';}
+    }
+    var c=document.createElement('div');
+    c.className='modcard'+(on?' on':'')+(disabled?' disabled':'');
+    c.dataset.id=m.id;
+    c.innerHTML='<div class="mh"><span class="mn">'+escapeHtml(m.n)+'</span><span class="mc">'+m.tl+' TL</span></div>'+
+      (m.sch?'<div class="ms">\u21bb '+escapeHtml(m.sch)+(reason?' \u00b7 '+reason:'')+'</div>':'')+
+      '<div class="me">'+escapeHtml(m.e)+'</div>';
+    grid.appendChild(c);
+  });
+  grid.querySelectorAll('.modcard').forEach(function(c){
+    c.addEventListener('click',function(){
+      if(c.classList.contains('disabled'))return;
+      var id=c.dataset.id,i=S.pcMods.indexOf(id);
+      if(i>=0)S.pcMods.splice(i,1);else S.pcMods.push(id);
+      renderPC();save();
+    });
+  });
+  document.getElementById('pcTL').textContent=totalTL;
+  document.getElementById('pcMods').textContent=S.pcMods.length;
+  document.getElementById('pcTLmeter').classList.toggle('over',totalTL>140);
+  document.getElementById('pcModMeter').classList.toggle('over',S.pcMods.length>maxMods);
+  var warns=[];
+  if(totalTL>140)warns.push('Over the 140 TL cap by '+(totalTL-140)+'.');
+  if(S.pcMods.length>maxMods)warns.push('Too many modifications (max '+maxMods+').');
+  if(totalTL>S.tl)warns.push('Costs more TL ('+totalTL+') than Magnolia currently has ('+S.tl+').');
+  document.getElementById('pcWarn').textContent=warns.join(' ');
+  document.getElementById('pcSpend').disabled=(totalTL===0||totalTL>S.tl||totalTL>140||S.pcMods.length>maxMods);
+}
+document.getElementById('origSchool').addEventListener('change',function(e){S.pcSchool=e.target.value;renderPC();save();});
+document.getElementById('pcClear').addEventListener('click',function(){S.pcMods=[];renderPC();save();});
+document.getElementById('pcSpend').addEventListener('click',function(){
+  var totalTL=0;S.pcMods.forEach(function(id){var m=MODS.find(function(x){return x.id===id;});if(m)totalTL+=m.tl;});
+  if(totalTL>0&&totalTL<=S.tl){spendTL(totalTL);}
+});
+
+/* ============================ SLOTS ============================ */
+function renderSlots(){
+  var host=document.getElementById('slotBoard');host.innerHTML='';
+  for(var lvl=1;lvl<=9;lvl++){
+    var s=S.slots[lvl]||{c:0,m:0};
+    var cell=document.createElement('div');cell.className='slot-cell'+(s.m===0?' empty':'');
+    var pips='';
+    for(var i=0;i<s.m;i++){pips+='<span class="spip'+(i>=s.c?' spent':'')+'" data-l="'+lvl+'" data-i="'+i+'"></span>';}
+    if(s.m===0)pips='<span style="font-size:11px;color:var(--bone-faint)">none</span>';
+    cell.innerHTML='<div class="sl-name">Level '+lvl+'</div><div class="slot-pips">'+pips+'</div>'+
+      '<div class="sl-val">'+s.c+' / <input type="number" data-l="'+lvl+'" value="'+s.m+'"></div>';
+    host.appendChild(cell);
+  }
+  host.querySelectorAll('.spip').forEach(function(p){
+    p.addEventListener('click',function(){
+      var l=p.dataset.l,i=parseInt(p.dataset.i),s=S.slots[l];
+      /* clicking a filled pip spends down to it; clicking spent restores up to it */
+      if(i<s.c){s.c=i;}else{s.c=i+1;}
+      s.c=clamp(s.c,0,s.m);renderSlots();save();
+    });
+  });
+  host.querySelectorAll('.sl-val input').forEach(function(inp){
+    inp.addEventListener('input',function(){var l=inp.dataset.l;S.slots[l].m=Math.max(0,parseInt(inp.value||0));S.slots[l].c=clamp(S.slots[l].c,0,S.slots[l].m);renderSlots();save();});
+  });
+  updateSpendNone();
+}
+document.getElementById('longRest').addEventListener('click',function(){for(var l=1;l<=9;l++){S.slots[l].c=S.slots[l].m;}S.fans=S.fansmax;renderSlots();renderVitals();save();});
+function updateSpendNone(){
+  var used=0,total=0;for(var l=1;l<=9;l++){total+=S.slots[l].m;used+=(S.slots[l].m-S.slots[l].c);}
+  document.getElementById('spendNone').textContent=used+' of '+total+' slots spent';
+}
+
+/* ============================ SPELL DATA ============================ */
+/* sb = Spellblade list ; kcc = Kibbles' Casting Compendium ; aero = default Wind/Air ;
+   fanDefault computed = sb && time==='Act' (Empowered Strike lets cantrips qualify) */
+const SPELLS=[
+ /* CANTRIPS */
+ {lvl:0,n:'Blade Ward',sc:'Abjur',t:'Act',rg:'Self',ar:'Self',sa:'\u2014',du:'1 rnd',cc:'',cp:'VS',src:'PHB 218',eff:'Resistance to bludgeoning, piercing, and slashing damage from weapon attacks.'},
+ {lvl:0,n:'Dancing Lights',sc:'Evoc',t:'Act',rg:"120'",ar:'\u22644 lights',sa:'\u2014',du:'\u22641 Min',cc:'C',cp:'VSM',src:'PHB 230',sb:1,eff:'Lights shine in a 10 ft radius, within 20 ft of each other. Bonus action to move them up to 60 ft.'},
+ {lvl:0,n:'Fire Bolt',sc:'Evoc',t:'Act',rg:"120'",ar:'1 target',sa:'Attack',du:'Instant',cp:'VS',src:'PHB 241',sb:1,eff:'Creature or object takes 1d10 fire, ignites combustibles. Scales 2d10/3d10/4d10 at 5/11/17.'},
+ {lvl:0,n:'Mage Hand',sc:'Conj',t:'Act',rg:"30'",ar:'Spectral hand',sa:'\u2014',du:'1 Min',cp:'VS',src:'PHB 256',sb:1,eff:'Use an Action to control a spectral hand that manipulates objects up to 10 lbs.'},
+ {lvl:0,n:'Minor Illusion',sc:'Illus',t:'Act',rg:"30'",ar:"\u22645' cube",sa:'\u2014',du:'1 Min',cp:'SM',src:'PHB 260',sb:1,eff:'Sound or image of an object. An Investigation check vs spell DC can reveal the illusion.'},
+ {lvl:0,n:'Ray of Frost',sc:'Evoc',t:'Act',rg:"60'",ar:'1 creature',sa:'Attack',du:'Instant',cp:'VS',src:'PHB 271',sb:1,eff:'1d8 cold on hit, speed reduced 10 ft. Scales 2d8/3d8/4d8 at 5/11/17.'},
+ {lvl:0,n:'Thunderclap',sc:'Evoc',t:'Act',rg:'Self',ar:"5' radius",sa:'Con',du:'Instant',cp:'S',src:'EE 22',eff:'Burst of thunder (heard 100 ft). 1d6 thunder to creatures within 5 ft, Con save negates. Scales at 5/11/17.'},
+ {lvl:0,n:'True Strike',sc:'Divin',t:'Act',rg:"30'",ar:'1 creature',sa:'\u2014',du:'\u22641 Min',cc:'C',cp:'S',src:'PHB 284',sb:1,eff:'Gain advantage on your next attack roll against the target.'},
+ {lvl:0,n:'Illusionary Dart',sc:'Illus',t:'Act',rg:"60'",ar:'1 creature',sa:'Attack',du:'Instant',cp:'VS',src:'KCC 39',sb:1,kcc:1,eff:'Ranged spell attack. On hit, 1d8 psychic. Dart count rises to 2/3/4 at 5/11/17.'},
+ {lvl:0,n:'Water Bullet',sc:'Conj',t:'Act',rg:"90'",ar:'1 creature',sa:'Attack',du:'Instant',cp:'VS',src:'KCC 66',sb:1,kcc:1,eff:'Ranged spell attack. On hit, 1d6 + spellcasting mod piercing. Scales 2d6/3d6/4d6 at 5/11/17.'},
+ {lvl:0,n:'Freeze',sc:'Trans',t:'Act',rg:'Touch',ar:'1 creature',sa:'Attack',du:'Instant',cp:'VS',src:'KCC 32',sb:1,kcc:1,eff:'Melee spell attack. On hit, 1d8 cold and movement -10 ft until end of its turn. Scales 2d8/3d8/4d8 at 5/11/17.'},
+ /* LEVEL 1 */
+ {lvl:1,n:'Burning Hands',sc:'Evoc',t:'Act',rg:'Self',ar:"15' cone",sa:'Dex',du:'Instant',cp:'VS',src:'PHB 220',sb:1,eff:'3d6 fire to creatures in the cone, save for half. Overpower: +1d6 per slot level above 1st.'},
+ {lvl:1,n:'Earth Tremor',sc:'Evoc',t:'Act',rg:'Self',ar:"10' radius",sa:'Dex',du:'Instant',cp:'VS',src:'EE 17',eff:'Each creature (other than you) takes 1d6 bludgeoning and is knocked prone (Dex save for no effect). Overpower: +1d6/lvl.'},
+ {lvl:1,n:'Fog Cloud',sc:'Conj',t:'Act',rg:"120'",ar:"20' radius sphere",sa:'\u2014',du:'\u22641 Hr',cc:'C',cp:'VS',src:'PHB 243',eff:'Area heavily obscured, spreads around corners. Moderate wind disperses it. Overpower: +20 ft radius/lvl.'},
+ {lvl:1,n:'Magic Missile',sc:'Evoc',t:'Act',rg:"120'",ar:'3 darts',sa:'\u2014',du:'Instant',cp:'VS',src:'PHB 257',eff:'Three darts, each 1d4+1 force, automatically hit. Overpower: +1 dart/lvl.'},
+ {lvl:1,n:'Elemental Orb',sc:'Evoc',t:'Act',rg:"90'",ar:'1 creature',sa:'Attack',du:'Instant',cp:'VSF',cost:'50gp',src:'PHB 221',sb:1,eff:'Choose acid, cold, fire, lightning, poison, or thunder. Ranged spell attack; on hit 3d8 of that type. Overpower: +1d8/lvl.'},
+ /* LEVEL 2 */
+ {lvl:2,n:'Gust of Wind',sc:'Evoc',t:'Act',rg:'Self',ar:"60' line",sa:'Str',du:'\u22641 Min',cc:'C',cp:'VSM',src:'PHB 248',aero:1,eff:'60 ft line, 10 ft wide. Creatures starting their turn in it are pushed 15 ft (Str save negates). Moving against it costs double. Disperses gases, snuffs fires. Bonus action: change direction.'},
+ {lvl:2,n:'Mirror Image',sc:'Illus',t:'Act',rg:'Self',ar:'Self',sa:'\u2014',du:'1 Min',cp:'VS',src:'PHB 260',sb:1,eff:'Create 3 duplicates (AC 10 + Dex). Attacks may strike a duplicate instead; each is destroyed when hit.'},
+ {lvl:2,n:'Misty Step',sc:'Conj',t:'Bonus',rg:'Self',ar:'Self',sa:'\u2014',du:'Instant',cp:'V',src:'PHB 260',eff:'Teleport up to 30 ft to an unoccupied space you can see.'},
+ {lvl:2,n:'Warding Wind',sc:'Evoc',t:'Act',rg:'Self',ar:"10' radius",sa:'\u2014',du:'\u226410 Min',cc:'C',cp:'V',src:'EE 23',aero:1,eff:'Strong wind surrounds you: deafens, snuffs small fires, difficult terrain to others, ranged weapon disadvantage, blocks and disperses vapor/gas/fog.'},
+ {lvl:2,n:'Crescent Wind Slash',sc:'Custom',t:'\u2014',rg:'\u2014',ar:'\u2014',sa:'\u2014',du:'\u2014',cp:'\u2014',src:'Homebrew',aero:1,custom:1,eff:'Homebrew \u2014 mechanics not yet recorded on the sheet.'},
+ {lvl:2,n:'Vacuum Pull',sc:'Custom',t:'\u2014',rg:'\u2014',ar:'\u2014',sa:'\u2014',du:'\u2014',cp:'\u2014',src:'Homebrew',aero:1,custom:1,eff:'Homebrew \u2014 mechanics not yet recorded on the sheet.'},
+ /* LEVEL 3 */
+ {lvl:3,n:'Counterspell',sc:'Abjur',t:'React',rg:"60'",ar:'1 spell',sa:'\u2014',du:'Instant',cp:'S',src:'PHB 228',eff:'Interrupt a spell of 3rd level or lower. 4th+ requires an ability check (DC 10 + spell level). Overpower: raises the counter level.'},
+ {lvl:3,n:'Fireball',sc:'Evoc',t:'Act',rg:"150'",ar:"20' radius sphere",sa:'Dex',du:'Instant',cp:'VSM',src:'PHB 241',eff:'8d6 fire, save for half. Ignites combustibles. Overpower: +1d6/lvl.'},
+ {lvl:3,n:'Lightning Bolt',sc:'Evoc',t:'Act',rg:'Self',ar:"100' line",sa:'Dex',du:'Instant',cp:'VSM',src:'PHB 255',sb:1,eff:'8d6 lightning, save for half. Ignites combustibles. Overpower: +1d6/lvl.'},
+ {lvl:3,n:'Water Cannon',sc:'Custom',t:'\u2014',rg:'\u2014',ar:'\u2014',sa:'\u2014',du:'\u2014',cp:'\u2014',src:'Homebrew',custom:1,eff:'Homebrew \u2014 mechanics not yet recorded on the sheet.'},
+ {lvl:3,n:'Flash Freeze',sc:'Evoc',t:'Act',rg:'Self',ar:"30' cone",sa:'\u2014',du:'\u2014',cp:'\u2014',src:'Homebrew',custom:1,eff:'Homebrew \u2014 30 ft cone; full mechanics not yet recorded on the sheet.'},
+ /* LEVEL 4 */
+ {lvl:4,n:'Elemental Bane',sc:'Trans',t:'Act',rg:"90'",ar:'1 creature',sa:'Con',du:'\u22641 Min',cc:'C',cp:'VS',src:'EE 17',eff:'Choose acid, cold, fire, lightning, or thunder. Con save; on a failure it loses resistance to that type and takes +2d6 of it the first time per turn. Overpower: +1 target/lvl (within 30 ft).'},
+ {lvl:4,n:'Fire Shield',sc:'Evoc',t:'Act',rg:'Self',ar:'Self',sa:'\u2014',du:'10 Min',cp:'VSM',src:'PHB 241',eff:'Light in 10/20 ft; resistance to cold or fire; melee attackers take 2d8 cold or fire.'},
+ {lvl:4,n:'Freedom of Movement',sc:'Abjur',t:'Act',rg:'Touch',ar:'1 creature',sa:'\u2014',du:'1 Hr',cp:'VSM',src:'PHB 244',eff:'Movement unaffected by difficult terrain or magic that slows, paralyzes, or restrains. Spend 5 ft to escape nonmagical restraints. Functions normally underwater.'},
+ {lvl:4,n:'Aero Barrage',sc:'Custom',t:'\u2014',rg:'\u2014',ar:'\u2014',sa:'\u2014',du:'\u2014',cp:'\u2014',src:'Homebrew',aero:1,custom:1,eff:'Homebrew \u2014 mechanics not yet recorded on the sheet.'},
+ {lvl:4,n:'Suffocate',sc:'Custom',t:'\u2014',rg:'\u2014',ar:'\u2014',sa:'\u2014',du:'\u2014',cp:'\u2014',src:'Homebrew',custom:1,eff:'Homebrew \u2014 mechanics not yet recorded on the sheet.'},
+ /* LEVEL 5 */
+ {lvl:5,n:'Cloudkill',sc:'Conj',t:'Act',rg:"120'",ar:"20' radius sphere",sa:'Con',du:'\u226410 Min',cc:'C',cp:'VS',src:'PHB 222',eff:'Entering or starting a turn: 5d8 poison, save for half. Fog drifts 10 ft from you each turn. +1d8 per slot above 5th.'},
+ {lvl:5,n:'Cone of Cold',sc:'Evoc',t:'Act',rg:'Self',ar:"60' cone",sa:'Con',du:'Instant',cp:'VSM',src:'PHB 224',eff:'8d8 cold, save for half. Overpower: +1d8 per slot above 5th.'},
+ {lvl:5,n:'Control Winds',sc:'Trans',t:'Act',rg:"300'",ar:"100' cube",sa:'Str',du:'\u22641 Hr',cc:'C',cp:'VS',src:'EE 16',aero:1,eff:'Choose Gusts (disadvantage on ranged, difficult movement), Downdraft (ranged disadvantage; flyers knocked prone, Str save), or Updraft (half fall damage, +10 ft vertical jump).'},
+ {lvl:5,n:'Steel Wind Strike',sc:'Conj',t:'Act',rg:"30'",ar:'\u22645 creatures',sa:'Attack',du:'Instant',cp:'SF',src:'XGTE 166',eff:'Melee spell attack against up to 5 creatures for 6d10 force, then teleport within 5 ft of one of them.'},
+ {lvl:5,n:'Tornado',sc:'Custom',t:'\u2014',rg:'\u2014',ar:'\u2014',sa:'\u2014',du:'\u2014',cp:'\u2014',src:'Homebrew',aero:1,custom:1,eff:'Homebrew \u2014 mechanics not yet recorded on the sheet.'},
+ /* LEVEL 6 */
+ {lvl:6,n:'Chain Lightning',sc:'Evoc',t:'Act',rg:"150'",ar:'1 + 3 within 30 ft',sa:'Dex',du:'Instant',cp:'VSM',src:'PHB 221',eff:'10d8 lightning, save for half. Up to 3 additional targets within 30 ft of the primary. Overpower: +1 secondary per slot above 6th.'},
+ {lvl:6,n:'Investiture of Wind',sc:'Trans',t:'Act',rg:'Self',ar:"15' cube",sa:'Con',du:'\u226410 Min',cc:'C',cp:'VS',src:'EE 20',aero:1,eff:'Ranged weapons have disadvantage vs you; fly speed 60 ft. Action: create a 15 ft windy cube within 60 ft \u2014 2d10 bludgeoning (Con save half); Large or smaller failing pushed 10 ft from center.'},
+ {lvl:6,n:'Mental Prison',sc:'Illus',t:'Act',rg:"60'",ar:'1 creature',sa:'Int',du:'\u22641 Min',cc:'C',cp:'S',src:'XGTE 161',eff:'5d10 psychic (Int save half). On a failure, the target is restrained and cannot see/hear beyond the illusion; moving out, attacking through, or reaching through deals 10d10 psychic and ends the spell. No effect if immune to charm.'},
+ {lvl:6,n:'Scatter',sc:'Conj',t:'Act',rg:"30'",ar:'\u22645 creatures',sa:'Wis',du:'Instant',cp:'V',src:'XGTE 164',eff:'Teleport each target to an unoccupied space you can see within 120 ft (on the ground). Unwilling targets get a Wis save to resist.'},
+ {lvl:6,n:'Power Torrent',sc:'Custom',t:'\u2014',rg:'\u2014',ar:'\u2014',sa:'\u2014',du:'\u2014',cp:'\u2014',src:'Homebrew',custom:1,eff:'Homebrew \u2014 mechanics not yet recorded on the sheet.'}
+];
+const SCHOOL_FULL={Abjur:'Abjuration',Conj:'Conjuration',Divin:'Divination',Evoc:'Evocation',Illus:'Illusion',Trans:'Transmutation',Custom:'Homebrew'};
+const SCHOOL_CLS={Abjur:'sc-abjur',Conj:'sc-conj',Divin:'sc-divin',Evoc:'sc-evoc',Illus:'sc-illus',Trans:'sc-trans',Custom:'sc-custom'};
+const LVLNAME={0:'Cantrips',1:'Level 1',2:'Level 2',3:'Level 3',4:'Level 4',5:'Level 5',6:'Level 6',7:'Level 7',8:'Level 8',9:'Level 9'};
+
+function spState(sp){
+  var id=sid(sp.n);
+  if(!S.spellState[id]){
+    S.spellState[id]={prep:false, fan:!!(sp.sb && sp.t==='Act'), aero:!!sp.aero};
+  } else {
+    if(typeof S.spellState[id].fan==='undefined')S.spellState[id].fan=!!(sp.sb && sp.t==='Act');
+    if(typeof S.spellState[id].aero==='undefined')S.spellState[id].aero=!!sp.aero;
+    if(typeof S.spellState[id].prep==='undefined')S.spellState[id].prep=false;
+  }
+  return S.spellState[id];
+}
+let spFilter='all', spQuery='';
+function spellMatches(sp,st){
+  if(spQuery){var hay=(sp.n+' '+sp.eff+' '+(SCHOOL_FULL[sp.sc]||sp.sc)+' '+sp.src).toLowerCase();if(hay.indexOf(spQuery)<0)return false;}
+  if(spFilter==='prep'&&!st.prep)return false;
+  if(spFilter==='sb'&&!sp.sb)return false;
+  if(spFilter==='fan'&&!st.fan)return false;
+  if(spFilter==='aero'&&!st.aero)return false;
+  if(spFilter==='kcc'&&!sp.kcc)return false;
+  return true;
+}
+function renderSpells(){
+  var host=document.getElementById('spellHost');host.innerHTML='';
+  var prepN=0;SPELLS.forEach(function(sp){if(spState(sp).prep)prepN++;});
+  document.getElementById('prepCount').textContent=prepN;
+  for(var lvl=0;lvl<=6;lvl++){
+    var inLvl=SPELLS.filter(function(s){return s.lvl===lvl;});
+    var shown=inLvl.filter(function(sp){return spellMatches(sp,spState(sp));});
+    if(!shown.length)continue;
+    var head=document.createElement('div');head.className='lvl-head';
+    var slotInfo='';
+    if(lvl>0){var s=S.slots[lvl];slotInfo='<span class="lvc">'+s.c+' / '+s.m+' slots</span>';}
+    head.innerHTML=LVLNAME[lvl]+' '+slotInfo+' <span class="lvc">&middot; '+shown.length+' shown</span>';
+    host.appendChild(head);
+    var rows=document.createElement('div');rows.className='spell-rows';
+    shown.forEach(function(sp){
+      var st=spState(sp);
+      var card=document.createElement('div');
+      card.className='scard '+(SCHOOL_CLS[sp.sc]||'')+(st.prep?'':' notprep');
+      var badges='<span class="chip school">'+escapeHtml(SCHOOL_FULL[sp.sc]||sp.sc)+'</span>';
+      if(sp.custom)badges+='<span class="chip custom">Homebrew</span>';
+      if(sp.sb)badges+='<span class="chip sb">SB</span>';
+      if(sp.kcc)badges+='<span class="chip kcc">KCC</span>';
+      badges+='<span class="chip toggle fan'+(st.fan?' on':'')+'" data-tog="fan" data-id="'+sid(sp.n)+'" title="Toggle fan / Spellstrike">&#9876; Fan</span>';
+      badges+='<span class="chip toggle aero'+(st.aero?' on':'')+'" data-tog="aero" data-id="'+sid(sp.n)+'" title="Toggle Wind/Air (Aeromancer)">&#8776; Aero</span>';
+      var meta='<span><b>Time</b> '+escapeHtml(sp.t)+'</span><span><b>Range</b> '+escapeHtml(sp.rg)+'</span><span><b>Area</b> '+escapeHtml(sp.ar)+'</span>'+
+        '<span><b>Save</b> '+escapeHtml(sp.sa)+'</span><span><b>Dur</b> '+escapeHtml(sp.du)+(sp.cc?' (C)':'')+'</span>'+
+        '<span><b>Comp</b> '+escapeHtml(sp.cp)+(sp.cost?' \u00b7 '+sp.cost:'')+'</span><span><b>Src</b> '+escapeHtml(sp.src)+'</span>';
+      card.innerHTML='<div class="sc-head"><button class="sc-prep'+(st.prep?' on':'')+'" data-prep="'+sid(sp.n)+'" title="Mark prepared">'+(st.prep?'\u2713':'')+'</button>'+
+        '<span class="sc-name">'+escapeHtml(sp.n)+'</span>'+badges+'</div>'+
+        '<div class="sc-meta">'+meta+'</div>'+
+        '<div class="sc-eff'+(sp.custom?' tbd':'')+'">'+escapeHtml(sp.eff)+'</div>';
+      rows.appendChild(card);
+    });
+    host.appendChild(rows);
+  }
+  if(!host.children.length){host.innerHTML='<p class="sec-note">No spells match this filter.</p>';}
+  updateSpendNone();
+  host.querySelectorAll('.sc-prep').forEach(function(b){b.addEventListener('click',function(){var id=b.dataset.prep;S.spellState[id].prep=!S.spellState[id].prep;renderSpells();save();});});
+  host.querySelectorAll('.chip.toggle').forEach(function(c){c.addEventListener('click',function(){var id=c.dataset.id,k=c.dataset.tog;S.spellState[id][k]=!S.spellState[id][k];renderSpells();save();});});
+}
+document.getElementById('spellSearch').addEventListener('input',function(e){spQuery=e.target.value.toLowerCase().trim();renderSpells();});
+document.querySelectorAll('#spellFilt button').forEach(function(b){b.addEventListener('click',function(){spFilter=b.dataset.f;document.querySelectorAll('#spellFilt button').forEach(function(x){x.classList.toggle('on',x===b);});renderSpells();});});
+
+/* ============================ TABS ============================ */
+document.querySelectorAll('#tabnav button').forEach(function(b){
+  b.addEventListener('click',function(){
+    document.querySelectorAll('#tabnav button').forEach(function(x){x.classList.remove('active');});b.classList.add('active');
+    document.querySelectorAll('.tabpanel').forEach(function(p){p.classList.remove('active');});
+    document.getElementById('tab-'+b.dataset.tab).classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+});
+
+/* ============================ RESET ============================ */
+document.getElementById('resetAll').addEventListener('click',function(){
+  if(confirm('Reset all trackers, slots, prepared spells, and the Perfect Casting build to defaults?')){
+    try{localStorage.removeItem(SK);}catch(e){}S=load();renderAll();
+  }
+});
+
+/* ============================ INIT ============================ */
+function renderAll(){
+  renderVitals();renderModRef();renderPC();renderSlots();renderSpells();
+}
+renderAll();
+
+
+/* ======================= CLOUD SYNC (Firebase) ======================= */
+/* Inserted by the Sync Injector. Wraps save() + subscribes once.        */
+/* Config + campaign come from firebase-config.js (window.FIREBASE_CONFIG).*/
+/* CHAR_ID is derived from this sheet's own SK key. Local-only until the  */
+/* shared config is filled in. Remote applies reuse the sheet's own load(). */
+(function(){
+  var CFG = window.FIREBASE_CONFIG || {};
+  var CAMPAIGN_ID = window.CAMPAIGN_ID || "astrology-club";
+  var CHAR_ID = (typeof SK === "string" ? SK.replace(/_v[0-9]+$/, "") : "unknown");
+  var configured = CFG && CFG.apiKey && CFG.apiKey.indexOf("PASTE") !== 0;
+
+  var pill = document.createElement("div");
+  pill.style.cssText = "position:fixed;bottom:10px;right:12px;z-index:99999;font:600 11px/1 monospace;padding:5px 9px;border-radius:20px;background:rgba(0,0,0,.55);color:#bbb;letter-spacing:.05em;pointer-events:none;";
+  pill.textContent = configured ? "○ connecting" : "○ local only";
+  document.body.appendChild(pill);
+  function setPill(t,c){ pill.textContent=t; pill.style.color=c; }
+  if(!configured) return;
+
+  var docRef=null, applyingRemote=false, pushT=null;
+  try{
+    firebase.initializeApp(CFG);
+    var db = firebase.firestore();
+    db.enablePersistence({synchronizeTabs:true}).catch(function(){});
+    docRef = db.collection("campaigns").doc(CAMPAIGN_ID).collection("characters").doc(CHAR_ID);
+  }catch(e){ setPill("○ sync error","#e08"); return; }
+
+  var _origSave = save;
+  save = function(){
+    _origSave();
+    if(applyingRemote) return;
+    clearTimeout(pushT);
+    pushT = setTimeout(pushRemote, 400);
+  };
+  function pushRemote(){
+    if(!docRef) return;
+    docRef.set(JSON.parse(JSON.stringify(S)))
+      .then(function(){ setPill("● synced","#7c7"); })
+      .catch(function(){ setPill("○ offline","#c96"); });
+  }
+  var rb = document.getElementById("resetAll");
+  if(rb) rb.addEventListener("click", function(){ setTimeout(function(){ if(!applyingRemote) pushRemote(); },0); });
+
+  docRef.onSnapshot(function(snap){
+    if(snap.metadata.hasPendingWrites) return;
+    if(!snap.exists){ pushRemote(); setPill("● synced","#7c7"); return; }
+    var data = snap.data(); if(!data) return;
+    applyingRemote = true;
+    try{ localStorage.setItem(SK, JSON.stringify(data)); }catch(e){}
+    try{ S = load(); }catch(e){}
+    try{ renderAll(); }catch(e){}
+    applyingRemote = false;
+    setPill("● synced","#7c7");
+  }, function(){ setPill("○ offline","#c96"); });
+})();
+
+</script>
+</body>
+</html>

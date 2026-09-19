@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Flagbearer of Betrayal — Dylan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#08080a;
+  --char:#100f12;
+  --char2:#16151a;
+  --panel:#1c1a21;
+  --panel2:#232029;
+  --line:#332e38;
+  --line2:#46404e;
+  --bone:#ece6da;
+  --bone-dim:#b3aca0;
+  --bone-faint:#7c766e;
+  --crimson:#e0565b;          /* primary accent · death */
+  --crimson-deep:#8a2326;
+  --blood:#c0353b;
+  --gold:#d8b25a;             /* victory · allies */
+  --gold-soft:#ecd28f;
+  --trait:#a877e0;            /* self-cost · betrayal */
+  --trait-deep:#5e438f;
+  --steel:#8fa6b8;
+  --shadow:0 8px 30px rgba(0,0,0,.6);
+  --glow:0 0 18px rgba(224,86,91,.35);
+  --glow-gold:0 0 16px rgba(216,178,90,.3);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Cormorant Garamond',serif;
+  background:
+    radial-gradient(1100px 560px at 82% -8%, rgba(224,86,91,.07), transparent 60%),
+    radial-gradient(900px 500px at -8% 108%, rgba(216,178,90,.05), transparent 60%),
+    var(--void);
+  color:var(--bone);
+  font-size:18px;line-height:1.5;min-height:100vh;letter-spacing:.2px;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.03'/%3E%3C/svg%3E");
+  mix-blend-mode:overlay;opacity:.6;
+}
+.wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:0 18px 90px}
+
+/* ---------- HEADER ---------- */
+header.top{text-align:center;padding:34px 0 18px;position:relative}
+.eyebrow{font-family:'Cinzel',serif;letter-spacing:6px;font-size:12px;text-transform:uppercase;color:var(--crimson);opacity:.85;margin-bottom:8px}
+h1.title{
+  font-family:'Cinzel Decorative',serif;font-weight:900;
+  font-size:clamp(28px,6vw,56px);line-height:1;
+  background:linear-gradient(180deg,#fff,var(--bone) 32%,var(--crimson) 130%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  text-shadow:0 2px 40px rgba(224,86,91,.18);
+}
+.subtitle{font-family:'Cinzel',serif;font-style:italic;color:var(--bone-dim);margin-top:10px;font-size:16px;letter-spacing:1px}
+.tagline{color:var(--gold-soft);font-style:italic;margin-top:6px;font-size:17px;opacity:.9}
+.idline{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 22px;margin-top:16px;font-size:14px;color:var(--bone-faint);font-family:'Fira Code',monospace}
+.idline b{color:var(--bone-dim);font-weight:500}
+.idline .stars{color:var(--gold);letter-spacing:1px}
+
+/* ---------- VITALS BAR ---------- */
+.vitals{
+  position:sticky;top:0;z-index:40;margin:18px 0 8px;
+  background:linear-gradient(180deg,rgba(16,15,18,.97),rgba(16,15,18,.9));
+  border:1px solid var(--line);border-radius:14px;backdrop-filter:blur(8px);
+  box-shadow:var(--shadow);padding:12px 14px;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;
+}
+.vital{background:var(--char2);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.vital .vlabel{font-family:'Cinzel',serif;font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--bone-faint);display:flex;justify-content:space-between;align-items:center;gap:6px}
+.vital .vval{font-family:'Fira Code',monospace;font-size:20px;font-weight:600;margin-top:2px;display:flex;align-items:baseline;gap:4px}
+.vital .vval input{width:62px;background:transparent;border:none;border-bottom:1px solid var(--line2);color:var(--crimson);font-family:'Fira Code',monospace;font-size:20px;font-weight:600;text-align:right}
+.vital .vval input:focus{outline:none;border-color:var(--crimson)}
+.vital .vval input.maxinput{width:46px;color:var(--bone-faint);font-size:15px;border-bottom:1px dotted var(--line2);text-align:left}
+.vital .vval input.maxinput:focus{color:var(--bone-dim);border-color:var(--bone-dim)}
+.vital .vmax{color:var(--bone-faint);font-size:14px}
+.vbar{height:5px;border-radius:3px;background:var(--char);margin-top:6px;overflow:hidden}
+.vbar i{display:block;height:100%;border-radius:3px;transition:width .35s ease}
+.vbar.tl i{background:linear-gradient(90deg,var(--crimson-deep),var(--crimson))}
+.vbar.hp i{background:linear-gradient(90deg,#5e1518,var(--blood))}
+.vbar.morale i{background:linear-gradient(90deg,#8a6f24,var(--gold))}
+.stepbtns{display:flex;gap:3px}
+.stepbtns button{background:var(--panel);border:1px solid var(--line2);color:var(--bone-dim);min-width:20px;height:18px;padding:0 4px;border-radius:5px;cursor:pointer;font-size:12px;line-height:1;font-family:'Fira Code',monospace}
+.stepbtns button:hover{background:var(--crimson);color:var(--void);border-color:var(--crimson)}
+/* flag status readout cell */
+.vital.flagcell .flagread{margin-top:3px;font-family:'Cinzel',serif;font-size:14px;color:var(--bone-dim);line-height:1.3}
+.vital.flagcell .flagread .ff{font-family:'Fira Code',monospace;font-size:12px;padding:1px 7px;border-radius:20px;border:1px solid;margin-right:5px}
+.ff.left{color:var(--gold-soft);border-color:var(--gold);background:rgba(216,178,90,.1)}
+.ff.right{color:var(--crimson);border-color:var(--crimson-deep);background:rgba(224,86,91,.1)}
+.vital.flagcell .flagaura{font-size:15px;color:var(--gold-soft)}
+.vital.flagcell .flagaura.none{color:var(--bone-faint);font-style:italic}
+
+/* ---------- LAYOUT ---------- */
+.layout{display:flex;gap:22px;margin-top:18px;align-items:flex-start}
+.content{flex:1;min-width:0}
+nav.tabs{
+  flex:0 0 210px;display:flex;flex-direction:column;gap:6px;
+  position:sticky;top:14px;align-self:flex-start;
+  border:1px solid var(--line);border-radius:14px;padding:12px 10px;
+  background:linear-gradient(180deg,var(--panel),var(--char2));box-shadow:var(--shadow);
+}
+nav.tabs button{
+  font-family:'Cinzel',serif;font-size:13px;letter-spacing:1px;text-align:left;
+  background:transparent;border:1px solid transparent;color:var(--bone-faint);
+  padding:10px 14px;border-radius:8px;cursor:pointer;transition:.18s;text-transform:uppercase;position:relative;
+}
+nav.tabs button:hover{color:var(--bone);background:var(--panel2)}
+nav.tabs button.active{color:var(--crimson);border-color:var(--crimson);background:rgba(224,86,91,.08);box-shadow:var(--glow)}
+nav.tabs button.active::before{content:"";position:absolute;left:-1px;top:8px;bottom:8px;width:3px;background:var(--crimson);border-radius:3px;box-shadow:var(--glow)}
+@media(max-width:760px){
+  .layout{flex-direction:column}
+  nav.tabs{flex:none;width:100%;position:static;flex-direction:row;flex-wrap:wrap;justify-content:center}
+  nav.tabs button{text-align:center}
+  nav.tabs button.active::before{display:none}
+}
+
+/* ---------- PANELS ---------- */
+.tabpanel{display:none;animation:fade .4s ease}
+.tabpanel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h2.sec{font-family:'Cinzel',serif;font-weight:700;font-size:25px;color:var(--bone);margin:30px 0 4px;display:flex;align-items:center;gap:12px}
+h2.sec::before{content:"";width:26px;height:2px;background:var(--crimson);box-shadow:var(--glow)}
+.sec-note{color:var(--bone-faint);font-style:italic;font-size:15px;margin-bottom:14px}
+.quote{font-style:italic;color:var(--crimson);text-align:center;font-size:20px;margin:6px 0 20px;opacity:.9}
+
+.card{background:linear-gradient(180deg,var(--panel),var(--char2));border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:14px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--crimson);opacity:.6}
+.card.gold::before{background:var(--gold)}
+.card.trait::before{background:var(--trait)}
+.card.steel::before{background:var(--steel)}
+.card.blood::before{background:var(--blood)}
+.card h3{font-family:'Cinzel',serif;font-size:18px;color:var(--gold-soft);margin-bottom:2px;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.card h3 .cost{font-family:'Fira Code',monospace;font-size:12px;color:var(--crimson);background:rgba(224,86,91,.1);border:1px solid var(--crimson-deep);padding:2px 8px;border-radius:20px;letter-spacing:.5px}
+.card h3 .tag{font-family:'Fira Code',monospace;font-size:11px;color:var(--bone-faint);background:var(--char);border:1px solid var(--line2);padding:2px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:.5px}
+.card h3 .tag.bonus{color:var(--steel);border-color:#3a4a55}
+.card h3 .tag.reaction{color:var(--gold-soft);border-color:#6a5a2a}
+.card h3 .tag.action{color:var(--crimson);border-color:var(--crimson-deep)}
+.card h3 .tag.passive{color:var(--trait);border-color:var(--trait-deep)}
+.card p{margin:6px 0;color:var(--bone-dim)}
+.card ul{list-style:none;margin:6px 0}
+.card ul li{position:relative;padding-left:18px;margin:4px 0;color:var(--bone-dim)}
+.card ul li::before{content:"◆";position:absolute;left:0;color:var(--crimson-deep);font-size:11px;top:4px}
+.card ul li.sub{padding-left:34px;font-size:.96em;color:var(--bone-faint)}
+.card ul li.sub::before{content:"›";left:20px;color:var(--bone-faint)}
+.enh{border-top:1px dashed var(--line2);margin-top:10px;padding-top:8px}
+.enh .lbl{font-family:'Cinzel',serif;font-size:12px;letter-spacing:1px;color:var(--gold);text-transform:uppercase}
+.placeholder-card{border-style:dashed}
+.placeholder-card h3{color:var(--bone-faint)}
+.tbd{font-family:'Fira Code',monospace;font-size:11px;color:var(--trait);border:1px solid var(--trait-deep);background:rgba(168,119,224,.08);padding:2px 8px;border-radius:6px;letter-spacing:.5px}
+
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.statchips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.statchips span{font-family:'Fira Code',monospace;font-size:13px;padding:4px 11px;border-radius:8px;border:1px solid var(--line2);color:var(--bone-dim);background:var(--char)}
+.statchips span b{color:var(--crimson)}
+
+/* ---------- AURA ENGINE ---------- */
+.facing-toggle{display:flex;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:16px;box-shadow:var(--shadow)}
+.facing-toggle button{
+  flex:1;font-family:'Cinzel',serif;font-size:15px;letter-spacing:1px;text-transform:uppercase;
+  background:var(--char2);border:none;color:var(--bone-faint);padding:14px 12px;cursor:pointer;transition:.2s;position:relative;
+}
+.facing-toggle button:hover{color:var(--bone)}
+.facing-toggle button .fsub{display:block;font-family:'Cormorant Garamond',serif;font-size:12px;text-transform:none;letter-spacing:0;color:var(--bone-faint);margin-top:2px;font-style:italic}
+.facing-toggle button[data-face="left"].active{color:var(--gold-soft);background:rgba(216,178,90,.1);box-shadow:inset 0 0 22px rgba(216,178,90,.15)}
+.facing-toggle button[data-face="left"].active .fsub{color:var(--gold)}
+.facing-toggle button[data-face="right"].active{color:var(--crimson);background:rgba(224,86,91,.1);box-shadow:inset 0 0 22px rgba(224,86,91,.18)}
+.facing-toggle button[data-face="right"].active .fsub{color:var(--crimson)}
+.facing-toggle .fdivide{width:1px;background:var(--line);flex:0 0 1px}
+
+.aura-active{
+  border:1px solid var(--line2);border-radius:12px;padding:0;margin-bottom:18px;overflow:hidden;
+  background:linear-gradient(180deg,var(--panel),var(--char2));box-shadow:var(--shadow);
+}
+.aura-active .aa-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 16px;border-bottom:1px solid var(--line);background:var(--char)}
+.aura-active .aa-title{font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--bone-faint)}
+.aura-active .aa-name{font-family:'Cinzel Decorative',serif;font-size:20px;color:var(--gold-soft)}
+.aura-active.empty .aa-name{color:var(--bone-faint);font-style:italic;font-family:'Cormorant Garamond',serif;font-weight:400}
+.aura-active .aa-body{padding:14px 16px}
+.aura-active .aa-live{margin-bottom:10px}
+.aura-active .aa-live .ll{font-family:'Cinzel',serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;display:block;margin-bottom:3px}
+.aura-active .aa-live.left .ll{color:var(--gold)}
+.aura-active .aa-live.right .ll{color:var(--crimson)}
+.aura-active .aa-live p{color:var(--bone);margin:0}
+.aura-active .aa-trait{border-top:1px dashed var(--line2);padding-top:10px;margin-top:4px}
+.aura-active .aa-trait .ll{font-family:'Cinzel',serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--trait);display:block;margin-bottom:3px}
+.aura-active .aa-trait p{color:var(--bone-dim);margin:0}
+.aura-active .aa-recall{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.5px;background:transparent;border:1px solid var(--line2);color:var(--bone-dim);padding:6px 12px;border-radius:7px;cursor:pointer}
+.aura-active .aa-recall:hover{border-color:var(--crimson);color:var(--crimson)}
+
+.roundbar{display:none}
+
+
+.aura-grid{display:grid;gap:13px;grid-template-columns:repeat(auto-fit,minmax(330px,1fr))}
+.aura-card{background:linear-gradient(180deg,var(--panel),var(--char2));border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow);position:relative;overflow:hidden;transition:.18s}
+.aura-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--line2);transition:.18s}
+.aura-card.active{border-color:var(--crimson);box-shadow:var(--glow)}
+.aura-card.active::before{background:var(--crimson)}
+.ac-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:10px}
+.ac-name{font-family:'Cinzel',serif;font-size:18px;color:var(--gold-soft);flex:1;min-width:120px}
+.ac-cost{font-family:'Fira Code',monospace;font-size:12px;color:var(--crimson);background:rgba(224,86,91,.1);border:1px solid var(--crimson-deep);padding:2px 9px;border-radius:20px}
+.ac-lock{font-family:'Fira Code',monospace;font-size:10px;letter-spacing:.5px;color:var(--trait);background:rgba(168,119,224,.1);border:1px solid var(--trait-deep);padding:2px 7px;border-radius:6px;text-transform:uppercase}
+.aura-card.locked{opacity:.62}
+.aura-card.locked::before{background:var(--trait-deep)}
+.ac-plant.locked{background:var(--char);color:var(--bone-faint);border:1px dashed var(--line2);cursor:not-allowed;flex:1;font-weight:500}
+.ac-eff{padding:8px 10px;border-radius:8px;border:1px solid var(--line);margin-bottom:7px;background:var(--char);transition:.18s}
+.ac-eff .es{font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;display:block;margin-bottom:2px}
+.ac-eff p{margin:0;font-size:15px;color:var(--bone-dim)}
+.ac-eff.left .es{color:var(--gold)}
+.ac-eff.right .es{color:var(--crimson)}
+.ac-eff.dim{opacity:.4}
+.ac-eff.live{border-color:currentColor}
+.ac-eff.left.live{border-color:var(--gold);background:rgba(216,178,90,.07)}
+.ac-eff.left.live p{color:var(--bone)}
+.ac-eff.right.live{border-color:var(--crimson-deep);background:rgba(224,86,91,.07)}
+.ac-eff.right.live p{color:var(--bone)}
+.ac-trait{font-size:14px;color:var(--bone-faint);border-top:1px dashed var(--line2);padding-top:8px;margin-top:4px}
+.ac-trait b{color:var(--trait);font-family:'Cinzel',serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:2px}
+.ac-btns{display:flex;gap:8px;margin-top:11px}
+.ac-btns button{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.5px;border-radius:7px;cursor:pointer;padding:8px 14px;transition:.15s}
+.ac-plant{background:var(--crimson);color:var(--void);border:none;font-weight:600;flex:1}
+.ac-plant:hover{background:var(--crimson-deep);color:#fff}
+.aura-card.active .ac-plant{background:var(--panel2);color:var(--bone-faint);cursor:default}
+.ac-recall{background:transparent;border:1px solid var(--line2);color:var(--bone-dim)}
+.ac-recall:hover{border-color:var(--crimson);color:var(--crimson)}
+.aura-card:not(.active) .ac-recall{display:none}
+
+/* tables */
+table.gt{width:100%;border-collapse:collapse;margin:8px 0;font-size:15.5px}
+table.gt th,table.gt td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+table.gt th{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.5px;text-transform:uppercase;color:var(--gold-soft);background:var(--char);font-weight:600}
+table.gt td{color:var(--bone-dim)}
+table.gt tr:nth-child(even) td{background:rgba(255,255,255,.012)}
+
+/* ---------- TRANSFORMATION TRACKERS ---------- */
+.tracker{background:var(--char2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:10px 0;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.tracker .tk-label{font-family:'Cinzel',serif;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--bone-faint);flex:1;min-width:140px}
+.tracker .tk-val{font-family:'Fira Code',monospace;font-size:26px;font-weight:600;color:var(--crimson)}
+.tracker .tk-cap{font-family:'Fira Code',monospace;font-size:15px;color:var(--bone-faint)}
+.tracker .tk-ctrl{display:flex;gap:5px}
+.tracker .tk-ctrl button{background:var(--panel);border:1px solid var(--line2);color:var(--bone-dim);min-width:28px;height:28px;padding:0 6px;border-radius:6px;cursor:pointer;font-family:'Fira Code',monospace}
+.tracker .tk-ctrl button:hover{background:var(--crimson);color:var(--void);border-color:var(--crimson)}
+.tracker.over{border-color:var(--crimson);box-shadow:var(--glow)}
+.tracker.over .tk-val{color:#fff}
+.dmgbar{height:6px;border-radius:3px;background:var(--char);overflow:hidden;flex-basis:100%;margin-top:4px}
+.dmgbar i{display:block;height:100%;background:linear-gradient(90deg,var(--crimson-deep),var(--crimson));transition:width .3s}
+.dmgbar i.over{background:linear-gradient(90deg,var(--crimson),#fff)}
+
+/* ---------- FLAG MARKERS ---------- */
+.btn-add{font-family:'Cinzel',serif;font-size:13px;letter-spacing:.5px;background:transparent;border:1px dashed var(--line2);color:var(--bone-dim);padding:10px 16px;border-radius:9px;cursor:pointer;transition:.15s;margin-bottom:6px}
+.btn-add:hover{border-color:var(--crimson);color:var(--crimson);border-style:solid}
+.flagmark{background:linear-gradient(160deg,var(--panel),var(--char2));border:1px solid var(--line);border-radius:11px;padding:13px 15px;margin-bottom:11px;position:relative;overflow:hidden}
+.flagmark::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--gold)}
+.flagmark.endure::before{background:var(--crimson)}
+.flagmark.death::before{background:var(--trait)}
+.fm-head{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+.fm-name{font-family:'Cinzel',serif;font-size:16px;color:var(--gold-soft);flex:1;min-width:80px}
+.fm-name input{background:transparent;border:none;border-bottom:1px solid var(--line2);color:var(--gold-soft);font-family:'Cinzel',serif;font-size:16px;width:100%}
+.fm-name input:focus{outline:none;border-color:var(--crimson)}
+.fm-type{font-family:'Fira Code',monospace;font-size:10px;letter-spacing:.5px;text-transform:uppercase;padding:2px 8px;border-radius:6px;border:1px solid}
+.fm-type.main{color:var(--steel);border-color:#3a4a55;background:rgba(143,166,184,.08)}
+.fm-type.death{color:var(--trait);border-color:var(--trait-deep);background:rgba(168,119,224,.08)}
+.fm-del{background:transparent;border:none;color:var(--bone-faint);cursor:pointer;font-size:16px;opacity:.5;padding:0 2px}
+.fm-del:hover{color:var(--crimson);opacity:1}
+.fm-facing{display:flex;gap:6px;margin-bottom:8px}
+.fm-facing button{flex:1;font-family:'Cinzel',serif;font-size:12px;letter-spacing:.5px;background:var(--char);border:1px solid var(--line2);color:var(--bone-faint);padding:8px 10px;border-radius:8px;cursor:pointer;transition:.15s}
+.fm-facing button:hover{color:var(--bone)}
+.fm-facing button[data-face="left"].on{color:var(--gold-soft);border-color:var(--gold);background:rgba(216,178,90,.1);box-shadow:var(--glow-gold)}
+.fm-facing button[data-face="right"].on{color:var(--crimson);border-color:var(--crimson-deep);background:rgba(224,86,91,.1);box-shadow:var(--glow)}
+.fm-desc{font-size:14px;color:var(--bone-dim);font-style:italic}
+.fm-hp{display:flex;align-items:center;gap:8px;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line2);font-family:'Fira Code',monospace;font-size:13px;color:var(--bone-faint)}
+.fm-hp .fm-ac{color:var(--steel)}
+.fm-hp .fm-acinput{width:46px;background:transparent;border:none;border-bottom:1px dotted var(--line2);color:var(--steel);font-family:'Fira Code',monospace;font-size:14px;text-align:center}
+.fm-hp .fm-acinput:focus{outline:none;border-color:var(--steel)}
+.fm-hp .fm-hpval{color:var(--crimson);font-size:17px;font-weight:600;min-width:32px;text-align:center}
+.fm-hp button{background:var(--panel);border:1px solid var(--line2);color:var(--bone-dim);min-width:24px;height:24px;padding:0 5px;border-radius:6px;cursor:pointer;font-family:'Fira Code',monospace}
+.fm-hp button:hover{background:var(--crimson);color:var(--void);border-color:var(--crimson)}
+
+/* ---------- EQUIPMENT SLOTS ---------- */
+.equip-hint{color:var(--bone-faint);font-style:italic;font-size:14px;margin:-4px 0 14px}
+.eq-slots{display:grid;gap:11px;grid-template-columns:repeat(auto-fit,minmax(232px,1fr));margin-bottom:6px}
+.eq-slot{background:var(--char2);border:1px solid var(--line);border-radius:11px;padding:13px 15px;position:relative;cursor:pointer;transition:.15s}
+.eq-slot.filled{background:linear-gradient(160deg,var(--panel),var(--char2))}
+.eq-slot.filled:hover{box-shadow:var(--glow);border-color:var(--crimson);transform:translateY(-2px)}
+.eq-slot.active{border-color:var(--crimson);background:rgba(224,86,91,.07);box-shadow:var(--glow)}
+.eq-slot .sl{font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:2.5px;text-transform:uppercase;color:var(--bone-faint)}
+.eq-slot .it{font-family:'Cinzel',serif;font-size:16px;color:var(--gold-soft);margin-top:5px}
+.eq-slot.empty{cursor:default}
+.eq-slot.empty .it{color:var(--bone-faint);font-style:italic}
+.eq-slot .meta{font-size:13px;color:var(--crimson);font-style:italic;margin-top:3px}
+.eq-slot .open-hint{position:absolute;top:12px;right:14px;color:var(--bone-faint);font-size:13px;transition:transform .2s}
+.eq-slot.active .open-hint{transform:rotate(180deg);color:var(--crimson)}
+.eq-detail{margin:6px 0 20px;padding:0 2px;animation:fade .3s ease}
+.eq-detail.hide{display:none}
+.eq-detail .lbl{font-family:'Cinzel',serif;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold-soft);margin:16px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.eq-detail .lbl:first-child{margin-top:4px}
+
+/* notes */
+textarea.notepad{width:100%;min-height:260px;background:var(--char2);border:1px solid var(--line);border-radius:10px;color:var(--bone);font-family:'Cormorant Garamond',serif;font-size:17px;padding:14px;resize:vertical;line-height:1.6}
+textarea.notepad:focus{outline:none;border-color:var(--crimson);box-shadow:var(--glow)}
+
+.footer{text-align:center;margin-top:40px;padding-top:18px;border-top:1px solid var(--line);color:var(--bone-faint);font-size:13px;font-family:'Fira Code',monospace}
+.reset-btn{background:transparent;border:1px solid var(--line2);color:var(--bone-faint);font-family:'Cinzel',serif;font-size:11px;padding:5px 12px;border-radius:6px;cursor:pointer;margin-top:10px}
+.reset-btn:hover{border-color:var(--crimson);color:var(--crimson)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div class="eyebrow">NPC Dossier</div>
+  <h1 class="title">The Flagbearer of Betrayal</h1>
+  <div class="subtitle">Dylan — He Who Flags Down Victory</div>
+  <div class="tagline">"If there is good and bad, then I'd rather be Dylan."</div>
+  <div class="idline">
+    <span><b>Difficulty</b> <span class="stars">★★</span></span>
+    <span><b>Role</b> Banner Tactician</span>
+    <span><b>Conduit</b> The Flag of Treason</span>
+  </div>
+</header>
+
+<!-- ============ PERSISTENT VITALS ============ -->
+<section class="vitals" id="vitals">
+  <div class="vital">
+    <div class="vlabel">Divine Link (TL) <span class="stepbtns"><button data-k="tl" data-d="-5">−</button><button data-k="tl" data-d="5">+</button></span></div>
+    <div class="vval"><input id="tl" type="number" value="120"> <span class="vmax">/ <input id="tlmax" type="number" value="240" class="maxinput"></span></div>
+    <div class="vbar tl"><i id="tlbar"></i></div>
+  </div>
+  <div class="vital">
+    <div class="vlabel">HP / Temp HP <span class="stepbtns"><button data-k="hp" data-d="-5">−</button><button data-k="hp" data-d="5">+</button></span></div>
+    <div class="vval"><input id="hp" type="number" value="0"><span class="vmax"> + </span><input id="thp" type="number" value="0" style="color:var(--gold-soft)"></div>
+    <div class="vbar hp"><i id="hpbar"></i></div>
+  </div>
+  <div class="vital">
+    <div class="vlabel">Morale <span class="stepbtns"><button data-k="morale" data-d="-5">−</button><button data-k="morale" data-d="5">+</button></span></div>
+    <div class="vval"><input id="morale" type="number" value="100"> <span class="vmax">/ <input id="moralemax" type="number" value="100" class="maxinput"></span></div>
+    <div class="vbar morale"><i id="moralebar"></i></div>
+  </div>
+  <div class="vital">
+    <div class="vlabel">ADR <span class="vmax">Craven Cloak</span></div>
+    <div class="vval"><input id="adr" type="number" value="10" style="width:54px"></div>
+  </div>
+  <div class="vital flagcell">
+    <div class="vlabel">Flag of Treason</div>
+    <div class="flagread"><span class="ff left" id="flagFace">Left · Allies</span></div>
+    <div class="flagaura none" id="flagAura">no aura planted</div>
+  </div>
+</section>
+
+<!-- ============ TABS ============ -->
+<div class="layout">
+<nav class="tabs" id="tabnav">
+  <button data-tab="kit" class="active">Kit &amp; Passives</button>
+  <button data-tab="auras">Aura Engine</button>
+  <button data-tab="form">Transformation</button>
+  <button data-tab="equipment">Equipment</button>
+  <button data-tab="notes">DM Notes</button>
+</nav>
+<div class="content">
+
+<!-- ===================================================== KIT & PASSIVES ===================================================== -->
+<section class="tabpanel active" id="tab-kit">
+  <div class="quote">DYLAN FLAGS DOWN VICTORY!</div>
+
+  <h2 class="sec">Flag of Treason <span style="font-size:13px;color:var(--bone-faint);font-family:'Cormorant Garamond';font-style:italic">(Core Mechanic)</span></h2>
+  <div class="card">
+    <p>A physical banner Dylan uses to ward off enemies and shield allies. <b>Once per turn</b>, as a <b>free action</b>, he plants the flag to release a <b>20 ft aura</b> chosen from the chart. The aura's effect depends on which way the flag faces — the <b style="color:var(--gold-soft)">left</b> side invigorates allies, the <b style="color:var(--crimson)">right</b> side condemns enemies. While an aura is active Dylan carries its <b>negative trait</b>.</p>
+    <ul>
+      <li>As a <b>bonus action</b>, recall the flag to his position.</li>
+      <li>The flag <b>can be attacked but never destroyed</b> (AC = Dylan). Damage dealt to the flag deals <b>half</b> to Dylan.</li>
+    </ul>
+    <p class="sec-note">Plant, flip facing, and read the live effect in the <b>Aura Engine</b> tab.</p>
+  </div>
+
+  <h2 class="sec">Craven's Cloak <span style="font-size:13px;color:var(--bone-faint);font-family:'Cormorant Garamond';font-style:italic">(Passive)</span></h2>
+  <div class="card trait">
+    <p>While Dylan wears the Craven's Cloak he gains:</p>
+    <div class="statchips">
+      <span>DEX cap <b>max 10</b></span>
+      <span><b>+5</b> to Dodge</span>
+      <span>ADR value <b>10</b></span>
+    </div>
+  </div>
+
+  <h2 class="sec">Actions</h2>
+  <div class="card">
+    <h3>Flagevin Throw <span class="tag action">Action</span></h3>
+    <p>Throw the flag up to <b>5 ft × STR</b>, planting it where it lands.</p>
+    <ul>
+      <li>If it lands directly on a creature, they make a <b>DEX save</b> or are <b>Impaled</b> — taking <b>3d20 piercing</b> damage.</li>
+    </ul>
+  </div>
+
+  <h2 class="sec">Bonus Actions</h2>
+  <div class="grid2">
+    <div class="card steel">
+      <h3>Flagbearer's Arrival <span class="tag bonus">Bonus</span></h3>
+      <p>Teleport to his flag without provoking opportunity attacks.</p>
+    </div>
+    <div class="card steel">
+      <h3>Look, I Got One! <span class="tag bonus">Bonus</span></h3>
+      <ul>
+        <li>Attempt to <b>tether</b> a creature to the flag — they roll a <b>DEX save</b> or are tethered.</li>
+        <li>A tethered creature cannot leave the flag's radius; at the end of its turn it may roll a <b>STR save</b> to escape.</li>
+        <li>Only <b>one</b> creature can be tethered per flag.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card steel">
+    <h3>Betraying Myself <span class="tag bonus">Bonus</span> <span class="tbd">Draft values</span></h3>
+    <p>Dylan turns the banner against its own bearer, trading his own blood for the flag's power.</p>
+    <ul>
+      <li>He takes <b>25 damage</b> that cannot be reduced or prevented. This counts as <b>Dylan taking damage</b> for all of his aura effects (Veined Ledger, etc.).</li>
+      <li>Then choose one:</li>
+      <li class="sub">Regain <b>TL equal to the damage taken</b>.</li>
+      <li class="sub"><b>Double</b> the active aura's live effect until the start of his next turn.</li>
+    </ul>
+    <p class="sec-note">Numbers are a starting draft — tune the self-damage and payoff to taste.</p>
+  </div>
+
+  <h2 class="sec">Reactions</h2>
+  <div class="grid2">
+    <div class="card gold">
+      <h3>Where You Goin'? <span class="tag reaction">Reaction</span></h3>
+      <p>If a creature within <b>10 ft</b> tries to move away from Dylan, he can attempt to grab them. The creature makes a <b>STR save</b> — on failure it is <b>grappled in a chokehold</b>.</p>
+    </div>
+    <div class="card gold">
+      <h3>No, I'm Dylan <span class="tag reaction">Reaction</span></h3>
+      <p>When someone tries to <b>Frighten</b> Dylan and he succeeds the check, he can <b>revert it back</b> to the caster — or to another creature within <b>20 ft</b>.</p>
+    </div>
+  </div>
+  <div class="card gold">
+    <h3>Better Off Alone <span class="tag reaction">Reaction</span></h3>
+    <p>While Dylan is within his flag's radius, if an enemy or effect would target one of his allies, he can <b>force that ally 10 ft outside</b> the flag range.</p>
+    <div class="enh"><span class="lbl">Enhancement (10 TL)</span> — Instead teleport the ally to <b>another flag</b> and grant them <b>+2 AC</b>.
+      <div style="margin-top:8px"><button class="ac-recall" style="font-family:'Cinzel',serif;font-size:12px;border:1px solid var(--crimson-deep);background:rgba(224,86,91,.08);color:var(--crimson);padding:7px 14px;border-radius:7px;cursor:pointer" id="spendBetter">Use Enhancement · −10 TL</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================== AURA ENGINE ===================================================== -->
+<section class="tabpanel" id="tab-auras">
+  <h2 class="sec">Aura Engine</h2>
+  <div class="sec-note">Set the flag's facing, then plant an aura. Only one aura is active at a time; planting spends its TL cost. The live effect follows the facing — the negative trait applies the whole time.</div>
+
+  <div class="facing-toggle" id="facingToggle">
+    <button data-face="left" class="active">◄ Left · Allies<span class="fsub">Victory for those who follow</span></button>
+    <div class="fdivide"></div>
+    <button data-face="right">Right · Enemies ►<span class="fsub">Death for those who stand against</span></button>
+  </div>
+
+  <div class="aura-active empty" id="auraActive">
+    <div class="aa-bar">
+      <span class="aa-title">Active Aura</span>
+      <button class="aa-recall" id="auraRecall" style="display:none">Recall flag</button>
+    </div>
+    <div class="aa-body" id="auraActiveBody">
+      <div class="aa-name">No aura planted</div>
+    </div>
+  </div>
+
+  <div class="aura-grid" id="auraGrid"></div>
+</section>
+
+<!-- ===================================================== TRANSFORMATION ===================================================== -->
+<section class="tabpanel" id="tab-form">
+  <div class="quote">DYLAN MELDS THE FLAG TO HIS BACK</div>
+  <h2 class="sec">Flagbearer of Betrayal <span class="tag" style="font-family:'Fira Code',monospace;font-size:11px;color:var(--crimson);background:rgba(224,86,91,.1);border:1px solid var(--crimson-deep);padding:2px 8px;border-radius:20px;letter-spacing:.5px">80 TL</span></h2>
+  <div class="card">
+    <p>Dylan becomes the Flagbearer, the banner fused to his spine.</p>
+    <div class="statchips">
+      <span>Max TL = <b>(CON + DEX) × 10 + 150</b> = 240</span>
+      <span>Tracked in the vitals bar</span>
+    </div>
+  </div>
+
+  <h2 class="sec">Unbreakable Semaphore <span style="font-size:13px;color:var(--bone-faint);font-family:'Cormorant Garamond';font-style:italic">(Passive)</span></h2>
+  <div class="card trait">
+    <p>Once per turn, as a <b>free action</b>, Dylan can change the side the <b>main banner</b> faces (set it in <b>Flag Markers</b> below). Death-flags don't reflect or endure — they project his aura instead.</p>
+    <ul>
+      <li><b style="color:var(--gold-soft)">◄ Reflect (Left-Facing):</b> all long-ranged attacks — spells, AoE, thrown weapons — are reversed back at the attacker.</li>
+      <li><b style="color:var(--crimson)">Endure (Right-Facing) ►:</b> attacks are endured into the pool below. He takes no damage until the pool exceeds capacity; overflow spills to HP <b>and burns TL</b>. He cannot flip a flag until the pool is expelled or absorbed.</li>
+    </ul>
+    <div class="tracker" id="dmgPoolTracker">
+      <span class="tk-label">Endurance Pool · cap = Max HP</span>
+      <div class="tk-ctrl">
+        <button data-pool="-10">−10</button>
+        <button data-pool="-1">−1</button>
+      </div>
+      <span class="tk-val" id="dmgPoolVal">0</span>
+      <span class="tk-cap">/ <input id="dmgPoolCap" type="number" value="100" style="width:62px;background:transparent;border:none;border-bottom:1px dotted var(--line2);color:var(--bone-faint);font-family:'Fira Code',monospace;font-size:15px;text-align:left"></span>
+      <div class="tk-ctrl">
+        <button data-pool="1">+1</button>
+        <button data-pool="10">+10</button>
+      </div>
+      <div class="dmgbar"><i id="dmgPoolBar"></i></div>
+    </div>
+    <p class="sec-note" id="poolNote">Set the cap to Dylan's Max HP for this encounter. Overflow spills to HP and burns TL.</p>
+  </div>
+
+  <h2 class="sec">Flag Markers</h2>
+  <div class="sec-note">Every flag on the field — the main banner plus any Ceremonious End death-flags — and what each is facing and doing.</div>
+  <div id="flagMarks"></div>
+  <button class="btn-add" id="addDeathFlag">+ Plant a Death-Flag</button>
+
+  <h2 class="sec">Ceremonious End <span style="font-size:13px;color:var(--bone-faint);font-family:'Cormorant Garamond';font-style:italic">(Passive)</span></h2>
+  <div class="card">
+    <p>When Dylan kills an enemy in this form, a flag is planted where they die (<b>AC 18 · 50 HP</b>, both editable). While that flag stands, <b>resurrection is impossible</b> and it acts as a mini-flag conduit that <b>projects Dylan's active aura</b> — set each one's facing (allies or enemies) in <b>Flag Markers</b> above.</p>
+  </div>
+
+  <h2 class="sec">Unforgivable Sensation <span style="font-size:13px;color:var(--bone-faint);font-family:'Cormorant Garamond';font-style:italic">(Passive)</span></h2>
+  <div class="card blood">
+    <p>Dylan's strikes leave marks beyond description. Whenever he <b>hits</b> an opponent, they lose <b>10 Morale</b>. If that drop knocks the opponent down a <b>tier of Morale</b>, Dylan gains an <b>extra action</b>.</p>
+    <ul>
+      <li>Extra actions <b>do not bank</b> — any extra action not used is <b>lost at the end of his turn</b>.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===================================================== EQUIPMENT ===================================================== -->
+<section class="tabpanel" id="tab-equipment">
+  <h2 class="sec">Equipment</h2>
+  <div class="equip-hint">Tap a filled slot to expand its full effects below. Tap again to close.</div>
+
+  <div class="eq-slots">
+    <div class="eq-slot filled" data-key="flag"><div class="sl">Conduit</div><div class="it">The Flag of Treason</div><div class="meta">Indestructible banner</div><span class="open-hint">▾</span></div>
+    <div class="eq-slot filled" data-key="cloak"><div class="sl">Body</div><div class="it">Craven's Cloak</div><div class="meta">Coward's mantle</div><span class="open-hint">▾</span></div>
+    <div class="eq-slot empty"><div class="sl">Weapon</div><div class="it">— open —</div></div>
+  </div>
+
+  <div class="eq-detail hide" id="detail-flag">
+    <div class="lbl">The Flag of Treason — Conduit</div>
+    <div class="card">
+      <p>The heart of Dylan's kit: a banner that can be planted, thrown, recalled, and tethered to. It <b>cannot be destroyed</b> — its AC equals Dylan's, and half of any damage it suffers is passed to him.</p>
+      <ul>
+        <li><b>Plant (free action, 1/turn):</b> release a 20 ft aura — see the Aura Engine.</li>
+        <li><b>Recall (bonus action):</b> return the flag to Dylan.</li>
+        <li><b>Flagevin Throw (action):</b> hurl up to 5 ft × STR; direct hit impales for 3d20 piercing.</li>
+        <li><b>Conduit:</b> tethering and teleport features key off the flag's position.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="eq-detail hide" id="detail-cloak">
+    <div class="lbl">Craven's Cloak — Body</div>
+    <div class="card trait">
+      <p>A mantle worn by one who would rather survive than be remembered fondly.</p>
+      <div class="statchips">
+        <span>DEX cap <b>max 10</b></span>
+        <span><b>+5</b> to Dodge</span>
+        <span>ADR value <b>10</b></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================== NOTES ===================================================== -->
+<section class="tabpanel" id="tab-notes">
+  <h2 class="sec">DM Notes</h2>
+  <div class="sec-note">Encounter scratchpad — tactics, tells, dialogue, leftover questions. Saves to this browser.</div>
+  <textarea class="notepad" id="dmNotes" placeholder="Notes on running Dylan…"></textarea>
+</section>
+
+</div><!-- /.content -->
+</div><!-- /.layout -->
+
+<div class="footer">
+  NPC Combat Reference · Dylan — The Flagbearer of Betrayal · State saves to this browser.
+  <br><button class="reset-btn" id="resetAll">⚠ Reset all trackers to defaults</button>
+</div>
+
+</div>
+
+
+<!-- ===== Firebase sync (added by Sync Injector) ===== -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+/* ============================ AURA DATA ============================ */
+/* locked:true marks auras destined for Dylan's upgrade tree — shown but not yet plantable. */
+const AURAS=[
+  {id:'risky', name:'Risky Road', tl:10,
+   left:'Movement is free; allies gain advantage on Dodge checks.',
+   right:'Enemies lose 20 ft of movement and the field is difficult terrain for them.',
+   trait:'Dylan cannot fly or teleport.'},
+  {id:'ledger', name:'Veined Ledger', tl:40,
+   left:'Whenever Dylan takes damage, allies heal for 50% of it, split evenly.',
+   right:'Whenever Dylan takes damage, enemies take true damage equal to 25% of it.',
+   trait:'Dylan takes 1.5× damage from all sources (after the above effect resolves).'},
+  {id:'mutual', name:'Mutual Ruin', tl:30,
+   left:'Allies gain +5 AC.',
+   right:'Dylan names one damage type; enemies become Vulnerable to it.',
+   trait:"Dylan's own AC drops by 5 for the duration (mirroring the bonus he grants)."},
+  {id:'crimson', name:'Crimson Wager', tl:25,
+   left:'Allies lose 50 HP each round but gain advantage on all attack rolls.',
+   right:'Enemies gain 50 HP each round but suffer disadvantage on all attack rolls.',
+   trait:'Dylan cannot be healed.'},
+  {id:'hunter', name:"Hunter's Mark", tl:20,
+   left:'Attacks against the nearest enemy deal +2d8 damage.',
+   right:'Attacks against the nearest ally deal +2d8 damage.',
+   trait:'Dylan is always considered the nearest target.'},
+  {id:'final', name:'Final Hour', tl:50,
+   left:'Damage is doubled while below 50% HP.',
+   right:'Damage is doubled while above 50% HP.',
+   trait:'Dylan is reduced to 50% HP and takes double damage.'},
+
+  /* ---- locked · upgrade tree ---- */
+  {id:'mire', name:"Deserter's Mire", tl:15, locked:true,
+   left:'Allies may Disengage as a free action and ignore the first opportunity attack against them each round.',
+   right:'The first time an enemy tries to leave the aura each turn, they are tethered to the field (STR save ends).',
+   trait:"Dylan's speed is halved."},
+  {id:'martyr', name:"Martyr's Standard", tl:45, locked:true,
+   left:'Damage that would drop an ally to 0 HP instead leaves them at 1; the excess is redirected to Dylan.',
+   right:'Enemies cannot be healed or gain temporary HP.',
+   trait:'Dylan gains no benefit from resistances or temporary HP.'},
+  {id:'oath', name:"Oathbreaker's Toll", tl:30, locked:true,
+   left:'When an enemy in the aura dies, every ally regains their reaction.',
+   right:'When an ally in the aura dies, every enemy loses their reaction until the end of their next turn.',
+   trait:'Dylan cannot take reactions.'},
+  {id:'crown', name:"Coward's Crown", tl:40, locked:true,
+   left:'Allies are immune to Frightened and gain advantage on saves against forced movement.',
+   right:"Enemies must save against Frightened (DC = Dylan's) at the start of each of their turns.",
+   trait:"Dylan has disadvantage on attacks against any creature that isn't Frightened."},
+  {id:'pyrrhic', name:'Pyrrhic Parade', tl:50, locked:true,
+   left:"Allies' critical hits spill over, dealing the same damage to a second creature within 10 ft.",
+   right:"Enemies' critical hits against allies are downgraded to normal hits.",
+   trait:'Dylan can no longer score critical hits — all his hits count as normal.'}
+];
+
+/* ============================ STATE & PERSISTENCE ============================ */
+const SK='dylan_v3';
+const defaults={
+  tl:120,tlmax:240, hp:0,thp:0, morale:100,moralemax:100, adr:10,
+  facing:'left', activeAura:null,
+  dmgPool:0, dmgPoolCap:100,
+  flags:[{id:'main', name:'Main Banner', type:'main', facing:'left'}],
+  notes:''
+};
+let S=load();
+function load(){
+  try{const r=localStorage.getItem(SK);if(r){const o=JSON.parse(r);return Object.assign(JSON.parse(JSON.stringify(defaults)),o);}}catch(e){}
+  return JSON.parse(JSON.stringify(defaults));
+}
+function save(){try{localStorage.setItem(SK,JSON.stringify(S));}catch(e){}}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+
+/* ============================ VITALS ============================ */
+function renderVitals(){
+  document.getElementById('tl').value=S.tl;
+  document.getElementById('hp').value=S.hp;
+  document.getElementById('thp').value=S.thp;
+  document.getElementById('morale').value=S.morale;
+  document.getElementById('tlmax').value=S.tlmax;
+  document.getElementById('moralemax').value=S.moralemax;
+  document.getElementById('adr').value=S.adr;
+  document.getElementById('tlbar').style.width=clamp(S.tl/Math.max(S.tlmax,1)*100,0,100)+'%';
+  document.getElementById('moralebar').style.width=clamp(S.morale/Math.max(S.moralemax,1)*100,0,100)+'%';
+  const hpDen=Math.max(S.hp+S.thp,Math.max(S.dmgPoolCap,1));
+  document.getElementById('hpbar').style.width=clamp((S.hp+S.thp)/hpDen*100,0,100)+'%';
+}
+['tl','hp','thp','morale'].forEach(k=>{
+  document.getElementById(k).addEventListener('input',e=>{S[k]=parseInt(e.target.value||0);renderVitals();save();});
+});
+document.getElementById('tlmax').addEventListener('input',e=>{S.tlmax=Math.max(1,parseInt(e.target.value||1));renderVitals();save();});
+document.getElementById('moralemax').addEventListener('input',e=>{S.moralemax=Math.max(1,parseInt(e.target.value||1));renderVitals();save();});
+document.getElementById('adr').addEventListener('input',e=>{S.adr=parseInt(e.target.value||0);save();});
+document.querySelectorAll('.stepbtns button[data-k]').forEach(b=>{
+  b.addEventListener('click',()=>{const k=b.dataset.k,d=parseInt(b.dataset.d);S[k]=(S[k]||0)+d;if(k==='tl'||k==='morale')S[k]=Math.max(0,S[k]);renderVitals();save();});
+});
+
+/* ============================ FLAG VITALS READOUT ============================ */
+function renderFlagCell(){
+  const face=document.getElementById('flagFace');
+  face.className='ff '+S.facing;
+  face.textContent=S.facing==='left'?'Left · Allies':'Right · Enemies';
+  const auraEl=document.getElementById('flagAura');
+  const a=AURAS.find(x=>x.id===S.activeAura);
+  if(a){auraEl.className='flagaura';auraEl.textContent=a.name;}
+  else{auraEl.className='flagaura none';auraEl.textContent='no aura planted';}
+}
+
+/* ============================ AURA ENGINE ============================ */
+function renderFacingToggle(){
+  document.querySelectorAll('#facingToggle button').forEach(b=>b.classList.toggle('active',b.dataset.face===S.facing));
+}
+document.querySelectorAll('#facingToggle button').forEach(b=>{
+  b.addEventListener('click',()=>{S.facing=b.dataset.face;renderFacingToggle();renderAuraGrid();renderActiveAura();renderFlagCell();save();});
+});
+
+function renderAuraGrid(){
+  const g=document.getElementById('auraGrid');g.innerHTML='';
+  AURAS.forEach(a=>{
+    const active=S.activeAura===a.id;
+    const card=document.createElement('div');
+    card.className='aura-card'+(active?' active':'')+(a.locked?' locked':'');
+    const leftLive=S.facing==='left';
+    let btns;
+    if(a.locked){
+      btns='<button class="ac-plant locked" disabled>🔒 Locked · upgrade tree</button>';
+    }else{
+      btns='<button class="ac-plant" data-plant="'+a.id+'">'+(active?'Planted':'Plant · −'+a.tl+' TL')+'</button>'+
+           '<button class="ac-recall" data-recall="'+a.id+'">Recall</button>';
+    }
+    card.innerHTML=
+      '<div class="ac-head"><span class="ac-name">'+a.name+'</span>'+
+        '<span class="ac-cost">'+a.tl+' TL</span>'+
+        (a.locked?'<span class="ac-lock">Upgrade Tree</span>':'')+'</div>'+
+      '<div class="ac-eff left'+(leftLive?' live':' dim')+'"><span class="es">Left · Allies</span><p>'+a.left+'</p></div>'+
+      '<div class="ac-eff right'+(!leftLive?' live':' dim')+'"><span class="es">Right · Enemies</span><p>'+a.right+'</p></div>'+
+      '<div class="ac-trait"><b>Negative Trait</b>'+a.trait+'</div>'+
+      '<div class="ac-btns">'+btns+'</div>';
+    g.appendChild(card);
+  });
+  g.querySelectorAll('button[data-plant]').forEach(b=>b.addEventListener('click',()=>plantAura(b.dataset.plant)));
+  g.querySelectorAll('button[data-recall]').forEach(b=>b.addEventListener('click',recallAura));
+}
+function plantAura(id){
+  if(S.activeAura===id)return;
+  const a=AURAS.find(x=>x.id===id);if(!a||a.locked)return;
+  S.activeAura=id;
+  S.tl=Math.max(0,S.tl-a.tl);
+  renderAuraGrid();renderActiveAura();renderFlagCell();renderVitals();renderFlagMarks();save();
+}
+function recallAura(){
+  S.activeAura=null;
+  renderAuraGrid();renderActiveAura();renderFlagCell();renderFlagMarks();save();
+}
+document.getElementById('auraRecall').addEventListener('click',recallAura);
+
+function renderActiveAura(){
+  const box=document.getElementById('auraActive');
+  const body=document.getElementById('auraActiveBody');
+  const recallBtn=document.getElementById('auraRecall');
+  const a=AURAS.find(x=>x.id===S.activeAura);
+  if(!a){
+    box.className='aura-active empty';
+    recallBtn.style.display='none';
+    body.innerHTML='<div class="aa-name">No aura planted</div>';
+    return;
+  }
+  box.className='aura-active';
+  recallBtn.style.display='inline-block';
+  const leftLive=S.facing==='left';
+  const liveText=leftLive?a.left:a.right;
+  const sideClass=leftLive?'left':'right';
+  const sideLabel=leftLive?'Left · Allies':'Right · Enemies';
+  body.innerHTML=
+    '<div class="aa-name">'+a.name+'</div>'+
+    '<div class="aa-live '+sideClass+'"><span class="ll">Live — '+sideLabel+'</span><p>'+liveText+'</p></div>'+
+    '<div class="aa-trait"><span class="ll">Negative Trait (always on)</span><p>'+a.trait+'</p></div>';
+}
+
+/* ============================ TRANSFORMATION ============================ */
+function escAttr(s){return (s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+const FACE_DESC={
+  left:'◄ Reflect — long-ranged attacks are reversed back at the attacker.',
+  right:'Endure ► — attacks feed Dylan\'s endurance pool; overflow hits HP and burns TL.'
+};
+function renderFlagMarks(){
+  const wrap=document.getElementById('flagMarks');wrap.innerHTML='';
+  S.flags.forEach(f=>{
+    const death=f.type==='death';
+    const card=document.createElement('div');
+    card.className='flagmark'+(f.facing==='right'?' endure':'')+(death?' death':'');
+    let body;
+    if(death){
+      // mini-flag = conduit for Dylan's aura: projects the active aura to allies/enemies in range
+      const a=AURAS.find(x=>x.id===S.activeAura);
+      let auraText;
+      if(a){
+        const live=f.facing==='left'?a.left:a.right;
+        const sideName=f.facing==='left'?'Allies':'Enemies';
+        auraText='<b style="color:'+(f.facing==='left'?'var(--gold-soft)':'var(--crimson)')+'">'+a.name+' — '+sideName+':</b> '+live;
+      }else{
+        auraText='<span style="color:var(--bone-faint)">No aura planted — plant one in the Aura Engine to project it through this flag.</span>';
+      }
+      const ac=(f.ac!=null?f.ac:18);
+      body=
+        '<div class="fm-head">'+
+          '<span class="fm-name"><input data-nameid="'+f.id+'" value="'+escAttr(f.name)+'"></span>'+
+          '<span class="fm-type death">Death-Flag · Aura Conduit</span>'+
+          '<button class="fm-del" data-delid="'+f.id+'" title="Remove flag">✕</button>'+
+        '</div>'+
+        '<div class="fm-facing">'+
+          '<button data-faceid="'+f.id+'" data-face="left" class="'+(f.facing==='left'?'on':'')+'">◄ Left · Allies</button>'+
+          '<button data-faceid="'+f.id+'" data-face="right" class="'+(f.facing==='right'?'on':'')+'">Right · Enemies ►</button>'+
+        '</div>'+
+        '<div class="fm-desc">'+auraText+'</div>'+
+        '<div class="fm-hp">'+
+          'AC <input class="fm-acinput" data-acid="'+f.id+'" type="number" value="'+ac+'"> · HP '+
+          '<button data-hpid="'+f.id+'" data-hpd="-5">−</button>'+
+          '<span class="fm-hpval">'+(f.hp!=null?f.hp:50)+'</span>'+
+          '<button data-hpid="'+f.id+'" data-hpd="5">+</button>'+
+          '<span style="opacity:.7;margin-left:6px">resurrection blocked while standing</span>'+
+        '</div>';
+    }else{
+      // main banner = Unbreakable Semaphore: Reflect / Endure
+      body=
+        '<div class="fm-head">'+
+          '<span class="fm-name">'+f.name+'</span><span class="fm-type main">Main Banner · Semaphore</span>'+
+        '</div>'+
+        '<div class="fm-facing">'+
+          '<button data-faceid="'+f.id+'" data-face="left" class="'+(f.facing==='left'?'on':'')+'">◄ Reflect</button>'+
+          '<button data-faceid="'+f.id+'" data-face="right" class="'+(f.facing==='right'?'on':'')+'">Endure ►</button>'+
+        '</div>'+
+        '<div class="fm-desc">'+FACE_DESC[f.facing]+'</div>';
+    }
+    card.innerHTML=body;
+    wrap.appendChild(card);
+  });
+  wrap.querySelectorAll('button[data-faceid]').forEach(b=>b.addEventListener('click',()=>{
+    const f=S.flags.find(x=>x.id===b.dataset.faceid);if(f){f.facing=b.dataset.face;renderFlagMarks();save();}
+  }));
+  wrap.querySelectorAll('button[data-delid]').forEach(b=>b.addEventListener('click',()=>{
+    S.flags=S.flags.filter(x=>x.id!==b.dataset.delid);renderFlagMarks();save();
+  }));
+  wrap.querySelectorAll('button[data-hpid]').forEach(b=>b.addEventListener('click',()=>{
+    const f=S.flags.find(x=>x.id===b.dataset.hpid);if(f){f.hp=Math.max(0,(f.hp!=null?f.hp:50)+parseInt(b.dataset.hpd));renderFlagMarks();save();}
+  }));
+  wrap.querySelectorAll('input[data-acid]').forEach(inp=>inp.addEventListener('input',()=>{
+    const f=S.flags.find(x=>x.id===inp.dataset.acid);if(f){f.ac=parseInt(inp.value||0);save();}
+  }));
+  wrap.querySelectorAll('input[data-nameid]').forEach(inp=>inp.addEventListener('input',()=>{
+    const f=S.flags.find(x=>x.id===inp.dataset.nameid);if(f){f.name=inp.value;save();}
+  }));
+}
+document.getElementById('addDeathFlag').addEventListener('click',()=>{
+  const n=S.flags.filter(f=>f.type==='death').length+1;
+  S.flags.push({id:'d'+Date.now(),name:'Death-Flag #'+n,type:'death',facing:'left',hp:50,ac:18});
+  renderFlagMarks();save();
+});
+function renderDmgPool(){
+  document.getElementById('dmgPoolVal').textContent=S.dmgPool;
+  document.getElementById('dmgPoolCap').value=S.dmgPoolCap;
+  const cap=Math.max(S.dmgPoolCap,1);
+  const pct=clamp(S.dmgPool/cap*100,0,100);
+  const bar=document.getElementById('dmgPoolBar');
+  bar.style.width=pct+'%';
+  const over=S.dmgPool>S.dmgPoolCap;
+  bar.classList.toggle('over',over);
+  document.getElementById('dmgPoolTracker').classList.toggle('over',over);
+  document.getElementById('poolNote').innerHTML=over
+    ? '<b style="color:var(--crimson)">Pool exceeded.</b> Overflow ('+(S.dmgPool-S.dmgPoolCap)+') spills to HP and burns TL — the flag is locked until expelled.'
+    : 'Set the cap to Dylan\'s Max HP for this encounter. Overflow spills to HP and burns TL.';
+}
+document.querySelectorAll('#dmgPoolTracker button[data-pool]').forEach(b=>{
+  b.addEventListener('click',()=>{S.dmgPool=Math.max(0,S.dmgPool+parseInt(b.dataset.pool));renderDmgPool();save();});
+});
+document.getElementById('dmgPoolCap').addEventListener('input',e=>{S.dmgPoolCap=Math.max(1,parseInt(e.target.value||1));renderDmgPool();renderVitals();save();});
+
+/* ============================ BETTER OFF ALONE ENHANCEMENT ============================ */
+document.getElementById('spendBetter').addEventListener('click',()=>{
+  S.tl=Math.max(0,S.tl-10);renderVitals();save();
+  const b=document.getElementById('spendBetter');const t=b.textContent;b.textContent='−10 TL spent';
+  setTimeout(()=>{b.textContent=t;},1100);
+});
+
+/* ============================ NOTES ============================ */
+const notes=document.getElementById('dmNotes');
+notes.addEventListener('input',()=>{S.notes=notes.value;save();});
+
+/* ============================ EQUIPMENT SLOTS ============================ */
+function toggleSlot(slot){
+  const key=slot.dataset.key;if(!key)return;
+  const detail=document.getElementById('detail-'+key);
+  const wasOpen=detail&&!detail.classList.contains('hide')&&slot.classList.contains('active');
+  document.querySelectorAll('#tab-equipment .eq-detail').forEach(d=>d.classList.add('hide'));
+  document.querySelectorAll('#tab-equipment .eq-slot').forEach(s=>s.classList.remove('active'));
+  if(!wasOpen&&detail){detail.classList.remove('hide');slot.classList.add('active');}
+}
+function initSlots(){
+  document.querySelectorAll('#tab-equipment .eq-slot.filled').forEach(slot=>{
+    if(slot.dataset.slotInit)return;slot.dataset.slotInit='1';
+    slot.addEventListener('click',()=>toggleSlot(slot));
+  });
+}
+
+/* ============================ TABS ============================ */
+document.querySelectorAll('#tabnav button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('#tabnav button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    document.querySelectorAll('.tabpanel').forEach(p=>p.classList.remove('active'));
+    document.getElementById('tab-'+b.dataset.tab).classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+});
+
+/* ============================ RESET ============================ */
+document.getElementById('resetAll').addEventListener('click',()=>{
+  if(confirm('Reset all trackers, the active aura, transformation pools, and notes to defaults?')){
+    try{localStorage.removeItem(SK);}catch(e){}
+    S=load();renderAll();
+  }
+});
+
+/* ============================ INIT ============================ */
+function renderAll(){
+  renderVitals();renderFlagCell();renderFacingToggle();renderAuraGrid();renderActiveAura();
+  renderFlagMarks();renderDmgPool();
+  notes.value=S.notes||'';initSlots();
+}
+renderAll();
+
+
+/* ======================= CLOUD SYNC (Firebase) ======================= */
+/* Inserted by the Sync Injector. Wraps save() + subscribes once.        */
+/* Config + campaign come from firebase-config.js (window.FIREBASE_CONFIG).*/
+/* CHAR_ID is derived from this sheet's own SK key. Local-only until the  */
+/* shared config is filled in. Remote applies reuse the sheet's own load(). */
+(function(){
+  var CFG = window.FIREBASE_CONFIG || {};
+  var CAMPAIGN_ID = window.CAMPAIGN_ID || "astrology-club";
+  var CHAR_ID = (typeof SK === "string" ? SK.replace(/_v[0-9]+$/, "") : "unknown");
+  var configured = CFG && CFG.apiKey && CFG.apiKey.indexOf("PASTE") !== 0;
+
+  var pill = document.createElement("div");
+  pill.style.cssText = "position:fixed;bottom:10px;right:12px;z-index:99999;font:600 11px/1 monospace;padding:5px 9px;border-radius:20px;background:rgba(0,0,0,.55);color:#bbb;letter-spacing:.05em;pointer-events:none;";
+  pill.textContent = configured ? "○ connecting" : "○ local only";
+  document.body.appendChild(pill);
+  function setPill(t,c){ pill.textContent=t; pill.style.color=c; }
+  if(!configured) return;
+
+  var docRef=null, applyingRemote=false, pushT=null;
+  try{
+    firebase.initializeApp(CFG);
+    var db = firebase.firestore();
+    db.enablePersistence({synchronizeTabs:true}).catch(function(){});
+    docRef = db.collection("campaigns").doc(CAMPAIGN_ID).collection("characters").doc(CHAR_ID);
+  }catch(e){ setPill("○ sync error","#e08"); return; }
+
+  var _origSave = save;
+  save = function(){
+    _origSave();
+    if(applyingRemote) return;
+    clearTimeout(pushT);
+    pushT = setTimeout(pushRemote, 400);
+  };
+  function pushRemote(){
+    if(!docRef) return;
+    docRef.set(JSON.parse(JSON.stringify(S)))
+      .then(function(){ setPill("● synced","#7c7"); })
+      .catch(function(){ setPill("○ offline","#c96"); });
+  }
+  var rb = document.getElementById("resetAll");
+  if(rb) rb.addEventListener("click", function(){ setTimeout(function(){ if(!applyingRemote) pushRemote(); },0); });
+
+  docRef.onSnapshot(function(snap){
+    if(snap.metadata.hasPendingWrites) return;
+    if(!snap.exists){ pushRemote(); setPill("● synced","#7c7"); return; }
+    var data = snap.data(); if(!data) return;
+    applyingRemote = true;
+    try{ localStorage.setItem(SK, JSON.stringify(data)); }catch(e){}
+    try{ S = load(); }catch(e){}
+    try{ renderAll(); }catch(e){}
+    applyingRemote = false;
+    setPill("● synced","#7c7");
+  }, function(){ setPill("○ offline","#c96"); });
+})();
+
+</script>
+</body>
+</html>

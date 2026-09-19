@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Diamond in the Rough — Yohan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#0c0805;--char:#15100a;--char2:#1c150d;--panel:#241a10;--panel2:#2e2113;
+  --line:#3a2c1a;--line2:#4f3c23;--bone:#f1e9d8;--bone-dim:#c7b794;--bone-faint:#8c7a5c;
+  --sand:#e3b85e;--sand-deep:#a87a26;--amber:#f0c674;--ochre:#c98a3a;
+  --jade:#6fcf9a;--jade-deep:#2f7d52;
+  --crimson:#e0553f;--crimson-deep:#9c2e1e;--rose:#ff9e6b;
+  --diamond:#8fd6e6;--diamond-deep:#3a8aa0;
+  --gold:#d9b154;--gold-soft:#f0d695;
+  --soul:#c2abff;--soul-deep:#7d5cc4;
+  --shadow:0 8px 30px rgba(0,0,0,.6);--glow-sand:0 0 18px rgba(227,184,94,.3);--glow-crim:0 0 16px rgba(224,85,63,.3);--glow-diam:0 0 16px rgba(143,214,230,.3);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Cormorant Garamond',serif;background:radial-gradient(1200px 600px at 80% -10%, rgba(227,184,94,.08), transparent 60%),radial-gradient(900px 500px at -10% 110%, rgba(224,85,63,.05), transparent 60%),var(--void);color:var(--bone);font-size:18px;line-height:1.5;min-height:100vh;letter-spacing:.2px}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.03'/%3E%3C/svg%3E");mix-blend-mode:overlay;opacity:.6}
+.wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:0 18px 90px}
+header.top{text-align:center;padding:34px 0 18px;position:relative}
+.eyebrow{font-family:'Cinzel',serif;letter-spacing:6px;font-size:12px;text-transform:uppercase;color:var(--sand);opacity:.85;margin-bottom:8px}
+h1.title{font-family:'Cinzel Decorative',serif;font-weight:900;font-size:clamp(30px,6vw,58px);line-height:1;background:linear-gradient(180deg,#fff,var(--bone) 30%,var(--sand) 130%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 2px 40px rgba(227,184,94,.18)}
+.subtitle{font-family:'Cinzel',serif;font-style:italic;color:var(--bone-dim);margin-top:10px;font-size:16px;letter-spacing:1px}
+.tagline{color:var(--sand);font-style:italic;margin-top:6px;font-size:17px;opacity:.9}
+.idline{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 22px;margin-top:16px;font-size:14px;color:var(--bone-faint);font-family:'Fira Code',monospace}
+.idline b{color:var(--bone-dim);font-weight:500}
+.vitals{position:sticky;top:0;z-index:40;margin:18px 0 8px;background:linear-gradient(180deg,rgba(21,16,10,.97),rgba(21,16,10,.9));border:1px solid var(--line);border-radius:14px;backdrop-filter:blur(8px);box-shadow:var(--shadow);padding:12px 14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.vital{background:var(--char2);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.vital .vlabel{font-family:'Cinzel',serif;font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--bone-faint);display:flex;justify-content:space-between;align-items:center}
+.vital .vval{font-family:'Fira Code',monospace;font-size:20px;font-weight:600;margin-top:2px;display:flex;align-items:baseline;gap:4px}
+.vital .vval input{width:58px;background:transparent;border:none;border-bottom:1px solid var(--line2);color:var(--sand);font-family:'Fira Code',monospace;font-size:20px;font-weight:600;text-align:right}
+.vital .vval input:focus{outline:none;border-color:var(--sand)}
+.vital .vval input.maxinput{width:44px;color:var(--bone-faint);font-size:15px;border-bottom:1px dotted var(--line2);text-align:left}
+.vital .vval input.maxinput:focus{color:var(--bone-dim);border-color:var(--bone-dim)}
+.vital .vmax{color:var(--bone-faint);font-size:14px}
+.vbar{height:5px;border-radius:3px;background:var(--char);margin-top:6px;overflow:hidden}
+.vbar i{display:block;height:100%;border-radius:3px;transition:width .35s ease}
+.vbar.hp i{background:linear-gradient(90deg,var(--crimson-deep),var(--crimson))}
+.vbar.ki i{background:linear-gradient(90deg,var(--diamond-deep),var(--diamond))}
+.vbar.md i{background:linear-gradient(90deg,var(--sand-deep),var(--amber))}
+.vbar.stk i{background:linear-gradient(90deg,var(--ochre),var(--gold-soft))}
+.mddie{font-family:'Fira Code',monospace;font-size:11px;color:var(--amber);border:1px solid var(--sand-deep);background:rgba(227,184,94,.08);padding:1px 7px;border-radius:10px;cursor:pointer}
+.mddie:hover{background:rgba(227,184,94,.16)}
+.stepbtns{display:flex;gap:3px}
+.stepbtns button{background:var(--panel);border:1px solid var(--line2);color:var(--bone-dim);width:20px;height:18px;border-radius:5px;cursor:pointer;font-size:13px;line-height:1;font-family:'Fira Code',monospace}
+.stepbtns button:hover{background:var(--sand);color:var(--void);border-color:var(--sand)}
+.stat-grid{display:flex;gap:8px;align-items:baseline;font-family:'Fira Code',monospace;margin-top:3px;flex-wrap:wrap}
+.stat-grid .dc-big{font-size:18px;font-weight:600;color:var(--gold-soft)}
+.stat-grid .dc-lbl{font-size:9px;color:var(--bone-faint);letter-spacing:1px;text-transform:uppercase}
+.stat-inputs{display:flex;gap:8px;margin-top:5px;font-size:11px;color:var(--bone-faint);font-family:'Fira Code',monospace}
+.stat-inputs label{display:flex;align-items:center;gap:3px}
+.stat-inputs input{width:30px;background:transparent;border:none;border-bottom:1px solid var(--line2);color:var(--bone);font-family:'Fira Code',monospace;font-size:13px;text-align:center}
+.stat-inputs input:focus{outline:none;border-color:var(--sand)}
+.layout{display:flex;gap:22px;margin-top:18px;align-items:flex-start}
+.content{flex:1;min-width:0}
+nav.tabs{flex:0 0 210px;display:flex;flex-direction:column;gap:6px;position:sticky;top:14px;align-self:flex-start;border:1px solid var(--line);border-radius:14px;padding:12px 10px;background:linear-gradient(180deg,var(--panel),var(--char2));box-shadow:var(--shadow)}
+nav.tabs button{font-family:'Cinzel',serif;font-size:13px;letter-spacing:1px;text-align:left;background:transparent;border:1px solid transparent;color:var(--bone-faint);padding:10px 14px;border-radius:8px;cursor:pointer;transition:.18s;text-transform:uppercase;position:relative}
+nav.tabs button:hover{color:var(--bone);background:var(--panel2)}
+nav.tabs button.active{color:var(--sand);border-color:var(--sand);background:rgba(227,184,94,.08);box-shadow:var(--glow-sand)}
+nav.tabs button.active::before{content:"";position:absolute;left:-1px;top:8px;bottom:8px;width:3px;background:var(--sand);border-radius:3px;box-shadow:var(--glow-sand)}
+nav.tabs button.lock{color:var(--bone-faint);opacity:.7}
+nav.tabs button.lock::after{content:"\1F512";margin-left:6px;font-size:11px}
+@media(max-width:760px){.layout{flex-direction:column}nav.tabs{flex:none;width:100%;position:static;flex-direction:row;flex-wrap:wrap;justify-content:center}nav.tabs button{text-align:center}nav.tabs button.active::before{display:none}}
+.tabpanel{display:none;animation:fade .4s ease}
+.tabpanel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h2.sec{font-family:'Cinzel',serif;font-weight:700;font-size:26px;color:var(--bone);margin:30px 0 4px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+h2.sec::before{content:"";width:26px;height:2px;background:var(--sand);box-shadow:var(--glow-sand)}
+h2.sec .subtag{font-family:'Fira Code',monospace;font-size:13px;color:var(--bone-faint);font-weight:400}
+.sec-note{color:var(--bone-faint);font-style:italic;font-size:15px;margin-bottom:14px}
+.quote{font-style:italic;color:var(--sand);text-align:center;font-size:20px;margin:6px 0 20px;opacity:.9}
+.card{background:linear-gradient(180deg,var(--panel),var(--char2));border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:14px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--sand);opacity:.6}
+.card.crim::before{background:var(--crimson)}.card.gold::before{background:var(--gold)}.card.diam::before{background:var(--diamond)}.card.jade::before{background:var(--jade)}.card.soul::before{background:var(--soul)}
+.card h3{font-family:'Cinzel',serif;font-size:18px;color:var(--gold-soft);margin-bottom:2px;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.card h3 .cost{font-family:'Fira Code',monospace;font-size:12px;color:var(--diamond);background:rgba(143,214,230,.1);border:1px solid var(--diamond-deep);padding:2px 8px;border-radius:20px;letter-spacing:.5px}
+.card h3 .cost.md{color:var(--amber);background:rgba(227,184,94,.1);border-color:var(--sand-deep)}
+.card h3 .tag{font-family:'Fira Code',monospace;font-size:11px;color:var(--bone-faint);background:var(--char);border:1px solid var(--line2);padding:2px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:.5px}
+.card h3 .tag.sand{color:var(--sand);border-color:var(--sand-deep)}.card h3 .tag.crim{color:var(--rose);border-color:var(--crimson-deep)}.card h3 .tag.gold{color:var(--gold-soft);border-color:var(--gold)}.card h3 .tag.jade{color:var(--jade);border-color:var(--jade-deep)}
+.card h3 .draft{font-family:'Cinzel',serif;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--crimson);background:rgba(224,85,63,.08);border:1px dashed var(--crimson-deep);padding:2px 8px;border-radius:6px}
+.card p{margin:6px 0;color:var(--bone-dim)}
+.card ul{list-style:none;margin:6px 0}
+.card ul li{position:relative;padding-left:18px;margin:4px 0;color:var(--bone-dim)}
+.card ul li::before{content:"\25C6";position:absolute;left:0;color:var(--sand-deep);font-size:10px;top:5px}
+.card ul li.sub{padding-left:34px;font-size:.96em;color:var(--bone-faint)}
+.card ul li.sub::before{content:"\203A";left:20px;color:var(--bone-faint)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.btn{font-family:'Cinzel',serif;font-size:13px;letter-spacing:.5px;background:var(--sand);color:var(--void);border:none;padding:9px 16px;border-radius:8px;cursor:pointer;transition:.15s;font-weight:600}
+.btn:hover{background:var(--sand-deep);color:#fff}
+.btn.crim{background:var(--crimson)}.btn.crim:hover{background:var(--crimson-deep);color:#fff}
+.btn.diam{background:var(--diamond)}.btn.diam:hover{background:var(--diamond-deep);color:#fff}
+.minibtn{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.5px;background:var(--char);border:1px solid var(--line2);color:var(--bone-dim);padding:7px 12px;border-radius:8px;cursor:pointer;transition:.15s}
+.minibtn:hover{border-color:var(--sand);color:var(--sand)}
+/* ---- Momentum board ---- */
+.mom-board{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:16px}
+.mom-panel{background:linear-gradient(180deg,var(--panel2),var(--char2));border:1px solid var(--line2);border-radius:14px;padding:16px;box-shadow:var(--shadow)}
+.mom-panel h4{font-family:'Cinzel',serif;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold-soft);margin-bottom:12px;border-bottom:1px solid var(--line);padding-bottom:7px;display:flex;justify-content:space-between;align-items:center}
+.bignum{display:flex;align-items:center;justify-content:center;gap:14px;margin:6px 0}
+.bignum .nv{font-family:'Cinzel Decorative',serif;font-size:52px;line-height:1;color:var(--sand);text-shadow:var(--glow-sand);min-width:70px;text-align:center}
+.bignum .nv.crim{color:var(--crimson);text-shadow:var(--glow-crim)}
+.bignum .nmax{font-family:'Fira Code',monospace;font-size:16px;color:var(--bone-faint)}
+.bignum button{background:var(--panel);border:1px solid var(--line2);color:var(--bone-dim);width:40px;height:40px;border-radius:10px;cursor:pointer;font-size:22px;font-family:'Fira Code',monospace;line-height:1}
+.bignum button:hover{background:var(--sand);color:var(--void);border-color:var(--sand)}
+.bignum button.crimb:hover{background:var(--crimson);color:#fff;border-color:var(--crimson)}
+.minirow{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:10px}
+.gen-row{display:flex;align-items:center;justify-content:center;gap:8px;font-family:'Fira Code',monospace;font-size:13px;color:var(--bone-faint);margin-top:8px}
+.gen-row b{color:var(--amber)}
+.gen-row.cap b{color:var(--crimson)}
+.gen-row button{background:var(--panel);border:1px solid var(--line2);color:var(--bone-dim);width:22px;height:20px;border-radius:5px;cursor:pointer;font-size:13px;font-family:'Fira Code',monospace}
+.gen-row button:hover{background:var(--amber);color:var(--void)}
+/* ---- stack pips ---- */
+.stack-track{display:flex;gap:8px;justify-content:center;margin:10px 0}
+.pip{width:42px;height:42px;border-radius:11px;border:1px solid var(--line2);background:var(--char);display:flex;align-items:center;justify-content:center;font-family:'Fira Code',monospace;font-size:16px;color:var(--bone-faint);transition:.2s;position:relative}
+.pip.thresh{border-color:var(--gold);color:var(--gold-soft)}
+.pip.on{background:linear-gradient(180deg,var(--ochre),var(--sand-deep));color:var(--void);border-color:var(--sand);box-shadow:var(--glow-sand)}
+.pip.on.thresh{background:linear-gradient(180deg,var(--gold),var(--ochre))}
+.pip.on.p6{background:linear-gradient(180deg,var(--crimson),var(--crimson-deep));border-color:var(--crimson);box-shadow:var(--glow-crim)}
+.thresh-list{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.th-item{display:flex;align-items:center;gap:10px;font-family:'Fira Code',monospace;font-size:13px;color:var(--bone-faint);padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--char);transition:.2s}
+.th-item .thn{font-weight:600;color:var(--bone-dim);min-width:64px}
+.th-item.lit{color:var(--bone);border-color:var(--gold);background:rgba(217,177,84,.07)}
+.th-item.lit .thn{color:var(--gold-soft)}
+.th-item.fin.lit{border-color:var(--crimson);background:rgba(224,85,63,.08)}
+.th-item.fin.lit .thn{color:var(--crimson)}
+.derived{font-family:'Fira Code',monospace;font-size:13px;color:var(--bone-faint);text-align:center;margin-top:8px}
+.derived b{color:var(--amber);font-size:18px}
+/* ---- toggle ---- */
+.tog{display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-family:'Cinzel',serif;font-size:12px;letter-spacing:.5px;text-transform:uppercase;color:var(--bone-faint)}
+.tog .knob{width:42px;height:22px;border-radius:14px;background:var(--char);border:1px solid var(--line2);position:relative;transition:.2s}
+.tog .knob::after{content:"";position:absolute;left:2px;top:2px;width:16px;height:16px;border-radius:50%;background:var(--bone-faint);transition:.2s}
+.tog.on .knob{background:rgba(143,214,230,.18);border-color:var(--diamond)}
+.tog.on .knob::after{left:22px;background:var(--diamond)}
+.tog.on{color:var(--diamond)}
+/* ---- stances ---- */
+.stance-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.stance-card{background:linear-gradient(180deg,var(--panel),var(--char2));border:1px solid var(--line);border-radius:13px;padding:14px 16px;position:relative;overflow:hidden;transition:.2s}
+.stance-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--bone-faint);opacity:.5;transition:.2s}
+.stance-card.red::before{background:var(--crimson)}
+.stance-card.sir::before{background:var(--diamond)}
+.stance-card.sco::before{background:var(--jade)}
+.stance-card.tomb::before{background:var(--sand)}
+.stance-card.active{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold-soft),var(--shadow)}
+.stance-card.active::before{opacity:1;width:5px}
+.stance-card h3{font-family:'Cinzel',serif;font-size:17px;color:var(--gold-soft);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.stance-card ul{list-style:none}
+.stance-card ul li{position:relative;padding-left:16px;margin:4px 0;color:var(--bone-dim);font-size:15px}
+.stance-card ul li::before{content:"\25C6";position:absolute;left:0;color:var(--sand-deep);font-size:9px;top:5px}
+.stance-card .act-row{margin-top:10px;display:flex;gap:8px;align-items:center}
+.stance-card .act-btn{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.5px;background:var(--char);border:1px solid var(--line2);color:var(--bone-dim);padding:7px 12px;border-radius:8px;cursor:pointer;transition:.15s}
+.stance-card .act-btn:hover{border-color:var(--gold);color:var(--gold-soft)}
+.stance-card.active .act-btn{background:var(--gold);color:var(--void);border-color:var(--gold)}
+.stance-card .activelabel{font-family:'Fira Code',monospace;font-size:11px;color:var(--gold-soft);display:none}
+.stance-card.active .activelabel{display:inline}
+/* ---- exploit dice / cooldown ---- */
+.cd-toggle{display:inline-flex;align-items:center;gap:7px;cursor:pointer;font-family:'Fira Code',monospace;font-size:12px;color:var(--bone-faint);border:1px solid var(--line2);background:var(--char);padding:5px 10px;border-radius:8px;margin-top:8px;transition:.15s}
+.cd-toggle .box{width:15px;height:15px;border-radius:4px;border:1px solid var(--line2);display:inline-flex;align-items:center;justify-content:center;font-size:11px}
+.cd-toggle.used{color:var(--crimson);border-color:var(--crimson-deep);background:rgba(224,85,63,.06)}
+.cd-toggle.used .box{background:var(--crimson);border-color:var(--crimson);color:#fff}
+.cd-toggle:hover{border-color:var(--bone-dim)}
+.prereq{font-family:'Fira Code',monospace;font-size:11px;color:var(--bone-faint);background:var(--char);border:1px solid var(--line);border-radius:6px;padding:1px 7px;display:inline-block;margin-top:2px}
+/* ---- locked ---- */
+.locked{text-align:center;padding:50px 24px;border:1px dashed var(--line2);border-radius:16px;background:linear-gradient(180deg,var(--panel),var(--char2));position:relative;overflow:hidden}
+.locked .lk-ico{font-size:46px;opacity:.6;margin-bottom:10px}
+.locked h3{font-family:'Cinzel Decorative',serif;font-size:26px;color:var(--bone-dim);margin-bottom:8px}
+.locked p{color:var(--bone-faint);font-style:italic;max-width:520px;margin:0 auto}
+.locked .unlock{font-family:'Fira Code',monospace;font-size:13px;color:var(--crimson);margin-top:16px;border:1px solid var(--crimson-deep);background:rgba(224,85,63,.06);display:inline-block;padding:8px 16px;border-radius:10px}
+.footer{text-align:center;margin-top:40px;padding-top:18px;border-top:1px solid var(--line);color:var(--bone-faint);font-size:13px;font-family:'Fira Code',monospace}
+.reset-btn{background:transparent;border:1px solid var(--line2);color:var(--bone-faint);font-family:'Cinzel',serif;font-size:11px;padding:5px 12px;border-radius:6px;cursor:pointer;margin-top:10px}
+.reset-btn:hover{border-color:var(--crimson);color:var(--crimson)}
+.weapon-state{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:14px;background:var(--char2);border:1px solid var(--line2);border-radius:12px;padding:14px 16px}
+.ws-lbl{font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--bone-faint)}
+.ws-note{font-family:'Cinzel',serif;font-style:italic;font-size:14px;color:var(--bone-faint)}
+.ws-note b{font-style:normal;color:var(--gold-soft)}
+.turn-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:linear-gradient(180deg,var(--panel2),var(--char2));border:1px solid var(--line2);border-radius:14px;padding:12px 16px;margin-bottom:16px;box-shadow:var(--shadow)}
+.turn-bar .tb-lbl{font-family:'Cinzel',serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--bone-faint)}
+.mlog{font-family:'Fira Code',monospace;font-size:12.5px;color:var(--gold-soft);background:var(--char);border:1px solid var(--line2);border-radius:9px;padding:8px 11px;margin-top:4px;min-height:36px}
+.mlog .ml-empty{color:var(--bone-faint);font-style:italic}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <div class="eyebrow">Diamond in the Rough</div>
+  <h1 class="title">Yohan</h1>
+  <div class="subtitle">Sword Saint of the Shifting Sands &middot; Savage Exploits</div>
+  <div class="tagline">"There is no turning back from the sands of fate."</div>
+  <div class="idline">
+    <span><b>System</b> JT&rsquo;s Improved D&amp;D &middot; Mythic Covenant</span>
+    <span><b>Weapon</b> Horizon&rsquo;s Reach &middot; Halberd</span>
+    <span><b>Core</b> Sands of Momentum</span>
+    <span><b>Difficulty</b> &#9733;&#9733;&#9733;&#9733;</span>
+  </div>
+</header>
+
+<section class="vitals" id="vitals">
+  <div class="vital">
+    <div class="vlabel">HP / Temp HP <span class="stepbtns"><button data-k="hp" data-d="-5">&minus;</button><button data-k="hp" data-d="5">+</button></span></div>
+    <div class="vval"><input id="hp" type="number" value="0"><span class="vmax"> + </span><input id="thp" type="number" value="0" style="color:var(--gold-soft);width:44px"></div>
+    <div class="vbar hp"><i id="hpbar"></i></div>
+  </div>
+  <div class="vital">
+    <div class="vlabel">Ki / Focus <span class="stepbtns"><button data-k="ki" data-d="-1">&minus;</button><button data-k="ki" data-d="1">+</button></span></div>
+    <div class="vval"><input id="ki" type="number" value="6"> <span class="vmax">/ <input id="kimax" type="number" value="6" class="maxinput"></span></div>
+    <div class="vbar ki"><i id="kibar"></i></div>
+  </div>
+  <div class="vital">
+    <div class="vlabel">Momentum Dice <span class="mddie" id="mdDie" title="Click to toggle die size">d8</span></div>
+    <div class="vval"><input id="md" type="number" value="0" readonly style="color:var(--amber)"> <span class="vmax">/ <span id="mdmax" style="color:var(--bone-faint);font-size:15px">6</span></span></div>
+    <div class="vbar md"><i id="mdbar"></i></div>
+  </div>
+  <div class="vital">
+    <div class="vlabel">Dune Stacks <span style="font-family:'Fira Code',monospace;font-size:10px;color:var(--bone-faint)" id="diceBonusV">+0 dice</span></div>
+    <div class="vval"><input id="stacksV" type="number" value="0" readonly style="color:var(--gold-soft)"> <span class="vmax">/ 6</span></div>
+    <div class="vbar stk"><i id="stkbar"></i></div>
+  </div>
+  <div class="vital">
+    <div class="vlabel">Save DCs</div>
+    <div class="stat-grid"><span class="dc-big" id="ssDC">&mdash;</span><span class="dc-lbl">Sword Saint</span><span class="dc-big" id="seDC">&mdash;</span><span class="dc-lbl">Savage</span></div>
+    <div class="stat-inputs"><label>STR <input id="str" type="number" value="6"></label><label>WIS <input id="wis" type="number" value="7"></label><label>PB <input id="pb" type="number" value="6"></label></div>
+  </div>
+</section>
+
+<div class="layout">
+<nav class="tabs" id="tabnav">
+  <button data-tab="overview" class="active">Overview</button>
+  <button data-tab="momentum">Sands of Momentum</button>
+  <button data-tab="stances">Stances &amp; Techniques</button>
+  <button data-tab="savage">Savage Exploits</button>
+  <button data-tab="transform" class="lock">Transformation</button>
+</nav>
+<div class="content">
+
+<!-- ============ OVERVIEW ============ -->
+<section class="tabpanel active" id="tab-overview">
+  <div class="quote">"Showcasing why he is called the Diamond in the Rough."</div>
+  <p class="sec-note">Yohan amplifies the momentum rules, turning motion into destructive force. Without proper positioning or strategy, he can find himself buried under the horizons. Two momentum tracks fuel everything &mdash; manage them on the <b>Sands of Momentum</b> tab.</p>
+
+  <h2 class="sec">Weapon &amp; Equipment</h2>
+  <div class="card gold"><h3>Horizon&rsquo;s Reach <span class="tag gold">Halberd</span> <span class="tag">1d12</span></h3>
+    <p>A long-hafted desert glaive &mdash; the polearm of the Diamond in the Rough. Its length lets Yohan threaten the line a full stride before a foe expects it, perfect fuel for straight-line momentum.</p>
+    <ul>
+      <li><b>Damage</b> &mdash; 1d12 slashing<span style="color:var(--bone-faint)"> (standard halberd; feeds Dunebreaker Strike&rsquo;s slashing property)</span></li>
+      <li><b>Reach</b> &mdash; <b>+5 ft</b> extra reach on top of normal weapon reach</li>
+      <li class="sub">Add Dune Stacks as bonus weapon damage dice (up to +6d12) when charging in a straight line.</li>
+    </ul>
+  </div>
+
+  <h2 class="sec">Two Tracks of Momentum</h2>
+  <div class="grid2">
+    <div class="card gold"><h3>Dune Momentum <span class="tag gold">Straight Line</span></h3><p>Follows JT&rsquo;s Improved D&amp;D. For every <b>10 ft moved in a straight line</b>:</p><ul>
+      <li>Gain <b>+1 weapon damage die</b></li>
+      <li>Gain <b>+1 Momentum stack</b></li>
+      <li class="sub">Maximum bonus: <b>+6</b> for both stacks &amp; damage dice.</li>
+    </ul>
+    <p style="margin-top:8px"><b>Thresholds:</b></p><ul>
+      <li><b>1 stack</b> &mdash; Knockback can be used to launch</li>
+      <li><b>3 stacks</b> &mdash; 1 Extra Attack</li>
+      <li><b>6 stacks</b> &mdash; <span style="color:var(--crimson)">Momentum Finisher</span>: Auto-Critical &amp; applies a weapon-based status</li>
+    </ul></div>
+    <div class="card"><h3>Sandstorm Momentum <span class="tag sand">Distance</span></h3><p>For every <b>10 ft of continuous movement</b>, gain <b>1 Momentum Die (d8)</b>. Expands to <b>d10 at 17th level</b>.</p><ul>
+      <li>Cannot retrace movement on the same turn (no back-and-forth)</li>
+      <li>Maximum Momentum Dice = <b>PB</b></li>
+      <li>Can only generate <b>3 per round</b></li>
+      <li>All Momentum Dice vanish at end of turn <b>unless preserved</b> (Buried Momentum)</li>
+    </ul></div>
+  </div>
+
+  <h2 class="sec">Passives</h2>
+  <div class="grid2">
+    <div class="card diam"><h3>Hmph. <span class="tag">Passive</span></h3><p>If Yohan has Momentum Dice and a creature attempts to forcibly move him, he lowers the distance by <b>5 ft &times; MD</b>.</p></div>
+    <div class="card jade"><h3>Lone Sand <span class="tag jade">Passive</span></h3><p>When there is <b>no ally within 20 ft</b>, Yohan gains <b>+2 AC</b>.</p></div>
+  </div>
+
+  <h2 class="sec">Class Frame <span class="subtag">at a glance</span></h2>
+  <div class="weapon-state">
+    <span class="ws-lbl">Sword Saint</span>
+    <span class="ws-note">Save DC = <b id="ssDC2">&mdash;</b> &nbsp;(8 + PB + WIS + STR)</span>
+    <span class="ws-lbl" style="margin-left:auto">Savage Exploits</span>
+    <span class="ws-note">Save DC = <b id="seDC2">&mdash;</b> &nbsp;(8 + PB + STR) &middot; <b>4</b> Exploit Dice (d8)</span>
+  </div>
+  <p class="sec-note">Edit STR / WIS / PB in the vitals bar &mdash; both DCs recompute live. Default values land on the printed DCs (27 / 20).</p>
+</section>
+
+<!-- ============ MOMENTUM ============ -->
+<section class="tabpanel" id="tab-momentum">
+  <h2 class="sec">Sands of Momentum <span class="subtag">Core Mechanic</span></h2>
+  <div class="turn-bar">
+    <span class="tb-lbl">Turn Cycle</span>
+    <button class="btn crim" id="endTurn">&#10227; End Turn</button>
+    <span class="ws-note" id="endTurnNote">Clears stacks &amp; per-turn generation. Momentum Dice vanish unless <b>Buried</b> is on.</span>
+  </div>
+
+  <div class="mom-board">
+    <!-- Momentum Dice -->
+    <div class="mom-panel">
+      <h4>Momentum Dice <span class="tog" id="buriedTog" title="Buried Momentum"><span class="knob"></span>Buried</span></h4>
+      <div class="bignum">
+        <button id="mdMinus">&minus;</button>
+        <span class="nv" id="mdBig">0</span>
+        <span class="nmax">/ <span id="mdBigMax">6</span></span>
+        <button id="mdPlus">+</button>
+      </div>
+      <div class="gen-row" id="genRow">Generated this turn: <button id="genMinus">&minus;</button><b id="genVal">0</b><button id="genPlus">+</button> / 3</div>
+      <div class="minirow">
+        <button class="minibtn" id="risingDawn">Rising Dawn &middot; +3 MD</button>
+      </div>
+      <div class="derived" style="margin-top:10px;font-style:italic;color:var(--bone-faint)">Die size: <b id="mdDieD" style="color:var(--amber)">d8</b> &middot; max = PB (<b style="color:var(--bone-dim)" id="mdMaxNote">6</b>)</div>
+    </div>
+    <!-- Dune Stacks -->
+    <div class="mom-panel">
+      <h4>Dune Stacks <span style="font-family:'Fira Code',monospace;font-size:12px;color:var(--bone-faint)">straight-line</span></h4>
+      <div class="bignum">
+        <button class="crimb" id="stkMinus">&minus;</button>
+        <span class="nv" id="stkBig">0</span>
+        <span class="nmax">/ 6</span>
+        <button id="stkPlus">+</button>
+      </div>
+      <div class="stack-track" id="stackPips"></div>
+      <div class="derived">Bonus weapon damage dice: <b id="diceBonus">+0</b></div>
+    </div>
+    <!-- Thresholds -->
+    <div class="mom-panel">
+      <h4>Stack Thresholds</h4>
+      <div class="thresh-list">
+        <div class="th-item" id="th-launch"><span class="thn">1 &middot; Launch</span><span>Knockback can be used to launch</span></div>
+        <div class="th-item" id="th-attack"><span class="thn">3 &middot; Attack</span><span>Gain 1 Extra Attack</span></div>
+        <div class="th-item fin" id="th-finish"><span class="thn">6 &middot; Finisher</span><span>Auto-Crit &amp; weapon-based status</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mlog" id="momLog"><span class="ml-empty">Momentum actions will log here&hellip;</span></div>
+
+  <h2 class="sec">Momentum Spenders</h2>
+  <div class="grid2">
+    <div class="card gold"><h3>Dunebreaker Strike <span class="tag gold">Free Action</span> <span class="cost md">All MD</span></h3><p>Once per turn, expend <b>all</b> Momentum Dice on one creature for bonus damage + a status based on the attack&rsquo;s property:</p><ul>
+      <li><b>Piercing</b> &mdash; target loses AC equal to your PB</li>
+      <li><b>Slashing</b> &mdash; target bleeds for additional MD damage at the start of its next turn</li>
+      <li><b>Bludgeoning</b> &mdash; push target up to 20 ft</li>
+    </ul>
+    <div class="minirow" style="justify-content:flex-start"><button class="minibtn" id="dunebreaker">Expend all MD</button></div></div>
+
+    <div class="card diam"><h3>Shifting Sands <span class="tag">Reaction</span> <span class="cost md">1 MD</span></h3><p>When targeted by an attack, expend 1 MD to gain <b>AC = PB</b> against that attack.</p><ul>
+      <li>If the attack <b>misses</b>, move 5 ft without provoking OAs &mdash; this movement does not expend stored Momentum.</li>
+    </ul>
+    <div class="minirow" style="justify-content:flex-start"><button class="minibtn" id="shifting">Spend 1 MD</button></div></div>
+
+    <div class="card"><h3>Sunpiercer Descent <span class="tag sand">Attack</span> <span class="cost md">2 MD</span></h3><p>Jump up to 15 ft without provoking OAs. On hit:</p><ul>
+      <li>Deal bonus <b>radiant</b> damage equal to MD</li>
+      <li>Target makes a CON save or is <b>blinded</b></li>
+    </ul>
+    <div class="minirow" style="justify-content:flex-start"><button class="minibtn" id="sunpiercer">Spend 2 MD</button></div></div>
+
+    <div class="card crim"><h3>Dunewall Charge <span class="tag crim">Charge</span> <span class="cost md">1+ MD</span></h3><p>When charging in a straight line, expend 1 MD per creature in your path. Each makes a <b>STR save</b>:</p><ul>
+      <li><b>Fail</b> &mdash; pushed aside, knocked prone, takes MD damage</li>
+      <li><b>Success</b> &mdash; may try to stop you with an OA</li>
+      <li class="sub">Interrupted if terrain changes; you must move up to half your speed before you can stop.</li>
+    </ul></div>
+
+    <div class="card jade"><h3>Buried Momentum <span class="tag jade">Bonus Action</span></h3><p>Plant your feet, entering a recursive loop. You <b>retain all Momentum Dice</b> generated during your turn.</p><ul>
+      <li>Every 5 ft you move or are forcibly moved, lose 1 MD.</li>
+      <li class="sub">Toggle <b>Buried</b> on the Momentum Dice panel above.</li>
+    </ul></div>
+
+    <div class="card"><h3>Rising Dawn <span class="tag sand">Bonus Action</span></h3><p>Instantly gain <b>3 MD</b>, but lose <b>half your movement speed</b> this turn.</p>
+    <div class="minirow" style="justify-content:flex-start"><button class="minibtn" id="risingDawn2">+3 MD</button></div></div>
+  </div>
+</section>
+
+<!-- ============ STANCES & TECHNIQUES ============ -->
+<section class="tabpanel" id="tab-stances">
+  <h2 class="sec">Stances of the Desert <span class="subtag">Bonus Action &middot; 3 Ki</span></h2>
+  <p class="sec-note">Expend 3 Ki to activate a stance. It lasts until the start of your next turn. Only one stance is active at a time &mdash; activating a new one replaces the old.</p>
+  <div class="stance-grid" id="stanceGrid">
+    <div class="stance-card red" data-stance="red">
+      <h3>Red Dunes <span class="activelabel">&#9679; Active</span></h3>
+      <ul><li>+10 movement speed</li><li>First creature hit takes bonus damage = MD expended this turn</li><li>Reduce a creature to 0 HP &rarr; gain 1 MD</li></ul>
+      <div class="act-row"><button class="act-btn" data-stance="red">Activate &middot; &minus;3 Ki</button></div>
+    </div>
+    <div class="stance-card sir" data-stance="sir">
+      <h3>Sirocco <span class="activelabel">&#9679; Active</span></h3>
+      <ul><li>Difficult terrain does not slow you</li><li>+5 AC against ranged attacks while moving</li><li>First 10 ft of movement each turn generates 1 free MD</li></ul>
+      <div class="act-row"><button class="act-btn" data-stance="sir">Activate &middot; &minus;3 Ki</button></div>
+    </div>
+    <div class="stance-card sco" data-stance="sco">
+      <h3>Scorpion <span class="activelabel">&#9679; Active</span></h3>
+      <ul><li>Creatures within 10 ft who miss their attack provoke a free OA</li><li>Opportunity attacks deal bonus damage = 1 MD</li><li>If a creature misses an attack twice in one round, gain 1 MD</li></ul>
+      <div class="act-row"><button class="act-btn" data-stance="sco">Activate &middot; &minus;3 Ki</button></div>
+    </div>
+    <div class="stance-card tomb" data-stance="tomb">
+      <h3>Buried Tomb <span class="activelabel">&#9679; Active</span></h3>
+      <ul><li>If you moved less than 15 ft this turn, gain resistance to all damage except psychic</li><li>Cannot be knocked prone or forcibly moved</li><li>Expend 1 MD to reduce damage by + PB</li></ul>
+      <div class="act-row"><button class="act-btn" data-stance="tomb">Activate &middot; &minus;3 Ki</button></div>
+    </div>
+  </div>
+  <div class="minirow" style="justify-content:flex-start;margin-top:6px"><button class="minibtn" id="clearStance">Clear active stance</button></div>
+
+  <h2 class="sec">Reactions</h2>
+  <div class="grid2">
+    <div class="card jade"><h3>Rolling Tumbleweed <span class="tag jade">Reaction</span></h3>
+      <p>When Yohan is <b>forcibly moved, knocked prone, or falls</b>, he may roll with the motion instead. He isn&rsquo;t knocked prone.</p><ul>
+        <li>For every <b>10 ft</b> he travels this way, generate <b>1 Momentum Die</b> (max of <b>3</b>).</li>
+        <li>He may end in any space along the path.</li>
+      </ul>
+    </div>
+    <div class="card jade"><h3>Prickly Cactus <span class="tag jade">Reaction</span></h3>
+      <p>When a creature within 5 ft <b>hits Yohan with a melee attack</b>, he may expend <b>1 Momentum Die</b> to bristle &mdash; the attacker takes piercing damage equal to <b>1 MD + PB</b>.</p><ul>
+        <li>While <b>Buried Momentum</b> is active, this costs no Momentum Die.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2 class="sec">Sword Saint Techniques <span class="subtag">Save DC = <span id="ssDC3">27</span></span></h2>
+  <div class="grid2">
+    <div class="card diam"><h3>Blasting Spear <span class="tag">Attack</span> <span class="cost">2 Ki</span></h3><p>On a piercing melee attack, spend 2 focus to forgo the roll. All creatures in a <b>30 ft long, 5 ft wide line</b> make a DEX save, taking the weapon&rsquo;s damage on a failure.</p>
+    <div class="minirow" style="justify-content:flex-start"><button class="minibtn" data-ki="2" data-name="Blasting Spear">Spend 2 Ki</button></div></div>
+    <div class="card diam"><h3>Majestic <span class="tag">Bonus Action</span> <span class="cost">2 Ki</span></h3><p>Spend 2 focus as a bonus action: all attacks against you are made with <b>disadvantage</b> until the start of your next turn.</p>
+    <div class="minirow" style="justify-content:flex-start"><button class="minibtn" data-ki="2" data-name="Majestic">Spend 2 Ki</button></div></div>
+    <div class="card diam"><h3>Thunder Joust <span class="tag">Trigger</span> <span class="cost">1 Ki</span></h3><p>When you move 10+ ft toward a creature in a straight line, spend 1 focus for <b>advantage</b> on your next weapon attack vs them. On hit, if the target is no more than one size larger, it makes a STR save or is knocked <b>prone</b>.</p>
+    <div class="minirow" style="justify-content:flex-start"><button class="minibtn" data-ki="1" data-name="Thunder Joust">Spend 1 Ki</button></div></div>
+  </div>
+</section>
+
+<!-- ============ SAVAGE EXPLOITS ============ -->
+<section class="tabpanel" id="tab-savage">
+  <h2 class="sec">Savage Exploits <span class="subtag">Alternative Barbarian &middot; Save DC = <span id="seDC3">20</span></span></h2>
+  <div class="mom-board" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">
+    <div class="mom-panel">
+      <h4>Exploit Dice <span style="font-family:'Fira Code',monospace;font-size:12px;color:var(--bone-faint)">d8</span></h4>
+      <div class="bignum">
+        <button id="exMinus">&minus;</button>
+        <span class="nv crim" id="exBig">4</span>
+        <span class="nmax">/ <input id="exmax" type="number" value="4" style="width:34px;background:transparent;border:none;border-bottom:1px solid var(--line2);color:var(--bone-faint);font-family:'Fira Code',monospace;font-size:15px;text-align:center"></span>
+        <button class="crimb" id="exPlus">+</button>
+      </div>
+      <div class="minirow"><button class="minibtn" id="restExploits">&#9790; Rest &middot; restore dice &amp; cooldowns</button></div>
+      <div class="derived" style="font-style:italic;color:var(--bone-faint);margin-top:10px">Spend up to PB per check where allowed.</div>
+    </div>
+    <div class="mom-panel" style="grid-column:1/-1;display:none"></div>
+  </div>
+
+  <h2 class="sec">Always Ready</h2>
+  <div class="grid2">
+    <div class="card"><h3>Feat of Strength <span class="tag">Free Reaction</span></h3><span class="prereq">Req: STR or CON 11+</span><p>On a STR or CON check, expend Exploit Dice (up to PB) and add them &mdash; after the roll, before you know the outcome.</p></div>
+    <div class="card"><h3>Mighty Leap <span class="tag">Bonus Action</span></h3><span class="prereq">Req: 5th level, STR 13</span><p>After running 10 ft in a line, expend an Exploit Die to long jump up to <b>30 ft</b> in a line, even beyond your speed.</p></div>
+    <div class="card"><h3>Honor Duel <span class="tag">Bonus Action</span></h3><span class="prereq">Req: 5th level, CHA 13</span><p>Expend an Exploit Die to challenge a creature within 15 ft. For 1 min it has disadvantage attacking anyone but you. Ends if you target another, or on its WIS save at end of turn.</p></div>
+    <div class="card"><h3>Mighty Blow <span class="tag">Free Reaction</span></h3><span class="prereq">Req: 5th level, STR 13</span><p>On a melee hit, expend an Exploit Die for bonus damage = the die; target makes a STR save or is knocked back <b>5 &times; STR mod</b> ft. Larger targets have advantage.</p></div>
+    <div class="card"><h3>Bloodthirsty Critical <span class="tag">Critical Hit</span></h3><span class="prereq">Req: 5th level, STR 13</span><p>On a crit, expend an Exploit Die to make another weapon attack against it; on hit, add the die to damage. Once per turn.</p></div>
+    <div class="card"><h3>Glancing Blow <span class="tag">Free Reaction</span></h3><span class="prereq">Req: 5th level</span><p>On a melee <b>miss</b>, expend an Exploit Die to repeat the attack against another target in range, adding the die to damage.</p></div>
+    <div class="card"><h3>Taunting Strike <span class="tag">Free Reaction</span></h3><span class="prereq">Req: CHA 11+</span><p>On a hit within 15 ft, expend an Exploit Die to taunt: add the die to damage; until your next turn it has disadvantage attacking anyone but you.</p></div>
+    <div class="card"><h3>Shattering Slam <span class="tag">Action</span></h3><span class="prereq">Req: 5th level, STR 13</span><p>In place of an attack, strike the ground and expend Exploit Dice (up to PB). The area within 5 ft becomes difficult terrain; creatures make a STR save &mdash; fail: bludgeoning damage = dice spent + STR mod and fall prone; success: half, no prone.</p></div>
+  </div>
+
+  <h2 class="sec">Cooldown Exploits <span class="subtag">once per short or long rest</span></h2>
+  <div class="grid2">
+    <div class="card crim"><h3>Mythic Resilience <span class="tag crim">Bonus Action</span></h3><span class="prereq">Req: 9th level, CON 15</span><p>When you take damage from a source you can see, expend Exploit Dice (up to PB) to reduce the damage by <b>three Exploit Dice per die spent</b>. Excess becomes temp HP.</p>
+    <div class="cd-toggle" data-cd="mythic"><span class="box"></span><span>Used this rest</span></div></div>
+    <div class="card crim"><h3>Roar of Triumph <span class="tag crim">Critical Hit</span></h3><span class="prereq">Req: 9th level</span><p>On a crit, expend an Exploit Die: you and up to CON-mod allies (min 1) who hear you within 300 ft gain temp HP = <b>level + CON mod</b>.</p>
+    <div class="cd-toggle" data-cd="roar"><span class="box"></span><span>Used this rest</span></div></div>
+    <div class="card crim"><h3>Disorienting Blow <span class="tag crim">Free Reaction</span></h3><span class="prereq">Req: 9th level, STR 15</span><p>On a melee hit, expend an Exploit Die for bonus damage = <b>twice the die</b>; WIS save or, for 1 min: speed halved, no reactions, AC &minus;2 (min 10), disadvantage on DEX saves, action <i>or</i> bonus action only, single attack only. Save ends at end of each turn. Doesn&rsquo;t stack with <i>slow</i>.</p>
+    <div class="cd-toggle" data-cd="disorient"><span class="box"></span><span>Used this rest</span></div></div>
+  </div>
+</section>
+
+<!-- ============ TRANSFORMATION ============ -->
+<section class="tabpanel" id="tab-transform">
+  <h2 class="sec">Transformation</h2>
+  <div class="locked">
+    <div class="lk-ico">&#128274;</div>
+    <h3>Sealed Beneath the Horizon</h3>
+    <p>Yohan&rsquo;s transformation has not yet awoken. The sands have not yet broken.</p>
+    <div class="unlock">Unlock &middot; complete <b>The Red Horizon: Yohan&rsquo;s Paralogue Mission</b></div>
+  </div>
+</section>
+
+</div>
+</div>
+
+<div class="footer">
+  Yohan &middot; The Diamond in the Rough &mdash; interactive reference v1.1
+  <br><button class="reset-btn" id="resetAll">Reset all trackers</button>
+</div>
+</div>
+
+
+<!-- ===== Firebase sync (added by Sync Injector) ===== -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+/* ============================ STATE ============================ */
+const SK='yohan_v1';
+const defaults={
+  hp:0,thp:0, ki:6,kimax:6,
+  md:0, genTurn:0, buried:false, mdDie:'d8',
+  stacks:0,
+  str:6,wis:7,pb:6,
+  stance:null,
+  exploit:4,exmax:4,
+  cds:{mythic:false,roar:false,disorient:false}
+};
+let S=load();
+function load(){
+  try{var r=localStorage.getItem(SK);if(r){var o=JSON.parse(r);var d=JSON.parse(JSON.stringify(defaults));deepMerge(d,o);return d;}}catch(e){}
+  return JSON.parse(JSON.stringify(defaults));
+}
+function deepMerge(t,s){for(var k in s){if(s[k]&&typeof s[k]==='object'&&!Array.isArray(s[k])&&t[k]&&typeof t[k]==='object'){deepMerge(t[k],s[k]);}else{t[k]=s[k];}}}
+function save(){try{localStorage.setItem(SK,JSON.stringify(S));}catch(e){}}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+function mdMaxVal(){return Math.max(1,S.pb);}
+
+/* ============================ LOG ============================ */
+function log(msg){
+  var el=document.getElementById('momLog');
+  el.innerHTML=msg;
+}
+
+/* ============================ VITALS ============================ */
+function renderVitals(){
+  ['hp','thp','ki','kimax','str','wis','pb'].forEach(function(k){var el=document.getElementById(k);if(el&&document.activeElement!==el)el.value=S[k];});
+  // hp bar
+  var hpDen=Math.max(S.hp+S.thp,100);
+  document.getElementById('hpbar').style.width=clamp((S.hp+S.thp)/hpDen*100,0,100)+'%';
+  // ki bar
+  document.getElementById('kibar').style.width=clamp(S.ki/Math.max(S.kimax,1)*100,0,100)+'%';
+  // md
+  var mx=mdMaxVal();
+  document.getElementById('md').value=S.md;
+  document.getElementById('mdmax').textContent=mx;
+  document.getElementById('mdbar').style.width=clamp(S.md/mx*100,0,100)+'%';
+  document.getElementById('mdDie').textContent=S.mdDie;
+  // stacks vital
+  document.getElementById('stacksV').value=S.stacks;
+  document.getElementById('diceBonusV').textContent='+'+S.stacks+' dice';
+  document.getElementById('stkbar').style.width=clamp(S.stacks/6*100,0,100)+'%';
+  // DCs
+  var ss=8+S.pb+S.wis+S.str; var se=8+S.pb+S.str;
+  ['ssDC','ssDC2'].forEach(function(id){document.getElementById(id).textContent=ss;});
+  ['seDC','seDC2'].forEach(function(id){document.getElementById(id).textContent=se;});
+  var s3=document.getElementById('ssDC3'); if(s3)s3.textContent=ss;
+  var e3=document.getElementById('seDC3'); if(e3)e3.textContent=se;
+}
+['hp','thp','ki','kimax','str','wis','pb'].forEach(function(k){
+  document.getElementById(k).addEventListener('input',function(e){
+    var v=parseInt(e.target.value);if(isNaN(v))v=0;
+    if(k==='kimax')v=Math.max(1,v); if(k==='pb')v=Math.max(1,v);
+    S[k]=v; renderVitals(); renderMomentum(); save();
+  });
+});
+document.querySelectorAll('.vitals .stepbtns button[data-k]').forEach(function(b){
+  b.addEventListener('click',function(){
+    var k=b.dataset.k,d=parseInt(b.dataset.d);S[k]=(S[k]||0)+d;
+    if(k==='ki')S[k]=clamp(S[k],0,S.kimax);
+    if(k!=='hp'&&k!=='thp')S[k]=Math.max(0,S[k]);
+    renderVitals();save();
+  });
+});
+document.getElementById('mdDie').addEventListener('click',function(){
+  S.mdDie=(S.mdDie==='d8')?'d10':'d8';renderVitals();renderMomentum();save();
+});
+
+/* ============================ MOMENTUM ============================ */
+function renderMomentum(){
+  var mx=mdMaxVal();
+  document.getElementById('mdBig').textContent=S.md;
+  document.getElementById('mdBigMax').textContent=mx;
+  document.getElementById('mdMaxNote').textContent=mx;
+  document.getElementById('mdDieD').textContent=S.mdDie;
+  document.getElementById('genVal').textContent=S.genTurn;
+  document.getElementById('genRow').classList.toggle('cap',S.genTurn>=3);
+  document.getElementById('buriedTog').classList.toggle('on',!!S.buried);
+  // stacks
+  document.getElementById('stkBig').textContent=S.stacks;
+  document.getElementById('diceBonus').textContent='+'+S.stacks;
+  var host=document.getElementById('stackPips');host.innerHTML='';
+  for(var i=1;i<=6;i++){
+    var p=document.createElement('div');
+    var cls='pip';
+    if([1,3,6].indexOf(i)>=0)cls+=' thresh';
+    if(i<=S.stacks)cls+=' on';
+    if(i===6&&S.stacks>=6)cls+=' p6';
+    p.className=cls;p.textContent=i;host.appendChild(p);
+  }
+  document.getElementById('th-launch').classList.toggle('lit',S.stacks>=1);
+  document.getElementById('th-attack').classList.toggle('lit',S.stacks>=3);
+  document.getElementById('th-finish').classList.toggle('lit',S.stacks>=6);
+}
+function setMD(v){S.md=clamp(v,0,mdMaxVal());renderVitals();renderMomentum();save();}
+function setStacks(v){S.stacks=clamp(v,0,6);renderVitals();renderMomentum();save();}
+
+document.getElementById('mdPlus').addEventListener('click',function(){setMD(S.md+1);});
+document.getElementById('mdMinus').addEventListener('click',function(){setMD(S.md-1);});
+document.getElementById('stkPlus').addEventListener('click',function(){setStacks(S.stacks+1);});
+document.getElementById('stkMinus').addEventListener('click',function(){setStacks(S.stacks-1);});
+document.getElementById('genPlus').addEventListener('click',function(){S.genTurn=clamp(S.genTurn+1,0,3);renderMomentum();save();});
+document.getElementById('genMinus').addEventListener('click',function(){S.genTurn=clamp(S.genTurn-1,0,3);renderMomentum();save();});
+document.getElementById('buriedTog').addEventListener('click',function(){S.buried=!S.buried;renderMomentum();save();});
+
+function risingDawn(){var before=S.md;setMD(S.md+3);log('&#9728; <b>Rising Dawn</b> &mdash; +'+(S.md-before)+' MD (now '+S.md+'/'+mdMaxVal()+'). Lose half movement this turn.');}
+document.getElementById('risingDawn').addEventListener('click',risingDawn);
+document.getElementById('risingDawn2').addEventListener('click',risingDawn);
+
+document.getElementById('dunebreaker').addEventListener('click',function(){
+  var spent=S.md;setMD(0);log('&#9876; <b>Dunebreaker Strike</b> &mdash; expended <b>'+spent+'</b> MD. Apply status by weapon property (Pierce / Slash / Bludgeon).');
+});
+document.getElementById('shifting').addEventListener('click',function(){
+  if(S.md<1){log('&#10006; <b>Shifting Sands</b> &mdash; need 1 MD.');return;}
+  setMD(S.md-1);log('&#128168; <b>Shifting Sands</b> &mdash; &minus;1 MD. AC +PB ('+S.pb+') vs that attack.');
+});
+document.getElementById('sunpiercer').addEventListener('click',function(){
+  if(S.md<2){log('&#10006; <b>Sunpiercer Descent</b> &mdash; need 2 MD.');return;}
+  setMD(S.md-2);log('&#9788; <b>Sunpiercer Descent</b> &mdash; &minus;2 MD. On hit: radiant = MD, CON save or blinded.');
+});
+document.getElementById('endTurn').addEventListener('click',function(){
+  var kept=S.buried;
+  if(!S.buried)S.md=0;
+  S.genTurn=0;S.stacks=0;
+  renderVitals();renderMomentum();save();
+  log('&#10227; <b>End of turn.</b> Stacks reset, generation reset.'+(kept?' Momentum Dice preserved (Buried).':' Momentum Dice vanished.'));
+});
+
+/* ============================ STANCES ============================ */
+function renderStances(){
+  document.querySelectorAll('.stance-card').forEach(function(c){c.classList.toggle('active',c.dataset.stance===S.stance);});
+}
+document.querySelectorAll('.act-btn[data-stance]').forEach(function(b){
+  b.addEventListener('click',function(){
+    var st=b.dataset.stance;
+    if(S.stance===st){S.stance=null;renderStances();save();return;}
+    if(S.ki<3){alert('Not enough Ki (need 3).');return;}
+    S.ki-=3;S.stance=st;renderVitals();renderStances();save();
+  });
+});
+document.getElementById('clearStance').addEventListener('click',function(){S.stance=null;renderStances();save();});
+
+/* ============================ KI TECHNIQUES ============================ */
+document.querySelectorAll('.minibtn[data-ki]').forEach(function(b){
+  b.addEventListener('click',function(){
+    var c=parseInt(b.dataset.ki);
+    if(S.ki<c){alert('Not enough Ki (need '+c+').');return;}
+    S.ki-=c;renderVitals();save();
+  });
+});
+
+/* ============================ EXPLOITS ============================ */
+function renderExploits(){
+  document.getElementById('exBig').textContent=S.exploit;
+  if(document.activeElement!==document.getElementById('exmax'))document.getElementById('exmax').value=S.exmax;
+  document.querySelectorAll('.cd-toggle[data-cd]').forEach(function(t){t.classList.toggle('used',!!S.cds[t.dataset.cd]);});
+}
+document.getElementById('exPlus').addEventListener('click',function(){S.exploit=clamp(S.exploit+1,0,S.exmax);renderExploits();save();});
+document.getElementById('exMinus').addEventListener('click',function(){S.exploit=clamp(S.exploit-1,0,S.exmax);renderExploits();save();});
+document.getElementById('exmax').addEventListener('input',function(e){var v=parseInt(e.target.value);if(isNaN(v))v=0;S.exmax=Math.max(0,v);S.exploit=Math.min(S.exploit,S.exmax);renderExploits();save();});
+document.querySelectorAll('.cd-toggle[data-cd]').forEach(function(t){
+  t.addEventListener('click',function(){var k=t.dataset.cd;S.cds[k]=!S.cds[k];renderExploits();save();});
+});
+document.getElementById('restExploits').addEventListener('click',function(){
+  S.exploit=S.exmax;S.cds={mythic:false,roar:false,disorient:false};renderExploits();save();
+});
+
+/* ============================ TABS ============================ */
+document.querySelectorAll('#tabnav button').forEach(function(b){
+  b.addEventListener('click',function(){
+    document.querySelectorAll('#tabnav button').forEach(function(x){x.classList.remove('active');});b.classList.add('active');
+    document.querySelectorAll('.tabpanel').forEach(function(p){p.classList.remove('active');});
+    document.getElementById('tab-'+b.dataset.tab).classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+});
+
+/* ============================ RESET ============================ */
+document.getElementById('resetAll').addEventListener('click',function(){
+  if(confirm('Reset all of Yohan\u2019s trackers to defaults?')){
+    try{localStorage.removeItem(SK);}catch(e){}S=load();renderAll();
+  }
+});
+
+/* ============================ INIT ============================ */
+function renderAll(){renderVitals();renderMomentum();renderStances();renderExploits();}
+renderAll();
+
+
+/* ======================= CLOUD SYNC (Firebase) ======================= */
+/* Inserted by the Sync Injector. Wraps save() + subscribes once.        */
+/* Config + campaign come from firebase-config.js (window.FIREBASE_CONFIG).*/
+/* CHAR_ID is derived from this sheet's own SK key. Local-only until the  */
+/* shared config is filled in. Remote applies reuse the sheet's own load(). */
+(function(){
+  var CFG = window.FIREBASE_CONFIG || {};
+  var CAMPAIGN_ID = window.CAMPAIGN_ID || "astrology-club";
+  var CHAR_ID = (typeof SK === "string" ? SK.replace(/_v[0-9]+$/, "") : "unknown");
+  var configured = CFG && CFG.apiKey && CFG.apiKey.indexOf("PASTE") !== 0;
+
+  var pill = document.createElement("div");
+  pill.style.cssText = "position:fixed;bottom:10px;right:12px;z-index:99999;font:600 11px/1 monospace;padding:5px 9px;border-radius:20px;background:rgba(0,0,0,.55);color:#bbb;letter-spacing:.05em;pointer-events:none;";
+  pill.textContent = configured ? "○ connecting" : "○ local only";
+  document.body.appendChild(pill);
+  function setPill(t,c){ pill.textContent=t; pill.style.color=c; }
+  if(!configured) return;
+
+  var docRef=null, applyingRemote=false, pushT=null;
+  try{
+    firebase.initializeApp(CFG);
+    var db = firebase.firestore();
+    db.enablePersistence({synchronizeTabs:true}).catch(function(){});
+    docRef = db.collection("campaigns").doc(CAMPAIGN_ID).collection("characters").doc(CHAR_ID);
+  }catch(e){ setPill("○ sync error","#e08"); return; }
+
+  var _origSave = save;
+  save = function(){
+    _origSave();
+    if(applyingRemote) return;
+    clearTimeout(pushT);
+    pushT = setTimeout(pushRemote, 400);
+  };
+  function pushRemote(){
+    if(!docRef) return;
+    docRef.set(JSON.parse(JSON.stringify(S)))
+      .then(function(){ setPill("● synced","#7c7"); })
+      .catch(function(){ setPill("○ offline","#c96"); });
+  }
+  var rb = document.getElementById("resetAll");
+  if(rb) rb.addEventListener("click", function(){ setTimeout(function(){ if(!applyingRemote) pushRemote(); },0); });
+
+  docRef.onSnapshot(function(snap){
+    if(snap.metadata.hasPendingWrites) return;
+    if(!snap.exists){ pushRemote(); setPill("● synced","#7c7"); return; }
+    var data = snap.data(); if(!data) return;
+    applyingRemote = true;
+    try{ localStorage.setItem(SK, JSON.stringify(data)); }catch(e){}
+    try{ S = load(); }catch(e){}
+    try{ renderAll(); }catch(e){}
+    applyingRemote = false;
+    setPill("● synced","#7c7");
+  }, function(){ setPill("○ offline","#c96"); });
+})();
+
+</script>
+</body>
+</html>
