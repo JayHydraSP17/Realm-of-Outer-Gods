@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hasani Eldesteen · The Scythe of Necrolien</title>
+<title>New Character · Covenant Sheet</title>
 <link rel="preconnect" href="https://fonts.googleapis.com/">
 <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -292,8 +292,9 @@ window.CHAR={
  level:13,classes:[{name:"Champion of Necrolien (set HP)",level:13,die:8}],
  stats:{str:10,dex:14,con:16,int:12,wis:14,cha:20},saves:{},
  spellStat:"cha",speed:30,hitDice:13,itemSlots:3,
+ tlStat:"cha",tlBonus:100,   /* Max TL = (CON mod + CHA mod)×10 + 100 — the doc's newer base ported faithfully; derives live from the stats. */
  identity:{Race:"Human",Alignment:"Neutral Good",Pronouns:"He/Him",Deity:"Necrolien (Dr. Death)",Birthday:"November 11th",Heirloom:"Mother's Pendant"},
- levelNote:"<b>Set from Hasani's live sheet:</b> the six ability scores, class levels &amp; HP, and AC/armor are placeholders. <b>Confirmed:</b> Level 13 (PB +5), Human, Neutral Good, patron Necrolien. <b>Max TL is fixed at 260</b> here pending the exact (CON+CHA) formula (the two source versions conflict: +70 vs +100 base).",
+ levelNote:"<b>Placeholders pending Hasani's live sheet:</b> the six ability scores, class levels &amp; HP, and AC/armor. <b>Confirmed:</b> Level 13 (PB +5), Human, Neutral Good, patron Necrolien. <b>Max TL</b> now derives from the ported formula (CON+CHA mods ×10 +100); the doc states a max of <b>260</b>, which implies bonuses beyond the mods — set the real stats, or type 260 into the Max TL box (stored as an adjustment), to pin it.",
  economy:[{id:"rx",name:"Reactions",max:1}],
  resources:[
   {id:"mp",name:"Mental Power (MP)",max:30,rest:"long",steps:[1,2],color:"#9b7bd4",note:"Msiona pool for the Grief cycle. All back on a long rest, half on a short. Max shown with bonuses (flag)."},
@@ -305,10 +306,7 @@ window.CHAR={
  barRes:["mp","sand"],
  subs:[],cycle:"Week",
  riders:[{n:"Ruthlessness",e:"1d6"},{n:"Tithe (per)",e:"CHA"},{n:"Senseless +CHA",e:"CHA"}],
- tx:{name:"The Angel of Death",activate:0,upkeep:0,channel:0,
-   tlMax:function(d){return 260;},
-   tlNote:"(CON+CHA)×10+100 — fixed at 260 (formula flagged). Spent by soul abilities; the strain ladder applies as TL drops.",
-   toggles:[],modes:null},
+ tx:{name:"The Angel of Death",activate:0,upkeep:0,channel:0,toggles:[],modes:null},
  kitPanes:[
   {id:"angel",n:"Angel of Death",eb:"Necrolien · soul harvest",bl:"The transformation and TL console, the Soul Arsenal, and every soul ability with its enhancements.",c:"#5fe6b8",tx:true},
   {id:"legacy",n:"Legacy of Aniʻani",eb:"Msiona · Mental Power",bl:"The Ecstasy Beyond Grief cycle, MP thresholds, Mental Breakdowns, and Madness.",c:"#9b7bd4"}
@@ -602,7 +600,7 @@ function defaults(){
   ident:clone(C.identity||{}),stats:clone(C.stats||{str:10,dex:10,con:10,int:10,wis:10,cha:10}),saves:clone(C.saves||{}),
   skills:{},skillMisc:clone(C.skillMisc||{}),initMisc:C.initMisc||0,speed:C.speed||30,dcMisc:C.dcMisc||0,tags:clone(C.tags||[]),
   hp:{cur:-1,temp:0,scar:0,burn:0},hd:{cur:C.hitDice||1,max:C.hitDice||1},death:{s:0,f:0},
-  tl:{cur:(C.tx&&C.tx.startTL!=null)?C.tx.startTL:-1},
+  tl:{cur:(C.tx&&C.tx.startTL!=null)?C.tx.startTL:-1,stat:C.tlStat||"wis",bonus:C.tlBonus||0,adj:0},
   tx:{on:false,mode:"",tog:{},fractured:false,fracAmt:0,collapse:"",burning:false,locked:false},
   mor:{cur:100,start:100,lost:0,shaken:0},sit:{ac:0,speed:0,adr:0},dmg:{expr:"",label:"",target:"",n:1,crit:false,eff:false,vuln:false,half:false,xd:0,flat:0,riders:{},custRiders:[],atk:true,adr:0,sunder:false,pip:false,lines:[]},round:1,eco:{},res:{},resMax:{},effects:[],
   items:(C.items||[]).map(function(o,i){var it=mkItem(o);if(!it.id)it.id="i"+i;return it;}),
@@ -677,7 +675,8 @@ function compute(){
  d.passive=10+d.skill.Perception;
  var sp=C.spellStat||"wis";d.dc=8+d.pb+d.mod[sp]+num(S.dcMisc);d.spellAtk=d.pb+d.mod[sp];
  d.init=d.mod.dex+(C.initAddsPB?d.pb:0)+num(S.initMisc)+d.im.init;
- d.tlMax=C.tx?Math.max(1,(C.tx.tlMax?C.tx.tlMax(d):100)+d.im.tl):0;
+ var tls=S.tl.stat&&d.mod[S.tl.stat]!=null?S.tl.stat:"wis";d.tlStat=tls;d.tlBase=(d.mod.con+d.mod[tls])*10;d.tlFormula=d.tlBase+num(S.tl.bonus);
+ d.tlMax=(C.tl!==false)?Math.max(1,d.tlFormula+d.im.tl+num(S.tl.adj)):0;
  d.st=strain(d);d.def=defense(d);
  d.speed=num(S.speed)+d.im.speed+(d.st?d.st.speed:0);
  d.itemSlots=Math.max(0,num(S.itemSlotsBase,3)+d.im.itemSlots);
@@ -686,10 +685,10 @@ function compute(){
  var bt=(S.bats||[]).filter(function(b){return b.on;})[0];d.bat=null;d.batHit=0;if(bt&&num(bt.end)>0){d.bat=bt;d.acNow+=num(bt.dep.ac);if(d.save[bt.dep.save]!=null)d.save[bt.dep.save]+=num(bt.dep.sv);d.batHit=num(bt.dep.hit);}d.speedNow=d.speed+num((S.sit||{}).speed);
  return d;
 }
-function strain(d){if(!C.tx)return null;var max=d.tlMax||1,cur=num(S.tl.cur),p=cur/max;
- var lvl=cur<=0?3:p<0.25?2:p<0.5?1:0,on=S.tx.on;
+function strain(d){if(!(C.tl!==false))return null;var max=d.tlMax||1,cur=num(S.tl.cur),p=cur/max;
+ var lvl=cur<=0?3:p<0.25?2:p<0.5?1:0,on=!!(C.tx&&S.tx.on);
  return {lvl:lvl,pct:p,on:on,sur:on?(lvl>=2?10:lvl===1?5:0):0,speed:on?(lvl>=2?-15:lvl===1?-10:0):0,
-  name:!on?"Dormant":["Stable","Strained","Fractured","Collapse"][lvl]};}
+  name:!on?(C.tx?"Dormant":["Full","Below half","Below quarter","Empty"][lvl]):["Stable","Strained","Fractured","Collapse"][lvl]};}
 function defense(d){
  var armor=slotItem("armor"),o={};var ct=clamp(Math.ceil(d.level/10),1,5);
  if(!armor||!armor.armor||!armor.armor.kind){
@@ -724,7 +723,7 @@ function upkeep(d){if(!C.tx)return {cost:0,gain:0,base:0};
 function spendTL(cost,isAb,what){var c=tlCostFor(cost,isAb);
  if(num(S.tl.cur)<c){flash("Not enough TL ("+c+" needed)");return false;}
  S.tl.cur=num(S.tl.cur)-c;if(what)logline(what+", "+c+" TL");afterTL();return true;}
-function afterTL(){if(!C.tx)return;var d=compute();S.tl.cur=clamp(num(S.tl.cur),0,d.tlMax);
+function afterTL(){var d=compute();S.tl.cur=clamp(num(S.tl.cur),0,d.tlMax);if(!C.tx)return;
  if(!S.tx.on)return;var p=S.tl.cur/d.tlMax;
  if(!S.tx.fractured&&p<0.25){var amt=Math.floor(d.hpMax*0.2);S.hp.scar=num(S.hp.scar)+amt;S.hp.cur=Math.max(0,num(S.hp.cur)-amt);
   S.tx.fractured=true;S.tx.fracAmt=amt;logline("Fractured: "+amt+" non-regenerable damage (20% of max HP)");}
@@ -776,7 +775,7 @@ function restoreRes(kind){var d=compute();(C.resources||[]).forEach(function(r){
 function shortRest(){restoreRes("short");for(var k in S.eco)S.eco[k].left=S.eco[k].max;if(C.hooks&&C.hooks.shortRest)C.hooks.shortRest(api);logline("Short rest");}
 function longRest(){if(S.tx.on)txEnd("Transformation ended for the rest");
  S.hp.scar=0;S.hp.burn=0;S.hp.temp=0;S.dead=false;S.sit={ac:0,speed:0,adr:0};var d=compute();S.hp.cur=d.hpMax;S.death={s:0,f:0};
- if(C.tx)S.tl.cur=d.tlMax;S.tx.locked=false;S.tx.tog={};S.hd.cur=S.hd.max;S.mor={cur:100,start:100,lost:0,shaken:0};
+ if((C.tl!==false))S.tl.cur=d.tlMax;S.tx.locked=false;S.tx.tog={};S.hd.cur=S.hd.max;S.mor={cur:100,start:100,lost:0,shaken:0};
  restoreRes("long");S.unarmed.cur=S.unarmed.max;for(var sl in S.spells.slots)S.spells.slots[sl].left=S.spells.slots[sl].max;S.comps.forEach(function(c){c.hp=num(c.hpMax);});S.bats.forEach(function(b){b.end=Math.min(num(b.endMax),num(b.end)+1);b.ch=num(b.chMax);});S.effects=[];for(var k in S.eco)S.eco[k].left=S.eco[k].max;S.round=1;S.infUsed=0;
  if(C.hooks&&C.hooks.longRest)C.hooks.longRest(api);logline("Long rest: health, TL, resources and lockouts restored");}
 function resMax(r,d){if(r.maxFn)return r.maxFn(d||compute(),S);if(S.resMax[r.id]!=null)return num(S.resMax[r.id]);return typeof r.max==="number"?r.max:null;}
@@ -838,12 +837,12 @@ function renderBar(d){var h="";var hpP=d.hpMax?num(S.hp.cur)/d.hpMax*100:0;
   '<div class="row" style="margin-top:6px"><input class="num w80" type="number" id="dmgIn" placeholder="amount" aria-label="Amount"><button class="btn sm" data-a="dmg">hit</button>'+(d.adrNow?'<button class="btn sm" data-a="dmgadr" title="Attack that hit: ADR applies">hit − ADR '+d.adrNow+'</button>':'')+'<button class="btn sm" data-a="healin">heal</button></div>'+
   '<div class="sub">Temp <input class="num w44" type="number" data-b="hp.temp" value="'+S.hp.temp+'"> '+(d.hpCeil<d.hpMax?' · heal ceiling '+d.hpCeil:'')+'</div>'+
   '<div class="meter"><i style="width:'+clamp(hpP,0,100)+'%;background:linear-gradient(90deg,#8a1f28,#d8434f)"></i></div></div>';
- if(C.tx){var st=d.st,tp=num(S.tl.cur)/d.tlMax*100,col=st.lvl>=2&&st.on?"#d8434f":st.lvl===1&&st.on?"#e8b04a":"var(--brand)";
+ if((C.tl!==false)){var st=d.st,tp=num(S.tl.cur)/d.tlMax*100,col=st.lvl>=2&&st.on?"#d8434f":st.lvl===1&&st.on?"#e8b04a":"var(--brand)";
   h+='<div class="tk"><div class="tk-h"><span class="d"></span>TL<span class="chip chipx '+(!st.on?'':st.lvl===0?'ok':st.lvl===1?'warn':'bad')+'">'+st.name+'</span></div>'+
-  '<div class="row"><button class="btn" data-a="tl" data-n="-10">−</button><input class="num big" type="number" data-b="tl.cur" value="'+S.tl.cur+'" aria-label="Current TL"><span class="sl">/ '+d.tlMax+'</span><button class="btn" data-a="tl" data-n="10">+</button><button class="btn sm" data-a="tlfull">↻</button></div>'+
+  '<div class="row"><button class="btn" data-a="tl" data-n="-10">−</button><input class="num big" type="number" data-b="tl.cur" value="'+S.tl.cur+'" aria-label="Current TL"><span class="sl">/</span><input class="num w44" type="number" data-tlmax="1" value="'+d.tlMax+'" title="Max TL. Typing here sets the adjustment; the formula is on the Character tab" aria-label="Max TL"><button class="btn" data-a="tl" data-n="10">+</button><button class="btn sm" data-a="tlfull">↻</button></div>'+
   '<div class="row" style="margin-top:6px"><button class="btn sm" data-a="tl" data-n="-50">−50</button><button class="btn sm" data-a="tl" data-n="-20">−20</button><button class="btn sm" data-a="tl" data-n="-5">−5</button><button class="btn sm" data-a="tl" data-n="30">+30</button></div>'+
   '<div class="meter"><i style="width:'+clamp(tp,0,100)+'%;background:'+col+'"></i><span class="mk" style="left:25%"></span><span class="mk" style="left:50%"></span></div>'+
-  '<div class="sub">'+(st.on&&st.sur?'abilities +'+st.sur+' TL · speed '+st.speed+' ft':'Strained <'+Math.ceil(d.tlMax/2)+' · Fractured <'+Math.ceil(d.tlMax/4))+'</div></div>';}
+  '<div class="sub">'+(st.on&&st.sur?'abilities +'+st.sur+' TL · speed '+st.speed+' ft':'(CON+'+d.tlStat.toUpperCase()+')×10'+(num(S.tl.bonus)?' '+sgn(num(S.tl.bonus)):'')+(d.im.tl?' '+sgn(d.im.tl)+' gear':'')+(num(S.tl.adj)?' <span class="amber">'+sgn(num(S.tl.adj))+' adj</span>':''))+'</div></div>';}
  var mt=moraleTier(S.mor.cur),M=MORALE[mt];
  h+='<div class="tk"><div class="tk-h" style="color:'+M.c+'"><span class="d"></span>Morale<span class="chip chipx" style="color:'+M.c+'">'+M.n+'</span></div>'+
   '<div class="row"><button class="btn" data-a="mor" data-n="-10" data-o="1" title="Drain from others (capped)">−</button><input class="num big" type="number" data-b="mor.cur" value="'+S.mor.cur+'" aria-label="Current morale" title="Typed values skip the swing cap and tier lock"><span class="sl">/ 200</span><button class="btn" data-a="mor" data-n="10">+</button></div>'+
@@ -865,7 +864,7 @@ function renderBar(d){var h="";var hpP=d.hpMax?num(S.hp.cur)/d.hpMax*100:0;
    h+='<div class="row" style="margin-top:8px;gap:4px"><span class="sub" style="margin:0;flex:1" title="'+esc(r.note||"")+'">'+esc(r.name)+'</span><button class="btn sm" data-a="res" data-id="'+r.id+'" data-n="'+(-((r.steps||[1])[0]))+'">−</button><input class="num w44" type="number" data-res="'+r.id+'" value="'+S.res[r.id]+'">'+(mx!=null?'<span class="sl">/'+mx+'</span>':'')+'<button class="btn sm" data-a="res" data-id="'+r.id+'" data-n="'+((r.steps||[1])[0])+'">+</button></div>'+(r.note?'<div class="sub" style="margin-top:2px">'+esc(r.note)+'</div>':'');});
   h+='</div>';}
  h+='<div class="roundrow"><span class="cz" style="color:var(--ac);font-size:13px;letter-spacing:.12em">ROUND '+S.round+'</span><button class="btn pri" style="height:32px;padding:0 16px" data-a="endturn">End turn</button><button class="btn sm" data-a="short">short rest</button><button class="btn sm" data-a="long">long rest</button></div>';
- h+='<div class="minibar">HP<b>'+S.hp.cur+'</b>'+(C.tx?' · TL<b>'+S.tl.cur+'</b> <span class="chip">'+d.st.name+'</span>':'')+' · Morale<b>'+S.mor.cur+'</b> · AC<b>'+d.acNow+'</b> · Speed<b>'+d.speedNow+'</b> · Round<b>'+S.round+'</b></div>';
+ h+='<div class="minibar">HP<b>'+S.hp.cur+'</b>'+((C.tl!==false)?' · TL<b>'+S.tl.cur+'/'+d.tlMax+'</b>'+(C.tx?' <span class="chip">'+d.st.name+'</span>':''):'')+' · Morale<b>'+S.mor.cur+'</b> · AC<b>'+d.acNow+'</b> · Speed<b>'+d.speedNow+'</b> · Round<b>'+S.round+'</b></div>';
  h+='<div class="bar-tools"><button data-a="fold">'+(S.ui.fold?"Show trackers":"Hide trackers")+'</button><button data-a="pal">Search</button><button data-a="export">Export</button><button data-a="import">Import</button><button data-a="wipe">Reset sheet</button><span class="savehint" id="saveHint">Saved to this device</span></div>';
  var b=$("bar");b.innerHTML=h;b.classList.toggle("fold",!!S.ui.fold);
  if(S.dead)b.style.borderTopColor="#fff";
@@ -953,8 +952,15 @@ function renderChar(d){var h='<section id="identity"><h2>Identity</h2><div class
  h+='<section id="vitals"><h2>Vitals</h2><div class="vitals">'+
   vit("Armor class",d.acNow,d.def.mode+(num(S.sit.ac)?" · situational "+sgn(num(S.sit.ac)):""),1)+vit("ADR",d.adrNow,d.def.kind?d.def.kind+" armor":"none")+vit("Initiative",sgn(d.init),"DEX"+(C.initAddsPB?" + PB":"")+(num(S.initMisc)?" "+sgn(num(S.initMisc)):"")+(d.im.init?" "+sgn(d.im.init)+" gear":""))+
   vit("Speed",d.speedNow+" ft",d.st&&d.st.speed?"strain "+d.st.speed:"base "+S.speed)+vit("Proficiency",sgn(d.pb),"level "+d.level)+vit("Save DC",d.dc,"8 + PB + "+(C.spellStat||"wis").toUpperCase()+(num(S.dcMisc)?" "+sgn(num(S.dcMisc)):""),1)+vit("Spell attack",sgn(d.spellAtk),"PB + "+(C.spellStat||"wis").toUpperCase())+vit("Passive Perc.",d.passive,"")+
-  (C.tx?vit("Max TL",d.tlMax,C.tx.tlNote||""):"")+vit("Item slots",d.itemSlots,"")+'</div>'+
+  ((C.tl!==false)?vit("Max TL",d.tlMax,"see TL below",1):"")+vit("Item slots",d.itemSlots,"")+'</div>'+
   '<div class="row"><span class="lbl" style="margin:0">Base speed</span><input class="num w44" type="number" data-b="speed" value="'+S.speed+'"><span class="lbl" style="margin:0 0 0 10px">Init misc</span><input class="num w44" type="number" data-b="initMisc" value="'+S.initMisc+'"><span class="lbl" style="margin:0 0 0 10px">DC misc</span><input class="num w44" type="number" data-b="dcMisc" value="'+S.dcMisc+'"><span class="lbl" style="margin:0 0 0 10px">Base item slots</span><input class="num w44" type="number" data-b="itemSlotsBase" value="'+S.itemSlotsBase+'"></div></section>';
+ if((C.tl!==false)){h+='<section id="tlformula"><h2>Transformation Limit <span class="sub2">(CON + one stat) × 10 + bonus</span></h2><div class="card">'+
+  '<div class="row"><span class="lbl" style="margin:0">Paired stat</span><select class="sel" data-b="tl.stat">'+STATS.filter(function(x){return x[0]!=="con";}).map(function(x){return '<option value="'+x[0]+'"'+(d.tlStat===x[0]?' selected':'')+'>'+x[0].toUpperCase()+'</option>';}).join("")+'</select>'+
+  '<span class="lbl" style="margin:0 0 0 12px">Bonus</span><input class="num w44" type="number" data-b="tl.bonus" value="'+num(S.tl.bonus)+'" title="Racial, class or story bonus">'+
+  '<span class="lbl" style="margin:0 0 0 12px">± Adjustment</span><input class="num w44" type="number" data-b="tl.adj" value="'+num(S.tl.adj)+'" title="Temporary or DM changes. Typing a max on the top bar sets this.">'+(num(S.tl.adj)?'<button class="btn sm" data-a="tladjclear" title="Clear adjustment">↺</button>':'')+'</div>'+
+  '<p class="mono" style="font-size:13px;margin-top:8px">(CON '+sgn(d.mod.con)+' + '+d.tlStat.toUpperCase()+' '+sgn(d.mod[d.tlStat])+') × 10 = '+d.tlBase+(num(S.tl.bonus)?' '+sgn(num(S.tl.bonus))+' bonus':'')+(d.im.tl?' '+sgn(d.im.tl)+' gear':'')+(num(S.tl.adj)?' '+sgn(num(S.tl.adj))+' adjustment':'')+' = <b style="color:#fff">'+d.tlMax+'</b></p>'+
+  (d.im.tl?'<p class="sub">Gear: '+equipped().filter(function(it){return num((it.mods||{}).tl);}).map(function(it){return esc(it.name)+' '+sgn(num(it.mods.tl));}).join(" · ")+'</p>':'')+
+  '<p class="note">Uses ability modifiers. Gear bonuses come from items with a TL bonus in their equipment editor. The adjustment is for anything temporary; clear it when it ends.</p></div></section>';}
  var df=d.def;h+='<section id="defense"><h2>Defense <span class="sub2">armor overhaul</span></h2><div class="card"><h3>'+esc(df.mode)+' <span class="tag gold">tier '+df.tier+'</span></h3>'+
   '<p class="mono" style="font-size:13px">AC '+df.formula+(df.raw>df.cap?' → capped at '+df.cap:'')+(d.im.ac?' '+sgn(d.im.ac)+' gear':'')+' = <b>'+df.ac+'</b></p>'+
   (df.over?'<p><b class="cz">Overflow Toughness.</b> '+df.over+' AC over the cap → '+df.dice+' × d'+df.die+' = <b>'+df.tough+'</b> temp HP at the start of each combat (dice at max). <button class="btn sm" data-a="tough">Apply to temp HP</button></p>':'')+
@@ -1453,7 +1459,7 @@ function batAct(a,el,d){var n=num(el.getAttribute("data-n")),v=num(el.getAttribu
 
 /* ===================== RENDER ALL ===================== */
 function renderAll(){var d=compute();
- if(S.hp.cur<0)S.hp.cur=d.hpMax;if(C.tx&&S.tl.cur<0)S.tl.cur=d.tlMax;
+ if(S.hp.cur<0)S.hp.cur=d.hpMax;if((C.tl!==false)&&S.tl.cur<0)S.tl.cur=d.tlMax;if((C.tl!==false)&&S.tl.lastMax!=null&&d.tlMax>S.tl.lastMax&&num(S.tl.cur)>=S.tl.lastMax)S.tl.cur=d.tlMax;S.tl.lastMax=d.tlMax;d=compute();
  var fk=focusKey();
  [["bar",renderBar],["turn",renderTurn],["char",renderChar],["kit",renderKit],["kitpanes",renderKitPanes],["school",renderSchool],["comps",renderComps],["spells",renderSpells],["bats",renderBats],["equip",renderEquip],["storage",renderStorage],["rels",renderRels],["rules",renderRules]].forEach(function(p){try{p[1](d);}catch(e){if(window.console)console.error("render "+p[0],e);}});
  if(C.hooks&&C.hooks.render)try{C.hooks.render(api,d);}catch(e){if(window.console)console.error(e);}
@@ -1464,7 +1470,7 @@ function renderAll(){var d=compute();
  var ac=getComputedStyle(document.documentElement).getPropertyValue("--ac").trim();
  document.documentElement.style.setProperty("--ac-soft",ac+"22");document.documentElement.style.setProperty("--ac-line",ac+"66");}
 function focusKey(){var a=document.activeElement;if(!a||a===document.body)return null;
- var k=["data-b","data-it","data-res","data-resmax","data-sub","data-rel","id"];for(var i=0;i<k.length;i++)if(a.getAttribute(k[i]))return {k:k[i],v:a.getAttribute(k[i]),f:a.getAttribute("data-f"),ab:a.getAttribute("data-ab")};return null;}
+ var k=["data-b","data-it","data-res","data-resmax","data-sub","data-tlmax","data-rel","id"];for(var i=0;i<k.length;i++)if(a.getAttribute(k[i]))return {k:k[i],v:a.getAttribute(k[i]),f:a.getAttribute("data-f"),ab:a.getAttribute("data-ab")};return null;}
 function restoreFocus(fk){if(!fk)return;var sel='['+fk.k+'="'+String(fk.v).replace(/"/g,'\\"')+'"]'+(fk.f?'[data-f="'+fk.f+'"]':'')+(fk.ab?'[data-ab="'+fk.ab+'"]':'');
  if(fk.k==="id")sel="#"+fk.v;try{var el=document.querySelector(sel);if(el&&el.focus)el.focus();}catch(e){}}
 var rt=null;function renderSoon(){clearTimeout(rt);rt=setTimeout(renderAll,0);}
@@ -1481,6 +1487,7 @@ document.addEventListener("input",function(e){var el=e.target;
   if(el.hasAttribute("data-ab")){var ab=(it.abilities||[]).filter(function(a){return a.id===el.getAttribute("data-ab");})[0];if(ab)ab[f]=v2;}else setPath(it,f,v2);save();return;}
  if(el.hasAttribute("data-res")){resSet(el.getAttribute("data-res"),num(el.value));save();return;}
  if(el.hasAttribute("data-resmax")){S.resMax[el.getAttribute("data-resmax")]=Math.max(0,num(el.value));save();return;}
+ if(el.hasAttribute("data-tlmax")){var dd=compute();S.tl.adj=Math.round(Math.max(1,num(el.value))-(dd.tlFormula+dd.im.tl));save();return;}
  if(el.hasAttribute("data-sub")){var sb=S.subs.filter(function(x){return x.id===el.getAttribute("data-sub");})[0];if(sb){sb[el.getAttribute("data-f")]=el.type==="checkbox"?el.checked:el.value;save();}return;}});
 document.addEventListener("change",function(e){var el=e.target;
  if(el.getAttribute("data-a2")==="armorbase"){var it=itemById(el.getAttribute("data-it"));if(it&&el.value){it.armor.base=ARMOR_BASE[it.armor.kind][el.value][clamp(num(it.armor.tier,1),1,5)-1];if(!it.name||/^Unnamed/.test(it.name))it.name=el.value;}commit();return;}
@@ -1491,7 +1498,7 @@ document.addEventListener("change",function(e){var el=e.target;
  if(el.getAttribute("data-b")==="dmg.n"){S.dmg.n=Math.max(1,Math.round(num(S.dmg.n,1)));}
  if(el.getAttribute("data-a2")==="dmgsrc"){var src=dmgSources()[num(el.value,-1)];if(src){S.dmg.expr=src.e;S.dmg.label=src.n;S.dmg.fromSrc=true;}save();renderAll();return;}
  if(el.hasAttribute("data-b")&&el.getAttribute("data-b")==="hp.cur"){var d=compute();S.hp.cur=clamp(num(S.hp.cur),0,d.hpCeil);}
- if(el.hasAttribute("data-b")||el.hasAttribute("data-it")||el.hasAttribute("data-res")||el.hasAttribute("data-resmax")||el.hasAttribute("data-sub")){save();renderSoon();}});
+ if(el.hasAttribute("data-b")||el.hasAttribute("data-it")||el.hasAttribute("data-res")||el.hasAttribute("data-resmax")||el.hasAttribute("data-sub")||el.hasAttribute("data-tlmax")){if(el.hasAttribute("data-tlmax")||/^tl\./.test(el.getAttribute("data-b")||"")){afterTL();logline("Max TL now "+compute().tlMax);}save();renderSoon();}});
 function relById(id){return S.rels.filter(function(r){return r.id===id;})[0];}
 document.addEventListener("keydown",function(e){
  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();palOpen();return;}
@@ -1589,6 +1596,7 @@ function act(a,el){var id=el.getAttribute("data-id"),n=num(el.getAttribute("data
  case "reldel":r=relById(id);if(window.confirm("Remove "+r.name+"?"))S.rels=S.rels.filter(function(x){return x.id!==id;});break;
  case "reladd":v=val("relN").trim();if(!v)return;if(S.rels.some(function(x){return x.name.toLowerCase()===v.toLowerCase();})){flash("Already listed");return;}
   S.rels.push({id:uid("r"),name:v,tier:num(val("relT")),pips:0,cap:Math.max(num(val("relCap")),num(val("relT"))),party:false,note:""});break;
+ case "tladjclear":S.tl.adj=0;afterTL();break;
  case "sitclear":S.sit={ac:0,speed:0,adr:0};break;
  case "resfull":r=(C.resources||[]).filter(function(x){return x.id===id;})[0];if(r){var mf=resMax(r,d);if(mf!=null)S.res[id]=mf;}break;
  case "dmgtog":S.dmg[id]=!S.dmg[id];if(id==="half"&&S.dmg.half)S.dmg.atk=false;break;
