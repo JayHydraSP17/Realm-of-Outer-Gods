@@ -411,7 +411,13 @@ var HZ=(function(){
   DECAY.forEach(function(r,i){var all=r[1]==="all",cost=all?mx:r[1],ok=all?(v>=mx&&mx>0&&!h.txd):v>=cost;
    o+='<tr><td>'+r[0]+'</td><td class="n">'+(all?'all ('+mx+')':cost)+'</td><td><button class="btn sm'+(ok?' pri':'')+'" data-a="hz-decay" data-n="'+i+'"'+(ok?'':' disabled')+'>'+(all&&h.txd?'used':'decay')+(tl?' +'+tl+' TL':'')+'</button></td></tr>';});
   return o+'</table><div class="hz-sub">Fully erasing a combat-long effect walks Combat → 3 → 2 → 1 → Turn → Instantaneous → Nothing ≈ 10 Sand.</div></div>';}
- function legacyHTML(api){return '<section class="hz-leg"><h2>Grief Tracker <span class="sub2">Msiona · MP '+api.res("mp")+'</span></h2>'+griefCard(api,true)+madnessCard(api)+
+ function mpCard(api){var S=api.S(),hz=st(api),d=api.compute(),b=hz.mpBonus!=null?+hz.mpBonus:8,mx=Math.max(0,d.pb*2+d.mod.cha+b),cur=api.res("mp");
+  var T=[[5,"Resistance to Charmed &amp; Frightened"],[10,"Advantage on Insight checks"],[15,"Telepathy 30 ft (B relationship+)"],[20,"Grief Aura unlocked"]];
+  return '<div class="card hz-card" style="--bd:#9b7bd4"><div class="hz-h">Mental Power <span class="hz-tag">max is derived — only the bonus/deficit can change</span><b class="hz-val" style="margin-left:auto;font-size:20px">'+cur+'<span>/'+mx+'</span></b></div>'+
+   '<div class="hz-formula">PB <b>'+d.pb+'</b> × 2 <span>+</span> CHA <b>'+sgn(d.mod.cha)+'</b> <span>+</span> bonus/deficit <button class="btn sm" data-a="hz-mpb" data-n="-1">−</button><b class="'+(b<0?'hz-blood':'hz-gold')+'">'+sgn(b)+'</b><button class="btn sm" data-a="hz-mpb" data-n="1">+</button> <span>=</span> <b style="font-size:18px">'+mx+'</b></div>'+
+   '<div class="hz-list" style="margin-top:8px">'+T.map(function(t){var on=mx>=t[0];return '<div style="opacity:'+(on?1:.45)+'"><b>'+t[0]+'+</b> '+t[1]+(on?'':' <span class="hz-cost">· locked</span>')+'</div>';}).join("")+'</div>'+
+   '<div class="hz-sub">Default bonus <b>+8</b> = the “+8 from C” on his doc (PB 5 × 2 + CHA 12 + 8 = 30). Use a negative value for deficits, e.g. −5 from a Madness Aftermath.</div></div>';}
+ function legacyHTML(api){return '<section class="hz-leg"><h2>Grief Tracker <span class="sub2">Msiona · MP '+api.res("mp")+'</span></h2>'+mpCard(api)+griefCard(api,true)+madnessCard(api)+
   '<div class="flag"><b>Source conflict:</b> the MP table lists “Empower a stage” at a flat 2 MP, but each stage’s Enhanced line lists its own MP (1/2/1/2/3). The Empower button uses the per-stage values — confirm which is canonical.</div></section>';}
  /* ---------- class progression · auto-unlock ---------- */
  var CODES={Pal:{re:/^paladin/i,name:"Paladin",sub:"Oath of the Crown",sec:"pal",pane:"paladin",col:"#e8cd87"},
@@ -541,7 +547,8 @@ var HZ=(function(){
   ".hz-turn{display:inline-flex;gap:4px}.hz-turn i{width:14px;height:14px;border-radius:50%;border:1.5px solid #cf3a3a;display:block}.hz-turn i.on{background:#cf3a3a;box-shadow:0 0 6px #cf3a3a88}"+
   ".hz-result{margin-top:10px;border:1px solid #cf3a3a66;border-radius:8px;padding:9px 11px;background:#cf3a3a12;font-size:14px;color:#e7e0ee}"+
   ".hz-dice{display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin:6px 0}.hz-dice span{min-width:28px;height:28px;border-radius:7px;border:1px solid #cf3a3a;display:inline-flex;align-items:center;justify-content:center;font-family:Cinzel;font-weight:700;color:#fff;background:#2a1418}.hz-dice b{font-family:Cinzel;font-size:18px;color:var(--gold);margin-left:4px}"+
-  ".hz-demo{color:#b07cff;letter-spacing:2px;font-size:15px}.btn .hz-cost{margin-left:4px;font-size:11px}";
+  ".hz-demo{color:#b07cff;letter-spacing:2px;font-size:15px}.btn .hz-cost{margin-left:4px;font-size:11px}"+
+  ".hz-formula{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:9px;font-size:14px;color:#a99fb4}.hz-formula b{color:#fff;font-family:Cinzel;font-size:15px}.hz-formula>span{color:#7d7489}";
  /* ---------- hooks ---------- */
  function mpSpend(api,h,n,what){if(api.res("mp")<n){api.flash("Not enough MP ("+n+" needed)");return false;}
   api.addRes("mp",-n);api.log(what+", "+n+" MP");if(h.grief>=0)h.cycMP+=n;return true;}
@@ -550,7 +557,7 @@ var HZ=(function(){
  return {
   init:function(api){st(api);syncUnlocks(api,true);if(!document.getElementById("hz-css")){var s=document.createElement("style");s.id="hz-css";s.textContent=CSS;document.head.appendChild(s);}
    if(!document.getElementById("hz-noop")){var b=document.createElement("button");b.id="hz-noop";b.setAttribute("data-a","hz-noop");b.hidden=true;document.body.appendChild(b);}},
-  render:function(api){st(api);
+  render:function(api){st(api);api.setRes("mp",api.res("mp"));
    inject(document.getElementById("body-turn"),"hz-live",liveHTML(api),"beforebegin","#resources");
    inject(document.getElementById("body-angel"),"hz-ars",arsenalHTML(api),"afterend","#transform");
    inject(document.getElementById("body-legacy"),"hz-leg",legacyHTML(api),"afterbegin",null);
@@ -609,6 +616,7 @@ var HZ=(function(){
     case "hz-mad":if(id==="restab"){if(api.res("mp")<n){api.flash("Not enough MP ("+n+" needed)");return false;}api.addRes("mp",-n);api.log("Restabilized from Madness, "+n+" MP");h.mad=0;h.brk=0;break;}
      h.mad=n;break;
     case "hz-noop":break;
+    case "hz-mpb":h.mpBonus=(h.mpBonus!=null?+h.mpBonus:8)+n;api.setRes("mp",api.res("mp"));api.log("MP bonus/deficit → "+sgn(h.mpBonus));break;
     case "hz-lvl":var K=CODES[id];if(!K)return false;var cl=(api.S().classes||[]).filter(function(x){return K.re.test(x.name||"");})[0];if(!cl)return false;
      cl.level=clamp((+cl.level||0)+n,0,20);syncUnlocks(api,true);api.log(K.name+" level → "+cl.level);break;
     case "hz-ldn":h.ldN=n;break;
@@ -767,7 +775,7 @@ window.CHAR={
  levelNote:"<b>Gestalt, character level 13</b> (PB +5) — Track A: <b>Paladin 11 + Warlock 2</b> · Track B: <b>Warlord 13</b>. Class features sit in the Paladin, Warlord and Warlock tabs and <b>unlock automatically from these class levels</b>; raise Warlock to 3 to bring Hexblade online. HP 438 = class dice (110 + 16 + 130) + 26 × CON 7, matching his sheet. <b>Flags:</b> Warlord hit die is d8 in the PDF but d10 on his sheet (kept d10 so HP stays 438); AC follows the Armor Overhaul (27 + Tier +2 + CON cap 5 + Defense 1 = 35 — his sheet's 33 skipped the Tier Bonus).",
  economy:[{id:"atk",name:"Attacks",max:4},{id:"rx",name:"Reactions",max:1}],   /* 4 per his sheet (Rayth ×4); RAW Extra Attack = 2 */
  resources:HZ_CLS.resources.concat([
-  {id:"mp",name:"Mental Power (MP)",max:30,rest:"long",steps:[1,2],color:"#9b7bd4",note:"Msiona pool for the Grief cycle. All back on a long rest, half on a short. Max shown with bonuses (flag)."},
+  {id:"mp",name:"Mental Power (MP)",start:30,rest:"long",steps:[1,2],color:"#9b7bd4",maxFn:function(d,S){var b=(S.hz&&S.hz.mpBonus!=null)?+S.hz.mpBonus:8;return Math.max(0,d.pb*2+d.mod.cha+b);},note:"Max = PB × 2 + CHA mod + bonus/deficit — derived, not typed. Set the bonus/deficit on the Legacy of Aniʻani tab. All back on a long rest, half on a short."},
   {id:"sand",name:"Hourglass · Sand",max:6,steps:[1],color:"#e8b45a",note:"Orion's Decay spends Sand. Start 6; grows via the upgrade tree. Refill: reap-the-expired + trickle (TBD)."},
   {id:"carn",start:0,name:"Carnage",max:5,steps:[1],rest:"empty",color:"#cf3a3a",note:"+1 whenever anything within 20 ft takes damage. At 5, next attack explodes (force+necrotic = CHA × creatures within 10 ft), then resets."},
   {id:"hollow",start:0,name:"Hollowed Stacks",max:5,steps:[1],rest:"empty",color:"#9b7bd4",note:"Emptiness that Follows: buffs at the cost of rationale. At 5 → Senseless State. Resets when Senseless ends."},
