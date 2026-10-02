@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hasani Eldesteen · The Scythe of Necrolien</title>
+<title>New Character · Covenant Sheet</title>
 <link rel="preconnect" href="https://fonts.googleapis.com/">
 <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -388,7 +388,7 @@ var HZ=(function(){
  /* ---------- sections ---------- */
  function liveHTML(api){var h=st(api);
   return '<section class="hz-live"><h2>Live Trackers <span class="sub2">Hasani · tap to track</span></h2><div class="grid3">'+
-   '<div class="card hz-card" style="--bd:#5fe6b8;grid-column:1/-1"><div class="hz-h">Soul Arsenal <span class="hz-tag">4 temporary + 1 permanent</span> <button class="chip" data-a="pane" data-id="angel" style="margin-left:auto">Cast &amp; forge →</button></div>'+slotsHTML(h)+harvHTML()+soulSummary(h)+'</div>'+
+   '<div class="card hz-card" style="--bd:#5fe6b8;grid-column:1/-1"><div class="hz-h">Soul Arsenal <span class="hz-tag">4 temporary + 1 permanent</span> <button class="chip" data-a="pane" data-id="angel" style="margin-left:auto">Cast &amp; forge →</button></div>'+slotsHTML(h)+harvHTML()+soulSummary(h)+'</div>'+ldCard(api)+
    carnCard(api)+hollowCard(api)+titheCard(api)+sandCard(api,true)+griefCard(api,false)+'</div></section>';}
  function arsenalHTML(api){var h=st(api),list=soulAbilities(),c=counts(h);
   var o='<section class="hz-ars"><h2>Soul Arsenal <span class="sub2">harvest · cast · forge</span></h2><div class="card hz-card" style="--bd:#5fe6b8">'+slotsHTML(h)+harvHTML()+soulSummary(h)+
@@ -413,6 +413,101 @@ var HZ=(function(){
   return o+'</table><div class="hz-sub">Fully erasing a combat-long effect walks Combat → 3 → 2 → 1 → Turn → Instantaneous → Nothing ≈ 10 Sand.</div></div>';}
  function legacyHTML(api){return '<section class="hz-leg"><h2>Grief Tracker <span class="sub2">Msiona · MP '+api.res("mp")+'</span></h2>'+griefCard(api,true)+madnessCard(api)+
   '<div class="flag"><b>Source conflict:</b> the MP table lists “Empower a stage” at a flat 2 MP, but each stage’s Enhanced line lists its own MP (1/2/1/2/3). The Empower button uses the per-stage values — confirm which is canonical.</div></section>';}
+ /* ---------- class progression · auto-unlock ---------- */
+ var CODES={Pal:{re:/^paladin/i,name:"Paladin",sub:"Oath of the Crown",sec:"pal",pane:"paladin",col:"#e8cd87"},
+  Wld:{re:/^warlord/i,name:"Warlord",sub:"Dreadlord's Presence",sec:"wld",pane:"warlord",col:"#cf3a3a"},
+  Wlk:{re:/^warlock/i,name:"Warlock",sub:"Hexblade (planned)",sec:"wlk",pane:"warlock",col:"#9b7bd4"}};
+ function lvls(api){var S=api.S(),o={};for(var k in CODES)o[k]=HZ_CLS.lv(S,CODES[k].re);return o;}
+ function reqOf(a){var m=/^(Pal|Wld|Wlk)\s+(\d+)$/.exec((a&&a.req)||"");return m?{c:m[1],l:+m[2]}:null;}
+ function syncUnlocks(api,force){var S=api.S(),h=st(api),L=lvls(api),sig=JSON.stringify(L);
+  if(!force&&h.lvSig===sig)return false;if(!S.kitOwn)S.kitOwn={};
+  (C().kit||[]).forEach(function(sec){(sec.items||[]).forEach(function(a){var r=reqOf(a);if(r&&a.unlock)S.kitOwn[sec.id+":"+a.n]=L[r.c]>=r.l;});});
+  h.lvSig=sig;return true;}
+ function featsOf(code){var sec=(C().kit||[]).filter(function(s){return s.id===CODES[code].sec;})[0];return sec?sec.items.filter(reqOf):[];}
+ function clsHeader(api,code){var K=CODES[code],L=lvls(api),l=L[code],S=api.S(),d=api.compute(),list=featsOf(code);
+  var got=list.filter(function(a){return reqOf(a).l<=l;}).length,next=list.filter(function(a){return reqOf(a).l>l;});
+  var groups=[],seen={};next.forEach(function(a){var x=reqOf(a).l;if(!seen[x]){seen[x]=[];groups.push([x,seen[x]]);}seen[x].push(a.n);});
+  var show=code==="Wlk"?groups:groups.slice(0,3);
+  var o='<section class="hz-cls"><div class="card hz-card" style="--bd:'+K.col+'"><div class="hz-h">'+K.name+' <span class="hz-tag">'+K.sub+'</span>'+
+   '<span class="hz-row" style="margin:0 0 0 auto"><button class="btn sm" data-a="hz-lvl" data-id="'+code+'" data-n="-1">−</button><b class="hz-val" style="font-size:20px">Lv '+l+'</b><button class="btn sm" data-a="hz-lvl" data-id="'+code+'" data-n="1">+</button></span></div>'+
+   '<div class="meter" style="margin-top:9px"><i style="width:'+(l/20*100)+'%;background:'+K.col+'"></i></div>'+
+   '<div class="hz-sub">Features unlocked <b>'+got+'/'+list.length+'</b>'+(groups.length?' · next at <b>Lv '+groups[0][0]+'</b>: '+esc(groups[0][1].join(", ")):' · <b>all unlocked</b>')+'</div>';
+  if(code==="Pal")o+='<div class="hz-stats"><span>Spell DC <b>'+d.dc+'</b></span><span>Aura of Protection <b>'+sgn(Math.max(1,d.mod.cha))+'</b> · '+(l>=18?30:10)+' ft</span><span>Lay on Hands <b>'+api.res("loh")+'/'+resMaxOf2(api,"loh")+'</b></span><span>Channel Divinity <b>'+api.res("channel")+'/'+resMaxOf2(api,"channel")+'</b></span></div>';
+  if(code==="Wld"){var I=ldInfo(api);o+='<div class="hz-stats"><span>Leadership <b>'+I.max+' × d'+I.die+'</b></span><span>Per turn <b>'+I.lim+'</b></span><span>Demoralization DC <b>'+d.dc+'</b></span></div>';}
+  if(code==="Wlk"){var ps=l>=9?5:l>=7?4:l>=5?3:l>=3?2:1;o+='<div class="hz-stats"><span>Pact slots <b>'+resMaxOf2(api,"pact")+' × '+ps+(ps===1?'st':ps===2?'nd':ps===3?'rd':'th')+'</b></span><span>Spell DC <b>'+d.dc+'</b></span><span>Invocations <b>'+(l>=18?10:l>=15?9:l>=12?8:l>=9?7:l>=7?6:l>=5?5:l>=2?3:l>=1?1:0)+'</b></span></div>';
+   if(l<3)o+='<div class="hz-alert" style="--al:#9b7bd4"><b>Hexblade is planned.</b> It comes online at <b>Warlock 3</b> — Hex Warrior, Hexblade\'s Curse and the expanded spell list unlock automatically when you raise the level. <b>Heads-up:</b> Hex Warrior only works on a weapon <i>without</i> the two-handed property, so for Rayth he would want the <b>Pact of the Blade</b> invocation, which extends Hex Warrior to any pact weapon.</div>';}
+  var A=L.Pal+L.Wlk,B=L.Wld,cl=+S.level||0;
+  if(A!==cl||B!==cl)o+='<div class="hz-sub hz-amber">Gestalt check: Track A (Paladin + Warlock) = <b>'+A+'</b>, Track B (Warlord) = <b>'+B+'</b>, character level = <b>'+cl+'</b>. Both tracks should equal the character level — update it on the Character tab when he levels.</div>';
+  if(show.length){o+='<div class="hz-lbl" style="margin-top:10px">'+(code==="Wlk"?'Hexblade road map':'Coming up')+'</div><div class="hz-road">';
+   show.forEach(function(g){o+='<div><b>Lv '+g[0]+'</b>'+esc(g[1].join(" · "))+'</div>';});o+='</div>';}
+  return o+'</div></section>';}
+ function resMaxOf2(api,id){var r=(C().resources||[]).filter(function(x){return x.id===id;})[0];if(!r)return 0;var S=api.S();
+  if(S.resMax&&S.resMax[id]!=null)return +S.resMax[id];return r.maxFn?r.maxFn(api.compute(),S):r.max;}
+ /* ---------- Leadership & Demoralization dice ---------- */
+ function ldInfo(api){var l=lvls(api).Wld;return {l:l,die:l>=17?10:l>=11?8:6,lim:l>=17?4:l>=11?3:l>=6?2:1,on:l>=2,max:resMaxOf2(api,"ld")};}
+ function rollN(n,s){var r=[];for(var i=0;i<n;i++)r.push(1+Math.floor(Math.random()*s));return r;}
+ var LDO=[["rally","Rallying Mark","bonus","n",2],["orders","Urgent Orders","bonus","n",2],["word","Helpful Word","bonus",1,2],
+  ["prep","Prepare for Battle","1 min","n",6],["expert","Expert Instructions","reaction",1,9],["boost","Boost Morale","reaction",1,9],
+  ["shift","Shift the Field","action",1,14],["fear","Fear · Supernatural Dread","action",3,7]];
+ var DMO=[["exc","Make it Excruciating","n",3],["touch","Don't Touch That",1,3],["sure","Are You Sure?","n",3],
+  ["panic","Panicked Terror",1,18],["blind","Blind Terror",2,18],["para","Paralyzing Terror",3,18]];
+ function cntOf(api,spec){var h=st(api),I=ldInfo(api);return spec==="n"?clamp(h.ldN||1,1,I.lim):spec;}
+ function ldBlock(api,o){var h=st(api),I=ldInfo(api),c=cntOf(api,o[3]);
+  if(I.l<o[4])return "Unlocks at Warlord "+o[4];if(api.res("ld")<c)return "Not enough Leadership Dice";
+  if((h.ldTurn||0)+c>I.lim)return "Per-turn limit ("+I.lim+") reached";if(o[0]==="fear"&&api.res("dread")<1)return "Fear already used this long rest";
+  if(o[0]==="boost"&&!h.lastRally)return "Use Rallying Mark first";return "";}
+ function ldEffect(api,id,sum,c){var h=st(api),I=ldInfo(api),d=api.compute();
+  switch(id){case "rally":return "The next ally to damage the marked target adds <b>+"+sum+"</b> damage and regains <b>"+sum+" HP</b>.";
+   case "orders":return "The ally uses its reaction to move up to 30 ft (no opportunity attacks) and gains <b>"+sum+" temp HP</b>."+(c>1&&I.l>=9?" Coordinated Movements: you may split the dice to move up to "+c+" allies.":"");
+   case "word":return "Help action as a bonus action — the attack target can be within 30 ft of you.";
+   case "prep":return "Up to five allies (you can include yourself) gain <b>"+sum+" temp HP</b> until a rest and may spend "+c+" Hit Dice.";
+   case "expert":return "Add <b>+"+sum+"</b> to the helped creature's roll.";
+   case "boost":return "Another creature within 30 ft of the attacker regains <b>"+h.lastRally+" HP</b>.";
+   case "shift":return "Up to 5 friendly creatures move up to half their speed without provoking.";
+   case "fear":return "Cast <i>fear</i> (CHA, DC "+d.dc+").";}}
+ function dmEffect(api,id,sum,c){var I=ldInfo(api),d=api.compute(),far=I.l>=15;
+  switch(id){case "exc":return "Add <b>+"+sum+"</b> bonus damage (same type) to the ally's weapon damage — ally within "+(far?60:30)+" ft.";
+   case "touch":return "Subtract <b>"+sum+"</b> from the attack roll against your ally (within "+(far?60:30)+" ft).";
+   case "sure":return "Creature within "+(far?10:5)+" ft makes a <b>WIS save (DC "+d.dc+")</b> — on a fail it uses its reaction to move <b>"+(10*c)+" ft</b> away.";
+   case "panic":return "The Frightened creature uses its reaction to flee.";
+   case "blind":return "The Frightened creature is <b>Blinded</b> until your next turn.";
+   case "para":return "The Frightened creature is <b>Paralyzed</b> until your next turn.";}}
+ function resultHTML(h){var r=h.ldLast;if(!r)return "";
+  return '<div class="hz-result"><div class="hz-lbl" style="margin:0">'+esc(r.t)+'</div>'+(r.dice&&r.dice.length?'<div class="hz-dice">'+r.dice.map(function(x){return '<span>'+x+'</span>';}).join("")+'<b>= '+r.sum+'</b></div>':'')+'<div>'+r.txt+'</div></div>';}
+ function turnPips(h,I){var o='<span class="hz-turn">';for(var i=1;i<=I.lim;i++)o+='<i class="'+(i<=(h.ldTurn||0)?'on':'')+'"></i>';return o+'</span>';}
+ function nChips(h,I){var o='<span class="hz-lbl">Dice per use</span>';for(var i=1;i<=I.lim;i++)o+='<button class="chip'+((h.ldN||1)===i?' on':'')+'" data-a="hz-ldn" data-n="'+i+'">'+i+'</button>';return o;}
+ function ldButtons(api,filter){var I=ldInfo(api);return LDO.filter(function(o){return !filter||filter.indexOf(o[0])>=0;}).map(function(o){var why=ldBlock(api,o),c=cntOf(api,o[3]);
+  var lab=o[1]+' · '+(o[0]==="boost"||o[0]==="word"||o[0]==="shift"||o[0]==="fear"?c+' die'+(c>1?'s':''):c+'d'+I.die);
+  return '<button class="btn sm'+(why?'':' pri')+'" data-a="hz-ld" data-id="'+o[0]+'"'+(why?' disabled title="'+esc(why)+'"':'')+'>'+esc(lab)+' <span class="hz-cost">'+o[2]+'</span></button>';}).join("");}
+ function demoHTML(api){var h=st(api),I=ldInfo(api);if(I.l<3)return "";
+  var o='<div class="card hz-card" style="--bd:#8a2be2"><div class="hz-h">Demoralization Dice <span class="hz-tag">gained 1 per Leadership Die spent · reaction</span></div>'+
+   '<div class="hz-row"><span class="hz-demo">'+(h.demo?new Array(h.demo+1).join('◆'):'—')+'</span><b class="hz-val">'+(h.demo||0)+' × d'+I.die+'</b>'+(h.demo?'<span class="hz-cost">fade in '+h.demoRd+' round'+(h.demoRd===1?'':'s')+' unused</span>':'<span class="hz-cost">spend a Leadership Die to gain one</span>')+'</div><div class="hz-row">';
+  DMO.forEach(function(m){var c=m[2]==="n"?clamp(h.ldN||1,1,I.lim):m[2],why=I.l<m[3]?"Unlocks at Warlord "+m[3]:(h.demo||0)<c?"Not enough Demoralization Dice":"";
+   o+='<button class="btn sm'+(why?'':' pri')+'" data-a="hz-dm" data-id="'+m[0]+'"'+(why?' disabled title="'+esc(why)+'"':'')+'>'+esc(m[1])+' · '+c+'d'+I.die+'</button>';});
+  return o+'</div></div>';}
+ function ldConsole(api){var h=st(api),I=ldInfo(api);if(!I.on)return "";
+  return '<section class="hz-ldc"><div class="card hz-card" style="--bd:#cf3a3a"><div class="hz-h">Leadership Dice <span class="hz-tag">'+I.max+' × d'+I.die+' · back on a short or long rest</span></div>'+
+   pips(api,"ld",I.max,"#cf3a3a")+
+   '<div class="hz-row"><span class="hz-lbl">This turn</span>'+turnPips(h,I)+'<b class="hz-val">'+(h.ldTurn||0)+'<span>/'+I.lim+'</span></b><button class="btn sm" data-a="hz-ldturn">new turn</button></div>'+
+   '<div class="hz-row">'+nChips(h,I)+'</div><div class="hz-row">'+ldButtons(api)+'</div>'+resultHTML(h)+'</div>'+demoHTML(api)+'</section>';}
+ function ldCard(api){var h=st(api),I=ldInfo(api);if(!I.on)return "";
+  return '<div class="card hz-card" style="--bd:#cf3a3a;grid-column:1/-1"><div class="hz-h">Leadership Dice <span class="hz-tag">'+I.max+' × d'+I.die+' · '+I.lim+' per turn</span><button class="chip" data-a="pane" data-id="warlord" style="margin-left:auto">Full console →</button></div>'+
+   pips(api,"ld",I.max,"#cf3a3a")+'<div class="hz-row"><span class="hz-lbl">This turn</span>'+turnPips(h,I)+'<b class="hz-val">'+(h.ldTurn||0)+'<span>/'+I.lim+'</span></b>'+
+   (I.l>=3?'<span class="hz-lbl" style="margin-left:10px">Demoralization</span><b class="hz-val">'+(h.demo||0)+'</b>':'')+'</div><div class="hz-row">'+nChips(h,I)+'</div><div class="hz-row">'+ldButtons(api,["rally","orders","word","expert"])+'</div>'+resultHTML(h)+'</div>';}
+ function spendLD(api,id){var h=st(api),I=ldInfo(api),o=LDO.filter(function(x){return x[0]===id;})[0];if(!o)return false;
+  var why=ldBlock(api,o);if(why){api.flash(why);return false;}var c=cntOf(api,o[3]);
+  var noroll=id==="word"||id==="boost"||id==="shift"||id==="fear",dice=noroll?[]:rollN(c,I.die),sum=dice.reduce(function(a,b){return a+b;},0);
+  api.addRes("ld",-c);h.ldTurn=(h.ldTurn||0)+c;if(id==="fear")api.addRes("dread",-1);
+  if(id==="rally")h.lastRally=sum;
+  if(I.l>=3){h.demo=(h.demo||0)+c;h.demoRd=10;}
+  h.ldLast={t:o[1]+(dice.length?" · "+c+"d"+I.die:""),dice:dice,sum:sum,txt:ldEffect(api,id,sum,c)+(I.l>=3?' <span class="hz-cost">+'+c+' Demoralization '+(c>1?'Dice':'Die')+'</span>':'')};
+  api.log(o[1]+": spent "+c+" Leadership "+(c>1?"Dice":"Die")+(dice.length?" — rolled "+sum:""));return true;}
+ function spendDM(api,id){var h=st(api),I=ldInfo(api),m=DMO.filter(function(x){return x[0]===id;})[0];if(!m)return false;
+  var c=m[2]==="n"?clamp(h.ldN||1,1,I.lim):m[2];if(I.l<m[3]){api.flash("Unlocks at Warlord "+m[3]);return false;}
+  if((h.demo||0)<c){api.flash("Not enough Demoralization Dice");return false;}
+  var dice=(id==="exc"||id==="touch")?rollN(c,I.die):[],sum=dice.reduce(function(a,b){return a+b;},0);h.demo-=c;if(!h.demo)h.demoRd=0;
+  h.ldLast={t:m[1]+" · "+c+" Demoralization "+(c>1?"Dice":"Die"),dice:dice,sum:sum,txt:dmEffect(api,id,sum,c)};
+  api.log(m[1]+": spent "+c+" Demoralization "+(c>1?"Dice":"Die")+(dice.length?" — rolled "+sum:""));return true;}
  /* ---------- css ---------- */
  var CSS=".hz-card{border-left:3px solid var(--bd,var(--line2))}"+
   ".hz-h{font-family:Cinzel;font-size:15px;color:#fff;display:flex;align-items:center;gap:8px;flex-wrap:wrap}"+
@@ -440,21 +535,32 @@ var HZ=(function(){
   ".hz-stages{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}"+
   ".hz-stage{flex:1;min-width:86px;padding:7px 6px;border-radius:8px;border:1px solid var(--line2);background:#100c15;color:#a99fb4;font-family:Cinzel;font-size:12.5px;cursor:pointer}"+
   ".hz-stage small{display:block;font-size:9.5px;color:#7d7489}.hz-stage.past{color:#6f6679}"+
-  ".hz-stage.on{border-color:#9b7bd4;color:#fff;background:#9b7bd422;box-shadow:0 0 12px #9b7bd455}";
+  ".hz-stage.on{border-color:#9b7bd4;color:#fff;background:#9b7bd422;box-shadow:0 0 12px #9b7bd455}"+
+  ".hz-stats{display:flex;gap:6px 16px;flex-wrap:wrap;margin-top:8px;font-size:13.5px;color:#a99fb4}.hz-stats b{color:#fff;font-family:Cinzel}"+
+  ".hz-road{display:grid;gap:4px;margin-top:6px;font-size:13.5px;color:#cfc7d8}.hz-road b{display:inline-block;min-width:46px;color:var(--gold);font-family:Cinzel;font-size:12.5px}"+
+  ".hz-turn{display:inline-flex;gap:4px}.hz-turn i{width:14px;height:14px;border-radius:50%;border:1.5px solid #cf3a3a;display:block}.hz-turn i.on{background:#cf3a3a;box-shadow:0 0 6px #cf3a3a88}"+
+  ".hz-result{margin-top:10px;border:1px solid #cf3a3a66;border-radius:8px;padding:9px 11px;background:#cf3a3a12;font-size:14px;color:#e7e0ee}"+
+  ".hz-dice{display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin:6px 0}.hz-dice span{min-width:28px;height:28px;border-radius:7px;border:1px solid #cf3a3a;display:inline-flex;align-items:center;justify-content:center;font-family:Cinzel;font-weight:700;color:#fff;background:#2a1418}.hz-dice b{font-family:Cinzel;font-size:18px;color:var(--gold);margin-left:4px}"+
+  ".hz-demo{color:#b07cff;letter-spacing:2px;font-size:15px}.btn .hz-cost{margin-left:4px;font-size:11px}";
  /* ---------- hooks ---------- */
  function mpSpend(api,h,n,what){if(api.res("mp")<n){api.flash("Not enough MP ("+n+" needed)");return false;}
   api.addRes("mp",-n);api.log(what+", "+n+" MP");if(h.grief>=0)h.cycMP+=n;return true;}
  function inject(host,cls,html,where,anchor){if(!host)return;var old=host.querySelector("."+cls);if(old)old.remove();
   var a=anchor?host.querySelector(anchor):null;if(a)a.insertAdjacentHTML(where,html);else host.insertAdjacentHTML("afterbegin",html);}
  return {
-  init:function(api){st(api);if(!document.getElementById("hz-css")){var s=document.createElement("style");s.id="hz-css";s.textContent=CSS;document.head.appendChild(s);}},
+  init:function(api){st(api);syncUnlocks(api,true);if(!document.getElementById("hz-css")){var s=document.createElement("style");s.id="hz-css";s.textContent=CSS;document.head.appendChild(s);}
+   if(!document.getElementById("hz-noop")){var b=document.createElement("button");b.id="hz-noop";b.setAttribute("data-a","hz-noop");b.hidden=true;document.body.appendChild(b);}},
   render:function(api){st(api);
    inject(document.getElementById("body-turn"),"hz-live",liveHTML(api),"beforebegin","#resources");
    inject(document.getElementById("body-angel"),"hz-ars",arsenalHTML(api),"afterend","#transform");
    inject(document.getElementById("body-legacy"),"hz-leg",legacyHTML(api),"afterbegin",null);
-   var o=document.getElementById("hz-orion");if(o)o.innerHTML=orionHTML(api);},
-  longRest:function(api){var h=st(api);h.grief=-1;h.brk=0;h.mad=0;h.cycMP=0;h.txd=false;h.gUsed=false;},
-  shortRest:function(api){st(api).txd=false;},
+   var o=document.getElementById("hz-orion");if(o)o.innerHTML=orionHTML(api);
+   ["Pal","Wld","Wlk"].forEach(function(k){inject(document.getElementById("body-"+CODES[k].pane),"hz-cls",clsHeader(api,k)+(k==="Wld"?ldConsole(api):""),"afterbegin",null);});
+   var old=document.querySelectorAll("#body-warlord .hz-ldc");for(var q=1;q<old.length;q++)old[q].remove();
+   if(syncUnlocks(api,false))setTimeout(function(){var b=document.getElementById("hz-noop");if(b)b.click();},0);},
+  endTurn:function(api){var h=st(api);h.ldTurn=0;if(h.demo>0){h.demoRd=(h.demoRd||10)-1;if(h.demoRd<=0){api.log("Demoralization Dice faded ("+h.demo+" unused)");h.demo=0;h.demoRd=0;}}},
+  longRest:function(api){var h=st(api);h.grief=-1;h.brk=0;h.mad=0;h.cycMP=0;h.txd=false;h.gUsed=false;h.ldTurn=0;h.demo=0;h.demoRd=0;},
+  shortRest:function(api){var h=st(api);h.txd=false;h.ldTurn=0;h.demo=0;h.demoRd=0;if(resMaxOf2(api,"channel")>0)api.addRes("channel",1);},
   act:function(a,el,api){if(String(a).indexOf("hz-")!==0)return false;
    var h=st(api),id=el.getAttribute("data-id"),n=+el.getAttribute("data-n"),i,s;
    switch(a){
@@ -502,33 +608,181 @@ var HZ=(function(){
     case "hz-brk":h.brk=(h.brk===n?n-1:n);if(h.brk>=3&&h.mad===0){h.mad=1;api.log("Third Mental Breakdown — Madness: Fracture");}break;
     case "hz-mad":if(id==="restab"){if(api.res("mp")<n){api.flash("Not enough MP ("+n+" needed)");return false;}api.addRes("mp",-n);api.log("Restabilized from Madness, "+n+" MP");h.mad=0;h.brk=0;break;}
      h.mad=n;break;
+    case "hz-noop":break;
+    case "hz-lvl":var K=CODES[id];if(!K)return false;var cl=(api.S().classes||[]).filter(function(x){return K.re.test(x.name||"");})[0];if(!cl)return false;
+     cl.level=clamp((+cl.level||0)+n,0,20);syncUnlocks(api,true);api.log(K.name+" level → "+cl.level);break;
+    case "hz-ldn":h.ldN=n;break;
+    case "hz-ldturn":h.ldTurn=0;break;
+    case "hz-ld":if(!spendLD(api,id))return false;break;
+    case "hz-dm":if(!spendDM(api,id))return false;break;
     default:return false;}
    return true;}
  };})();
+/* ================== HASANI · CLASS DATA ==================
+   Gestalt, character level 13:  Track A = Paladin 11 + Warlock 2  ·  Track B = Warlord 13.
+   Every class feature carries req:"Pal|Wld|Wlk <level>" + unlock:true. The HZ hooks read the
+   class levels on the Character tab and tick each feature on/off automatically (manual override
+   still works until the next level change). Rules text paraphrased from: Paladin & Warlock (XPHB),
+   Oath of the Crown (SCAG), Hexblade (XGE — XPHB-adapted levels 3/6/10/14), Warlord v1.4.1 and
+   Dreadlord's Presence (KibblesTasty). */
+var HZ_CLS=(function(){
+ function lv(S,re){var c=(S&&S.classes||[]).filter(function(x){return re.test(x.name||"");})[0];return c?(+c.level||0):0;}
+ var PAL=/^paladin/i,WLD=/^warlord/i,WLK=/^warlock/i;
+ return {
+ lv:lv,PAL:PAL,WLD:WLD,WLK:WLK,
+ resources:[
+  {id:"ld",name:"Leadership Dice",start:13,rest:"short",steps:[1],color:"#cf3a3a",
+   maxFn:function(d,S){var l=lv(S,WLD);return l>=2?l:0;},
+   note:"Warlord: count = Warlord level, size d6 (2–10) · d8 (11–16) · d10 (17–20). Per-turn limit 1 · 2 at 6 · 3 at 11 · 4 at 17. All back on a short or long rest. Full console on the Warlord tab."},
+  {id:"loh",name:"Lay on Hands",start:55,rest:"long",steps:[1,5,10],color:"#e8cd87",
+   maxFn:function(d,S){return 5*lv(S,PAL);},note:"Pool = 5 × Paladin level. Bonus action touch. 5 points removes Poisoned (Restoring Touch at Pal 14 adds more conditions)."},
+  {id:"channel",name:"Channel Divinity",start:3,rest:"long",steps:[1],color:"#e8cd87",
+   maxFn:function(d,S){var l=lv(S,PAL);return l>=11?3:l>=3?2:0;},note:"2 uses (3 at Paladin 11). Regain ONE on a short rest (handled automatically), all on a long rest. DC = spell DC."},
+  {id:"smite",name:"Free Divine Smite",start:1,rest:"long",steps:[1],color:"#e8cd87",
+   maxFn:function(d,S){return lv(S,PAL)>=2?1:0;},note:"Paladin's Smite: cast Divine Smite once without a slot per long rest."},
+  {id:"steed",name:"Free Find Steed",start:1,rest:"long",steps:[1],color:"#e8cd87",
+   maxFn:function(d,S){return lv(S,PAL)>=5?1:0;},note:"Faithful Steed: cast Find Steed once without a slot per long rest."},
+  {id:"pact",name:"Pact Slots",start:2,rest:"short",steps:[1],color:"#9b7bd4",
+   maxFn:function(d,S){var l=lv(S,WLK);return l>=17?4:l>=11?3:l>=2?2:l>=1?1:0;},note:"Warlock Pact Magic — all slots share one level (1st at Wlk 1–2, 2nd at 3–4, 3rd at 5–6, 4th at 7–8, 5th at 9+). Back on a short rest."},
+  {id:"cunning",name:"Magical Cunning",start:1,rest:"long",steps:[1],color:"#9b7bd4",
+   maxFn:function(d,S){return lv(S,WLK)>=2?1:0;},note:"1-minute rite: regain up to half your Pact slots (round up). Once per long rest."},
+  {id:"curse",name:"Hexblade's Curse",start:0,rest:"short",steps:[1],color:"#9b7bd4",
+   maxFn:function(d,S){return lv(S,WLK)>=3?1:0;},note:"PLANNED — unlocks at Warlock 3 (Hexblade). Once per short or long rest."},
+  {id:"intuition",name:"Warlord's Intuition",start:1,rest:"long",steps:[1],color:"#cf3a3a",
+   maxFn:function(d,S){return lv(S,WLD)>=13?1:0;},note:"Treat the d20 as your Warlord level on a proficient ability check. Once per long rest."},
+  {id:"dread",name:"Supernatural Dread · Fear",start:1,rest:"long",steps:[1],color:"#cf3a3a",
+   maxFn:function(d,S){return lv(S,WLD)>=7?1:0;},note:"Spend 3 Leadership Dice to cast Fear — once per long rest."}
+ ],
+ kit:[
+  /* ================= PALADIN · OATH OF THE CROWN ================= */
+  {id:"pal",title:"Paladin — Oath of the Crown",pane:"paladin",sub:"auto-unlocks from the Paladin level on the Character tab",items:[
+   {n:"Lay on Hands",k:"bonus",req:"Pal 1",unlock:true,cost:"pool 5 × Pal level",text:"Touch a creature (or yourself) and restore HP from a pool of <b>5 × Paladin level</b> (55 at Pal 11). Spend 5 from the pool to remove <b>Poisoned</b> instead of healing. Pool refills on a long rest. <i>(Tracker in Resources.)</i>"},
+   {n:"Spellcasting (Paladin)",k:"passive",req:"Pal 1",unlock:true,text:"CHA casting — <b>DC 25 · +17</b>. Slots 4/3/3 at Pal 11; 10 prepared spells plus always-prepared oath spells. Swap one prepared spell per long rest."},
+   {n:"Weapon Mastery",k:"passive",req:"Pal 1",unlock:true,text:"Use the mastery properties of two kinds of weapons you're proficient with. Change the choices on a long rest."},
+   {n:"Fighting Style — Defense",k:"passive",req:"Pal 2",unlock:true,text:"+1 AC while wearing armor (already counted on his Half Plate)."},
+   {n:"Paladin's Smite",k:"bonus",req:"Pal 2",unlock:true,dmg:"2d8",pay:{res:{smite:1}},text:"<b>Divine Smite</b> is always prepared. Cast it once per long rest without a slot (the pay button). Smite: after a hit, <b>2d8 radiant</b>, +1d8 per slot level above 1st, +1d8 vs Fiends/Undead."},
+   {n:"Channel Divinity",k:"passive",req:"Pal 3",unlock:true,text:"<b>2 uses (3 at Pal 11)</b>; regain one on a short rest, all on a long rest. Options: Divine Sense, Champion Challenge, Turn the Tide, Abjure Foes (9). Save DC = spell DC (25)."},
+   {n:"Divine Sense",k:"bonus",req:"Pal 3",unlock:true,pay:{res:{channel:1}},text:"For 10 minutes, know the location and type of Celestials, Fiends and Undead within 60 ft, and sense consecrated or desecrated places."},
+   {n:"Oath of the Crown · Oath Spells",k:"passive",req:"Pal 3",unlock:true,text:"Tenets: <b>Law · Loyalty · Courage · Responsibility</b>. Always prepared: <b>3</b> command, compelled duel · <b>5</b> warding bond, zone of truth · <b>9</b> aura of vitality, spirit guardians · <b>13</b> banishment, guardian of faith · <b>17</b> circle of power, geas."},
+   {n:"Champion Challenge",k:"bonus",req:"Pal 3",unlock:true,pay:{res:{channel:1}},text:"Channel Divinity. Creatures of your choice you can see within 30 ft make a <b>WIS save (DC 25)</b>; on a fail they can't willingly move more than 30 ft from you. Ends if you're incapacitated or die, or the creature ends up over 30 ft away."},
+   {n:"Turn the Tide",k:"bonus",req:"Pal 3",unlock:true,pay:{res:{channel:1}},text:"Channel Divinity. Each creature of your choice within 30 ft that can hear you and is at <b>half HP or less</b> regains <b>1d6 + CHA (1d6 + 12)</b> HP."},
+   {n:"Ability Score Improvement (Paladin)",k:"passive",req:"Pal 4",unlock:true,text:"An ASI or feat — again at Paladin 8, 12 and 16."},
+   {n:"Extra Attack (Paladin)",k:"passive",req:"Pal 5",unlock:true,text:"Attack twice when you take the Attack action. Doesn't stack with the Warlord's Extra Attack."},
+   {n:"Faithful Steed",k:"action",req:"Pal 5",unlock:true,pay:{res:{steed:1}},text:"<b>Find Steed</b> is always prepared; cast it once per long rest without a slot."},
+   {n:"Aura of Protection",k:"passive",req:"Pal 6",unlock:true,text:"You and allies in a <b>10-ft emanation</b> add your CHA (<b>+12</b>) to saving throws. Inactive while you're Incapacitated. (30 ft at Pal 18.)"},
+   {n:"Divine Allegiance",k:"reaction",req:"Pal 7",unlock:true,text:"When a creature within 5 ft of you takes damage, take it instead. That damage can't be reduced or prevented in any way."},
+   {n:"Abjure Foes",k:"action",req:"Pal 9",unlock:true,pay:{res:{channel:1}},text:"Channel Divinity (Magic action). Up to CHA mod (<b>12</b>) creatures within 60 ft make a <b>WIS save (DC 25)</b> or are <b>Frightened</b> for 1 minute or until they take damage. While Frightened this way, each turn they can only move, take an action, or take a bonus action."},
+   {n:"Aura of Courage",k:"passive",req:"Pal 10",unlock:true,text:"You and allies in your Aura of Protection are immune to <b>Frightened</b>; a Frightened ally entering the aura ignores it while inside."},
+   {n:"Radiant Strikes",k:"passive",req:"Pal 11",unlock:true,dmg:"1d8",text:"Melee weapon and unarmed hits deal an extra <b>1d8 radiant</b>."},
+   {n:"Restoring Touch",k:"passive",req:"Pal 14",unlock:true,text:"Lay on Hands can also remove Blinded, Charmed, Deafened, Frightened, Paralyzed or Stunned — 5 pool points each."},
+   {n:"Unyielding Spirit",k:"passive",req:"Pal 15",unlock:true,text:"Advantage on saves against being Paralyzed or Stunned."},
+   {n:"Aura Expansion",k:"passive",req:"Pal 18",unlock:true,text:"Aura of Protection (and Aura of Courage) become a 30-ft emanation."},
+   {n:"Epic Boon (Paladin)",k:"passive",req:"Pal 19",unlock:true,text:"An Epic Boon feat (Boon of Truesight recommended)."},
+   {n:"Exalted Champion",k:"action",req:"Pal 20",unlock:true,text:"Once per long rest, for 1 hour: resistance to nonmagical bludgeoning/piercing/slashing; allies within 30 ft have advantage on death saves; you and allies within 30 ft have advantage on WIS saves. Ends if you're incapacitated or die."}
+  ]},
+  /* ================= WARLORD · DREADLORD'S PRESENCE ================= */
+  {id:"wld",title:"Warlord — Dreadlord's Presence",pane:"warlord",sub:"auto-unlocks from the Warlord level on the Character tab",items:[
+   {n:"Battlefield Presence",k:"attack",req:"Wld 1",unlock:true,text:"When you take the Attack action, replace an attack to grant a friendly creature that can see or hear you an extra attack the next time it takes the Attack action. Unused grants are lost at the start of your next turn; a creature gains at most one per round from this."},
+   {n:"Dreadlord Proficiency",k:"passive",req:"Wld 1",unlock:true,text:"Proficiency with heavy armor and the Intimidation skill."},
+   {n:"Unapproachable",k:"passive",req:"Wld 1",unlock:true,text:"After initiative is rolled, the first attack made by the first hostile creature to attack an ally within 30 ft of you has <b>disadvantage</b>."},
+   {n:"Leadership Dice",k:"passive",req:"Wld 2",unlock:true,text:"Dice = Warlord level; size <b>d6</b> (2–10) → <b>d8</b> (11–16) → <b>d10</b> (17–20). Spend up to <b>1 per turn</b> (2 at 6, <b>3 at 11</b>, 4 at 17). All back on a short or long rest. <i>(Roll &amp; spend from the console at the top of this tab.)</i>"},
+   {n:"Rallying Mark",k:"bonus",req:"Wld 2",unlock:true,text:"Spend dice (up to your limit) targeting a hostile creature within 60 ft. The next ally to roll damage against it before your next turn adds the dice to the damage and <b>regains HP equal to the dice rolled</b>."},
+   {n:"Urgent Orders",k:"bonus",req:"Wld 2",unlock:true,text:"Spend dice (up to your limit): an ally within 60 ft that can see or hear you uses its reaction to move up to its speed (max 30 ft) without provoking, and gains <b>temp HP equal to the dice rolled</b>."},
+   {n:"Helpful Word",k:"bonus",req:"Wld 2",unlock:true,text:"Spend 1 die to take the Help action as a bonus action; when aiding an attack, the target can be within 30 ft of you (not 5) if the ally can see or hear you."},
+   {n:"Warlord's Expertise",k:"passive",req:"Wld 3",unlock:true,text:"Expertise in one of Persuasion, Intimidation, Insight or Investigation (his: <b>Insight</b>)."},
+   {n:"Demoralization Dice",k:"reaction",req:"Wld 3",unlock:true,text:"Each Leadership Die you spend grants a <b>Demoralization Die</b> of the same size (lost after 1 minute unused). Spend them as a reaction: <b>Make it Excruciating</b> — when an ally within 30 ft deals weapon damage, add dice (up to your limit) as bonus damage of the same type · <b>Don't Touch That</b> — when a creature attacks an ally within 30 ft, spend 1 die and subtract it from the attack roll · <b>Are You Sure?</b> — dice (up to your limit) force a creature within 5 ft to make a <b>WIS save (DC 25)</b>; on a fail it uses its reaction to move 10 ft away per die. <i>(Console at the top of this tab.)</i>"},
+   {n:"Ability Score Improvement (Warlord)",k:"passive",req:"Wld 4",unlock:true,text:"An ASI — again at Warlord 8, 10, 12, 16 and 19."},
+   {n:"Extra Attack (Warlord)",k:"passive",req:"Wld 5",unlock:true,text:"Attack twice on the Attack action; either attack can be Battlefield Presence. Doesn't stack with the Paladin's."},
+   {n:"Prepare for Battle",k:"free",req:"Wld 6",unlock:true,cost:"1 minute",text:"Spend a minute and dice (up to your limit): up to five allies (you can include yourself) gain <b>temp HP equal to the roll</b> until a short or long rest, and may spend that many Hit Dice as if on a short rest."},
+   {n:"Supernatural Dread",k:"action",req:"Wld 7",unlock:true,text:"Spend Leadership Dice to cast <i>fearsome visage</i> at a level equal to the dice spent, or spend 3 dice to cast <i>fear</i> once per long rest. CHA is the casting stat. <i>(Fear uses tracked in Resources.)</i>"},
+   {n:"Iron Mask",k:"passive",req:"Wld 7",unlock:true,text:"Insight checks against you have disadvantage. You can suppress the Frightened condition on yourself by concentrating (it can't be broken, but you can't concentrate on a spell while doing it)."},
+   {n:"Press the Attack",k:"reaction",req:"Wld 9",unlock:true,text:"<b>Boost Morale</b> — when Rallying Mark heals a creature, spend 1 die (reaction) so another creature within 30 ft regains the same HP · <b>Coordinated Movements</b> — Urgent Orders can target one creature per die spent · <b>Expert Instructions</b> — when a creature benefits from your Help, spend 1 die (reaction) and add it to their roll, even after seeing it."},
+   {n:"Punish the Weak",k:"passive",req:"Wld 11",unlock:true,dmg:"1d8",text:"Creatures you target with your abilities within 60 ft are marked (no action) until they're more than 60 ft away. Once per turn a marked creature takes an extra <b>1d8</b> damage (<b>1d12</b> if it's Frightened of you)."},
+   {n:"Warlord's Intuition",k:"free",req:"Wld 13",unlock:true,pay:{res:{intuition:1}},text:"Before rolling a proficient ability check, treat the d20 as your Warlord level (<b>13</b>). Once per long rest."},
+   {n:"Shift the Field",k:"action",req:"Wld 14",unlock:true,text:"Spend 1 die: up to 5 friendly creatures that can see or hear you move up to half their speed without provoking opportunity attacks."},
+   {n:"Instinctive Flinch",k:"passive",req:"Wld 15",unlock:true,text:"Creatures that fail a WIS save against your fear or flee effects still have disadvantage on their next attack before your next turn (unless immune to Frightened)."},
+   {n:"Expanded Dominion",k:"passive",req:"Wld 15",unlock:true,text:"Demoralization Dice ranges double: 60 ft (Excruciating, Don't Touch That) and 10 ft (Are You Sure?)."},
+   {n:"Unbreakable Will",k:"passive",req:"Wld 17",unlock:true,text:"Immune to the Charmed and Frightened conditions."},
+   {n:"Dreadful Terror",k:"reaction",req:"Wld 18",unlock:true,text:"When a creature becomes Frightened of you, spend Demoralization Dice: <b>Panicked Terror</b> (it uses its reaction to flee) · <b>Blind Terror</b> (2 dice — Blinded until your next turn) · <b>Paralyzing Terror</b> (3 dice — Paralyzed until your next turn)."},
+   {n:"Tireless Leader",k:"passive",req:"Wld 20",unlock:true,text:"Roll d4s instead of spending Leadership Dice for Rallying Mark, Urgent Orders, Helpful Word or Prepare for Battle."}
+  ]},
+  /* ================= WARLOCK · HEXBLADE (PLANNED) ================= */
+  {id:"wlk",title:"Warlock — Hexblade (planned)",pane:"warlock",sub:"Hexblade unlocks at Warlock 3 — raise the Warlock level to bring it online",items:[
+   {n:"Eldritch Invocations",k:"passive",req:"Wlk 1",unlock:true,text:"Learn invocations — 1 at Warlock 1, <b>3 at Warlock 2</b> (5 at 5, 6 at 7, 7 at 9, 8 at 12, 9 at 15, 10 at 18). Swap one per Warlock level gained. <b class='amber'>Which three does he have?</b>"},
+   {n:"Pact Magic",k:"passive",req:"Wlk 1",unlock:true,text:"CHA casting (<b>DC 25 · +17</b>). Cantrips: <i>eldritch blast</i>, <i>toll the dead</i>. <b>2 Pact slots, 1st level</b> at Warlock 2 — all slots share one level and return on a short rest. <i>(Pact Slots in Resources.)</i>"},
+   {n:"Magical Cunning",k:"free",req:"Wlk 2",unlock:true,cost:"1 minute",pay:{res:{cunning:1}},text:"A 1-minute rite to regain expended Pact slots, up to half your maximum (round up). Once per long rest."},
+   {n:"Hexblade · Expanded Spells",k:"passive",req:"Wlk 3",unlock:true,text:"Add to your Warlock list: <b>1</b> shield, wrathful smite · <b>2</b> blur, branding smite · <b>3</b> blink, elemental weapon · <b>4</b> phantasmal killer, staggering smite · <b>5</b> banishing smite, cone of cold."},
+   {n:"Hex Warrior",k:"passive",req:"Wlk 3",unlock:true,text:"Proficiency with medium armor, shields and martial weapons. After a long rest, touch one proficient weapon <b>without the two-handed property</b> — attack and damage with it use <b>CHA</b> until your next long rest. With Pact of the Blade, this extends to every pact weapon regardless of type."},
+   {n:"Hexblade's Curse",k:"bonus",req:"Wlk 3",unlock:true,dmg:"5",pay:{res:{curse:1}},text:"Curse a creature you can see within 30 ft for 1 minute: <b>+PB (+5) damage</b> against it, you <b>crit on 19–20</b> against it, and when it dies you regain <b>Warlock level + CHA</b> HP. Once per short or long rest."},
+   {n:"Ability Score Improvement (Warlock)",k:"passive",req:"Wlk 4",unlock:true,text:"An ASI or feat — again at Warlock 8, 12 and 16."},
+   {n:"Accursed Specter",k:"free",req:"Wlk 6",unlock:true,text:"When you slay a humanoid, raise its spirit as a <b>specter</b> with temp HP = half your Warlock level. It acts on its own initiative, obeys you, adds your CHA to its attacks, and stays until your next long rest. Once per long rest."},
+   {n:"Contact Patron",k:"action",req:"Wlk 9",unlock:true,text:"<i>Contact other plane</i> always prepared; once per long rest cast it free to reach your patron, auto-succeeding on its save."},
+   {n:"Armor of Hexes",k:"reaction",req:"Wlk 10",unlock:true,text:"When your cursed target hits you, roll a d6 — on <b>4+</b> the attack misses instead."},
+   {n:"Mystic Arcanum",k:"passive",req:"Wlk 11",unlock:true,text:"One 6th-level Warlock spell castable once per long rest without a slot; add 7th at 13, 8th at 15, 9th at 17."},
+   {n:"Master of Hexes",k:"passive",req:"Wlk 14",unlock:true,text:"When your cursed target dies, move the curse to another creature you can see within 30 ft (you don't regain HP from that death)."},
+   {n:"Epic Boon (Warlock)",k:"passive",req:"Wlk 19",unlock:true,text:"An Epic Boon feat (Boon of Fate recommended)."},
+   {n:"Eldritch Master",k:"passive",req:"Wlk 20",unlock:true,text:"Magical Cunning restores <b>all</b> expended Pact slots."}
+  ]},
+  /* ================= FEATS & BACKGROUND (Kit tab) ================= */
+  {id:"feats",title:"Feats & Background",sub:"from his character sheet",items:[
+   {n:"Noble (Offspring) · Death Candidate",k:"passive",text:"+2 CHA and +2 INT. Miss Ambre's tutelage and Damas's service (see School → Servants)."},
+   {n:"Polearm Master",k:"bonus",dmg:"1d4",text:"After the Attack action with only a glaive, halberd, quarterstaff or spear, make a bonus-action butt-end attack (d4 bludgeoning, same ability). Creatures entering your reach with those weapons provoke opportunity attacks. <i>(Whether Rayth counts is a DM call.)</i>"},
+   {n:"Sentinel",k:"reaction",text:"Opportunity attack hits drop the target's speed to 0 for the turn. Disengage doesn't stop your opportunity attacks. When a creature within 5 ft attacks someone other than you, make a melee weapon attack against it as a reaction."},
+   {n:"Shield Master",k:"bonus",text:"After the Attack action, shove a creature within 5 ft with your shield. Add the shield's AC bonus to DEX saves against effects that target only you. On a DEX save for half damage, use your reaction to take none on a success. <i>(Needs a shield — Elyse.)</i>"},
+   {n:"Tough",k:"passive",text:"+2 HP per character level."}
+  ]}
+ ],
+ spellSlots:{1:{max:4,left:4},2:{max:3,left:3},3:{max:3,left:3}},
+ spellNote:"Paladin slots shown here (4/3/3 at Paladin 11). Warlock <b>Pact Slots</b> (2 × 1st, short rest) are tracked in Resources. Both casting stats are CHA — <b>DC 25 · spell attack +17</b>. Oath spells are always prepared and don't count against his 10.",
+ spells:[
+  {name:"Eldritch Blast",lvl:0,kind:"action",range:"120 ft",dmg:"1d10 force",src:"Wlk · cantrip",desc:"Three beams at character level 11+ (each its own attack roll and target)."},
+  {name:"Toll the Dead",lvl:0,kind:"action",range:"60 ft",dmg:"3d12 necrotic",src:"Wlk · cantrip",desc:"WIS save or 3d8 necrotic — 3d12 if the target is already missing HP."},
+  {name:"Command",lvl:1,kind:"action",range:"60 ft",src:"Pal · oath (Crown)",desc:"One-word command; WIS save. +1 target per slot level above 1st."},
+  {name:"Compelled Duel",lvl:1,kind:"bonus",range:"30 ft",conc:true,src:"Pal · oath (Crown)",desc:"WIS save: disadvantage on attacks against anyone but you, and must save to move more than 30 ft from you."},
+  {name:"Divine Smite",lvl:1,kind:"bonus",range:"Self",dmg:"2d8 radiant",src:"Pal · always prepared",desc:"After a hit: 2d8 radiant, +1d8 per slot above 1st, +1d8 vs Fiends/Undead. Once per long rest free (Paladin's Smite)."},
+  {name:"Hex",lvl:1,kind:"bonus",range:"90 ft",dmg:"1d6 necrotic",conc:true,src:"Wlk · known",desc:"+1d6 necrotic on your hits against the target; disadvantage on checks with one chosen ability. Move it when the target dies."},
+  {name:"Protection from Evil and Good",lvl:1,kind:"action",range:"Touch",conc:true,src:"Pal · known",desc:"Aberrations, Celestials, Elementals, Fey, Fiends and Undead attack the target at disadvantage; it can't be charmed, frightened or possessed by them."},
+  {name:"Shield",lvl:1,kind:"reaction",range:"Self",src:"Wlk · known (Hexblade list)",desc:"+5 AC until the start of your next turn, including against the triggering attack."},
+  {name:"Find Steed",lvl:2,kind:"action",range:"30 ft",src:"Pal · always prepared",desc:"Summon an otherworldly steed. Free once per long rest (Faithful Steed)."},
+  {name:"Warding Bond",lvl:2,kind:"action",range:"Touch",src:"Pal · oath (Crown)",desc:"Target within 60 ft gets +1 AC and saves and resistance to all damage; you take the same damage it takes."},
+  {name:"Zone of Truth",lvl:2,kind:"action",range:"60 ft",src:"Pal · oath (Crown)",desc:"15-ft sphere; creatures that fail a CHA save can't knowingly lie."},
+  {name:"Aura of Vitality",lvl:3,kind:"action",range:"Self (30 ft)",conc:true,src:"Pal · oath (Crown)",desc:"Bonus action each turn: one creature in the aura regains 2d6 HP."},
+  {name:"Spirit Guardians",lvl:3,kind:"action",range:"Self (15 ft)",dmg:"3d8 radiant",conc:true,src:"Pal · oath (Crown)",desc:"Chosen enemies in the aura move at half speed and take 3d8 radiant (WIS save half) when they enter or start a turn there."},
+  {name:"Create Food and Water",lvl:3,kind:"action",range:"30 ft",src:"Pal · known",desc:"45 lb of food and 30 gallons of water."},
+  {name:"Dispel Magic",lvl:3,kind:"action",range:"120 ft",src:"Pal · known",desc:"End spells of 3rd level or lower; higher needs a CHA check vs DC 10 + spell level."},
+  {name:"Revivify",lvl:3,kind:"action",range:"Touch",src:"Pal · known",desc:"Return a creature that died in the last minute to life with 1 HP (300 gp diamond)."}
+ ],
+ armor:{name:"Hasani's Forged Half Plate",cat:"armor",loc:"armor",rarity:"",armor:{kind:"medium",tier:2,base:27,ps:"con"},props:["Tempered","Brace"],mods:{ac:1},
+   desc:"Medium armor, Tier 2, prime stat CON. Properties: Tempered (2nd+ hits each round reduced by PB or 10%) and Brace (first hit each round reduced by PB). +1 AC mod = Defense fighting style."}
+ };})();
 window.CHAR={
  id:"hasani",name:"Hasani Eldesteen",epithet:"The Scythe of Necrolien",accent:"#5fe6b8",
- level:13,classes:[{name:"Champion of Necrolien (set HP)",level:13,die:8}],
- stats:{str:10,dex:14,con:16,int:12,wis:14,cha:20},saves:{},
- spellStat:"cha",speed:30,hitDice:13,itemSlots:3,
- tlStat:"cha",tlBonus:100,   /* Max TL = (CON mod + CHA mod)×10 + 100 — the doc's newer base ported faithfully; derives live from the stats. */
+ level:13,classes:[{name:"Paladin (Oath of the Crown)",level:11,die:10},{name:"Warlock (Hexblade from 3)",level:2,die:8},{name:"Warlord (Dreadlord's Presence)",level:13,die:10}],
+ stats:{str:17,dex:18,con:25,int:18,wis:22,cha:34},saves:{wis:true,cha:true},
+ skills:{Athletics:1,Deception:1,History:1,Insight:2,Intimidation:1,Persuasion:1,Religion:1},
+ spellStat:"cha",speed:30,hitDice:26,itemSlots:3,
+ tlStat:"cha",tlBonus:70,   /* Max TL = (CON +7 + CHA +12) × 10 + 70 = 260 — matches his doc exactly with the real stats. */
  hooks:HZ,
- identity:{Race:"Human",Alignment:"Neutral Good",Pronouns:"He/Him",Deity:"Necrolien (Dr. Death)",Birthday:"November 11th",Heirloom:"Mother's Pendant"},
- levelNote:"<b>Placeholders pending Hasani's live sheet:</b> the six ability scores, class levels &amp; HP, and AC/armor. <b>Confirmed:</b> Level 13 (PB +5), Human, Neutral Good, patron Necrolien. <b>Max TL</b> now derives from the ported formula (CON+CHA mods ×10 +100); the doc states a max of <b>260</b>, which implies bonuses beyond the mods — set the real stats, or type 260 into the Max TL box (stored as an adjustment), to pin it.",
- economy:[{id:"rx",name:"Reactions",max:1}],
- resources:[
+ identity:{Name:"Hasani Phepolo Eldesteen von Hollon",Race:"Human",Alignment:"Neutral Good",Background:"Noble (Offspring) · Death Candidate",Pronouns:"He/Him",Deity:"Necrolien (Dr. Death)",Birthday:"November 11th",Heirloom:"Mother's Pendant"},
+ levelNote:"<b>Gestalt, character level 13</b> (PB +5) — Track A: <b>Paladin 11 + Warlock 2</b> · Track B: <b>Warlord 13</b>. Class features sit in the Paladin, Warlord and Warlock tabs and <b>unlock automatically from these class levels</b>; raise Warlock to 3 to bring Hexblade online. HP 438 = class dice (110 + 16 + 130) + 26 × CON 7, matching his sheet. <b>Flags:</b> Warlord hit die is d8 in the PDF but d10 on his sheet (kept d10 so HP stays 438); AC follows the Armor Overhaul (27 + Tier +2 + CON cap 5 + Defense 1 = 35 — his sheet's 33 skipped the Tier Bonus).",
+ economy:[{id:"atk",name:"Attacks",max:4},{id:"rx",name:"Reactions",max:1}],   /* 4 per his sheet (Rayth ×4); RAW Extra Attack = 2 */
+ resources:HZ_CLS.resources.concat([
   {id:"mp",name:"Mental Power (MP)",max:30,rest:"long",steps:[1,2],color:"#9b7bd4",note:"Msiona pool for the Grief cycle. All back on a long rest, half on a short. Max shown with bonuses (flag)."},
   {id:"sand",name:"Hourglass · Sand",max:6,steps:[1],color:"#e8b45a",note:"Orion's Decay spends Sand. Start 6; grows via the upgrade tree. Refill: reap-the-expired + trickle (TBD)."},
   {id:"carn",start:0,name:"Carnage",max:5,steps:[1],rest:"empty",color:"#cf3a3a",note:"+1 whenever anything within 20 ft takes damage. At 5, next attack explodes (force+necrotic = CHA × creatures within 10 ft), then resets."},
   {id:"hollow",start:0,name:"Hollowed Stacks",max:5,steps:[1],rest:"empty",color:"#9b7bd4",note:"Emptiness that Follows: buffs at the cost of rationale. At 5 → Senseless State. Resets when Senseless ends."},
   {id:"tithe",start:0,name:"Rayth · Tithes",max:3,steps:[1],rest:"empty",color:"#d9b154",note:"+2 die / −25% healing per Tithe (max 3). Resets on stun or when Hollowed Cleave fires."}
- ],
- barRes:["mp","sand"],
+ ]),
+ barRes:["mp","ld","sand"],
  subs:[],cycle:"Week",
- riders:[{n:"Ruthlessness",e:"1d6"},{n:"Tithe (per)",e:"CHA"},{n:"Senseless +CHA",e:"CHA"}],
+ riders:[{n:"Radiant Strikes",e:"1d8 radiant"},{n:"Divine Smite",e:"2d8 radiant"},{n:"Leadership Die",e:"1d8"},{n:"Punish the Weak",e:"1d8"},{n:"Punish (frightened)",e:"1d12"},{n:"Hex",e:"1d6 necrotic"},{n:"Ruthlessness",e:"1d6"},{n:"Tithe (per)",e:"CHA"},{n:"Senseless +CHA",e:"CHA"}],
  tx:{name:"The Angel of Death",activate:0,upkeep:0,channel:0,toggles:[],modes:null},
  kitPanes:[
   {id:"angel",n:"Angel of Death",eb:"Necrolien · soul harvest",bl:"The transformation and TL console, the Soul Arsenal, and every soul ability with its enhancements.",c:"#5fe6b8",tx:true},
-  {id:"legacy",n:"Legacy of Aniʻani",eb:"Msiona · Mental Power",bl:"The Ecstasy Beyond Grief cycle, MP thresholds, Mental Breakdowns, and Madness.",c:"#9b7bd4"}
+  {id:"legacy",n:"Legacy of Aniʻani",eb:"Msiona · Mental Power",bl:"The Ecstasy Beyond Grief cycle, MP thresholds, Mental Breakdowns, and Madness.",c:"#9b7bd4"},
+  {id:"paladin",n:"Paladin",eb:"Oath of the Crown · Track A",bl:"Paladin features by level — Lay on Hands, Channel Divinity, the auras and the Crown's oath. Locked features unlock as the Paladin level rises.",c:"#e8cd87"},
+  {id:"warlord",n:"Warlord",eb:"Dreadlord's Presence · Track B",bl:"The Leadership Dice console, Demoralization Dice, and every Warlord feature by level.",c:"#cf3a3a"},
+  {id:"warlock",n:"Warlock",eb:"Hexblade · planned · Track A",bl:"Pact Magic now, and the Hexblade road map — it comes online at Warlock 3.",c:"#9b7bd4"}
  ],
  kit:[
   /* ===== GENERAL PASSIVES (Kit tab) ===== */
@@ -582,9 +836,9 @@ window.CHAR={
    {n:"Madness — Stage 1: Fracture",k:"passive",cost:"3 MP to restabilize",text:`1 min or until 0 HP. Eyes glow; allies & enemies indistinguishable; MP regen disabled; advantage on attacks & saves vs charm/fright; takes <b>double psychic</b>. On each kill, WIS save (earlier DC): success regain 1 MP; failure → Stage 2.`},
    {n:"Madness — Stage 2: Revelation",k:"passive",cost:"5 MP to restabilize",text:`Restabilize or until 0 HP. 30 ft aura of whispers — all within WIS save each turn: fail 3d8 psychic & <b>Charmed by Msiona</b> (roll d4: Paranoia II / Delusion II / Berserk II / Delirium III) to end of next turn, half on success. Attacks deal psychic + hollow = CHA but you can't choose targets. Auto-fail Insight & Perception. On each charm, DC 20 WIS: success +1 MP, failure −1 MP.`}
   ]}
- ],
+ ].concat(HZ_CLS.kit),
 
- items:[
+ items:[HZ_CLS.armor,
   {name:"Sovereign's Leash",cat:"head",loc:"head",rarity:"Legendary",desc:"Merged crown — the Circlet of Screaming Clarity fused with the Crown Shard of Kalsa Corkay and the expiration-god Orion; sands swirl into an hourglass at the brow. Retained (Circlet): keeps Hasani sane, activates his Grief Cycle, and still counts as one of the three Aniʻani artifacts, so the Legacy of Aniʻani and MP are unaffected. Full Integrity/Decay reference is on the Orion tab.",
    abilities:[
     {id:"a_decay",name:"Decay",kind:"bonus",cost:"25 TL + Sand",text:"Choose one creature with an active ability within 30 ft; spend Sand to knock it one rung down the Integrity ladder (see the Orion tab for per-target Sand costs)."},
@@ -598,7 +852,7 @@ window.CHAR={
     {id:"a_weave",name:"Form: Holy Weave",kind:"bonus",text:"Hair shrouds the body: +5 AC (ignores cap) and incoming damage halved, but Hasani is blinded, −10 ft move, and cannot fly."},
     {id:"a_snare",name:"Snare Reflex",kind:"reaction",text:"Enemy enters within 20 ft — hair lashes to grapple and pull them in (competing Athletics; on failure, grappled). Free auto-attempt when Unbound."}
    ]},
-  {name:"Rayth",cat:"weapon",loc:"w1",weaponType:"Scythe",atk:"+3",dmg:"2d12 slashing",rarity:"Legendary",twoSlot:false,desc:"Sentient scythe — acts on its own; narratively does not consume a normal weapon slot. Tithe of the Hollow (live tracker on the Turn tab): +2 die/−25% healing (1), +4/−50% (2), +6/−75% (3); resets on stun or Hollowed Cleave.",
+  {name:"Rayth",cat:"weapon",loc:"w1",weaponType:"Scythe",atk:"+20",dmg:"2d12+12 slashing",rarity:"Legendary",twoSlot:false,desc:"Sentient scythe — acts on its own; narratively does not consume a normal weapon slot. Tithe of the Hollow (live tracker on the Turn tab): +2 die/−25% healing (1), +4/−50% (2), +6/−75% (3); resets on stun or Hollowed Cleave.",
    abilities:[
     {id:"r_false",name:"False Appearance",kind:"passive",text:"While motionless, indistinguishable from a normal weapon."},
     {id:"r_slash",name:"Slashing Heaven & Earth",kind:"passive",text:"Slashes through any non-reinforced object; ignores slashing resistance (resistant → normal, vulnerable → 2.5×). Every two consecutive strikes on a creature reduce its AC by 3 until the start of Hasani's next turn."},
@@ -622,7 +876,7 @@ window.CHAR={
    ]},
   {name:"Whip of Twisting Providence",cat:"accessory",loc:"acc1",rarity:"Legendary",desc:"One of the three Aniʻani artifacts.",
    abilities:[
-    {id:"w_coil",name:"Wrath Coil",kind:"attack",dmg:"1d10",text:"Melee weapon attack, 1d10."},
+    {id:"w_coil",name:"Wrath Coil",kind:"attack",dmg:"1d10+12",text:"Melee weapon attack, +16 to hit, 1d10 + 12."},
     {id:"w_induced",name:"Induced Wrath",kind:"passive",text:"Causes the user to destroy everything in sight, including objects."},
     {id:"w_torment",name:"Wrathful Torment",kind:"passive",text:"After being hit, on their turn the creature makes a WIS save (spell DC) to resist harming themselves; each hit raises the DC by 3. If they attack themselves they use their held weapon; a prepared spell is turned on themselves."},
     {id:"w_movin",name:"Get to Movin'",kind:"reaction",text:"When an enemy enters reach, whip them 10 ft back."}
@@ -657,7 +911,7 @@ window.CHAR={
   {name:"Yohan Portrov",tier:2}
  ],
  infusions:[],
- tabs:{school:true,battalions:true,companions:false,spells:false},
+ tabs:{school:true,battalions:true,companions:false,spells:true},
  school:{
   servants:[
    ["Miss Ambre","Servant / Tutor","Advantage on History and Religion checks — but she must teach you twice a week for it to last. 10 gp."],
@@ -688,7 +942,7 @@ window.CHAR={
    ["Broken but Alive",0,"Push past exhaustion; depression, charmed, and frightened have no hold."]
   ]
  },
- companions:[],spellSlots:{},spells:[],
+ companions:[],spellSlots:HZ_CLS.spellSlots,spellNote:HZ_CLS.spellNote,spells:HZ_CLS.spells,
  battalions:[
   {name:"Burial Stingers",tier:"Bronze",end:3,endMax:3,ch:3,chMax:3,hit:3,dep:{hit:3,ac:0,save:"cha",sv:0},notes:"Tier Bonus +2. Gambit DC = 8 + Com CHA + Tier = 22. Gambit Charge 3 (Team Combat bonus). Replenish 10 gp.",
    gambits:[
