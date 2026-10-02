@@ -304,7 +304,7 @@ window.CHAR={
    ]},
  kitPanes:[{id:"transform",n:"Transformation",tx:true,c:"#c2abff",eb:"The Harvesting Princess",bl:"Thread Link console, the transformation ladder, and every ability that keys off being transformed."}],
  /* ===== Economy & resources ===== */
- economy:[{id:"atk",name:"Attacks",max:2},{id:"rx",name:"Reactions",max:1},{id:"ba",name:"Bonus action",max:1}],
+ economy:[{id:"atk",name:"Attacks",max:2},{id:"rx",name:"Reactions",max:1}],   /* Action + Bonus action are built into the engine */
  resources:[
    {id:"vines",name:"Active Blooming Vines",max:11,rest:"none",steps:[1],note:"Up to INT mod vines; must be ≥10 ft apart. Track living vines here."},
    {id:"rapid",name:"Rapid Growth uses",max:11,rest:"long",steps:[1],note:"= INT mod per long rest, or spend a spell slot instead."},
@@ -317,9 +317,8 @@ window.CHAR={
  /* ===== KIT: weapon, class features (level-gated via unlock), vine & reagent abilities ===== */
  kit:[
   {id:"weapon",title:"Sylvan's Oblige",sub:"her shapeshifting weapon",items:[
-   {n:"Sylvan Bow",k:"attack",cost:"1 weapon slot",dmg:"2d8+INT",text:"Bow form. Always shoots <b>three arrows</b> at any target in range. Range 80/320."},
-   {n:"Sylvan Blades",k:"attack",cost:"2 weapon slots",dmg:"1d10+INT",text:"Dual-blade form, 5 ft, multiattack. When <b>both</b> strikes hit one creature, gain temp HP = 20% of its max HP (once per creature per round). Needs a free hand to switch to."},
-   {n:"Natural Cycle",k:"bonus",text:"Switch weapon state for a seasonal effect. <b>Spring</b> (→ Bow): next strike 25% chance to deal double damage. <b>Autumn</b> (→ Blades): next strike 25% chance to heal her proportional to the damage."},
+   {n:"Sylvan's Oblige",k:"attack",cost:"one weapon, two forms",dmg:"Bow 2d8+INT \u00d73 \u00b7 Blades 1d10+INT \u00d72",text:"A single weapon that converts between two forms. Switch forms with the <b>Form</b> buttons at the top of this tab or on Equipment.<br><b>Sylvan Bow</b> (Weapon I, 1 slot): always fires <b>three arrows</b> at targets in range. 2d8 piercing, range 80/320.<br><b>Sylvan Blades</b> (Weapon I + II, 2 slots): dual blades, 5 ft, multiattack, 1d10 slashing. When <b>both</b> strikes hit one creature, gain temp HP = 20% of its max HP (once per creature per round). Needs Weapon II free, so whatever is held there goes to storage when she converts."},
+   {n:"Natural Cycle",k:"bonus",text:"<b>This is how Sylvan's Oblige converts.</b> Switch weapon form for a seasonal effect. <b>Spring</b> (→ Bow): next strike 25% chance to deal double damage. <b>Autumn</b> (→ Blades): next strike 25% chance to heal her proportional to the damage."},
    {n:"Coated Arrows",k:"free",text:"Coat up to 3 arrows with a potion/poison that has the <b>Contact</b> property. On hit, the target suffers the coating's effect."},
    {n:"Leafy Torrent",k:"reaction",cost:"1/turn",text:"When targeted by a melee attack: <b>Spin</b> (switch to Blades, whirlwind everyone within 5 ft), <b>Jump</b> (5 ft up, reposition within 10 ft), <b>Shoot</b> (switch to Bow, trishot one or more creatures)."},
    {n:"Thorny Approach",k:"reaction",cost:"PB/long rest",text:"When a creature enters within 20 ft, fire a thorny arrow: normal weapon damage and its speed becomes 0 until end of the current turn."},
@@ -669,12 +668,49 @@ function doHarvest(api,v,silent){var k=K(api),r=rollHarvest(k.biome),bonus=vineB
  return v.lastlog;}
 function syncVineCount(api){var k=K(api),S=api.S();if(S.res&&typeof S.res.vines!=='undefined'){S.res.vines=k.vines.filter(function(v){return v.active;}).length;}}
 
+
+/* ---- SYLVAN'S OBLIGE: one weapon, two forms ---- */
+var FORMS={
+ bow:{name:"Sylvan's Oblige — Bow",weaponType:"Bow",twoSlot:false,dmg:"2d8+INT piercing ×3 arrows",
+  desc:"Bow form (Weapon I, 1 slot). Always fires three arrows at targets in range. Range 80/320.",season:"Spring",
+  fx:"Spring: next strike has a 25% chance to deal double damage."},
+ blades:{name:"Sylvan's Oblige — Blades",weaponType:"Sword",twoSlot:true,dmg:"1d10+INT slashing ×2 strikes",
+  desc:"Blade form (Weapon I + II, 2 slots). Dual blades, 5 ft, multiattack. Both strikes hit one creature: temp HP = 20% of its max HP (once per creature per round).",season:"Autumn",
+  fx:"Autumn: next strike has a 25% chance to heal her in proportion to the damage."}};
+function sylvan(api){var S=api.S();return (S.items||[]).filter(function(x){return x.sylvan;})[0];}
+function atkStr(api){var d=api.compute();var b=d.pb+d.mod.int;return (b>=0?"+":"")+b;}
+function applyForm(api,it,form){var f=FORMS[form];it.form=form;it.name=f.name;it.weaponType=f.weaponType;it.twoSlot=f.twoSlot;it.dmg=f.dmg;it.desc=f.desc;it.atk=atkStr(api);}
+function ensureWeapon(api){var S=api.S();if(!S.items)S.items=[];var it=sylvan(api);
+ if(!it){it={id:api.uid("syl"),name:"",cat:"weapon",qty:1,rarity:"",weaponType:"",twoSlot:false,atk:"",dmg:"",dur:0,armor:{kind:"",tier:1,base:0,ps:"dex"},props:[],abilities:[],mods:{},tags:"Sylvan's Oblige",desc:"",loc:"storage",sylvan:true,form:"bow"};
+  S.items.push(it);var w1=S.items.filter(function(x){return x.loc==="w1"&&x!==it;})[0];if(!w1)it.loc="w1";}
+ applyForm(api,it,it.form||"bow");return it;}
+function weaponCard(api,where0){var it=ensureWeapon(api),S=api.S(),f=FORMS[it.form],tx=S.tx&&S.tx.on,bon=S.eco&&S.eco.bon?S.eco.bon.left:1;
+ var w2=(S.items||[]).filter(function(x){return x.loc==="w2"&&!x.sylvan;})[0];
+ var where=it.loc==="w1"?(it.twoSlot?"equipped · Weapon I + II":"equipped · Weapon I"):"in storage (not equipped)";
+ var cost=tx?"free once a turn (Sylvan Judgement)":"bonus action (Natural Cycle)"+(bon<1?" — none left this turn":"");
+ var h='<section id="sylvanform-'+where0+'" class="sylvanform"><h2>Sylvan\'s Oblige <span class="sub2">one weapon, two forms</span></h2><div class="card"><div class="row" style="gap:8px;flex-wrap:wrap;align-items:center">';
+ ["bow","blades"].forEach(function(fm){var on=it.form===fm;h+='<button class="btn'+(on?' pri':'')+'" data-a="bxform" data-id="'+fm+'"'+(on?' disabled':'')+'>'+(fm==="bow"?"Bow · 1 slot":"Blades · 2 slots")+'</button>';});
+ h+='<span class="chip on">'+f.season+'</span><span class="tag">'+esc(where)+'</span>'+(it.loc!=="w1"?'<button class="btn sm" data-a="bxsylequip">equip</button>':'')+'</div>';
+ h+='<p style="margin-top:8px"><b class="cz">'+esc(f.name)+'</b> · hit '+esc(it.atk)+' · '+esc(f.dmg)+'</p><p class="sub" style="margin:2px 0 0">'+esc(f.desc)+'</p>';
+ h+='<p class="sub" style="margin:6px 0 0">Switching costs: <b>'+esc(cost)+'</b>. '+esc(f.fx)+'</p>';
+ if(it.form==="bow"&&w2)h+='<p class="sub" style="margin:4px 0 0">Converting to Blades will move <b>'+esc(w2.name)+'</b> from Weapon II to storage.</p>';
+ return h+'</div></section>';}
+function injectWeapon(api){["body-kit","body-equip"].forEach(function(id){var host=document.getElementById(id);if(!host)return;var old=host.querySelector(".sylvanform");if(old)old.remove();host.insertAdjacentHTML("afterbegin",weaponCard(api,id.replace("body-","")));});}
+
 C.hooks=C.hooks||{};
 var prevRender=C.hooks.render,prevAct=C.hooks.act,prevInit=C.hooks.init;
-C.hooks.render=function(api,d){try{renderVines(api);renderHarvest(api);renderAlchemy(api);}catch(e){if(window.console)console.error('bx render',e);}if(prevRender)prevRender(api,d);};
-C.hooks.init=function(api){K(api);if(prevInit)prevInit(api);};
+C.hooks.render=function(api,d){try{renderVines(api);renderHarvest(api);renderAlchemy(api);injectWeapon(api);}catch(e){if(window.console)console.error('bx render',e);}if(prevRender)prevRender(api,d);};
+C.hooks.init=function(api){K(api);ensureWeapon(api);if(prevInit)prevInit(api);};
 C.hooks.act=function(a,el,api){var k=K(api),id=el.getAttribute('data-id'),n=api.num(el.getAttribute('data-n')),v;
  switch(a){
+  case 'bxform':var it=ensureWeapon(api),S=api.S();if(it.form===id)return true;
+   var txOn=S.tx&&S.tx.on,used=(k.sylTurn===S.round);
+   if(txOn&&!used){k.sylTurn=S.round;}
+   else{var b=S.eco&&S.eco.bon;if(b&&b.left<1&&!window.confirm("No bonus action left this turn. Convert anyway?"))return false;if(b)b.left=Math.max(0,b.left-1);}
+   if(id==="blades"){var o=(S.items||[]).filter(function(x){return x.loc==="w2"&&x!==it;})[0];if(o){o.loc="storage";api.flash(o.name+" moved to storage — the Blades need both weapon slots");}}
+   if(it.loc!=="w1"){(S.items||[]).forEach(function(x){if(x.loc==="w1"&&x!==it)x.loc="storage";});it.loc="w1";}
+   applyForm(api,it,id);api.log("Sylvan's Oblige → "+(id==="bow"?"Bow (Spring)":"Blades (Autumn)")+(txOn&&!used?" · free (Sylvan Judgement)":" · bonus action"));return true;
+  case 'bxsylequip':var it2=ensureWeapon(api),S2=api.S();(S2.items||[]).forEach(function(x){if(x!==it2&&(x.loc==="w1"||(it2.twoSlot&&x.loc==="w2")))x.loc="storage";});it2.loc="w1";api.log("Equipped Sylvan's Oblige");return true;
   case 'bxbiome':k.biome=id;return true;
   case 'bxplant':if(k.vines.length>=20){api.flash('That is a lot of vines.');}k.vines.push(newVine(api));syncVineCount(api);return true;
   case 'bxround':k.round++;k.vines.forEach(function(v){if(v.active){doHarvest(api,v,true);v.rounds++;}else{v.active=true;v.lastlog='Reactivated at start of turn.';}});syncVineCount(api);return true;
