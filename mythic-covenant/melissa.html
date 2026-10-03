@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Melissa · Seals of the Ancientst</title>
+<title>Melissa · Seals of the Ancients</title>
 <link rel="preconnect" href="https://fonts.googleapis.com/">
 <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -327,7 +327,7 @@ var MAN=[
  ["Lunging Attack","bonus","As a Bonus Action, you can expend one Superiority Die and take the Dash action. If you move at least 5 feet in a straight line immediately before hitting with a melee attack as part of the Attack action on this turn, you can add the Superiority Die to the attack's damage roll.",1],
  ["Maneuvering Attack","attack","When you hit a creature with an attack roll, you can expend one Superiority Die to maneuver one of your comrades into another position. Add the Superiority Die roll to the attack's damage roll, and choose a willing creature who can see or hear you. That creature can use its Reaction to move up to half its Speed without provoking an Opportunity Attack from the target of your attack.",1],
  ["Menacing Attack","attack","On a hit, add the die to the damage. The target makes a Wisdom save or has the Frightened condition until the end of your next turn.",0],
- ["Parry","reaction","When another creature damages you with a melee attack, use your Reaction and expend one die to reduce the damage by the roll + your Strength or Dexterity modifier.",0],
+ ["Parry","reaction","When another creature damages you with a melee attack, use your Reaction and expend one die to reduce the damage by the roll + your Strength or Dexterity modifier. <span class=\"tbd\">same name as her monk Parry</span>",0],
  ["Precision Attack","free","When you miss with an attack roll, expend one die and add it to the roll, possibly turning the miss into a hit.",0],
  ["Pushing Attack","attack","On a hit, add the die to the damage. A Large or smaller target makes a Strength save or is pushed up to 15 ft straight away from you.",0],
  ["Rally","bonus","As a Bonus Action, expend one die to bolster an ally who can see or hear you: it gains temporary HP equal to the roll + half your Fighter level (round down).",0],
@@ -343,13 +343,18 @@ var KNOWN0=MAN.filter(function(m){return m[3];}).map(function(m){return m[0];});
 function api0(){return window.SheetAPI;}
 function St(){return api0().S();}
 function K(){var S=St();if(!S.kit||typeof S.kit!=="object")S.kit={};var k=S.kit;
- if(!Array.isArray(k.seals))k.seals=[];if(!Array.isArray(k.man))k.man=KNOWN0.slice();if(!k.rnd||typeof k.rnd!=="object")k.rnd={};if(!k.manF)k.manF="all";return k;}
+ if(!Array.isArray(k.seals))k.seals=[];if(!Array.isArray(k.man))k.man=KNOWN0.slice();if(!k.rnd||typeof k.rnd!=="object")k.rnd={};if(!k.manF)k.manF="all";
+ if(!k.seeded){k.seeded=true;S.res.ki=kiMax(S);S.res.tempo=2+Math.floor((Math.max(1,n(S.level))-1)/4);}return k;}
 function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 function n(v){var x=parseFloat(v);return isNaN(x)?0:x;}
 function clsLvl(re){var c=(St().classes||[]).filter(function(x){return re.test(x.name);})[0];return c?n(c.level):0;}
 function manCap(f){return f>=15?9:f>=10?7:f>=7?5:f>=3?3:0;}
 function supDie(f){return f>=18?12:f>=10?10:8;}
-function maDie(m){return m>=17?12:m>=11?10:m>=5?8:6;} /* 2024 Martial Arts die */
+function maDie(m){return 8;} /* "a Martial Arts die" under the revised monk: d8 per her sheet, pending ruling */
+function monkOf(S){var c=(S.classes||[]).filter(function(x){return /monk/i.test(x.name);})[0];return c?n(c.level):0;}
+function kiMax(S){var m=monkOf(S);return 2*m+5*Math.floor(m/10);} /* Ki Surge: double baseline, +5 at 10/20/30/40/50 */
+function maCount(m){return 1+[5,10,17].filter(function(t){return m>=t;}).length;} /* revised: +1 die at 5, 10, 17 */
+var UNARMED=[["Fist",6,"bludgeoning","Default. Listed as Palms on her sheet.","5 ft"],["Elbow",8,"piercing","Ignores temporary HP.","5 ft"],["Knee",8,"piercing","Knocks the target back 5 ft.","5 ft"],["Kick",10,"bludgeoning","+5 ft reach, knocks the target back 10 ft. On a miss, Melissa is <b>Vulnerable</b>.","10 ft"]];
 function drain(d){return Math.max(0,d.mod.wis*d.pb);}
 function tierOf(t){return Math.min(6,1+Math.floor(n(t)/3));}
 function flowMax(d){return Math.max(1,d.pb);}
@@ -404,6 +409,7 @@ function flowStrip(d,full){var k=K(),S=St(),f=n(S.res.flow),mx=flowMax(d),i,h=''
   '<button class="btn" data-a="sl-wake" title="Reaction riding on a dodge, once per turn: seal the attacker">Waking Tiger</button>'+
   '<button class="btn" data-a="fl-rush" title="Reaction, once per round: a sealed creature missed or failed a save → Step of the Wind">Rushing Current · 1 Ki</button>'+
   '<button class="btn" data-a="sl-undertow" title="Bonus action, once per round: +1 tick to every seal within 20 ft, move up to Flow bonus">Undertow · 2 Ki</button>'+
+  '<button class="btn" data-a="fl-parry" title="Exclusive Dynamic Reaction: hit by a melee attack → spend a Tempo token and attack back">Parry · 1 Tempo</button>'+
   '<button class="btn" data-a="fl-mercury" title="Once per turn when out of reactions: spend 1 Ki for one more">Mind of Mercury · 1 Ki</button></div>';
  var R=k.rnd;
  h+='<div class="oncerow">'+[["readFlow","Read the Flow"],["still","Still Water"],["wake","Waking Tiger"],["rush","Rushing Current"],["undertow","Undertow"],["mercury","Mind of Mercury"],["relentless","Relentless"]].map(function(x){
@@ -473,19 +479,15 @@ function manPane(d){var k=K(),f=clsLvl(/fighter/i),cap=manCap(f),die=supDie(f),k
 /* ---------- abilities (kit) ---------- */
 function A(nm,k,text,o){var a={n:nm,k:k,text:text};for(var x in (o||{}))a[x]=o[x];return a;}
 var KIT=[
- {id:"strikes",title:"Unarmed strikes",sub:"+14 to hit · Empowered Strikes: force",items:[
-  A("Palms","attack","Bludgeoning, 5 ft.",{dmg:"3d6+DEX bludgeoning",req:"+14"}),
-  A("Knee","attack","Piercing, 5 ft. Knocks the target back 5 ft.",{dmg:"3d8+DEX piercing",req:"+14"}),
-  A("Elbow","attack","Piercing, 5 ft. Ignores temporary HP.",{dmg:"3d8+DEX piercing",req:"+14"}),
-  A("Kick","attack","Bludgeoning, 10 ft reach. Knocks the target back 10 ft. On a miss, Melissa is <b>Vulnerable</b>.",{dmg:"3d10+DEX bludgeoning",req:"+14"}),
-  A("Tavern Brawler","passive","<b>Enhanced Unarmed Strike:</b> +1d4 + DEX bludgeoning on unarmed hits (calculator rider). <b>Damage rerolls:</b> reroll a 1 on an attack die and take the new roll. <b>Improvised weaponry:</b> proficient. <b>Push:</b> on an unarmed hit, push the target 5 ft away.",{dmg:"1d4+DEX"})]},
+ {id:"strikes",title:"Unarmed weapons",sub:"revised monk · dice grow at Monk 5, 10, 17 · force via Empowered Strikes",get items(){var m=monkOf(St()),cnt=maCount(m),d=api0().compute(),hit="+"+(d.pb+d.mod.dex);
+  return UNARMED.map(function(u){return {n:u[0],k:"attack",text:u[3]+" Reach "+u[4]+".",dmg:cnt+"d"+u[1]+"+DEX "+u[2],req:hit};}).concat([
+  A("Tavern Brawler","passive","<b>Enhanced Unarmed Strike:</b> +1d4 + DEX bludgeoning on unarmed hits (calculator rider). <b>Damage rerolls:</b> reroll a 1 on an attack die and take the new roll. <b>Improvised weaponry:</b> proficient. <b>Push:</b> on an unarmed hit, push the target 5 ft away.",{dmg:"1d4+DEX"})]);}},
  {id:"identity",title:"Traits, race and background",items:[
   A("Composed","passive","Defined Trait. If Melissa does not attack or cast a spell on her turn, she gains <b>+5 to Dodge</b> until the start of her next turn. Toggle it on the Flow strip."),
   A("Adaptable","passive","Human: +1 to all ability scores (already in her scores)."),
   A("Skillful","passive","Human: proficiency in Perception."),
   A("Versatile","passive","Human: gains the Tavern Brawler feat."),
-  A("Alert","passive","Inquisitive background feat. Adds proficiency to Initiative and lets her swap Initiative with a willing ally. Her Google sheet lists Initiative +10 (DEX only); the sheet matches it. "+TBD),
-  A("Psychic resistance","passive","Resistant to psychic damage.")]},
+  A("Alert","passive","Inquisitive background feat. Adds proficiency to Initiative and lets her swap Initiative with a willing ally. Her Google sheet lists Initiative +10 (DEX only); the sheet matches it. "+TBD)]},
  {id:"flow",title:"Flow & Seals",sub:"Melissa's feat",pane:"seals",items:[
   A("Read the Flow","passive","Each round, the first time Melissa dodges an attack, she gains advantage on her next action against that enemy. Tracked by <b>Dodged</b>."),
   A("Flow State","passive","After every successful dodge, gain 1 Flow (max PB). Each stack: <b>+2 to Dodge checks</b> and <b>+5 ft movement</b>. Lose 1 stack each time she is hit."),
@@ -495,20 +497,24 @@ var KIT=[
   A("Still Water","reaction","Once per round, when Melissa would be hit, spend 1 Flow to turn it into a successful dodge. The converted dodge counts for Read the Flow and Waking Tiger but grants no Flow (net −1)."),
   A("Waking Tiger","reaction","On a successful dodge, place a seal on the attacker. Rides on the dodge (no extra reaction), once per turn, still bound by one seal per creature and the PB cap.")]},
  {id:"monkcore",title:"Monk",sub:"level 12",pane:"monk",items:[
-  A("Martial Arts","passive","Martial Arts die <b>d8</b> (d10 at Monk 11 by the 2024 handbook "+TBD+"). DEX for unarmed attack and damage; a bonus-action unarmed strike after the Attack action."),
+  A("Martial Arts","passive","Revised monk: unarmed weapons (Fist, Elbow, Knee, Kick) gain one damage die at Monk 5, 10 and 17 (see the table at the top of this tab). DEX for unarmed attack and damage; a bonus-action unarmed strike after the Attack action. Features that say \"a Martial Arts die\" use d8 on this sheet "+TBD+"."),
+  A("Ki Surge","passive","Revised monk: the Ki pool is double a baseline monk's, +5 at Monk 10, 20, 30, 40 and 50. At Monk 12: 2 × 12 + 5 = 29. The top bar maximum follows Monk level."),
+  A("Athletic Flow","free","Revised monk: after any successful attack in a chain, attempt a grapple or shove as a free action, using Acrobatics instead of Athletics if she likes (Acrobatics +14)."),
+  A("Parry","reaction","Revised monk, Monk 2, exclusive Dynamic Reaction. When a creature hits her with a melee attack, spend one Tempo token to attack it. If her attack roll beats theirs, her attack lands and cancels theirs. If not, their attack lands with +20% damage. The token is spent either way. Use the Parry button on the Flow strip.",{cost:"1 Tempo"}),
+  A("Stillness of Mind","passive","Revised monk, Monk 6: proficiency in all saving throws and resistance to psychic damage."),
   A("Unarmored Defense","passive","AC = 10 + DEX + WIS while unarmored. The armor overhaul's tier bonus and cap apply on this sheet."),
   A("Unarmored Movement","passive","+20 ft speed (in her 50 ft)."),
   A("Flurry of Blows","bonus","Make three unarmed strikes. A hit can trigger Extract Aspects.",{cost:"1 Ki",pay:{res:{ki:1}}}),
   A("Patient Defense","bonus","Disengage; for 1 Ki also Dodge and gain temporary HP equal to two Martial Arts dice (16 at max).",{cost:"1 Ki",pay:{res:{ki:1}}}),
   A("Step of the Wind","bonus","Dash; for 1 Ki also Disengage, double jump distance, and carry a willing creature within 5 ft along.",{cost:"1 Ki",pay:{res:{ki:1}}}),
   A("Uncanny Metabolism","free","When rolling Initiative, regain all expended Ki and heal Monk level + one Martial Arts die (20 at max). Once per long rest.",{cost:"1/LR",pay:{res:{um:1}}}),
-  A("Deflect Attacks","reaction","2024 Monk 3: reduce damage from an attack that hits by 1d10 + DEX + Monk level; spend 1 Ki to redirect it if reduced to 0. Not on her Google sheet. "+TBD),
+  A("Deflect Attacks","reaction","2024 Monk 3 (revised monk keeps the 2024 buffs): reduce damage from an attack that hits by 1d10 + DEX + Monk level; spend 1 Ki to redirect it if reduced to 0."),
   A("Slow Fall","reaction","Reduce falling damage by five times Monk level."),
   A("Stunning Strike","free","On a hit with a Monk weapon or unarmed strike, spend 1 Ki: CON save or Stunned until the start of her next turn. On a success, speed halved and the next attack against it has advantage.",{cost:"1 Ki",pay:{res:{ki:1}}}),
   A("Empowered Strikes","passive","Unarmed strikes deal force damage."),
   A("Evasion","passive","DEX save for half damage: success = none, failure = half."),
-  A("Acrobatic Movement","passive","2024 Monk 9: move along vertical surfaces and across liquids on her turn. Not on her Google sheet. "+TBD),
-  A("Self-Restoration","passive","2024 Monk 10: end one of Charmed, Frightened, or Poisoned at the end of each turn. Not on her Google sheet. "+TBD)]},
+  A("Acrobatic Movement","passive","2024 Monk 9: move along vertical surfaces and across liquids on her turn. "),
+  A("Self-Restoration","passive","2024 Monk 10: end one of Charmed, Frightened, or Poisoned at the end of each turn.")]},
  {id:"cobalt",title:"Way of the Cobalt Soul",sub:"subclass",pane:"monk",items:[
   A("Extract Aspects","reaction","When she hits with a Flurry of Blows strike, she analyzes the target and learns its damage vulnerabilities, resistances, immunities and condition immunities. Whenever an analyzed creature misses her, she can use her reaction to make an unarmed strike against it if it's within reach."),
   A("Extort Truth","free","On an unarmed hit, spend 1 Ki: CHA save or for 10 minutes it can't speak a deliberate lie and all CHA checks directed at it have advantage.",{cost:"1 Ki",pay:{res:{ki:1}}}),
@@ -517,8 +523,11 @@ var KIT=[
  {id:"monkahead",title:"Ahead",sub:"future levels",pane:"monk",items:[
   A("Deflect Energy","reaction","Monk 13: Deflect Attacks works against any damage type.",{req:"Monk 13"}),
   A("Disciplined Survivor","passive","Monk 14: proficiency in all saves (she already has it); spend 1 Ki to reroll a failed save.",{req:"Monk 14"}),
+  A("Ki Siphon","action","Revised monk, Monk 14: touch a magical weapon to siphon its enchantment into her limbs. Her unarmed strikes gain its effects (flaming, vampiric, and so on) and its charge limit until the end of combat or her next siphon.",{req:"Monk 14"}),
   A("Perfect Focus","passive","Monk 15: on Initiative with 3 or fewer Ki, regain up to 4.",{req:"Monk 15"}),
-  A("Debilitating Barrage","free","Cobalt Soul 17: on an unarmed hit, spend 3 Ki to give the target vulnerability to one damage type for 1 minute or until it takes that type.",{req:"Monk 17",cost:"3 Ki"})]},
+  A("Debilitating Barrage","free","Cobalt Soul 17: on an unarmed hit, spend 3 Ki to give the target vulnerability to one damage type for 1 minute or until it takes that type.",{req:"Monk 17",cost:"3 Ki"}),
+  A("Martial Arts die increase","passive","Revised monk, Monk 17: unarmed weapons gain a third extra damage die (4d6 / 4d8 / 4d10).",{req:"Monk 17"}),
+  A("Enlightenment","passive","Revised monk, Monk 20: Flurry, Step of the Wind and Patient Defense cost 0 Ki; one Ki ability per turn even at 0 Ki; advantage on DEX and WIS saves; +4 DEX and +4 WIS (can exceed 20).",{req:"Monk 20"})]},
  {id:"fightcore",title:"Fighter",sub:"level 12",pane:"fighter",items:[
   A("Fighting Style","passive","Style not recorded on her Google sheet ('type: x'). "+TBD),
   A("Second Wind","bonus","Regain 1d10 + Fighter level HP (22 at max) and move up to half speed. As a reaction on a failed save, add 1d10; if it still fails, the use isn't spent. Four uses; one back on a short rest, all on a long rest.",{cost:"1 use",pay:{res:{sw:1}}}),
@@ -549,6 +558,11 @@ function act(a,el,api){var k=K(),S=St(),d=api.compute(),i=n(el.getAttribute("dat
   api.log("Still Water: hit turned into a dodge (−1 Flow)");return true;
  case "fl-composed":k.composed=!k.composed;api.log(k.composed?"Composed: +5 Dodge until her next turn":"Composed ended");return true;
  case "fl-rush":if(k.rnd.rush){api.flash("Rushing Current already used this round");return false;}if(!needKi(api,1))return false;k.rnd.rush=true;api.log("Rushing Current: Step of the Wind (1 Ki)");return true;
+ case "fl-parry":if(n(S.res.tempo)<1){api.flash("No Tempo tokens left");return false;}if(S.eco.rx&&S.eco.rx.left<1){api.flash("No reactions left (Mind of Mercury can buy one)");return false;}
+  api.addRes("tempo",-1);if(S.eco.rx)S.eco.rx.left--;
+  var won=window.confirm("Parry: did her attack roll beat theirs?\nOK = yes, the attack is cancelled and hers lands\nCancel = no, their attack lands with +20% damage");
+  api.log(won?"Parry won: their attack cancelled, hers lands (1 Tempo)":"Parry lost: their attack lands at +20% damage (1 Tempo)");
+  if(won){api.setRes("flow",n(S.res.flow));}return true;
  case "fl-mercury":if(k.rnd.mercury){api.flash("Mind of Mercury already used this turn");return false;}if(!needKi(api,1))return false;k.rnd.mercury=true;if(S.eco.rx)S.eco.rx.left=Math.min(S.eco.rx.max,S.eco.rx.left+1);api.log("Mind of Mercury: +1 reaction (1 Ki)");return true;
  case "sl-undertow":if(k.rnd.undertow){api.flash("Undertow already used this round");return false;}if(!k.seals.length){api.flash("No seals on the field");return false;}
   if(!needKi(api,2))return false;k.rnd.undertow=true;k.seals.forEach(function(x){tickSeal(api,x,"Undertow");});
@@ -583,7 +597,7 @@ function pay(a,api){var S=St(),k=K(),d=api.compute();
  case "Second Wind":api.heal(10+clsLvl(/fighter/i));if(S.eco.bon&&S.eco.bon.left>0)S.eco.bon.left--;break;
  case "Patient Defense":var th=2*maDie(clsLvl(/monk/i));S.hp.temp=Math.max(n(S.hp.temp),th);api.log("Patient Defense: "+th+" temp HP");break;
  case "Action Surge":if(S.eco.act)S.eco.act.left++;api.log("Action Surge: +1 action");break;
- case "Uncanny Metabolism":var r=(window.CHAR.resources||[]).filter(function(x){return x.id==="ki";})[0];S.res.ki=n(S.resMax.ki!=null?S.resMax.ki:r.max);api.heal(clsLvl(/monk/i)+maDie(clsLvl(/monk/i)));api.log("Uncanny Metabolism: Ki refilled");break;
+ case "Uncanny Metabolism":S.res.ki=kiMax(S);api.heal(clsLvl(/monk/i)+maDie(clsLvl(/monk/i)));api.log("Uncanny Metabolism: Ki refilled");break;
  }}
 
 function render(api,d){var host;
@@ -593,14 +607,15 @@ function render(api,d){var host;
  host=document.getElementById("body-fighter");if(host)host.insertAdjacentHTML("afterbegin",manPane(d));
  host=document.getElementById("body-monk");if(host){var m=clsLvl(/monk/i);host.insertAdjacentHTML("afterbegin",'<section id="monkvit"><h2>Discipline <span class="sub2">Monk '+m+'</span></h2><div class="vitals">'+
   '<div class="vit hi"><div class="lb">Ki</div><div class="v">'+n(St().res.ki)+'</div><div class="s">top bar tracks it</div></div>'+
-  '<div class="vit"><div class="lb">Martial Arts die</div><div class="v">d'+maDie(m)+'</div><div class="s">2024 progression</div></div>'+
+  '<div class="vit"><div class="lb">Unarmed dice</div><div class="v">'+maCount(m)+' dice</div><div class="s">revised: +1 at 5, 10, 17</div></div>'+
   '<div class="vit"><div class="lb">Ki save DC</div><div class="v">'+(8+d.pb+d.mod.wis)+'</div><div class="s">8 + PB + WIS</div></div>'+
-  '<div class="vit"><div class="lb">Unarmed attack</div><div class="v">+'+(d.pb+d.mod.dex)+'</div><div class="s">PB + DEX</div></div></div></section>');}
+  '<div class="vit"><div class="lb">Unarmed attack</div><div class="v">+'+(d.pb+d.mod.dex)+'</div><div class="s">PB + DEX</div></div></div>'+
+  '<table style="max-width:640px"><tr><th>Weapon</th><th class="n">Base</th><th class="n">Now</th><th>Type</th><th>Trait</th></tr>'+UNARMED.map(function(u){return '<tr><td style="font-family:Cinzel;color:#fff">'+u[0]+'</td><td class="n">1d'+u[1]+'</td><td class="n" style="color:#fff">'+maCount(m)+'d'+u[1]+' + '+d.mod.dex+'</td><td>'+u[2]+'</td><td style="font-size:14px">'+u[3]+'</td></tr>';}).join('')+'</table></section>');}
  var ct=document.getElementById("ct-seals");if(ct)ct.textContent=K().seals.length||"";}
 
 return {
  id:"melissa",name:"Melissa",epithet:"Seals of the Ancients",accent:"#e24a52",
- level:12,classes:[{name:"Monk",level:12,die:8},{name:"Fighter",level:12,die:10}],
+ level:12,classes:[{name:"Monk",level:12,die:10},{name:"Fighter",level:12,die:10}],
  stats:{str:13,dex:30,con:20,int:14,wis:26,cha:12},
  saves:{str:true,dex:true,con:true,int:true,wis:true,cha:true},
  skills:{"Acrobatics":1,"History":2,"Insight":1,"Intimidation":1,"Investigation":2,"Perception":1,"Stealth":1,"Survival":1},
@@ -610,7 +625,8 @@ return {
  unarmored:{stats:["dex","wis"],die:8},
  economy:[{id:"atk",name:"Attacks",max:3},{id:"rx",name:"Reactions",max:3}],
  resources:[
-  {id:"ki",name:"Ki",max:29,rest:"short",steps:[1,2],color:"#5fd2c0",note:"29 per her sheet"},
+  {id:"ki",name:"Ki",maxFn:function(d,S){return kiMax(S);},rest:"short",steps:[1,2],color:"#5fd2c0",note:"Ki Surge: 2 × Monk level + 5 per 10"},
+  {id:"tempo",name:"Tempo tokens",maxFn:function(d){return d.pb;},rest:"short",steps:[1],color:"#c2abff",note:"Parry · Deflect · Feint pool = PB"},
   {id:"sup",name:"Superiority dice",max:5,rest:"short",steps:[1],color:"#d9b154",note:"d10"},
   {id:"flow",name:"Flow",maxFn:function(d){return flowMax(d);},rest:"empty",steps:[1],color:"#a9c2dc",note:"+2 Dodge, +5 ft each"},
   {id:"sw",name:"Second Wind",max:4,rest:"long",steps:[1],color:"#e0506b",note:"+1 on short rest"},
@@ -618,10 +634,10 @@ return {
   {id:"indom",name:"Indomitable",max:1,rest:"long",steps:[1]},
   {id:"kye",name:"Know Your Enemy",max:1,rest:"long",steps:[1]},
   {id:"um",name:"Uncanny Metabolism",max:1,rest:"long",steps:[1]}],
- barRes:["ki","sup","flow"],
+ barRes:["ki","sup","flow","tempo"],
  riders:[{n:"Tavern Brawler",e:"1d4+DEX"},{n:"Superiority die",e:"1d10"},{n:"Relentless d8",e:"1d8"}],
  tlStat:"wis",tlBonus:0,
- levelNote:"Character level 12 sets PB +4; Monk 12 and Fighter 12 give 336 max HP, matching her Google sheet. Max TL assumes (CON + WIS) × 10 "+TBD+". AC uses the armor overhaul's Unarmored Defense (tier 2 bonus, cap 30); her Google sheet lists 28 "+TBD+".",
+ levelNote:"Character level 12 sets PB +4. The revised monk uses a d10 hit die, so Monk 12 + Fighter 12 give 360 max HP; her Google sheet (12d8 for Monk) lists 336 "+TBD+". Max TL assumes (CON + WIS) × 10 "+TBD+". AC uses the armor overhaul's Unarmored Defense (tier 2 bonus, cap 30); her Google sheet lists 28 "+TBD+".",
  effectPresets:[{name:"Stunned",rounds:1,note:"Stunning Strike · until the start of her next turn"},{name:"Extort Truth",rounds:100,note:"10 minutes · can't lie, CHA checks vs it have advantage"},{name:"Analyzed",rounds:0,note:"Extract Aspects · misses vs her trigger a reaction strike"},{name:"Prone",rounds:0,note:"Trip Attack"}],
  kitState:{seals:[],man:KNOWN0.slice(),rnd:{},manF:"all",autoTick:false,autoRel:true,composed:false},
  kitPanes:[
@@ -629,7 +645,7 @@ return {
   {id:"monk",n:"Cobalt Soul",c:"#5fd2c0",eb:"Monk 12 · Way of the Cobalt Soul",bl:"Ki, Martial Arts, and the Cobalt Soul's analysis kit. Pay buttons spend Ki."},
   {id:"fighter",n:"Battle Master",c:"#d9b154",eb:"Fighter 12 · Battle Master",bl:"Superiority dice, maneuver selection, and the Fighter's once-per-rest features."}],
  panes:[{id:"transform",n:"Transformation",c:"#7a7288",eb:"Locked",bl:"Unlocks with her paralogue.",
-  html:'<section id="txlock"><div class="tx" style="text-align:center;padding:34px 18px"><div class="tx-name" style="color:var(--dim)">Locked</div><p class="note" style="margin:12px auto">To unlock, complete <b>Mountains of the Ancients</b>: Melissa\'s Paralogue Mission.</p><p class="sub"></p></div></section>'}],
+  html:'<section id="txlock"><div class="tx" style="text-align:center;padding:34px 18px"><div class="tx-name" style="color:var(--dim)">Locked</div><p class="note" style="margin:12px auto">To unlock, complete <b>Mountains of the Ancients</b>: Melissa\'s Paralogue Mission.</p><p class="sub">Direction sketched in v1.0 (seals advancing on their own, immunity to forced movement, failures cascading across every seal). Mechanics and values wait on the paralogue.</p></div></section>'}],
  kit:KIT,items:[],rels:[],infusions:[],
  tabs:{school:true,battalions:true,companions:false,spells:false},
  hooks:{
@@ -641,7 +657,7 @@ return {
   shortRest:function(api){api.addRes("sw",1);K().rnd={};},
   longRest:function(api){var k=K();k.rnd={};k.composed=false;}
  },
- footNote:"Melissa v2.0 on the Covenant engine"
+ footNote:"Melissa v2.1 · revised monk"
 };
 })();
 
