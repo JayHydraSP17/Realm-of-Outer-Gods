@@ -383,7 +383,7 @@ window.CHAR={
  skills:{"Acrobatics":1,"History":1,"Investigation":1,"Deception":2,"Insight":2,"Performance":2,"Persuasion":2,"Religion":2},
  /* Jack of All Trades (+½PB) on every unproficient skill; Religion and Performance carry +4 misc on her export. */
  skillMisc:{"Animal Handling":2,"Arcana":2,"Athletics":2,"Intimidation":2,"Medicine":2,"Nature":2,"Perception":2,"Sleight of Hand":2,"Stealth":2,"Survival":2,"Religion":4,"Performance":4},
- initMisc:4,spellStat:"cha",speed:30,hitDice:24,itemSlots:4,tl:false,
+ initMisc:4,spellStat:"cha",speed:30,hitDice:24,itemSlots:3,tl:false,
  identity:{"Name":"Sika Carmichael","Race":"Human","Gender":"Female (she/her)","Age":"15","Height":"5' 2\"","Alignment":"Neutral Good","Background":"Noble (Fallen) / Entertainer","Deity":"???","Hair":"Blonde, long & wavy","Eyes":"Green","Skin":"White"},
  identityFields:["Name","Race","Gender","Age","Height","Alignment","Background","Deity","Hair","Eyes","Skin"],
  economy:[{id:"atk",name:"Attacks",max:2},{id:"rx",name:"Reactions",max:1}],
@@ -414,7 +414,7 @@ window.CHAR={
   {id:"bard",n:"Bard · Whispers",c:"#9d7ce8",eb:"Bard 2024 · College of Whispers",bl:"Bardic Inspiration, Psychic Blades and the Whispers features. Everything unlocks from her Bard level."},
   {id:"troub",n:"Troubadour · Mindwhisper",c:"#5fd6a0",eb:"Troubadour · Mindwhisper's Tradition",bl:"Concordance, Mystic Songs, Telepathic Intrusion and Shattering Song. Everything unlocks from her Troubadour level."}],
  kit:[
-  {id:"feat",title:"Sika's Hymns Defy Despair",sub:"feat · difficulty ★",blurb:"Live trackers for all of these are on the <b>Melodies &amp; Hymns</b> and <b>Alcohol &amp; Wasted</b> tabs.",items:[
+  {id:"feat",title:"Mindful Melodies",sub:"feat · difficulty ★",blurb:"Live trackers for all of these are on the <b>Melodies &amp; Hymns</b> and <b>Alcohol &amp; Wasted</b> tabs.",items:[
    {n:"The Sephopine Flute · Mental Power",k:"passive",cost:"MP 50",text:"Her family heirloom lets her influence others through song at the cost of her mental fortitude. Instead of TL she uses <b>Mental Power (MP)</b>, max 50. Regain all MP on a long rest and half on a short rest; certain events restore bonus MP. <b>Melody Factor</b> = (PB + CHA + WIS) × 2 = <b>44</b>."},
    {n:"Mindful Melodies",k:"bonus",cost:"5 MP",text:"Begin performing a Melody targeting creatures of her choice within 30 ft. A creature stops being a target when it leaves range; one that enters can be made a target (no action). Lasts <b>1 minute</b>; she can stop any time. Stops if she's incapacitated or can't speak. Starting or switching costs <b>5 MP</b>, at most <b>once per turn</b>, and is <b>locked while Dizzy</b>."},
    {n:"Hymns",k:"free",cost:"listed MP",text:"Each Melody grants three hymns. Once per turn she plays one as a <b>free action</b> for its listed MP. Extra hymns the same turn, or a hymn as a <b>reaction</b>, cost <b>+3 MP</b>. Hymns only play from the Melody she is <b>actually performing</b>."},
@@ -496,6 +496,7 @@ window.CHAR={
  items:[
   {id:"flute",name:"The Sephopine Flute",cat:"weapon",weaponType:"Flute",loc:"w1",dmg:"1d10 bludgeoning",atk:"",desc:"Family heirloom. Doubles as a baton (5 ft, 1d10 bludgeoning). Her spellcasting focus and the source of her Mental Power: every Melody, hymn and Mystic Song is played through it."},
   {id:"cloak",name:"Craven Cloak",cat:"accessory",loc:"acc1",desc:"Worn on her body per her export. <span class=\"tbd\">no description on the export</span>"},
+  {id:"pearl",name:"Storage Pearl",cat:"accessory",loc:"acc2",mods:{itemSlots:2},desc:"<b>+2 item slots</b> while equipped (3 base → 5)."},
   {id:"pack",name:"Backpack",cat:"other",desc:"Carried gear."},
   {id:"pouch",name:"Belt Pouch",cat:"other",desc:""},
   {id:"quiver",name:"Bandoleer / Quiver",cat:"other",desc:""}],
@@ -776,7 +777,10 @@ function renderTroub(d){var host=$("body-troub");if(!host)return;var k=K(),t=tLv
 function clearCombat(k){k.mel.on="";k.mel.rounds=0;k.mel.free=false;k.mel.extra=false;k.mel.switched=false;k.mel.cha2=false;
  k.song={id:"",mode:"",left:0,last:k.song.last||""};var r=k.dr;r.n=0;r.diz=false;r.rd=0;r.hy=0;r.ext=false;r.bend=0;r.nau=false;r.last="";r.nlast="";k.ti.bonusConc=false;k.bl.used=false;}
 C.hooks={
- init:function(api){A=api;var k=K();if(!k.lastLv)k.lastLv={bard:-1,trb:-1};syncOwn();refreshDyn(api.compute());},
+ init:function(api){A=api;var k=K(),s=S();if(!k.lastLv)k.lastLv={bard:-1,trb:-1};
+  if(!k.pearlFix){k.pearlFix=true;if(n(s.itemSlotsBase)===6)s.itemSlotsBase=3;
+   if(!s.items.some(function(it){return /storage pearl/i.test(it.name||"");})){var free=["acc1","acc2","acc3"].filter(function(sl){return !s.items.some(function(it){return it.loc===sl;});})[0]||"storage";
+    s.items.push({id:"pearl",name:"Storage Pearl",cat:"accessory",qty:1,rarity:"",weaponType:"",twoSlot:false,atk:"",dmg:"",dur:0,armor:{kind:"",tier:1,base:0,ps:"dex"},props:[],abilities:[],mods:{itemSlots:2},tags:"",desc:"<b>+2 item slots</b> while equipped (3 base → 5).",loc:free});}}syncOwn();refreshDyn(api.compute());},
  render:function(api,d){A=api;if(syncOwn())setTimeout(function(){if(window.__sheet)window.__sheet.renderAll();},0);refreshDyn(d);
   [renderStrip,renderMel,renderWasted,renderBard,renderTroub].forEach(function(f){try{f(d);}catch(e){if(window.console)console.error("sika render",e);}});},
  endTurn:function(api,parts){A=api;var k=K(),r=k.dr,m=k.mel;
