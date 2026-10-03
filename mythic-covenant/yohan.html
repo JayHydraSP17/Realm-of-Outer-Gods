@@ -428,9 +428,12 @@ var SAINT=[
 ];
 
 /* ---------- state helpers ---------- */
-var KDEF={buried:false,gen:0,stance:"",stanceR:0,kiTurn:0,mdSpent:0,surgeN:0,surgeTurn:false,surgeFt:0,raging:false,majR:-1,lone:false,tumble:0,wallN:1,dbProp:"slashing",exAdj:0,exFilter:"mine",exQ:"",exSpend:{},cd:{},known:{},seeded:false};
+var KDEF={inferior:false,cfgVer:0,bulN:1,buried:false,gen:0,stance:"",stanceR:0,kiTurn:0,mdSpent:0,surgeN:0,surgeTurn:false,surgeFt:0,raging:false,majR:-1,lone:false,tumble:0,wallN:1,dbProp:"slashing",exAdj:0,exFilter:"mine",exQ:"",exSpend:{},cd:{},known:{},seeded:false};
 function seed(){var S=St();if(!S.kit||typeof S.kit!=="object")S.kit={};var k=S.kit;
  for(var x in KDEF)if(k[x]===undefined)k[x]=JSON.parse(JSON.stringify(KDEF[x]));
+ if(n(k.cfgVer)<2){var C0=window.CHAR;S.level=C0.level;S.classes=JSON.parse(JSON.stringify(C0.classes));S.stats=JSON.parse(JSON.stringify(C0.stats));S.saves=JSON.parse(JSON.stringify(C0.saves));
+  for(var sk in C0.skills)S.skills[sk]=C0.skills[sk];for(var f in C0.identity)if(!S.ident[f]||f==="Name")S.ident[f]=C0.identity[f];S.hd={cur:C0.hitDice,max:C0.hitDice};S.dcMisc=C0.dcMisc;
+  if(k.seeded){S.hp.cur=-1;S.res.ki=focusMax(S);S.res.exd=exDiceMax(S);S.res.rage=rageMax(S);}k.cfgVer=2;}
  if(!k.seeded){YOHAN_KNOWN.forEach(function(id){k.known[id]=true;});k.seeded=true;
   S.res.ki=focusMax(S);S.res.exd=exDiceMax(S);S.res.rage=rageMax(S);}}
 function res(id){return n(St().res[id]);}
@@ -485,7 +488,7 @@ function renderSands(d,S){var k=S.kit,md=res("md"),mx=d.pb,st=res("stacks"),die=
   '<div class="row" style="margin-top:6px"><button class="btn" data-a="y-tumble"'+(n(k.tumble)>=3?' disabled':'')+'>Rolling Tumbleweed · +10 ft rolled</button><span class="sub" style="margin:0">'+n(k.tumble)+'/3 MD this roll</span></div></div>';
  var lone=!!k.lone;
  h+='<div class="card"><h3>Passives</h3><p><b class="cz">Hmph.</b> Forced movement against you shrinks by <b>'+(5*md)+' ft</b> (5 × '+md+' MD).</p>'+
-  '<div class="row"><button class="chip'+(lone?' on':'')+'" data-a="y-lone">Lone Sand · no ally within 20 ft'+(lone?' · +2 AC applied':'')+'</button></div></div></div></section>';
+  '<div class="row"><button class="chip'+(lone?' on':'')+'" data-a="y-lone">Lone Sand · no ally within 20 ft'+(lone?' · +2 AC applied':'')+'</button><button class="chip'+(k.inferior?' on':'')+'" data-a="y-inf">Inferiority Complex · enemy has more HP'+(k.inferior?' · +1 die':'')+'</button></div></div></div></section>';
  /* stances */
  h+='<section id="stances"><h2>Stances of the Desert <span class="sub2">bonus action · 3 ki · until the start of your next turn · one at a time</span></h2><div class="grid2">';
  [["red","Red Dunes","#e0553f",["+10 ft movement speed","First creature you hit takes bonus damage = MD spent this turn ("+n(k.mdSpent)+"d"+die+")","Drop a creature to 0 HP: gain 1 MD"]],
@@ -509,7 +512,9 @@ function renderSaint(d,S){var k=S.kit,s=ssLv(S),mx=focusMax(S),cap=focusCap(S),k
  h+='<div class="card"><h3>Dragon Surge <span class="tag k-free">your turn</span><span class="tag gold">'+sc+' ki</span></h3><p>Take an additional action. Speed +'+(5*sc)+' ft until the end of the turn. Each use costs 1 more until a rest.</p>'+
   '<div class="row"><button class="btn pri" data-a="y-surge"'+(s<2||k.surgeTurn?' disabled':'')+'>Surge · −'+sc+' ki</button>'+(k.surgeTurn?chip("used this turn","warn"):'')+chip("uses since rest "+n(k.surgeN))+'</div></div>';
  h+='<div class="card"><h3>Technique DC <span class="tag gold">'+dcS+'</span></h3><p class="mono" style="font-size:13px">8 + PB '+d.pb+' + WIS '+(d.mod.wis>=0?'+':'')+d.mod.wis+' + STR '+(d.mod.str>=0?'+':'')+d.mod.str+' = '+dcS+'</p><p class="note">Book formula is 8 + PB + WIS; Yohan\'s sheet adds STR. Character tab DC uses the same total.</p></div>';
- h+='<div class="card"><h3>Saint Weapon · Horizon\'s Reach</h3><p>Halberd, 1d12, +5 ft reach. '+(s>=14?'Bond active: +1 attack and damage, magical, no focus limit.':'Bond benefits (+1, magical, no focus limit) arrive with <b>Saint Weapon Bond</b> at Sword Saint 14.')+'</p></div></div></section>';
+ h+='<div class="card"><h3>Saint Weapon · Horizon\'s Reach</h3><p>Halberd, 1d12, +5 ft reach. '+(s>=14?'Bond active: +1 attack and damage, magical, no focus limit.':'Bond benefits (+1, magical, no focus limit) arrive with <b>Saint Weapon Bond</b> at Sword Saint 14.')+'</p></div>'+
+  (s>=11?'<div class="card"><h3>Enduring Bulwark <span class="tag gold">1+ ki</span>'+(k.cd.bulwark?chip("used","bad"):chip("ready","ok"))+'</h3><p>When damage would drop you to 0 HP: stay at 1 HP and gain 1d10 temp HP per focus spent (max '+(n(k.bulN,1)*10)+'). Lose 1d8 of them at the start of each of your turns. Once per short or long rest.</p><div class="row"><button class="btn sm" data-a="y-buln" data-n="-1">−</button><span class="cur" style="font-size:16px">'+n(k.bulN,1)+'</span><button class="btn sm" data-a="y-buln" data-n="1">+</button><button class="btn pri" data-a="y-bulwark"'+(k.cd.bulwark?' disabled':'')+'>Endure · −'+n(k.bulN,1)+' ki</button></div></div>':'')+
+  (s>=6?'<div class="card"><h3>Rally and Conquer <span class="tag k-passive">on melee hit</span></h3><p>Until your next turn, allies add 1d4 to attacks against the creature you hit while it stays in your reach. Use the <b>Rallied</b> preset on the Turn tab to track the mark.</p></div>':'')+'</div></section>';
  return h;}
 
 /* ======= SAVAGE (top of the Savage pane) ======= */
@@ -554,17 +559,19 @@ function renderStrip(d,S){var k=S.kit,die=mdDie(d);
   '<span class="cz">MD</span>'+pipsHtml(res("md"),d.pb,"#e3b85e")+'<span class="cz" style="margin-left:10px">Stacks</span>'+pipsHtml(res("stacks"),6,"#f0d695")+
   '<span class="sub" style="margin:0">gen '+n(k.gen)+'/3</span></div><div class="row" style="margin-top:8px">'+
   '<button class="btn sm" data-a="y-move" data-n="1">+10 ft straight</button><button class="btn sm" data-a="y-move" data-n="0">+10 ft</button><button class="btn sm" data-a="y-calc">strike → calc</button><button class="btn sm" data-a="y-dunebreak"'+(res("md")?'':' disabled')+'>Dunebreaker '+res("md")+'d'+die+'</button>'+
-  '<button class="chip'+(k.buried?' on':'')+'" data-a="y-buried">Buried</button>'+(k.stance?chip(stanceName(k.stance),"on"):chip("no stance"))+(k.raging?chip("Raging","bad"):'')+(k.lone?chip("Lone Sand +2 AC","ok"):'')+(n(k.majR)>=0?chip("Majestic","ok"):'')+(k.surgeTurn?chip("Surged +"+n(k.surgeFt)+" ft","warn"):'')+
+  '<button class="chip'+(k.buried?' on':'')+'" data-a="y-buried">Buried</button>'+(k.stance?chip(stanceName(k.stance),"on"):chip("no stance"))+(k.raging?chip("Raging","bad"):'')+(k.lone?chip("Lone Sand +2 AC","ok"):'')+(n(k.majR)>=0?chip("Majestic","ok"):'')+(k.surgeTurn?chip("Surged +"+n(k.surgeFt)+" ft","warn"):'')+(k.inferior?chip("Inferiority +1 die","warn"):'')+
   '<button class="btn sm" data-a="pane" data-id="sands">open Sands →</button></div></div></section>';}
 
 /* ======= CONFIG OBJECT ======= */
 var C={
  id:"yohan",name:"Yohan",epithet:"The Diamond in the Rough",accent:"#e3b85e",
- level:14,classes:[{name:"Barbarian (Alt · Champion)",level:11,die:12},{name:"Sword Saint (Dragonfly)",level:3,die:10}],
- stats:{str:24,dex:10,con:15,int:10,wis:24,cha:13},saves:{str:true,con:true},
- spellStat:"wis",dcMisc:7,speed:30,hitDice:14,itemSlots:3,
- unarmored:{stats:["dex","con"]},
- identity:{Name:"Yohan"},
+ level:12,classes:[{name:"Barbarian (Alt · Champion)",level:12,die:12},{name:"Sword Saint (Dragonfly)",level:12,die:10}],
+ stats:{str:28,dex:16,con:26,int:15,wis:22,cha:14},saves:{str:true,dex:true,con:true,wis:true},
+ skills:{"Animal Handling":1,"Athletics":1,"Nature":1,"Perception":1,"Survival":1},
+ spellStat:"wis",dcMisc:9,speed:30,hitDice:24,itemSlots:3,
+ unarmored:{stats:["str","con"]},
+ identityFields:["Name","Race","Gender","Age","Height","Weight","Size","Alignment","Background","Deity","Defined Trait"],
+ identity:{Name:"Yohan Petrov",Race:"Human",Gender:"Male (he/him)",Age:"15",Height:"6' 8\"",Weight:"180 lb",Size:"Medium",Alignment:"Neutral",Background:"Noble / Outlander",Deity:"Ugenheur","Defined Trait":"Inferiority Complex"},
  economy:[{id:"atk",name:"Attacks",max:2},{id:"rx",name:"Reactions",max:1}],
  resources:[
   {id:"md",name:"Momentum Dice",maxFn:function(d){return d.pb;},rest:"empty",steps:[1],color:"#e3b85e",note:"Sandstorm · max PB · 3 a round"},
@@ -575,8 +582,8 @@ var C={
  barRes:["md","stacks","ki","exd","rage"],
  tlStat:"wis",tlBonus:0,
  kitState:JSON.parse(JSON.stringify(KDEF)),
- levelNote:"<b>Levels inferred.</b> Barbarian 11 / Sword Saint 3 (level 14, PB +5) is the only split that fits the Sands sheet: 6 Exploits known with 9th-level ones, d8 Exploit Dice, only 3rd-level Dragonfly techniques, MD still d8, and both DCs (Savage 20, Sword Saint 27) with STR 24 / WIS 24. <span class=\"tbd\">confirm</span> CON 15 and CHA 13 are the Exploit prerequisites, not his real scores, and DEX/INT are placeholders. <span class=\"tbd\">enter real scores</span> TL paired stat is a placeholder too. <span class=\"tbd\">confirm</span>",
- defenseNote:"Unarmored Defense (10 + DEX + CON) from the Barbarian. Lone Sand adds +2 AC through the situational box while toggled on the Sands tab.",
+ levelNote:"<b>Gestalt.</b> Barbarian 12 and Sword Saint 12 run side by side at character level 12 (PB +4), as on his character sheet. Max HP follows both hit-die tables + 24 × CON = 456. Max TL is blank on his sheet, so the paired stat is a placeholder. <span class=\"tbd\">confirm TL stat</span>",
+ defenseNote:"Unarmored Defense uses STR + CON to match the 27 AC on his character sheet (the handbook's version uses DEX + CON). Lone Sand adds +2 AC through the situational box while toggled on the Sands tab.",
  kitPanes:[
   {id:"sands",n:"Sands of Momentum",c:"#e3b85e",eb:"Core mechanic",bl:"Two momentum tracks turn movement into force. Log movement here, then spend it."},
   {id:"saint",n:"Sword Saint",c:"#8fd6e6",eb:"Way of the Dragonfly",bl:"Ki (focus points), Dragon Surge, focus techniques, and the class progression."},
@@ -610,6 +617,14 @@ var C={
    {n:"Blasting Spear",k:"attack",cost:"2 ki",pay:{res:{ki:2}},dmg:"1d12+STR",text:"On a melee attack with a weapon that deals <b>piercing</b> damage, forgo the roll: every creature in a 30-ft × 5-ft line makes a DEX save, taking the weapon's damage on a failure. <span class=\"tbd\">Horizon's Reach is slashing</span>"},
    {n:"Majestic",k:"bonus",cost:"2 ki",majestic:true,pay:{res:{ki:2}},text:"All attacks against you have disadvantage until the start of your next turn."},
    {n:"Thunder Joust",k:"free",cost:"1 ki",pay:{res:{ki:1}},text:"After moving 10+ ft straight toward a creature, gain advantage on your next weapon attack against it this turn. On a hit, a target no more than one size larger makes a STR save or falls prone."}]},
+  {id:"origin",title:"Race, background & feats",sub:"Human · Noble",items:[
+   {n:"Adaptable (Human)",k:"passive",text:"+1 to all ability scores (already in his scores)."},
+   {n:"Skillful (Human)",k:"passive",text:"Proficiency in Animal Handling."},
+   {n:"Versatile (Human)",k:"passive",text:"Gained the Free Sword Mercenary's Will feat."},
+   {n:"Noble (background)",k:"passive",text:"+2 CHA and WIS (already in his scores)."},
+   {n:"Hold the Ground",k:"reaction",text:"Free Sword Mercenary's Will. When a creature forcibly moves you, use your reaction to reduce the distance by up to your speed. Works alongside Hmph."},
+   {n:"Resolute",k:"passive",text:"Free Sword Mercenary's Will. Advantage on saving throws that would apply a condition."},
+   {n:"Defined Trait: Inferiority Complex",k:"passive",text:"+1 weapon damage die when fighting an enemy with higher HP than you. Toggle it on the Sands tab; it rides along when a strike is sent to the calculator."}]},
   {id:"rage",pane:"savage",title:"Barbarian actions",sub:"",items:[
    {n:"Rage",k:"bonus",cost:"1 rage",rage:true,pay:{res:{rage:1}},text:"Enter a Rage (tracker above shows what's active). Danger Sense lets you rage while rolling initiative."},
    {n:"Reckless Attack",k:"free",text:"Advantage on Strength attacks until your next turn; attacks against you have advantage too."}]}],
@@ -617,7 +632,7 @@ var C={
   desc:"Halberd. Yohan's Sword Saint weapon.",
   abilities:[{name:"Long Haft",kind:"passive",text:"+5 ft extra reach on top of normal weapon reach."},
    {name:"Saint Weapon",kind:"passive",text:"Yohan's Sword Saint weapon. Saint Weapon Bond (Sword Saint 14): +1 attack and damage, magical, no per-turn focus limit."}]}],
- effectPresets:[{name:"Honor Duel",rounds:10,note:"disadv. vs others · WIS save ends"},{name:"Taunted",rounds:1,note:"Taunting Strike"},{name:"Disoriented",rounds:10,note:"Disorienting Blow · WIS save ends"},{name:"Blinded",rounds:1,note:"Sunpiercer · CON save"},{name:"Bleeding",rounds:1,note:"Dunebreaker (slashing)"},{name:"Prone",rounds:1,note:"Thunder Joust / Dunewall"}],
+ effectPresets:[{name:"Rallied",rounds:1,note:"Rally and Conquer · allies +1d4 to hit"},{name:"Honor Duel",rounds:10,note:"disadv. vs others · WIS save ends"},{name:"Taunted",rounds:1,note:"Taunting Strike"},{name:"Disoriented",rounds:10,note:"Disorienting Blow · WIS save ends"},{name:"Blinded",rounds:1,note:"Sunpiercer · CON save"},{name:"Bleeding",rounds:1,note:"Dunebreaker (slashing)"},{name:"Prone",rounds:1,note:"Thunder Joust / Dunewall"}],
  tabs:{school:true,battalions:true,companions:false,spells:false},
  footNote:"Sands of Momentum · Alternate Barbarian v2.3.1 · Sword Saint",
  hooks:{
@@ -663,6 +678,9 @@ var C={
    case "y-shift":spendMD(1,"Shifting Sands, AC +"+d.pb);return true;
    case "y-cactus":if(!k.buried&&!spendMD(1,""))return true;log("Prickly Cactus: "+mdDie(d)+" + "+d.pb+" = "+(mdDie(d)+d.pb)+" piercing"+(k.buried?" (free, Buried)":""));return true;
    case "y-tumble":if(n(k.tumble)>=3)return false;var gt=gainMD(1,false,"Rolling Tumbleweed");if(gt)k.tumble=n(k.tumble)+1;return true;
+   case "y-inf":k.inferior=!k.inferior;return true;
+   case "y-bulwark":var bn=Math.max(1,n(k.bulN,1));if(k.cd.bulwark){flash("Enduring Bulwark is used until a rest");return false;}if(!spendKi(bn,""))return true;k.cd.bulwark=true;S.hp.cur=Math.max(1,n(S.hp.cur));S.hp.temp=n(S.hp.temp)+bn*10;log("Enduring Bulwark: 1 HP, +"+(bn*10)+" temp HP ("+bn+"d10 at max); lose 1d8 at the start of each turn");return true;
+   case "y-buln":k.bulN=Math.max(1,n(k.bulN,1)+v);return true;
    case "y-lone":k.lone=!k.lone;S.sit.ac=n(S.sit.ac)+(k.lone?2:-2);log("Lone Sand "+(k.lone?"on, +2 AC":"off"));return true;
    case "y-stance":if(!id){log(stanceName(k.stance)+" dropped");k.stance="";return true;}if(k.stance===id)return false;if(!spendKi(3,"Stance: "+stanceName(id)))return true;k.stance=id;k.stanceR=S.round;return true;
    case "y-stgain":gainMD(1,false,"Stance trigger");return true;
@@ -684,8 +702,8 @@ var C={
    case "y-exknow":k.known[id]=!k.known[id];return true;
    case "y-calc":var w=null;S.items.forEach(function(it){if(it.cat==="weapon"&&/horizon/i.test(it.name)&&it.loc!=="storage")w=it;});
     var ex=w&&(/(\d+d\d+(?:[+\-](?:\d+d\d+|\d+|str|dex|con|int|wis|cha|pb))*)/i.exec(String(w.dmg).replace(/\s+/g,""))||[])[1]||"1d12+STR";
-    S.dmg.expr=ex;S.dmg.label="Horizon's Reach";S.dmg.fromSrc=true;S.dmg.xd=res("stacks");S.dmg.crit=res("stacks")>=6;if(!S.dmg.riders)S.dmg.riders={};S.dmg.riders["Rage"]=!!k.raging;
-    S.ui.pane="turn";log("Strike sent: "+ex+" +"+res("stacks")+" stack dice"+(res("stacks")>=6?", auto-crit":""));setTimeout(function(){var x=document.getElementById("damage");if(x)x.scrollIntoView({behavior:"smooth",block:"start"});},60);return true;
+    S.dmg.expr=ex;S.dmg.label="Horizon's Reach";S.dmg.fromSrc=true;S.dmg.xd=res("stacks")+(k.inferior?1:0);S.dmg.crit=res("stacks")>=6;if(!S.dmg.riders)S.dmg.riders={};S.dmg.riders["Rage"]=!!k.raging;
+    S.ui.pane="turn";log("Strike sent: "+ex+" +"+res("stacks")+" stack dice"+(k.inferior?" +1 Inferiority Complex":"")+(res("stacks")>=6?", auto-crit":""));setTimeout(function(){var x=document.getElementById("damage");if(x)x.scrollIntoView({behavior:"smooth",block:"start"});},60);return true;
    }return false;}}
 };
 /* damage-calculator riders track live state */
