@@ -354,7 +354,7 @@ function maDie(m){return 8;} /* "a Martial Arts die" under the revised monk: d8 
 function monkOf(S){var c=(S.classes||[]).filter(function(x){return /monk/i.test(x.name);})[0];return c?n(c.level):0;}
 function kiMax(S){var m=monkOf(S);return 2*m+5*Math.floor(m/10);} /* Ki Surge: double baseline, +5 at 10/20/30/40/50 */
 function maCount(m){return 1+[5,10,17].filter(function(t){return m>=t;}).length;} /* revised: +1 die at 5, 10, 17 */
-var UNARMED=[["Fist",6,"bludgeoning","Default. Listed as Palms on her sheet.","5 ft"],["Elbow",8,"piercing","Ignores temporary HP.","5 ft"],["Knee",8,"piercing","Knocks the target back 5 ft.","5 ft"],["Kick",10,"bludgeoning","+5 ft reach, knocks the target back 10 ft. On a miss, Melissa is <b>Vulnerable</b>.","10 ft"]];
+var UNARMED=[["Palm",6,"bludgeoning","Default.","5 ft"],["Elbow",8,"piercing","Ignores temporary HP.","5 ft"],["Knee",8,"piercing","Knocks the target back 5 ft.","5 ft"],["Kick",10,"bludgeoning","+5 ft reach, knocks the target back 10 ft. On a miss, Melissa is <b>Vulnerable</b>.","10 ft"]];
 function drain(d){return Math.max(0,d.mod.wis*d.pb);}
 function tierOf(t){return Math.min(6,1+Math.floor(n(t)/3));}
 function flowMax(d){return Math.max(1,d.pb);}
