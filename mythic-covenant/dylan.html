@@ -352,7 +352,6 @@ body{background:radial-gradient(1100px 560px at 82% -12%,rgba(224,86,91,.09),tra
 .dy-strip>div{flex:1 1 220px;}
 details.dy-more{margin-top:10px;}
 details.dy-more summary{cursor:pointer;font-family:'Cinzel';font-size:14px;color:var(--dim);}
-.rail-btn[data-id="rels"],#pane-rels{display:none!important;}
 </style>
 </head>
 <body>
@@ -679,8 +678,8 @@ return {
   {id:"flag",name:"The Flag of Treason",cat:"accessory",desc:"Indestructible banner. AC equals Dylan's; damage it takes deals half to him. Every feat ability keys off it — see the Flag of Treason tab.",loc:"acc1"},
   {id:"pack",name:"Backpack",cat:"other",qty:1},{id:"pouch",name:"Belt Pouch",cat:"other",qty:1},{id:"quiver",name:"Bandoleer / Quiver",cat:"other",qty:1},{id:"saddle",name:"Saddlebags",cat:"other",qty:1}],
  prof:[{type:"Unarmed",start:"F",wexp:0},{type:"Mace",start:"F",wexp:0},{type:"Sword",start:"F",wexp:0},{type:"Dagger",start:"F",wexp:0},{type:"Polearm",start:"F",wexp:0},{type:"Axe",start:"F",wexp:0},{type:"Bow",start:"F",wexp:0},{type:"Gauntlet",start:"F",wexp:0},{type:"Magic",start:"F",wexp:0}],
- rels:[],infusions:[],
- tabs:{school:false,battalions:false,companions:false,spells:false},
+ rels:[{name:"Aaron",tier:0,pips:0,cap:4},{name:"Alexander Volkbane",tier:0,pips:0,cap:4},{name:"Anais",tier:0,pips:0,cap:4},{name:"Andrew Long",tier:0,pips:0,cap:4},{name:"Amias Rosetherry",tier:0,pips:0,cap:4},{name:"Beatrix Callie",tier:0,pips:0,cap:4},{name:"Bonnie & Clyde",tier:0,pips:0,cap:4},{name:"Eva",tier:0,pips:0,cap:4},{name:"Callisto",tier:0,pips:0,cap:4},{name:"Cecilia DuBois",tier:0,pips:0,cap:4},{name:"Cynthia Goodwill",tier:0,pips:0,cap:4},{name:"Damien Creed",tier:0,pips:0,cap:4},{name:"Denver",tier:0,pips:0,cap:4},{name:"Fior Munya",tier:0,pips:0,cap:4},{name:"Goru",tier:0,pips:0,cap:4},{name:"Hasani Eldesteen",tier:3,pips:0,cap:4,note:"B on Hasani's sheet"},{name:"Ionus",tier:0,pips:0,cap:4},{name:"Jason",tier:0,pips:0,cap:4},{name:"Julia",tier:0,pips:0,cap:4},{name:"Klaus Killmore",tier:0,pips:0,cap:4},{name:"Nisa",tier:0,pips:0,cap:4},{name:"May Blaine",tier:0,pips:0,cap:4},{name:"Magnolia DuBois",tier:0,pips:0,cap:4},{name:"Melissa",tier:0,pips:0,cap:4},{name:"Melicca (Hazel)",tier:0,pips:0,cap:4},{name:"Nanny Barbara",tier:0,pips:0,cap:4},{name:"Raphael DuBois",tier:0,pips:0,cap:4},{name:"Rhea",tier:0,pips:0,cap:4},{name:"Sika Carmichael",tier:0,pips:0,cap:4},{name:"Simon ???",tier:0,pips:0,cap:4},{name:"Soldur",tier:0,pips:0,cap:4},{name:"Soloman",tier:0,pips:0,cap:4},{name:"Sylvana",tier:0,pips:0,cap:4},{name:"Timothy",tier:0,pips:0,cap:4},{name:"Tyler Vullistos",tier:0,pips:0,cap:4},{name:"Victor Silvermane",tier:0,pips:0,cap:4},{name:"Victoria",tier:0,pips:0,cap:4},{name:"Vince",tier:0,pips:0,cap:4},{name:"Xavier",tier:0,pips:0,cap:4},{name:"Yohan Portrov",tier:0,pips:0,cap:4}],infusions:[],
+ tabs:{school:true,battalions:false,companions:false,spells:false},
  kitState:STARTS,
  levelNote:"<b>Gestalt.</b> Character level 14 sets PB; Vagabond 14 and Ravager 14 each add their hit dice. Vagabond is d10 and Ravager d12 by their handbooks; the +28 adjustment is Tough. Total matches his Google sheet (532).",
  defenseNote:"<b>Craven Cloak vs the armor overhaul.</b> The cloak's DEX cap of 10 beats the light tier-1 cap of +4, so the sheet adds +1 gear AC to land on 19. The cloak lists ADR 10; the engine's light armor formula gives 11 (6 + PB). <span class=\"tbd\">confirm which wins</span>",
@@ -691,7 +690,7 @@ return {
   if(Array.isArray(o.flags)){o.flags.forEach(function(f){if(f.type==="main")k.sem=f.facing==="left"?"left":"right";else k.flags.push({name:f.name||"Death-flag",facing:f.facing||"left",ac:num(f.ac,18),hp:num(f.hp,50),tether:""});});}
   if(o.notes)S.notes.fight=o.notes;},
  hooks:{
-  init:function(api){document.querySelectorAll(".rail-grp").forEach(function(g){if(/^life$/i.test(g.textContent.trim()))g.style.display="none";});var S=api.S();for(var key in STARTS)if(S.kit[key]==null)S.kit[key]=JSON.parse(JSON.stringify(STARTS[key]));if(!Array.isArray(S.kit.flags))S.kit.flags=[];if(!Array.isArray(S.kit.known))S.kit.known=STARTS.known.slice();},
+  init:function(api){var S=api.S();for(var key in STARTS)if(S.kit[key]==null)S.kit[key]=JSON.parse(JSON.stringify(STARTS[key]));if(!Array.isArray(S.kit.flags))S.kit.flags=[];if(!Array.isArray(S.kit.known))S.kit.known=STARTS.known.slice();},
   render:function(api,d){var S=api.S(),k=K(S),w=wound(S,d);
    /* Vicious Rage drives the attack pips */
    var base=ravLv(S)>=11&&w.half?3:(vagLv(S)>=5||ravLv(S)>=5)?2:1,extra=k.ro&&k.ro.pending?(ravLv(S)>=11?2:1):0;
@@ -702,7 +701,6 @@ return {
    var b=$("body-bearer");if(b){var tx=b.querySelector("#transform");if(tx)tx.insertAdjacentHTML("afterend",bearerPane(S,d));else b.insertAdjacentHTML("afterbegin",bearerPane(S,d));}
    var v=$("body-vag");if(v)v.insertAdjacentHTML("afterbegin",vagPane(S,d));
    var r=$("body-rav");if(r)r.insertAdjacentHTML("afterbegin",ravPane(S,d));
-   var rl=$("body-rels");if(rl)rl.innerHTML="";
    var ct=$("ct-flag");if(ct)ct.textContent=k.aura?"●":"";ct=$("ct-vag");if(ct)ct.textContent=num(S.res.bd)+"/"+(V_DICE[vagLv(S)]||0);},
   absorb:function(n,api,parts){var S=api.S(),k=K(S);if(k.bypass||!S.tx.on||k.sem!=="right")return n;
    var d=api.compute(),cap=Math.max(1,d.hpMax),room=Math.max(0,cap-num(k.pool)),inp=Math.min(n,room);k.pool=num(k.pool)+inp;parts.push(inp+" endured");
