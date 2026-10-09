@@ -990,8 +990,7 @@ window.CHAR={
  ]
 };
 
-</script>
-<script>
+</script><script>
 (function(){"use strict";
 var C=window.CHAR||{};
 var KEY=(C.id||"sheet")+"_v3:sheet";
@@ -1017,13 +1016,87 @@ var SLOTCAT={};SLOTS.forEach(function(s){SLOTCAT[s[0]]=s[2];});
 var CATS=[["weapon","Weapon"],["armor","Armor"],["head","Head"],["legs","Legs"],["feet","Feet"],["accessory","Accessory"],["consumable","Consumable"],["material","Material"],["resource","Resource"],["key","Key item"],["other","Other"]];
 var CATN={};CATS.forEach(function(c){CATN[c[0]]=c[1];});
 var TIER_BONUS=[0,0,2,4,6,8],UD_CAP=[0,20,30,40,50,60],AC_MAX=[0,28,40,52,66,80];
+/* ===================== ARMOR PROPERTIES (Armor Overhaul, JH's Version · Part II) =====================
+   Each: [name, tagline, tier 1–2, tier 3–4, tier 5]. Tier 1–2 scales on PB, 3–4 on Prime Stat, 5 adds its own effect. */
+var ARMOR_PROPS={
+ light:[
+  ["Slipstream","You are hardest to catch while in motion.","If you moved at least 10 feet this turn, the first attack against you each round takes a penalty equal to PB.","Use PS instead.","If that attack misses, you may immediately reposition 10 feet without provoking, and the attacker cannot use offensive reactions against you this turn."],
+  ["Deadeye","You make called shots matter.","Your first called shot each round gains +PB.","Use PS instead.","If that called shot succeeds, choose one: the target loses 1 Dynamic Reaction, loses 1 Momentum stack, or takes a penalty equal to PS on its next Disable save or defensive contest."],
+  ["Trickster","Your Feints force bad decisions.","Gain +PB to Feints.","Use PS instead.","If a creature falls for your Feint, your next attack this turn cannot be Deflected, or it ignores part of the called-shot penalty, your choice."],
+  ["Counterstep","A missed attack gives you a better angle.","When a creature misses you in melee, gain +PB to your next attack against it.","Use PS instead.","If that attack hits, you may either move 5 feet for free, strip 1 Dynamic Reaction from the target, or reduce its next attack roll by PS."],
+  ["Perfect Deflect","A successful Deflect turns defense into immediate pressure.","Gain +PB to Deflect contests.","Use PS instead.","After a successful Deflect, your next attack this round gains +PS, cannot be blocked, and if it hits the target, cannot Deflect before the end of its next turn."],
+  ["Pursuit","Distance does not buy safety.","After you hit a creature, you may move 5 feet.","Move 10 feet instead, and this movement does not provoke.","If you end this movement outside the target's reach, that target cannot use opportunity attacks or anti-movement reactions until the start of its next turn."],
+  ["Airborne","You thrive when the fight leaves the ground.","Gain +PB against launch effects and airborne recovery checks.","Use PS instead.","Once per round, if you recover while airborne, you may immediately make a basic attack or move up to half your speed before landing. Against airborne targets, your attacks gain +PS."],
+  ["Flowstate","Movement sharpens your offense without becoming a Momentum exploit engine.","If you move at least 10 feet before attacking, gain +PB to that attack.","Use PS instead.","If the attack hits, gain 1 Momentum stack once per round, and Momentum does not fully decay from one failed attack this round."],
+  ["Ghostline","You attack from places the enemy thought were safe.","Difficult terrain does not reduce your speed while you move toward an attack.","You may move through hostile creature spaces during your turn, though you cannot end there.","The first reaction used against your movement each round suffers disadvantage or a penalty equal to PS."],
+  ["Ambush","You are strongest at the first true opening.","Gain +PB on the first attack you make each round against a creature that has not targeted you yet this round.","Use PS instead.","That first hit each round deals bonus damage equal to PS and reduces the target's next defensive contest by PS."],
+  ["Mirage","Enemy precision becomes less reliable against you.","The first called shot against you each round takes a penalty equal to PB.","Use PS instead.","If that called shot fails, the attacker loses its bonus action or 10 feet of movement, attacker's choice."],
+  ["Opportunist","You capitalize when the enemy has already been opened.","Gain +PB to attacks against creatures that are airborne, prone, rattled, or otherwise compromised.","Use PS instead.","Against compromised targets, your attacks gain +PS damage and ignore one layer of defensive mitigation as determined by the table's normal rules."]],
+ medium:[
+  ["Brace","You do not take the full force of a clean hit.","Reduce damage from the first attack that hits you each round by PB.","Reduce it by PS.","If that hit is a heavy hit, reduce its damage by 20%, then gain Bonus ADR equal to PS until the start of your next turn."],
+  ["Read Through","You see tricks for what they are.","Gain +PB against Feints and reaction baits.","Use PS instead.","The first Feint used against you each round automatically fails unless the attacker exceeds your defense by PS or more, and that attacker takes a penalty equal to PS on its next attack."],
+  ["Counterweight","You are hard to throw out of the exchange.","Reduce knockback and forced movement by PB, rounded up.","Reduce it by PS.","If forced movement is reduced to 0, gain +PS on your next Block, Deflect, or Dodge before the end of your next turn."],
+  ["Tempered","The second hit is never as good as the first.","The second and later hits against you each round are reduced by PB or 10%, whichever is better.","The second and later hits against you each round are reduced by PS or 15%, whichever is better.","The second and later hits against you each round deal 20% less damage, and each additional hit grants Bonus ADR equal to PS ÷ 2 until the start of your next turn, up to PS."],
+  ["Catch","You stop one nearby ally from getting opened up for free.","When an ally within 5 feet is hit, reduce that damage by PB.","Reduce it by PS.","That ally also gains +PS AC against the next attack made against it before the start of your next turn."],
+  ["Recenter","A successful defense lets you recover your structure.","When you succeed on a saving throw against an attack, effect, or Disable, gain temp HP equal to PB.","Gain temp HP equal to PS.","Also remove one temporary movement penalty, attack penalty, or similar debuff."],
+  ["Deflect Line","You defend with good form, not desperation.","Gain +PB to Block.","Use PS instead.","After a successful Block or Deflect, gain +PS AC until the start of your next turn and +PS against the next called shot made against you in that time."],
+  ["Surefooted","You stay upright, armed, and useful.","Gain +PB to resist prone, shove, and disarm effects.","Use PS instead.","The first time each round you would be knocked prone, disarmed, or lose your footing, ignore it."],
+  ["Interfere","You make nearby attacks less clean.","When a creature within 5 feet attacks an ally, that attack takes a penalty equal to PB.","Use PS instead.","If the attack misses, you may immediately move 5 feet or make one basic attack against the attacker."],
+  ["Hold Fast","Your defense improves when you commit to your stance.","If you move no more than 10 feet this turn, gain +PB AC until the start of your next turn.","Use PS instead.","Also gain Bonus ADR equal to PS."],
+  ["Layered Guard","Precision attacks do not unravel you as easily.","Gain +PB against called shots, limb-targeting, and Disable attempts.","Use PS instead.","The first successful called shot against you each round has its duration halved or its effect downgraded, and any Disable duration applied to you is reduced by 50%."],
+  ["Backswing","A failed defense does not mean the exchange is lost.","The first time each round your Block, Deflect, or Dodge fails, reduce the resulting damage by PB.","Reduce it by PS.","Gain +PS to your next defensive contest before the end of your next turn, and the attacker takes a penalty equal to PS on its next attack."]],
+ heavy:[
+  ["Juggernaut","The things meant to crack tanks work worse on you.","Reduce percent-based damage, max HP damage, and takedown damage by 5%.","Reduce them by 10%.","Reduce them by 15%, and when this reduction applies gain Bonus ADR equal to PS until the start of your next turn."],
+  ["Anchor","You are not where the enemy wants you.","Reduce knockback and forced movement by PB × 5 feet.","Reduce it by PS × 5 feet.","Once per round, if forced movement or launch would still apply, you may ignore it entirely."],
+  ["Fortress","Burst does not land cleanly against you.","Reduce critical bonus damage by 25%.","Reduce critical bonus damage by 50%.","Critical hits against you become normal hits unless the attacker exceeds your AC by 10 or more."],
+  ["Last Stand","The closer you are to falling, the harder you are to finish.","While below half HP, reduce all incoming damage by 10%.","While below half HP, reduce all incoming damage by 15%.","While below half HP, reduce all incoming damage by 20% and gain resistance to forced movement, disarm, and Disable effects."],
+  ["Lockdown","Getting close to you costs movement and freedom.","When you hit a creature, reduce its speed by PB.","Reduce it by PS.","If its speed is reduced to 0 this way, it also loses a reaction."],
+  ["Suppress","Enemies near you do not execute cleanly.","Enemies within 5 feet take a penalty equal to PB on attack rolls.","Penalty becomes PS.","Those enemies also deal reduced damage equal to PS."],
+  ["Phalanx","Your armor protects the line, not just yourself.","Allies within 5 feet gain +PB AC against ranged attacks, opportunity attacks, and movement-triggered reactions.","Use PS instead.","The first time an ally within 5 feet would be knocked back, launched, or forced prone each round, reduce that effect by PS."],
+  ["Intercept","If they try to attack through you, they pay for it.","When a creature within 5 feet attacks an ally, that attack takes a penalty equal to PB.","Penalty becomes PS.","If that attack misses, you may immediately make one basic attack against that creature."],
+  ["Bastion","Standing your ground makes you even harder to break.","If you move no more than 5 feet this turn, gain +PB AC until the start of your next turn.","Gain +PS AC instead.","Also gain Bonus ADR equal to PS."],
+  ["Bulwark","You refuse to become an easy finish.","Gain +PB against becoming prone, airborne, Vulnerable, or otherwise takedown-eligible.","Gain +PS instead.","Once per round, if you would become takedown-eligible, you may immediately end one qualifying condition, and takedown damage against you is reduced by 15%."],
+  ["Platebreak Resist","You are harder to dismantle with precision and called shots.","Gain +PB against called shots, limb-targeting, and precision-based Disable attempts.","Gain +PS instead.","The first successful called shot against you each round is downgraded, shortened, or negated if the attack did not exceed your AC by at least PS."],
+  ["Weight","Your mass affects the fight before your weapon does.","Enemies within 5 feet take a penalty equal to PB on Dynamic Reaction checks.","Penalty becomes PS.","The first Dynamic Reaction used by an adjacent enemy each round is made with disadvantage or a penalty equal to PS."],
+  ["Iron Grip","You turn control attempts into control of your own.","Gain +PB on shove and grapple attempts.","Gain +PS instead.","If you succeed on a shove or grapple, the target also loses 1 Momentum stack or takes damage equal to PS."]]};
+var ARMOR_LEGENDARY={
+ light:[["Phantom Step","Once per round, when you successfully Dodge, Deflect, or cause an attack to miss you, you may immediately teleport or reposition up to 15 feet to a space you can see. This movement does not provoke opportunity attacks. If you end adjacent to a creature, your next attack against it before the end of the turn gains advantage, and your next called shot this turn ignores part of its normal penalty."],
+  ["Killing Intent","The first time each round a creature fails a reaction, falls for your Feint, misses you in melee, or fails to defend against one of your precision attacks, you mark it until the end of your turn. Your next attack against it gains bonus damage equal to PS, ignores resistance, and if it is a called shot, applies an additional penalty to the target's next Dynamic Reaction, save, or contested defense roll."],
+  ["Vanishing Point","Once per round, when a creature misses you, fails to hit you with a called shot, or fails a reaction against your movement or Feint, you may become untargetable by that creature until the end of its turn. If you attack that creature before the end of your next turn, your attack gains bonus damage equal to PS and reduces the normal called-shot penalty by PB or PS, depending on tier."],
+  ["Razor Thread","The first time each round you land a called shot, Deflect into an attack, or hit a creature that fell for your Feint, apply one pressure effect: the target loses 1 Dynamic Reaction, loses 1 Momentum stack, or takes a penalty equal to PS on its next save or contested defense roll. Only one per round."]],
+ medium:[["Aegis Script","At the start of each round choose a stance. Guard: Bonus ADR equal to PS. Poise: +PS against knockback, prone, Feints, and called shots. Shelter: one ally within 10 feet gains +PS AC and Bonus ADR equal to PS against the first hit that lands on them this round. You may change stance each round."],
+  ["Overture","Once per round, when a creature hits you or an ally within 5 feet of you twice in the same round, the next attack against that creature before the end of your next turn gains advantage, bonus damage equal to PS, and makes it lose all Momentum or 1 Dynamic Reaction, your choice."],
+  ["Second Nature","The first time each round you are hit by an attack, targeted by a called shot, or targeted by a Feint, choose until the start of your next turn: Bonus ADR equal to PS, +PS to Block, Deflect, and Dodge contests, or +PS against called shots, Feints, and Disable effects."],
+  ["Guardian's Exchange","Once per round, when an ally within 10 feet would be hit, knocked back, launched, or made takedown-eligible, reduce the triggering damage or effect by PS, then move up to 10 feet toward that ally or the attacker without provoking. Ending adjacent to the attacker gives your next attack against it advantage."]],
+ heavy:[["Throne of Iron","While you are standing and conscious, enemies within 10 feet treat the area as difficult terrain and take a penalty equal to PS on shove, launch, takedown setup, and movement-based reaction plays. A creature that starts its turn adjacent to you must stay engaged with you or take a penalty equal to PS on its first attack or movement-based action."],
+  ["Juggernaut Core","Reduce percent-based damage, max HP damage, takedown damage, and other durability-based effects by 10%. Once per round when this applies, gain Bonus ADR equal to PS until the start of your next turn. If the effect would also make you prone, airborne, Vulnerable, or takedown-eligible, make an immediate resistance check at +PS."],
+  ["Iron Verdict","Once per round, when a creature within 5 feet attacks you or an adjacent ally, before the roll impose one: reduce the attack roll by PS, reduce the damage by PS, or prevent knockback, launch, or takedown setup. If it still hits, the attacker's speed drops by PS × 5 feet until the end of its next turn."],
+  ["Last Wall","Once per long rest, when you would become prone, airborne, Vulnerable, takedown-eligible, or drop below a major HP threshold chosen by the table, ignore that state until the end of your next turn. During that time gain Bonus ADR equal to PS × 2, resistance to percent-based, max HP, and critical damage, and enemies within 5 feet take a penalty equal to PS on attacks against anyone but you."]]};
+var ARMOR_PICKS={light:3,medium:2,heavy:2};
+function armorPropDef(kind,name){var L=ARMOR_PROPS[kind]||[];for(var i=0;i<L.length;i++)if(L[i][0].toLowerCase()===String(name).toLowerCase())return L[i];return null;}
+function legendaryDef(kind,name){var L=ARMOR_LEGENDARY[kind]||[];for(var i=0;i<L.length;i++)if(L[i][0].toLowerCase()===String(name).toLowerCase())return L[i];return null;}
+/* What the worn armor's properties do right now, at its tier, with PB/PS filled in. */
+function armorPropsActive(d){var it=slotItem("armor");if(!it||!it.armor||!it.armor.kind)return [];var a=it.armor,k=a.kind,t=clamp(num(a.tier,1),1,5),ps=d.def.ps||"dex",psm=d.mod[ps];
+ var out=[],band=t<=2?"T1–2":t<=4?"T3–4":"T5",val=t<=2?d.pb:psm,vlab=t<=2?"PB "+sgn(d.pb):"PS ("+ps.toUpperCase()+") "+sgn(psm);
+ (it.props||[]).slice(0,ARMOR_PICKS[k]).forEach(function(p){var df=armorPropDef(k,p);
+  if(!df){out.push({n:p,src:it.name,custom:true,line:"Not on the "+k+" armor list. Check with the DM.",band:band,val:val,vlab:vlab});return;}
+  var line=t<=2?df[2]:(/^Use PS instead/.test(df[3])?df[2].replace(/\bPB\b/g,"PS"):df[2]+" Tier 3–4: "+df[3]);
+  if(t===5)line+=" Tier 5: "+df[4];
+  out.push({n:df[0],src:it.name,tag:df[1],line:line,band:band,val:val,vlab:vlab,def:df});});
+ if(it.legendary){var lg=legendaryDef(k,it.legendary);out.push({n:it.legendary,src:it.name,legendary:true,line:lg?lg[1]:(it.legendaryText||"Custom legendary property."),band:band,val:psm,vlab:"PS "+sgn(psm),locked:t<4});}
+ return out;}
+/* Reaction synergy as numbers, plus the two properties that add straight to a defensive contest. */
+function reactionMods(d){var k=d.def.kind;if(!k)return null;var pb=d.pb,h=Math.floor(pb/2);
+ var r=k==="light"?{dodge:pb,block:-pb,deflect:pb}:k==="medium"?{dodge:h,block:h,deflect:h}:{dodge:-pb,block:pb,deflect:0};
+ armorPropsActive(d).forEach(function(p){if(p.n==="Perfect Deflect")r.deflect+=p.val;if(p.n==="Deflect Line")r.block+=p.val;});return r;}
+
 var LIGHT_CAP=[0,4,7,10,13,16],MED_CAP=[0,3,5,7,9,12];
 var ARMOR_VAL={light:[0,6,10,16,24,34],medium:[0,10,16,24,36,48],heavy:[0,16,24,36,52,70]};
 var ARMOR_BASE={light:{"Padded":[13,16,20,24,29],"Leather":[14,17,21,25,30],"Studded Leather":[15,18,22,26,31]},
  medium:{"Hide":[18,23,28,34,40],"Chain Shirt":[19,24,29,35,41],"Scale Mail":[20,25,30,36,42],"Breastplate":[21,26,31,37,43],"Half Plate":[22,27,32,38,44]},
  heavy:{"Ring Mail":[20,26,32,38,46],"Chain Mail":[22,28,34,40,48],"Splint":[23,29,35,41,49],"Plate":[24,30,36,42,50]}};
-var SYNERGY={light:"Dodge +PB, and once per round a successful Dodge grants 1 feint token. Deflect +PB. Block −PB.",
- medium:"Dodge, Block and Deflect each gain +½PB (round down). Adaptation: once per round a successful defensive reaction grants 1 feint token.",
+var SYNERGY={light:"Dodge +PB, and once per round a successful Dodge grants 1 Tempo. Deflect +PB. Block −PB.",
+ medium:"Dodge, Block and Deflect each gain +½PB (round down). Adaptation: once per round a successful defensive reaction grants 1 Tempo.",
  heavy:"Block +PB, and the first Block each round costs no reaction. Dodge −PB. Deflect gets no bonus."};
 var MORALE=[{n:"Broken",lo:0,hi:49,c:"#d8434f",fx:"Disadvantage on attack rolls. No reactions. WIS save at start of turn or spend movement moving away from enemies. Keeps action and bonus action."},
  {n:"Shaken",lo:50,hi:99,c:"#e8b04a",fx:"Disadvantage on first attack roll each round. Reactions need a WIS save, DC +1 per round spent Shaken (max +10). Vulnerable to Frightened."},
@@ -1061,7 +1134,7 @@ var DEFAULT_SCALE={"D":60,"D+":67,"C":70,"C+":77,"B":80,"B+":87,"A":90,"A+":97};
 var DEFAULT_PROF=[["Unarmed","F"],["Sword","F"],["Dagger","F"],["Polearm","F"],["Axe","F"],["Bow","F"],["Gauntlet","F"],["Magic","F"]];
 
 /* ===================== STATE ===================== */
-function mkItem(o){var it={id:"",name:"",cat:"other",qty:1,rarity:"",weaponType:"",twoSlot:false,atk:"",dmg:"",dur:0,armor:{kind:"",tier:1,base:0,ps:"dex"},props:[],abilities:[],mods:{},tags:"",desc:"",loc:"storage"};
+function mkItem(o){var it={id:"",name:"",cat:"other",qty:1,rarity:"",weaponType:"",twoSlot:false,atk:"",dmg:"",dur:0,armor:{kind:"",tier:1,base:0,ps:"dex"},props:[],legendary:"",legendaryText:"",abilities:[],mods:{},tags:"",desc:"",loc:"storage"};
  for(var k in o)if(o.hasOwnProperty(k))it[k]=clone(o[k]);
  (it.abilities||[]).forEach(function(a,i){if(!a.id)a.id="a"+i+Math.random().toString(36).slice(2,6);});
  return it;}
@@ -1084,6 +1157,8 @@ function defaults(){
  (C.resources||[]).forEach(function(r){s.res[r.id]=(r.start!=null)?r.start:(typeof r.max==="number"?r.max:0);});
  s.rels.forEach(function(r,i){if(!r.id)r.id="r"+i;if(r.pips==null)r.pips=0;if(r.cap==null)r.cap=5;});
  s.inf.forEach(function(f,i){if(!f.id)f.id="f"+i;});
+ s.udDie=(C.unarmored&&C.unarmored.die)||8;s.combat={on:false,tough:0};
+ if(C.stateDefaults)deep(s,clone(C.stateDefaults));
  return s;
 }
 function econDefs(){return [{id:"act",name:"Action",max:1},{id:"bon",name:"Bonus action",max:1}].concat(C.economy||[{id:"rx",name:"Reactions",max:1}]);}
@@ -1103,6 +1178,8 @@ function sanitize(){
  if(!S.dmg||!Array.isArray(S.dmg.lines))S.dmg=defaults().dmg;if(!S.dmg.riders)S.dmg.riders={};if(!S.sit)S.sit={ac:0,speed:0,adr:0};if(S.sit.adr==null)S.sit.adr=0;if(!Array.isArray(S.subs))S.subs=[];if(!Array.isArray(S.wlog))S.wlog=[];
  var dfl=null;function D0(){return dfl||(dfl=defaults());}
  if(!S.school||!Array.isArray(S.school.classes))S.school=D0().school;["servants","clubs","learn"].forEach(function(k){if(!Array.isArray(S.school[k]))S.school[k]=[];});if(!S.school.scale)S.school.scale=clone(DEFAULT_SCALE);
+ if(!S.udDie)S.udDie=(C.unarmored&&C.unarmored.die)||8;if(!S.combat)S.combat={on:false,tough:0};
+ if(C.hooks&&C.hooks.sanitize)try{C.hooks.sanitize(S,api);}catch(e){}
  if(!Array.isArray(S.bats))S.bats=D0().bats;S.bats=S.bats.map(function(b){return mkBat(b);});
  if(!Array.isArray(S.comps))S.comps=D0().comps;if(!S.spells||!Array.isArray(S.spells.list))S.spells=D0().spells;if(!S.spells.slots)S.spells.slots={};
  if(!Array.isArray(S.effects))S.effects=[];if(!Array.isArray(S.rels))S.rels=[];if(!Array.isArray(S.inf))S.inf=[];
@@ -1146,6 +1223,7 @@ function compute(){
  var sp=C.spellStat||"wis";d.dc=8+d.pb+d.mod[sp]+num(S.dcMisc);d.spellAtk=d.pb+d.mod[sp];
  d.init=d.mod.dex+(C.initAddsPB?d.pb:0)+num(S.initMisc)+d.im.init;
  var tls=S.tl.stat&&d.mod[S.tl.stat]!=null?S.tl.stat:"wis";d.tlStat=tls;d.tlBase=(d.mod.con+d.mod[tls])*10;d.tlFormula=d.tlBase+num(S.tl.bonus);
+ if(C.tlStat==null&&C.tx&&typeof C.tx.tlMax==="function"){d.tlFormula=C.tx.tlMax(d);d.tlLegacy=true;}
  d.tlMax=(C.tl!==false)?Math.max(1,d.tlFormula+d.im.tl+num(S.tl.adj)):0;
  d.st=strain(d);d.def=defense(d);
  d.speed=num(S.speed)+d.im.speed+(d.st?d.st.speed:0);
@@ -1153,6 +1231,8 @@ function compute(){
  d.infCap=C.infusionCap||3;
  d.acNow=d.def.ac+num((S.sit||{}).ac);d.adrNow=Math.max(0,d.def.adr+num((S.sit||{}).adr));
  var bt=(S.bats||[]).filter(function(b){return b.on;})[0];d.bat=null;d.batHit=0;if(bt&&num(bt.end)>0){d.bat=bt;d.acNow+=num(bt.dep.ac);if(d.save[bt.dep.save]!=null)d.save[bt.dep.save]+=num(bt.dep.sv);d.batHit=num(bt.dep.hit);}d.speedNow=d.speed+num((S.sit||{}).speed);
+ d.acMax=AC_MAX[d.def.tier]||AC_MAX[1];d.acRaw=d.acNow;d.acCapped=d.acNow>d.acMax;d.acNow=Math.min(d.acNow,d.acMax);
+ d.aprops=armorPropsActive(d);d.rx=reactionMods(d);
  return d;
 }
 function strain(d){if(!(C.tl!==false))return null;var max=d.tlMax||1,cur=num(S.tl.cur),p=cur/max;
@@ -1164,7 +1244,7 @@ function defense(d){
  if(!armor||!armor.armor||!armor.armor.kind){
   if(C.unarmored){var raw=10+TIER_BONUS[ct];C.unarmored.stats.forEach(function(k){raw+=d.mod[k];});
    var cap=UD_CAP[ct],over=Math.max(0,raw-cap);
-   o={mode:"Unarmored Defense",kind:"",tier:ct,raw:raw,cap:cap,ac:Math.min(raw,cap)+d.im.ac,over:over,dice:Math.floor(over/2),die:C.unarmored.die||8,adr:0,
+   o={mode:"Unarmored Defense",kind:"",tier:ct,raw:raw,cap:cap,ac:Math.min(raw,cap)+d.im.ac,over:over,dice:Math.floor(over/2),die:num(S.udDie,C.unarmored.die||8),adr:0,
     formula:"10 + tier "+sgn(TIER_BONUS[ct])+" + "+C.unarmored.stats.map(function(k){return k.toUpperCase()+" "+sgn(d.mod[k]);}).join(" + ")+" = "+raw,
     syn:"None. Unarmored Defense gets no ADR and no reaction synergy."};
    o.tough=o.dice*o.die;
@@ -1321,9 +1401,11 @@ function renderBar(d){var h="";var hpP=d.hpMax?num(S.hp.cur)/d.hpMax*100:0;
   '<div class="sub">lost this round '+S.mor.lost+'/30'+(S.mor.shaken?' · Shaken DC +'+S.mor.shaken:'')+'</div></div>';
  var sp=d.st&&d.st.speed?' · strain '+d.st.speed+' ft':'';
  h+='<div class="tk" style="flex-basis:220px"><div class="tk-h" style="color:#d9b154"><span class="d"></span>Defense<span class="chip chipx" title="'+esc(d.def.mode)+'">'+esc(d.def.kind?d.def.kind:(C.unarmored?"unarmored":"none"))+'</span></div>'+
-  '<div class="row" style="gap:10px"><span><span class="sub" style="margin:0">AC </span><span class="cur">'+d.acNow+'</span></span><span><span class="sub" style="margin:0">ADR </span><span class="cur" style="font-size:20px">'+d.adrNow+'</span></span><span style="margin-left:auto"><span class="sub" style="margin:0">Speed </span><span class="cur" style="font-size:20px">'+d.speedNow+'</span><span class="sl">ft</span></span></div>'+
+  '<div class="row" style="gap:10px"><span title="AC Maximum for tier '+d.def.tier+': '+d.acMax+(d.def.kind===""&&C.unarmored?' · Unarmored cap '+d.def.cap:'')+'"><span class="sub" style="margin:0">AC </span><span class="cur"'+(d.acCapped?' style="color:var(--amber)"':'')+'>'+d.acNow+'</span><span class="sl" style="font-size:11px">/'+d.acMax+'</span></span><span><span class="sub" style="margin:0">ADR </span><span class="cur" style="font-size:20px">'+d.adrNow+'</span></span><span style="margin-left:auto"><span class="sub" style="margin:0">Speed </span><span class="cur" style="font-size:20px">'+d.speedNow+'</span><span class="sl">ft</span></span></div>'+
   '<div class="row" style="margin-top:6px;gap:3px;flex-wrap:nowrap"><span class="sub" style="margin:0">±AC</span><input class="num w44" type="number" data-b="sit.ac" value="'+num(S.sit.ac)+'" title="Situational AC: spells, stances, cover"><span class="sub" style="margin:0">±ADR</span><input class="num w44" type="number" data-b="sit.adr" value="'+num(S.sit.adr)+'" title="Bonus ADR from properties like Hold Fast or Bastion"><span class="sub" style="margin:0">±ft</span><input class="num w44" type="number" data-b="sit.speed" value="'+num(S.sit.speed)+'" title="Situational speed"></div>'+
-  '<div class="sub">'+(d.def.tough?'toughness '+d.def.tough+' · ':'')+'init '+sgn(d.init)+sp+(d.bat?' · '+esc(d.bat.name)+(d.batHit?' '+sgn(d.batHit)+' hit':''):'')+' <button class="btn sm" data-a="sitclear" title="Clear situational modifiers" style="height:18px">↺</button></div></div>';
+  (d.rx?'<div class="sub" style="margin-top:4px">Dodge '+sgn(d.rx.dodge)+' · Block '+sgn(d.rx.block)+' · Deflect '+sgn(d.rx.deflect)+'</div>':'')+
+  (d.acCapped?'<div class="sub amber">capped at AC Maximum ('+d.acRaw+' → '+d.acMax+')</div>':'')+
+  '<div class="sub">'+(d.def.tough?'<span title="Overflow Toughness, applied by Start combat">overflow '+d.def.tough+' temp</span> · ':'')+'init '+sgn(d.init)+sp+(d.bat?' · '+esc(d.bat.name)+(d.batHit?' '+sgn(d.batHit)+' hit':''):'')+' <button class="btn sm" data-a="sitclear" title="Clear situational modifiers" style="height:18px">↺</button></div></div>';
  var br=(C.barRes||[]).map(function(id){return (C.resources||[]).filter(function(x){return x.id===id;})[0];}).filter(Boolean);
  if(br.length){var r0=br[0],m0=resMax(r0,d),v0=S.res[r0.id];
   h+='<div class="tk"><div class="tk-h" style="color:'+(r0.color||"var(--ac)")+'"><span class="d"></span>'+esc(r0.name)+'<button class="btn sm chipx" data-a="resfull" data-id="'+r0.id+'" title="Refill">↻</button></div>'+
@@ -1333,7 +1415,7 @@ function renderBar(d){var h="";var hpP=d.hpMax?num(S.hp.cur)/d.hpMax*100:0;
   br.slice(1).forEach(function(r){var mx=resMax(r,d);
    h+='<div class="row" style="margin-top:8px;gap:4px"><span class="sub" style="margin:0;flex:1" title="'+esc(r.note||"")+'">'+esc(r.name)+'</span><button class="btn sm" data-a="res" data-id="'+r.id+'" data-n="'+(-((r.steps||[1])[0]))+'">−</button><input class="num w44" type="number" data-res="'+r.id+'" value="'+S.res[r.id]+'">'+(mx!=null?'<span class="sl">/'+mx+'</span>':'')+'<button class="btn sm" data-a="res" data-id="'+r.id+'" data-n="'+((r.steps||[1])[0])+'">+</button></div>'+(r.note?'<div class="sub" style="margin-top:2px">'+esc(r.note)+'</div>':'');});
   h+='</div>';}
- h+='<div class="roundrow"><span class="cz" style="color:var(--ac);font-size:13px;letter-spacing:.12em">ROUND '+S.round+'</span><button class="btn pri" style="height:32px;padding:0 16px" data-a="endturn">End turn</button><button class="btn sm" data-a="short">short rest</button><button class="btn sm" data-a="long">long rest</button></div>';
+ h+='<div class="roundrow"><span class="cz" style="color:var(--ac);font-size:13px;letter-spacing:.12em">ROUND '+S.round+'</span><button class="btn pri" style="height:32px;padding:0 16px" data-a="endturn">End turn</button><button class="btn sm" data-a="combatstart" title="Round 1, refresh the action economy and battalion charges, and apply Overflow Toughness">start combat'+(d.def.tough?' (+'+d.def.tough+' temp)':'')+'</button><button class="btn sm" data-a="short">short rest</button><button class="btn sm" data-a="long">long rest</button></div>';
  h+='<div class="minibar">HP<b>'+S.hp.cur+'</b>'+((C.tl!==false)?' · TL<b>'+S.tl.cur+'/'+d.tlMax+'</b>'+(C.tx?' <span class="chip">'+d.st.name+'</span>':''):'')+' · Morale<b>'+S.mor.cur+'</b> · AC<b>'+d.acNow+'</b> · Speed<b>'+d.speedNow+'</b> · Round<b>'+S.round+'</b></div>';
  h+='<div class="bar-tools"><button data-a="fold">'+(S.ui.fold?"Show trackers":"Hide trackers")+'</button><button data-a="pal">Search</button><button data-a="export">Export</button><button data-a="import">Import</button><button data-a="wipe">Reset sheet</button><span class="savehint" id="saveHint">Saved to this device</span></div>';
  var b=$("bar");b.innerHTML=h;b.classList.toggle("fold",!!S.ui.fold);
@@ -1396,6 +1478,7 @@ function renderLoadout(d){var cols={};KINDS.forEach(function(k){cols[k[0]]=[];})
  equipped().forEach(function(it){
   if(it.cat==="weapon"&&(it.atk||it.dmg))cols.attack.push({n:it.name,src:"weapon",c:[it.atk,it.dmg].filter(Boolean).join(" · "),t:it.desc||""});
   (it.abilities||[]).forEach(function(a){(cols[a.kind]||cols.passive).push({n:a.name,src:it.name,c:a.cost,t:a.text});});});
+ (d.aprops||[]).forEach(function(p){cols.passive.push({n:p.n,src:"armor · "+p.src+" · "+p.band,c:p.vlab,t:esc(p.line)});});
  S.inf.filter(function(f){return f.eq;}).forEach(function(f){cols.attack.push({n:f.name,src:"infusion · "+f.weapon,c:f.dur+" dur",t:f.text});});
  allKit().forEach(function(k){if(S.kitPin[k.key])(cols[k.a.k]||cols.passive).push({n:k.a.n,src:k.sec.title,c:costStr(k.a),t:k.a.text});});
  var dbt=deployedBat();if(dbt&&num(dbt.end)>0)(dbt.gambits||[]).forEach(function(g){var L=gambitLine(dbt,g,d);(cols[L.kind]).push({n:g.name,src:"gambit · "+dbt.name+" · "+dbt.ch+"/"+dbt.chMax+" charges",c:num(g.cost)+" End"+(g.dmg?" · "+g.dmg:""),t:esc(L.txt+(g.desc?". "+g.desc:""))});});
@@ -1420,7 +1503,7 @@ function renderChar(d){var h='<section id="identity"><h2>Identity</h2><div class
  ["s","f"].forEach(function(k){for(var i=0;i<3;i++)h+='<button class="pip'+(S.death[k]>i?' live':'')+'" style="'+(k==="f"?'--ac:#d8434f;':'--ac:#5fd2c0;')+'" data-a="death" data-id="'+k+'" data-n="'+i+'"></button>';h+='<span style="width:8px"></span>';});
  h+='</div></section>';
  h+='<section id="vitals"><h2>Vitals</h2><div class="vitals">'+
-  vit("Armor class",d.acNow,d.def.mode+(num(S.sit.ac)?" · situational "+sgn(num(S.sit.ac)):""),1)+vit("ADR",d.adrNow,d.def.kind?d.def.kind+" armor":"none")+vit("Initiative",sgn(d.init),"DEX"+(C.initAddsPB?" + PB":"")+(num(S.initMisc)?" "+sgn(num(S.initMisc)):"")+(d.im.init?" "+sgn(d.im.init)+" gear":""))+
+  vit("Armor class",d.acNow+(d.acCapped?"*":""),"max "+d.acMax+" · "+d.def.mode+(num(S.sit.ac)?" · situational "+sgn(num(S.sit.ac)):""),1)+vit("ADR",d.adrNow,d.def.kind?d.def.kind+" armor":"none")+vit("Initiative",sgn(d.init),"DEX"+(C.initAddsPB?" + PB":"")+(num(S.initMisc)?" "+sgn(num(S.initMisc)):"")+(d.im.init?" "+sgn(d.im.init)+" gear":""))+
   vit("Speed",d.speedNow+" ft",d.st&&d.st.speed?"strain "+d.st.speed:"base "+S.speed)+vit("Proficiency",sgn(d.pb),"level "+d.level)+vit("Save DC",d.dc,"8 + PB + "+(C.spellStat||"wis").toUpperCase()+(num(S.dcMisc)?" "+sgn(num(S.dcMisc)):""),1)+vit("Spell attack",sgn(d.spellAtk),"PB + "+(C.spellStat||"wis").toUpperCase())+vit("Passive Perc.",d.passive,"")+
   ((C.tl!==false)?vit("Max TL",d.tlMax,"see TL below",1):"")+vit("Item slots",d.itemSlots,"")+'</div>'+
   '<div class="row"><span class="lbl" style="margin:0">Base speed</span><input class="num w44" type="number" data-b="speed" value="'+S.speed+'"><span class="lbl" style="margin:0 0 0 10px">Init misc</span><input class="num w44" type="number" data-b="initMisc" value="'+S.initMisc+'"><span class="lbl" style="margin:0 0 0 10px">DC misc</span><input class="num w44" type="number" data-b="dcMisc" value="'+S.dcMisc+'"><span class="lbl" style="margin:0 0 0 10px">Base item slots</span><input class="num w44" type="number" data-b="itemSlotsBase" value="'+S.itemSlotsBase+'"></div></section>';
@@ -1432,9 +1515,11 @@ function renderChar(d){var h='<section id="identity"><h2>Identity</h2><div class
   (d.im.tl?'<p class="sub">Gear: '+equipped().filter(function(it){return num((it.mods||{}).tl);}).map(function(it){return esc(it.name)+' '+sgn(num(it.mods.tl));}).join(" · ")+'</p>':'')+
   '<p class="note">Uses ability modifiers. Gear bonuses come from items with a TL bonus in their equipment editor. The adjustment is for anything temporary; clear it when it ends.</p></div></section>';}
  var df=d.def;h+='<section id="defense"><h2>Defense <span class="sub2">armor overhaul</span></h2><div class="card"><h3>'+esc(df.mode)+' <span class="tag gold">tier '+df.tier+'</span></h3>'+
-  '<p class="mono" style="font-size:13px">AC '+df.formula+(df.raw>df.cap?' → capped at '+df.cap:'')+(d.im.ac?' '+sgn(d.im.ac)+' gear':'')+' = <b>'+df.ac+'</b></p>'+
-  (df.over?'<p><b class="cz">Overflow Toughness.</b> '+df.over+' AC over the cap → '+df.dice+' × d'+df.die+' = <b>'+df.tough+'</b> temp HP at the start of each combat (dice at max). <button class="btn sm" data-a="tough">Apply to temp HP</button></p>':'')+
-  '<p class="mono" style="font-size:13px">ADR '+(df.adrF?df.adrF+' = '+df.adr:'0 (no armor worn)')+(num(S.sit.adr)?' '+sgn(num(S.sit.adr))+' situational':'')+' = <b>'+d.adrNow+'</b>. Only on attacks that hit, not saves. Equip armor in the Armor slot and this fills in on its own.</p>'+'<p><b class="cz">Reaction synergy.</b> '+df.syn+'</p>'+
+  '<p class="mono" style="font-size:13px">AC '+df.formula+(df.raw>df.cap?' → '+(df.kind?'AC Maximum ':'Unarmored cap ')+df.cap:'')+(d.im.ac?' '+sgn(d.im.ac)+' gear':'')+' = <b>'+df.ac+'</b>'+(num(S.sit.ac)?' · '+sgn(num(S.sit.ac))+' situational':'')+(d.bat&&num(d.bat.dep.ac)?' · '+sgn(num(d.bat.dep.ac))+' '+esc(d.bat.name):'')+' → <b style="color:#fff">'+d.acNow+'</b> / AC Maximum '+d.acMax+(d.acCapped?' <span class="amber">(capped from '+d.acRaw+')</span>':'')+'</p>'+
+  (!df.kind&&C.unarmored?'<p class="sub">Unarmored Defense: tier '+df.tier+' from character level '+d.level+' · formula cap '+df.cap+' · spells and in-combat effects can push past '+df.cap+', but never past AC Maximum '+d.acMax+'. Hit die for Overflow Toughness <select class="sel" data-a2="udDie">'+[6,8,10,12].map(function(x){return '<option value="'+x+'"'+(num(S.udDie)===x?' selected':'')+'>d'+x+'</option>';}).join("")+'</select></p>':'')+
+  (df.over?'<p><b class="cz">Overflow Toughness.</b> '+df.over+' AC over the cap → '+df.dice+' × d'+df.die+' = <b>'+df.tough+'</b> temp HP at the start of each combat (dice at max; spells excluded; doesn\'t update mid-fight). Applied by <b>start combat</b> on the tracker bar. <button class="btn sm" data-a="tough">Apply now</button></p>':(!df.kind&&C.unarmored?'<p class="sub">No overflow: the formula is at or under the cap.</p>':''))+
+  '<p class="mono" style="font-size:13px">ADR '+(df.adrF?df.adrF+' = '+df.adr:'0 (no armor worn)')+(num(S.sit.adr)?' '+sgn(num(S.sit.adr))+' situational':'')+' = <b>'+d.adrNow+'</b>. Only on attacks that hit, not saves. Equip armor in the Armor slot and this fills in on its own.</p>'+'<p><b class="cz">Reaction synergy.</b> '+df.syn+(d.rx?' <span class="mono" style="font-size:12.5px;color:#fff">Dodge '+sgn(d.rx.dodge)+' · Block '+sgn(d.rx.block)+' · Deflect '+sgn(d.rx.deflect)+'</span>':'')+'</p>'+
+  (df.kind?'<h4 class="cz" style="margin-top:10px;font-size:14px;color:var(--gold)">Armor properties <span class="sub2">'+((slotItem("armor")||{}).props||[]).length+' / '+ARMOR_PICKS[df.kind]+' · edit in Equipment</span></h4>'+(armorPropsHtml(d)||'<div class="empty">None picked yet. Open the Armor slot on the Equipment tab.</div>'):'')+
   '<p style="margin-top:8px"><b class="cz">Unit tags.</b> '+unitTags(d).map(function(t){return '<span class="chip warn">'+esc(t)+'</span>';}).join(" ")+' <input type="text" id="tagIn" placeholder="add tag" style="width:130px;display:inline-block"> <button class="btn sm" data-a="tagadd">add</button></p>'+
   (S.tags.length?'<p class="sub">'+S.tags.map(function(t,i){return esc(t)+' <button class="btn sm" data-a="tagdel" data-n="'+i+'">×</button>';}).join(" ")+'</p>':'')+'</div>'+(C.defenseNote?'<div class="flag">'+C.defenseNote+'</div>':'')+'</section>';
  h+='<section id="abilities"><h2>Ability scores &amp; saves <span class="sub2">tap a save to toggle proficiency</span></h2><div class="stats">';
@@ -1468,8 +1553,8 @@ function renderKit(d){var h='<div class="row" style="margin:14px 0 4px"><button 
  if((C.kitPanes||[]).length)h+='<p class="note">Also in their own tabs: '+C.kitPanes.map(function(p){return '<button class="chip" data-a="pane" data-id="'+p.id+'">'+esc(p.n)+'</button>';}).join(" ")+'</p>';
  $("body-kit").innerHTML=h;}
 function renderKitPanes(d){(C.kitPanes||[]).forEach(function(p){var host=$("body-"+p.id);if(!host)return;var h="";
- if(p.tx&&C.tx)h+=renderTx(d);
- (C.kit||[]).filter(function(s){return s.pane===p.id;}).forEach(function(sec){h+=kitSection(sec,false);});
+ if(p.tx&&C.tx)h+=renderTx(d)+(p.html||"");else if(p.html)h+=p.html;
+ (C.kit||[]).filter(function(s){return s.pane===p.id&&(p.skip||[]).indexOf(s.id)<0;}).forEach(function(sec){h+=kitSection(sec,false);});
  host.innerHTML=h;});}
 function txHome(){for(var i=0;i<(C.kitPanes||[]).length;i++)if(C.kitPanes[i].tx)return C.kitPanes[i].id;return "";}
 function renderTxSummary(d){var st=d.st,u=upkeep(d),home=txHome(),m=u.mode;
@@ -1669,12 +1754,13 @@ function itemEditor(it,d,inSlot){var h='<div class="row" style="justify-content:
    '<div class="fld"><span class="lbl">Piece</span><select class="sel" data-a2="armorbase" data-it="'+it.id+'"><option value="">custom</option>'+Object.keys(bases).map(function(b){return '<option value="'+b+'">'+b+' ('+bases[b][clamp(num(a.tier,1),1,5)-1]+')</option>';}).join("")+'</select></div>'+
    '<div class="fld"><span class="lbl">Base AC</span><input class="num" type="number" data-it="'+it.id+'" data-f="armor.base" value="'+num(a.base)+'"></div>'+
    (a.kind==="medium"?'<div class="fld"><span class="lbl">Prime stat</span><select class="sel" data-it="'+it.id+'" data-f="armor.ps"><option value="dex"'+(a.ps!=="con"?' selected':'')+'>DEX</option><option value="con"'+(a.ps==="con"?' selected':'')+'>CON</option></select></div>':'')+'</div>'+
-   '<p class="note">Properties to pick: light 3, medium 2, heavy 2 (from the armor overhaul lists). Enter them below.</p>';
+   '';
  }else h+='</div>';
+ if(it.cat==="armor"){h+=armorPropEditor(it,d);}else{
  h+='<h4 class="cz" style="margin-top:12px;font-size:14px;color:var(--gold)">Properties <span class="sub2">permanent once imbued</span></h4><div class="row">';
  (it.props||[]).forEach(function(p,i){var act=it.cat!=="weapon"||i<RANK_PROPS[rankIdx(profRow(it.weaponType))];var pi=propInfo(p);
   h+='<span class="chip '+(act?'on':'')+'" title="'+esc(pi?pi[2]:"")+'">'+esc(p)+(act?'':' (rank too low)')+' <button class="btn sm dgr" style="height:18px" data-a="propdel" data-id="'+it.id+'" data-n="'+i+'">×</button></span>';});
- h+='<select class="sel" id="propSel-'+it.id+'"><option value="">add property…</option>'+PROPS.map(function(p){return '<option>'+p[0]+'</option>';}).join("")+'</select><input type="text" id="propTxt-'+it.id+'" placeholder="or type one (e.g. Slayer (Monster))" style="width:210px"><button class="btn sm" data-a="propadd" data-id="'+it.id+'">add</button></div>';
+ h+='<select class="sel" id="propSel-'+it.id+'"><option value="">add property…</option>'+PROPS.map(function(p){return '<option>'+p[0]+'</option>';}).join("")+'</select><input type="text" id="propTxt-'+it.id+'" placeholder="or type one (e.g. Slayer (Monster))" style="width:210px"><button class="btn sm" data-a="propadd" data-id="'+it.id+'">add</button></div>';}
  h+='<h4 class="cz" style="margin-top:12px;font-size:14px;color:var(--gold)">Abilities on this item</h4>';
  (it.abilities||[]).forEach(function(a){h+='<div class="ab-row"><div class="form"><div class="fld"><span class="lbl">Name</span><input type="text" data-it="'+it.id+'" data-ab="'+a.id+'" data-f="name" value="'+esc(a.name)+'"></div><div class="fld"><span class="lbl">Type</span><select class="sel" data-it="'+it.id+'" data-ab="'+a.id+'" data-f="kind">'+KINDS.map(function(k){return '<option value="'+k[0]+'"'+(a.kind===k[0]?' selected':'')+'>'+k[1]+'</option>';}).join("")+'</select></div><div class="fld"><span class="lbl">Cost</span><input type="text" data-it="'+it.id+'" data-ab="'+a.id+'" data-f="cost" value="'+esc(a.cost||"")+'"></div><div class="fld"><span class="lbl">Damage</span><input type="text" data-it="'+it.id+'" data-ab="'+a.id+'" data-f="dmg" value="'+esc(a.dmg||"")+'" placeholder="e.g. 2d8+WIS"></div><button class="btn sm dgr" data-a="abdel" data-id="'+it.id+'" data-n="'+a.id+'">remove</button><div class="fld wide"><textarea style="min-height:54px" data-it="'+it.id+'" data-ab="'+a.id+'" data-f="text">'+esc(a.text||"")+'</textarea></div></div></div>';});
  h+='<button class="btn sm" data-a="abadd" data-id="'+it.id+'" style="margin-top:7px">+ ability</button>';
@@ -1719,6 +1805,22 @@ function renderWealth(){var h='<section id="wealth"><h2>Wealth <span class="sub2
   '<div class="row"><span class="lbl" style="margin:0">Cycle</span><input type="text" data-b="cycle" value="'+esc(S.cycle||"Week")+'" style="width:90px"><button class="btn pri lg" data-a="subrun">Process '+esc((S.cycle||"week").toLowerCase())+'</button></div></div>';
  if(S.wlog.length)h+='<div class="log">'+S.wlog.slice(-10).reverse().map(function(t){return '<div>'+esc(t)+'</div>';}).join("")+'</div>';
  return h+'<p class="note">Amounts take any mix of coins ("49 pp 6 gp"); a bare number is gold. Paying uses the listed coins first, then whatever fits, then breaks a larger coin and keeps the change. Unticked lines are skipped when processing.</p></div></section>';}
+
+function armorPropEditor(it,d){var a=it.armor||{},k=a.kind,t=clamp(num(a.tier,1),1,5),h='';
+ if(!k)return '<p class="note">Set the armor weight above to pick its properties.</p>';
+ var cap=ARMOR_PICKS[k],L=ARMOR_PROPS[k],have=(it.props||[]).map(function(p){return p.toLowerCase();});
+ h+='<h4 class="cz" style="margin-top:12px;font-size:14px;color:var(--gold)">Armor properties <span class="sub2">'+(it.props||[]).length+' / '+cap+' · '+k+' list · tier '+t+' scales on '+(t<=2?'PB':t<=4?'Prime Stat':'Prime Stat + tier 5 effect')+'</span></h4>';
+ (it.props||[]).forEach(function(p,i){var df=armorPropDef(k,p),over=i>=cap;
+  h+='<div class="ab-row"'+(over?' style="opacity:.55"':'')+'><div class="row"><b class="cz" style="color:#fff">'+esc(p)+'</b>'+(df?'<span class="sub" style="margin:0">'+esc(df[1])+'</span>':'<span class="chip bad">not on the '+k+' list</span>')+(over?'<span class="chip bad">over the limit, inactive</span>':'')+'<button class="btn sm dgr" style="margin-left:auto" data-a="apropdel" data-id="'+it.id+'" data-n="'+i+'">remove</button></div>'+
+   (df?'<table style="margin:6px 0 0;font-size:14px"><tr'+(t<=2?' class="hl"':'')+'><td class="n">T1–2</td><td>'+esc(df[2])+'</td></tr><tr'+(t>=3&&t<=4?' class="hl"':'')+'><td class="n">T3–4</td><td>'+esc(df[3])+'</td></tr><tr'+(t===5?' class="hl"':'')+'><td class="n">T5</td><td>'+esc(df[4])+'</td></tr></table>':'')+'</div>';});
+ if((it.props||[]).length<cap)h+='<div class="row" style="margin-top:8px"><select class="sel" id="apSel-'+it.id+'"><option value="">add a '+k+' property…</option>'+L.filter(function(x){return have.indexOf(x[0].toLowerCase())<0;}).map(function(x){return '<option value="'+esc(x[0])+'">'+esc(x[0])+' · '+esc(x[1])+'</option>';}).join("")+'</select><button class="btn sm" data-a="apropadd" data-id="'+it.id+'">add</button></div>';
+ var LG=ARMOR_LEGENDARY[k]||[];
+ h+='<h4 class="cz" style="margin-top:12px;font-size:14px;color:var(--gold)">Legendary property <span class="sub2">DM-granted · tier 4+ · doesn\'t count toward the '+cap+'</span></h4><div class="row"><select class="sel" id="alSel-'+it.id+'"><option value="">none</option>'+LG.map(function(x){return '<option value="'+esc(x[0])+'"'+(it.legendary===x[0]?' selected':'')+'>'+esc(x[0])+'</option>';}).join("")+'<option value="__custom"'+(it.legendary&&!legendaryDef(k,it.legendary)?' selected':'')+'>custom…</option></select><button class="btn sm" data-a="alegset" data-id="'+it.id+'">set</button>'+(it.legendary&&t<4?'<span class="chip warn">needs tier 4+</span>':'')+'</div>';
+ if(it.legendary){var lg=legendaryDef(k,it.legendary);h+='<p style="font-size:14.5px;margin-top:6px"><b class="cz">'+esc(it.legendary)+'.</b> '+esc(lg?lg[1]:it.legendaryText||"")+'</p>';}
+ return h;}
+function armorPropsHtml(d,compact){var P=d.aprops;if(!P.length)return "";var h='';
+ P.forEach(function(p){h+='<div class="ab-row"><div class="row"><b class="cz" style="color:#fff">'+esc(p.n)+'</b>'+(p.legendary?'<span class="tag gold">legendary</span>':'')+(p.custom?'<span class="chip bad">off-list</span>':'')+(p.locked?'<span class="chip warn">needs tier 4+</span>':'')+'<span class="tag">'+esc(p.band)+'</span><span class="tag veil">'+esc(p.vlab)+'</span></div><p style="font-size:14.5px;margin-top:3px">'+esc(p.line)+'</p></div>';});
+ return h;}
 
 /* ===================== RENDER: STORAGE ===================== */
 function renderStorage(d){var h=renderWealth()+(C.wealthNote?'<p class="note">'+C.wealthNote+'</p>':'');
@@ -1961,6 +2063,7 @@ document.addEventListener("input",function(e){var el=e.target;
  if(el.hasAttribute("data-sub")){var sb=S.subs.filter(function(x){return x.id===el.getAttribute("data-sub");})[0];if(sb){sb[el.getAttribute("data-f")]=el.type==="checkbox"?el.checked:el.value;save();}return;}});
 document.addEventListener("change",function(e){var el=e.target;
  if(el.getAttribute("data-a2")==="armorbase"){var it=itemById(el.getAttribute("data-it"));if(it&&el.value){it.armor.base=ARMOR_BASE[it.armor.kind][el.value][clamp(num(it.armor.tier,1),1,5)-1];if(!it.name||/^Unnamed/.test(it.name))it.name=el.value;}commit();return;}
+ if(el.getAttribute("data-a2")==="udDie"){S.udDie=num(el.value,8);commit();return;}
  if(el.hasAttribute("data-rel")){var r=relById(el.getAttribute("data-rel"));if(r){var f=el.getAttribute("data-f"),v=num(el.value);
    if(f==="tier"&&v===5){var o=S.rels.filter(function(x){return x.tier===5&&x!==r;})[0];if(o){flash("Only one S bond at a time ("+o.name+")");renderAll();return;}}r[f]=v;if(f==="tier")r.pips=0;}commit();return;}
  if(el.hasAttribute("data-b")&&el.getAttribute("data-b")==="tl.cur"){afterTL();}
@@ -2013,6 +2116,16 @@ function act(a,el){var id=el.getAttribute("data-id"),n=num(el.getAttribute("data
  case "hd":if(S.hd.cur<1){flash("No hit dice left");return;}S.hd.cur--;break;
  case "death":S.death[id]=S.death[id]>n?n:n+1;break;
  case "tough":S.hp.temp=Math.max(num(S.hp.temp),d.def.tough);logline("Overflow Toughness: "+d.def.tough+" temp HP");break;
+ case "combatstart":S.round=1;S.infUsed=0;for(var ek in S.eco)S.eco[ek].left=S.eco[ek].max;(S.bats||[]).forEach(function(b){b.ch=num(b.chMax);});
+  S.mor.start=S.mor.cur;S.mor.lost=0;S.combat={on:true,tough:d.def.tough};
+  if(d.def.tough){S.hp.temp=Math.max(num(S.hp.temp),d.def.tough);}logline("Combat started"+(d.def.tough?": Overflow Toughness "+d.def.tough+" temp HP":""));break;
+ case "udDie":S.udDie=n;break;
+ case "apropadd":it=itemById(id);v=val("apSel-"+id);if(!v)return;var kk=it.armor.kind;
+  if(it.props.some(function(p){return p.toLowerCase()===v.toLowerCase();})){flash("A property can't be taken twice");return;}
+  if(it.props.length>=ARMOR_PICKS[kk]){flash(kk.charAt(0).toUpperCase()+kk.slice(1)+" armor takes "+ARMOR_PICKS[kk]+" properties");return;}
+  it.props.push(v);logline(it.name+": "+v);break;
+ case "apropdel":it=itemById(id);it.props.splice(n,1);break;
+ case "alegset":it=itemById(id);v=val("alSel-"+id);if(v==="__custom"){var cn=window.prompt("Legendary property name","");if(!cn)return;var ct=window.prompt("What it does","")||"";it.legendary=cn;it.legendaryText=ct;}else{it.legendary=v;it.legendaryText="";}break;
  case "tagadd":v=val("tagIn").trim();if(v&&S.tags.indexOf(v)<0)S.tags.push(v);break;
  case "tagdel":S.tags.splice(n,1);break;
  case "savetog":S.saves[id]=!S.saves[id];break;
@@ -2119,8 +2232,8 @@ function initSync(){var CFG=window.FIREBASE_CONFIG||{},pill=$("syncPill");
  function setPill(t,c){pill.textContent=t;pill.style.color=c;}
  var ok=CFG&&CFG.apiKey&&String(CFG.apiKey).indexOf("PASTE")!==0&&window.firebase;
  if(!ok){setPill("○ local only","#bbb");return;}
- var docRef,applying=false,pushT=null;
- try{if(!firebase.apps.length)firebase.initializeApp(CFG);var db=firebase.firestore();db.enablePersistence({synchronizeTabs:true}).catch(function(){});
+ var docRef,applying=false,pushT=null,db=null,backedUp=false;
+ try{if(!firebase.apps.length)firebase.initializeApp(CFG);db=firebase.firestore();db.enablePersistence({synchronizeTabs:true}).catch(function(){});
   docRef=db.collection("campaigns").doc(window.CAMPAIGN_ID||"astrology-club").collection("characters").doc(C.id);}catch(e){setPill("○ sync error","#e08");return;}
  function push(){docRef.set(JSON.parse(JSON.stringify(S))).then(function(){setPill("● synced","#7c7");}).catch(function(){setPill("○ offline","#c96");});}
  remoteSave=function(){if(applying)return;clearTimeout(pushT);pushT=setTimeout(push,400);};
@@ -2129,12 +2242,14 @@ function initSync(){var CFG=window.FIREBASE_CONFIG||{},pill=$("syncPill");
   applying=true;try{if(data.schema===3){var ui=S.ui;S=defaults();deep(S,data);S.ui=ui;}
    else if(C.migrate&&!S.migratedRemote){C.migrate(data,S,api);S.migratedRemote=true;logline("Imported the v2 cloud save");}
    sanitize();store.set(KEY,JSON.stringify(S));renderAll();}catch(e){}applying=false;
-  if(data.schema!==3)push();setPill("● synced","#7c7");},function(){setPill("○ offline","#c96");});}
+  if(data.schema!==3){if(backedUp)push();else{backedUp=true;var bk=db.collection("campaigns").doc(window.CAMPAIGN_ID||"astrology-club").collection("characters").doc(C.id+"__backup_"+Date.now());
+   bk.set({backupOf:C.id,savedAt:new Date().toISOString(),data:JSON.parse(JSON.stringify(data))}).then(push,function(){setPill("○ backup failed · not overwriting","#e08");});logline("Older cloud save backed up before upgrading");}}
+  setPill("● synced","#7c7");},function(){setPill("○ offline","#c96");});}
 
 /* ===================== BOOT ===================== */
 function boot(){panes();renderRail();buildPanes();wirePal();load();
  if(C.hooks&&C.hooks.init)C.hooks.init(api);renderAll();
- $("foot").textContent=(C.name||"")+" · sheet engine v3 · saves to this device"+(C.footNote?" · "+C.footNote:"");initSync();}
+ $("foot").textContent=(C.name||"")+" · Covenant engine 1.6 · saves to this device"+(C.footNote?" · "+C.footNote:"");initSync();}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot);else boot();
 window.__sheet={get S(){return S;},compute:compute,endTurn:endTurn,act:act,renderAll:renderAll,takeDamage:takeDamage,moraleChange:moraleChange,equip:equip,declareInf:declareInf};
 })();
