@@ -533,7 +533,7 @@ var KIT=[
   A("Second Wind","bonus","Regain 1d10 + Fighter level HP (22 at max) and move up to half speed. As a reaction on a failed save, add 1d10; if it still fails, the use isn't spent. Four uses; one back on a short rest, all on a long rest.",{cost:"1 use",pay:{res:{sw:1}}}),
   A("Action Surge","free","Take one additional action (not Magic). Twice at Fighter 17.",{cost:"1/SR",pay:{res:{surge:1}}}),
   A("Weapon Mastery","passive","2024 Fighter 1: mastery properties on chosen weapons. Not on her Google sheet; Tactical Master implies it. "+TBD),
-  A("Extra Attack ×2","passive","Three attacks with the Attack action (Two Extra Attacks at Fighter 11). Set as the Attacks pips."),
+  A("Extra Attack ×2","passive","Fighter 5 and 11 each add an attack; with the Monk's Extra Attack she makes four (gestalt stacking). Set as the Attacks pips."),
   A("Indomitable","free","Reroll a failed saving throw, adding Fighter level (+12). Once per long rest (twice at 13).",{cost:"1/LR",pay:{res:{indom:1}}}),
   A("Tactical Master","passive","When attacking, she can swap a weapon's mastery for Push, Sap, or Slow.")]},
  {id:"bmcore",title:"Battle Master",sub:"subclass",pane:"fighter",items:[
@@ -665,6 +665,31 @@ return {
 (function(){"use strict";
 var C=window.CHAR||{};
 var KEY=(C.id||"sheet")+"_v3:sheet";
+/* ===================== GESTALT ATTACKS · DYNAMIC REACTIONS · REVISED MONK ===================== */
+/* Extra Attacks stack across gestalt classes (Handbook). Each class lists the class levels that add one attack. */
+var EA_TABLE=[[/fighter|banneret/i,[5,11,20]],[/sword\s*saint/i,[5,13]],[/duskworn/i,[5,11]],[/plantsmith/i,[5]],
+ [/monk|barbarian|paladin|ranger|warlord|vagabond|ravager|troubadour/i,[5]]];
+function eaDefault(name){for(var i=0;i<EA_TABLE.length;i++)if(EA_TABLE[i][0].test(name||""))return EA_TABLE[i][1].slice();return [];}
+/* A tracker that already exists in a save keeps its value; only brand-new trackers start full. */
+function markRes(d){S.resInit=S.resInit||{};Object.keys((d&&d.res)||{}).forEach(function(k){S.resInit[k]=1;});}
+function monkLevel(){var l=0;(S.classes||[]).forEach(function(c){if(/monk/i.test(c.name||""))l+=Math.max(0,+c.level||0);});return l;}
+/* J.T.'s Revised Monk: Ki pool is double the baseline (one per monk level), minimum 4, +5 at 10/20/30/40/50. */
+function jtKi(L){return L<=0?0:Math.max(4,2*L)+5*Math.floor(L/10);}
+function maDice(L){return 1+[5,10,17].filter(function(x){return L>=x;}).length;}
+var MA_WEAPONS=[["Fist",6,"Bludgeoning","Default"],["Elbow",8,"Piercing","Ignores temp HP"],["Knee",8,"Piercing","5 ft knockback"],["Kick",10,"Bludgeoning","5 ft reach, +10 ft knockback, Vulnerable on a miss"]];
+var JT_FEATURES=[[1,"Ki Surge","Ki pool doubled (minimum 4), +5 Ki at monk 10, 20, 30, 40 and 50."],[1,"Athletic Flow","After any successful attack in a chain, attempt a grapple or shove as a free action, using Acrobatics instead of Athletics if you like."],
+ [1,"Unarmed weapons","Fist d6 · Elbow d8 (ignores temp HP) · Knee d8 (5 ft knockback) · Kick d10 (5 ft reach, +10 ft knockback, Vulnerable on a miss)."],
+ [1,"2024 monk buffs","Flurry of Blows, Patient Defense and Step of the Wind as written for the 2024 monk (Flurry is three strikes from monk 10)."],
+ [2,"Parry","Exclusive Dynamic Reaction. When a melee attack hits you, both roll attacks; higher wins. Win: the hit is cancelled and your strike lands. Lose: the hit lands with +20% damage."],
+ [5,"Martial arts dice","+1 damage die at monk 5, 10 and 17."],[6,"Stillness of Mind","Proficiency in all saving throws and resistance to psychic damage."],
+ [14,"Ki Siphon","Touch a magical weapon to take its enchantment into your limbs (and its charges) until the end of combat or your next siphon."],
+ [20,"Enlightenment","Flurry, Patient Defense and Step of the Wind cost 0 Ki; one Ki ability per turn even at 0 Ki; advantage on DEX and WIS saves; +4 DEX and +4 WIS."]];
+(function(){C.resources=(C.resources||[]).slice();
+ var hasMonk=(C.classes||[]).some(function(c){return /monk/i.test(c.name||"");});
+ C.resources.forEach(function(r,i){if(r.id==="ki"&&hasMonk&&C.kiFormula!==false){C.resources[i]=Object.assign({},r,{max:undefined,maxFn:function(){return jtKi(monkLevel());},note:r.note||"J.T. Revised Monk",rest:r.rest||"short",fillNew:true});}});
+ if(hasMonk&&!C.resources.some(function(r){return r.id==="ki";}))C.resources.unshift({id:"ki",name:"Ki",maxFn:function(){return jtKi(monkLevel());},rest:"short",steps:[1,3],note:"J.T. Revised Monk",color:"#c2abff",fillNew:true});
+ if(!C.resources.some(function(r){return /tempo/i.test(r.id+" "+r.name);}))C.resources.push({id:"tempo",name:"Tempo",maxFn:function(d){return d.pb;},rest:"short",steps:[1],note:"PB · Feints and Deflects · short rest",color:"#5fd2c0",fillNew:true});
+})();
 function $(id){return document.getElementById(id);}
 function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 function clone(o){return JSON.parse(JSON.stringify(o==null?null:o));}
@@ -832,14 +857,23 @@ function defaults(){
  if(C.stateDefaults)deep(s,clone(C.stateDefaults));
  return s;
 }
-function econDefs(){return [{id:"act",name:"Action",max:1},{id:"bon",name:"Bonus action",max:1}].concat(C.economy||[{id:"rx",name:"Reactions",max:1}]);}
+function econDefs(){var L=(C.economy||[]).map(function(e){var o=Object.assign({},e);if(o.id==="rx")o.name="Dynamic Reactions";if(o.id==="atk")o.name="Attacks";return o;});
+ if(!L.some(function(e){return e.id==="atk";}))L.unshift({id:"atk",name:"Attacks",max:1});
+ if(!L.some(function(e){return e.id==="rx";}))L.push({id:"rx",name:"Dynamic Reactions",max:3});
+ return [{id:"act",name:"Action",max:1},{id:"bon",name:"Bonus action",max:1}].concat(L);}
+function cfgEco(id){var e=(C.economy||[]).filter(function(x){return x.id===id;})[0];return e?num(e.max):null;}
+/* Keep pip maxima in line with the rules every render; manual +/- adjusts the "other sources" bonus instead. */
+function syncEco(d){var a=S.eco.atk,r=S.eco.rx;
+ if(a){var na=Math.max(0,d.attacks);if(na>a.max)a.left+=na-a.max;a.max=na;if(a.left>a.max)a.left=a.max;}
+ if(r){var nr=Math.max(0,d.drMax);if(nr>r.max)r.left+=nr-r.max;r.max=nr;if(r.left>r.max)r.left=r.max;}
+ if(d.monkL>0&&!S.eco.fl){S.monk=S.monk||{fl:0,flMax:0};}}
 function deep(t,src){for(var k in src){if(!src.hasOwnProperty(k))continue;var v=src[k];
  if(v&&typeof v==="object"&&!Array.isArray(v)&&t[k]&&typeof t[k]==="object"&&!Array.isArray(t[k]))deep(t[k],v);else t[k]=v;}return t;}
 var S=defaults();
 var store={get:function(k){try{return localStorage.getItem(k);}catch(e){return null;}},set:function(k,v){try{localStorage.setItem(k,v);}catch(e){}}};
 function load(){
  var raw=store.get(KEY);
- if(raw){try{var d=JSON.parse(raw);if(d&&d.schema===3)deep(S,d);}catch(e){}}
+ if(raw){try{var d=JSON.parse(raw);if(d&&d.schema===3){deep(S,d);markRes(d);}}catch(e){}}
  else if(C.legacyKey&&C.migrate){var old=store.get(C.legacyKey);if(old){try{C.migrate(JSON.parse(old),S,api);S.log.push("Imported the previous sheet's saved state");}catch(e){}}}
  sanitize();
 }
@@ -849,6 +883,11 @@ function sanitize(){
  if(!S.dmg||!Array.isArray(S.dmg.lines))S.dmg=defaults().dmg;if(!S.dmg.riders)S.dmg.riders={};if(!S.sit)S.sit={ac:0,speed:0,adr:0};if(S.sit.adr==null)S.sit.adr=0;if(!Array.isArray(S.subs))S.subs=[];if(!Array.isArray(S.wlog))S.wlog=[];
  var dfl=null;function D0(){return dfl||(dfl=defaults());}
  if(!S.school||!Array.isArray(S.school.classes))S.school=D0().school;["servants","clubs","learn"].forEach(function(k){if(!Array.isArray(S.school[k]))S.school[k]=[];});if(!S.school.scale)S.school.scale=clone(DEFAULT_SCALE);
+ (S.classes||[]).forEach(function(c){if(!Array.isArray(c.ea)){var cc=(C.classes||[]).filter(function(x){return x.name===c.name&&Array.isArray(x.ea);})[0];c.ea=cc?cc.ea.slice():eaDefault(c.name);}});
+ if(!S.mig17){S.mig17=true;(S.classes||[]).forEach(function(c){if(/monk/i.test(c.name||"")&&C.kiFormula!==false)c.die=10;});
+  if(S.atkBonus==null){var ca=cfgEco("atk"),base=1;(S.classes||[]).forEach(function(c){base+=(c.ea||[]).filter(function(x){return num(c.level)>=num(x);}).length;});S.atkBonus=(ca!=null&&ca>base)?ca-base:0;}
+  if(S.drBonus==null){var cr=cfgEco("rx");S.drBonus=(cr!=null&&cr>3)?cr-3:0;}}
+ if(S.atkBonus==null)S.atkBonus=0;if(S.drBonus==null)S.drBonus=0;if(!S.resInit)S.resInit={};if(!S.monk)S.monk={fl:0,flMax:0};
  if(!S.udDie)S.udDie=(C.unarmored&&C.unarmored.die)||8;if(!S.combat)S.combat={on:false,tough:0};
  if(C.hooks&&C.hooks.sanitize)try{C.hooks.sanitize(S,api);}catch(e){}
  if(!Array.isArray(S.bats))S.bats=D0().bats;S.bats=S.bats.map(function(b){return mkBat(b);});
@@ -888,7 +927,10 @@ function compute(){
  d.im=itemMods();
  d.hpBase=d.dieSum+d.totalLv*d.mod.con+num(S.hpAdj)+d.im.hp;
  d.hpMax=Math.max(0,d.hpBase-num(S.hp.burn));d.hpCeil=Math.max(0,d.hpMax-num(S.hp.scar));
- STATS.forEach(function(s){d.save[s[0]]=d.mod[s[0]]+(S.saves[s[0]]?d.pb:0);});
+ d.monkL=monkLevel();d.stillness=d.monkL>=6;
+ STATS.forEach(function(s){d.save[s[0]]=d.mod[s[0]]+((S.saves[s[0]]||d.stillness)?d.pb:0);});
+ d.eaParts=[];var ea=0;(S.classes||[]).forEach(function(c){var lv=(Array.isArray(c.ea)?c.ea:eaDefault(c.name)).filter(function(x){return num(c.level)>=num(x);});if(lv.length){ea+=lv.length;d.eaParts.push({n:c.name,k:lv.length,at:lv});}});
+ d.attacksBase=1+ea;d.attacks=Math.max(1,d.attacksBase+num(S.atkBonus));d.drMax=Math.max(0,3+num(S.drBonus));
  SKILLS.forEach(function(k){var l=S.skills[k[0]]||0;d.skill[k[0]]=d.mod[k[1]]+(l===1?d.pb:l===2?d.pb*2:0)+num(S.skillMisc[k[0]]);});
  d.passive=10+d.skill.Perception;
  var sp=C.spellStat||"wis";d.dc=8+d.pb+d.mod[sp]+num(S.dcMisc);d.spellAtk=d.pb+d.mod[sp];
@@ -990,7 +1032,7 @@ function endTurn(){var parts=[],d=compute();
  if(C.hooks&&C.hooks.endTurn)C.hooks.endTurn(api,parts);
  var keep=[];S.effects.forEach(function(e){if(num(e.rounds)>0){e.rounds--;if(e.rounds<=0){parts.push(e.name+(e.target&&e.target!=="self"?" on "+e.target:"")+" ended");return;}}keep.push(e);});S.effects=keep;
  moraleEndRound(parts);
- for(var k in S.eco)S.eco[k].left=S.eco[k].max;S.infUsed=0;
+ syncEco(compute());for(var k in S.eco)S.eco[k].left=S.eco[k].max;S.infUsed=0;if(S.monk){S.monk.fl=0;S.monk.flMax=0;}if(S.eco.fl&&monkLevel()>0)S.eco.fl.left=0;
  S.round++;logline(parts.length?parts.join(", "):"Next round");}
 function restoreRes(kind){var d=compute();(C.resources||[]).forEach(function(r){if(r.rest==="long"&&kind!=="long")return;if(!r.rest)return;S.res[r.id]=r.rest==="empty"?0:resMax(r,d);});}
 function shortRest(){restoreRes("short");for(var k in S.eco)S.eco[k].left=S.eco[k].max;if(C.hooks&&C.hooks.shortRest)C.hooks.shortRest(api);logline("Short rest");}
@@ -1101,7 +1143,8 @@ function renderTurn(d){var h="";
  econDefs().forEach(function(e){var st=S.eco[e.id];h+='<div class="res"><div class="rn">'+esc(e.name)+'<small>'+st.left+'/'+st.max+'</small></div><div class="pips">';
   for(var i=0;i<st.max;i++)h+='<button class="pip'+(i<st.left?' live':'')+'" data-a="eco" data-id="'+e.id+'" data-n="'+i+'" aria-label="'+esc(e.name)+' '+(i+1)+'"></button>';
   h+='<button class="btn sm" data-a="ecomax" data-id="'+e.id+'" data-n="-1">−</button><button class="btn sm" data-a="ecomax" data-id="'+e.id+'" data-n="1">+</button></div></div>';});
- h+='</div></section>';
+ h+='</div>'+renderReactRow(d)+'</section>';
+ if(d.monkL>0)h+=renderMonk(d);
  h+=renderDmg(d);
  if((C.resources||[]).length){h+='<section id="resources"><h2>Resources</h2><div class="grid3">';
   C.resources.forEach(function(r){var mx=resMax(r,d),v=S.res[r.id];
@@ -1124,6 +1167,25 @@ function renderTurn(d){var h="";
  h+='<section id="log"><h2>Log</h2><div class="log">'+S.log.slice(-14).reverse().map(function(t){return '<div>'+esc(t)+'</div>';}).join("")+'</div></section>';
  h+='<section id="fightnotes"><h2>Live notes</h2><textarea data-b="notes.fight" placeholder="Who is marked, what the DM ruled, what to do next turn.">'+esc(S.notes.fight)+'</textarea></section>';
  $("body-turn").innerHTML=h;}
+function renderReactRow(d){var rx=S.eco.rx||{left:0,max:0},t=num(S.res.tempo),tm=d.pb;
+ var h='<div class="card" style="margin-top:10px"><div class="row"><b class="cz" style="color:#fff">Dynamic Reactions</b><span class="chip'+(rx.left?' ok':' bad')+'">'+rx.left+'/'+rx.max+(rx.left?'':' · Vulnerable')+'</span>';
+ ["Block","Dodge"].concat(d.monkL>=2?["Parry"]:[]).concat(["Riposte","Help (save)","Team Attack"]).forEach(function(n){h+='<button class="btn sm" data-a="drx" data-id="'+n+'"'+(rx.left?'':' disabled')+'>'+n+'</button>';});
+ h+='<span style="margin-left:auto" class="row"><b class="cz" style="color:var(--veil)">Tempo</b><span class="chip">'+t+'/'+tm+'</span><button class="btn sm" data-a="deflect"'+(t?'':' disabled')+' title="Block active, incoming melee: cancel the hit and act immediately">Deflect</button><button class="btn sm" data-a="feint" data-id="off"'+(t?'':' disabled')+' title="Your turn, replaces one attack">Feint</button><button class="btn sm" data-a="feint" data-id="react"'+(t&&rx.left?'':' disabled')+' title="Enemy turn: 1 Dynamic Reaction + 1 Tempo">Reactive feint</button></span></div>'+
+  '<p class="sub">3 per round for every special-or-higher creature, refreshed at the start of your turn. Declare before the roll (Block, Dodge'+(d.monkL>=2?', Parry':'')+'). At 0 you are Vulnerable to Takedowns. Tempo = PB, refreshed on a short rest.'+(num(S.drBonus)?' Other sources '+sgn(num(S.drBonus))+'.':'')+'</p></div>';
+ return h;}
+function renderMonk(d){var L=d.monkL,kc=L>=20?0:1,fl=S.eco.fl?{left:S.eco.fl.left,max:S.eco.fl.max}:{left:num(S.monk.fl),max:num(S.monk.flMax)},n=maDice(L),ki=num(S.res.ki),kiMax=jtKi(L);
+ var h='<section id="monk"><h2>Monk <span class="sub2">J.T.\'s Revised Monk · monk level '+L+'</span></h2><div class="card">';
+ h+='<div class="row"><b class="cz" style="color:var(--ac)">Ki</b><button class="btn sm" data-a="res" data-id="ki" data-n="-1">−</button><span class="cur" style="font-size:18px">'+ki+'</span><span class="sl">/ '+kiMax+'</span><button class="btn sm" data-a="res" data-id="ki" data-n="1">+</button><span class="sub" style="margin:0">max(4, 2 × '+L+')'+(Math.floor(L/10)?' + '+5*Math.floor(L/10):'')+' · short rest</span></div>';
+ h+='<div class="row" style="margin-top:10px"><button class="btn pri" data-a="flurry">Flurry of Blows · '+(L>=10?3:2)+' strikes · '+kc+' Ki</button><span class="lbl" style="margin:0">Strikes</span><span class="pips" style="margin:0">';
+ for(var i=0;i<fl.max;i++)h+='<button class="pip'+(i<fl.left?' live':'')+'" data-a="flstrike" title="Tick a strike when you make it"></button>';
+ h+=(fl.max?'':'<span class="sub" style="margin:0">none this turn</span>')+'</span>'+
+  '<button class="btn sm" data-a="monkbon" data-id="Patient Defense (Disengage)" data-free="1">Patient Defense</button><button class="btn sm" data-a="monkbon" data-id="Patient Defense + Dodge">+ Dodge ('+kc+' Ki)</button><button class="btn sm" data-a="monkbon" data-id="Step of the Wind (Dash)" data-free="1">Step of the Wind</button><button class="btn sm" data-a="monkbon" data-id="Step of the Wind + Disengage">+ Disengage ('+kc+' Ki)</button></div>';
+ h+='<table style="margin-top:10px"><tr><th>Unarmed weapon</th><th class="n">Damage</th><th>Type</th><th>Trait</th></tr>';
+ MA_WEAPONS.forEach(function(w){var k=findKitByName(w[0]);h+='<tr><td>'+w[0]+'</td><td class="n">'+n+'d'+w[1]+(k&&k.a.cost?' <span class="sub" style="margin:0">('+esc(k.a.cost)+')</span>':'')+'</td><td>'+w[2]+'</td><td>'+w[3]+'</td></tr>';});
+ h+='</table><p class="sub">'+n+' dice per strike at monk '+L+' (+1 die at 5, 10 and 17). Athletic Flow: after any hit in a chain, grapple or shove as a free action.</p>';
+ h+='<div class="grid2" style="margin-top:8px">';JT_FEATURES.forEach(function(f){var on=L>=f[0];h+='<div class="ab-row"'+(on?'':' style="opacity:.5"')+'><b class="cz" style="color:#fff">'+f[1]+'</b> <span class="tag'+(on?' veil':'')+'">monk '+f[0]+(on?' · online':'')+'</span><p style="font-size:14.5px;margin-top:3px">'+f[2]+'</p></div>';});
+ return h+'</div></div></section>';}
+function findKitByName(n){var all=allKit();for(var i=0;i<all.length;i++)if(all[i].a.n===n)return all[i];return null;}
 function renderTx(d){var T=C.tx,st=d.st,u=upkeep(d),h='<section id="transform"><div class="tx">';
  h+='<div class="tx-top"><div><div class="tx-name">'+esc(T.name)+'</div><div class="tx-sub">'+(S.tx.on?(u.mode?esc(u.mode.name)+' channelled':'active, unchannelled'):(S.tx.locked?'locked until a long rest':'dormant'))+' · TL '+S.tl.cur+'/'+d.tlMax+(S.tx.burning?' · BURNING':'')+'</div></div><div class="row">';
  if(!S.tx.on)h+='<button class="btn pri lg" data-a="txon"'+(S.tx.locked?' disabled':'')+'>Raise, '+T.activate+' TL</button>';
@@ -1165,9 +1227,10 @@ function renderChar(d){var h='<section id="identity"><h2>Identity</h2><div class
  h+='</div></section>';
  h+='<section id="levels"><h2>Level &amp; classes <span class="sub2">proficiency from character level · HP from the class table</span></h2>';
  h+='<div class="row"><span class="lbl" style="margin:0">Character level</span><button class="btn" data-a="lvl" data-n="-1">−</button><input class="num" type="number" data-b="level" value="'+S.level+'"><button class="btn" data-a="lvl" data-n="1">+</button><span class="chip on">PB '+sgn(d.pb)+'</span><span class="chip">class levels '+d.totalLv+'</span></div>';
- h+='<table><tr><th>Class</th><th class="n">Level</th><th class="n">Hit die</th><th class="n">HP</th><th></th></tr>';
- S.classes.forEach(function(c,i){h+='<tr><td><input type="text" data-b="classes.'+i+'.name" value="'+esc(c.name)+'"></td><td class="n"><input class="num w44" type="number" data-b="classes.'+i+'.level" value="'+c.level+'"></td><td class="n"><select class="sel" data-b="classes.'+i+'.die">'+[6,8,10,12].map(function(x){return '<option value="'+x+'"'+(num(c.die)===x?' selected':'')+'>d'+x+'</option>';}).join("")+'</select></td><td class="n">'+(num(c.level)*num(c.die))+'</td><td><button class="btn sm dgr" data-a="cldel" data-n="'+i+'">×</button></td></tr>';});
- h+='</table><div class="row"><button class="btn sm" data-a="cladd">+ class</button><span class="lbl" style="margin:0 0 0 auto">HP adjustment</span><input class="num w44" type="number" data-b="hpAdj" value="'+S.hpAdj+'"></div>';
+ h+='<table><tr><th>Class</th><th class="n">Level</th><th class="n">Hit die</th><th class="n">HP</th><th>Extra Attack at</th><th></th></tr>';
+ S.classes.forEach(function(c,i){h+='<tr><td><input type="text" data-b="classes.'+i+'.name" value="'+esc(c.name)+'"></td><td class="n"><input class="num w44" type="number" data-b="classes.'+i+'.level" value="'+c.level+'"></td><td class="n"><select class="sel" data-b="classes.'+i+'.die">'+[6,8,10,12].map(function(x){return '<option value="'+x+'"'+(num(c.die)===x?' selected':'')+'>d'+x+'</option>';}).join("")+'</select></td><td class="n">'+(num(c.level)*num(c.die))+'</td><td><input type="text" class="eaIn" data-a2="eaedit" data-n="'+i+'" value="'+esc((c.ea||[]).join(", "))+'" placeholder="e.g. 5, 11, 20" style="width:110px" title="Class levels that add an attack"></td><td><button class="btn sm dgr" data-a="cldel" data-n="'+i+'">×</button></td></tr>';});
+ h+='</table><p class="mono" style="font-size:12.5px;margin:4px 0 8px">Attacks per Attack action: 1'+d.eaParts.map(function(p){return ' + '+p.k+' '+esc(p.n)+' ('+p.at.join(", ")+')';}).join("")+(num(S.atkBonus)?' '+sgn(num(S.atkBonus))+' other sources':'')+' = <b style="color:#fff">'+d.attacks+'</b> · Dynamic Reactions '+d.drMax+(d.stillness?' · Stillness of Mind: all saves proficient':'')+' <span class="lbl" style="display:inline;margin:0 0 0 8px">other attacks</span><input class="num w44" type="number" data-b="atkBonus" value="'+num(S.atkBonus)+'"><span class="lbl" style="display:inline;margin:0 0 0 8px">other DR</span><input class="num w44" type="number" data-b="drBonus" value="'+num(S.drBonus)+'"></p>'+
+  '<div class="row"><button class="btn sm" data-a="cladd">+ class</button><span class="lbl" style="margin:0 0 0 auto">HP adjustment</span><input class="num w44" type="number" data-b="hpAdj" value="'+S.hpAdj+'"></div>';
  h+='<p class="note mono" style="font-size:12.5px">Max HP = '+d.dieSum+' (hit die max × class levels) + '+d.totalLv+' × CON '+sgn(d.mod.con)+(num(S.hpAdj)?' '+sgn(num(S.hpAdj))+' adjustment':'')+(d.im.hp?' '+sgn(d.im.hp)+' gear':'')+' = <b>'+d.hpBase+'</b>'+(S.hp.burn?' · −'+S.hp.burn+' burned':'')+'</p>';
  if(C.levelNote)h+='<div class="flag">'+C.levelNote+'</div>';
  h+='<div class="row" style="margin-top:8px"><span class="lbl" style="margin:0">Hit dice</span><button class="btn sm" data-a="hd" data-n="-1">spend</button><span class="cur" style="font-size:17px">'+S.hd.cur+'</span><span class="sl">/</span><input class="num w44" type="number" data-b="hd.max" value="'+S.hd.max+'"><span class="lbl" style="margin:0 0 0 14px">Death saves</span>';
@@ -1701,7 +1764,8 @@ function batAct(a,el,d){var n=num(el.getAttribute("data-n")),v=num(el.getAttribu
  }return null;}
 
 /* ===================== RENDER ALL ===================== */
-function renderAll(){var d=compute();
+function renderAll(){var d0=compute();(C.resources||[]).forEach(function(r){if(r.fillNew&&!(S.resInit||{})[r.id]){S.resInit=S.resInit||{};var mx=resMax(r,d0);if(mx!=null){S.res[r.id]=mx;S.resInit[r.id]=1;}}});
+ var d=compute();syncEco(d);
  if(S.hp.cur<0)S.hp.cur=d.hpMax;if((C.tl!==false)&&S.tl.cur<0)S.tl.cur=d.tlMax;if((C.tl!==false)&&S.tl.lastMax!=null&&d.tlMax>S.tl.lastMax&&num(S.tl.cur)>=S.tl.lastMax)S.tl.cur=d.tlMax;S.tl.lastMax=d.tlMax;d=compute();
  var fk=focusKey();
  [["bar",renderBar],["turn",renderTurn],["char",renderChar],["kit",renderKit],["kitpanes",renderKitPanes],["school",renderSchool],["comps",renderComps],["spells",renderSpells],["bats",renderBats],["equip",renderEquip],["storage",renderStorage],["rels",renderRels],["rules",renderRules]].forEach(function(p){try{p[1](d);}catch(e){if(window.console)console.error("render "+p[0],e);}});
@@ -1735,6 +1799,7 @@ document.addEventListener("input",function(e){var el=e.target;
 document.addEventListener("change",function(e){var el=e.target;
  if(el.getAttribute("data-a2")==="armorbase"){var it=itemById(el.getAttribute("data-it"));if(it&&el.value){it.armor.base=ARMOR_BASE[it.armor.kind][el.value][clamp(num(it.armor.tier,1),1,5)-1];if(!it.name||/^Unnamed/.test(it.name))it.name=el.value;}commit();return;}
  if(el.getAttribute("data-a2")==="udDie"){S.udDie=num(el.value,8);commit();return;}
+ if(el.getAttribute("data-a2")==="eaedit"){var ix=num(el.getAttribute("data-n"));S.classes[ix].ea=String(el.value||"").split(/[ ,]+/).map(Number).filter(function(x){return x>0;});commit();return;}
  if(el.hasAttribute("data-rel")){var r=relById(el.getAttribute("data-rel"));if(r){var f=el.getAttribute("data-f"),v=num(el.value);
    if(f==="tier"&&v===5){var o=S.rels.filter(function(x){return x.tier===5&&x!==r;})[0];if(o){flash("Only one S bond at a time ("+o.name+")");renderAll();return;}}r[f]=v;if(f==="tier")r.pips=0;}commit();return;}
  if(el.hasAttribute("data-b")&&el.getAttribute("data-b")==="tl.cur"){afterTL();}
@@ -1768,7 +1833,16 @@ function act(a,el){var id=el.getAttribute("data-id"),n=num(el.getAttribute("data
  case "short":shortRest();break;
  case "long":if(!window.confirm("Long rest: health, TL, resources, hit dice, morale and lockouts restore, the transformation ends and effects clear. Go ahead?"))return;longRest();break;
  case "eco":r=S.eco[id];r.left=n<r.left?n:n+1;break;
- case "ecomax":r=S.eco[id];r.max=clamp(r.max+n,0,20);r.left=Math.min(r.left+(n>0?1:0),r.max);break;
+ case "ecomax":if(id==="atk"){S.atkBonus=num(S.atkBonus)+n;if(n>0)S.eco.atk.left++;break;}if(id==="rx"){S.drBonus=num(S.drBonus)+n;if(n>0)S.eco.rx.left++;break;}
+  r=S.eco[id];r.max=clamp(r.max+n,0,20);r.left=Math.min(r.left+(n>0?1:0),r.max);break;
+ case "drx":if(!S.eco.rx||S.eco.rx.left<1){flash("No Dynamic Reactions left: Vulnerable");return;}if(id==="Parry"&&d.monkL<2){flash("Parry needs monk 2");return;}S.eco.rx.left--;logline(id+" (Dynamic Reaction, "+S.eco.rx.left+" left)"+(S.eco.rx.left===0?" · Vulnerable":""));break;
+ case "deflect":if(num(S.res.tempo)<1){flash("No Tempo left");return;}S.res.tempo=num(S.res.tempo)-1;logline("Deflect (1 Tempo)");break;
+ case "feint":if(num(S.res.tempo)<1){flash("No Tempo left");return;}if(id==="react"){if(!S.eco.rx||S.eco.rx.left<1){flash("Reactive Feints also need a Dynamic Reaction");return;}S.eco.rx.left--;}S.res.tempo=num(S.res.tempo)-1;logline((id==="react"?"Reactive":"Offensive")+" Feint (1 Tempo"+(id==="react"?" + 1 Dynamic Reaction":"")+")");break;
+ case "flurry":var kc=d.monkL>=20?0:1;if(S.eco.bon&&S.eco.bon.left<1){flash("No bonus action left");return;}if(num(S.res.ki)<kc){flash("Not enough Ki");return;}
+  if(S.eco.bon)S.eco.bon.left--;S.res.ki=num(S.res.ki)-kc;var fn=d.monkL>=10?3:2;if(S.eco.fl){S.eco.fl.max=Math.max(S.eco.fl.max,fn);S.eco.fl.left=fn;}else{S.monk.flMax=fn;S.monk.fl=fn;}logline("Flurry of Blows: "+fn+" strikes ("+kc+" Ki)");break;
+ case "flstrike":if(S.eco.fl){if(S.eco.fl.left>0)S.eco.fl.left--;}else if(S.monk.fl>0)S.monk.fl--;break;
+ case "monkbon":var kc2=(d.monkL>=20||el.getAttribute("data-free")==="1")?0:1;if(S.eco.bon&&S.eco.bon.left<1){flash("No bonus action left");return;}if(num(S.res.ki)<kc2){flash("Not enough Ki");return;}if(S.eco.bon)S.eco.bon.left--;S.res.ki=num(S.res.ki)-kc2;logline(id+(kc2?" (1 Ki)":""));break;
+ case "eaedit":var lst=String(el.value||"").split(/[ ,]+/).map(Number).filter(function(x){return x>0;});S.classes[n].ea=lst;break;
  case "txon":txStart();break;
  case "txoff":txEnd();break;
  case "txpay":var u=upkeep(d);if(S.tx.burning){S.hp.burn=num(S.hp.burn)+u.cost;}else{S.tl.cur=Math.max(0,num(S.tl.cur)-u.cost);}logline("Paid upkeep "+u.cost);afterTL();break;
@@ -1782,12 +1856,12 @@ function act(a,el){var id=el.getAttribute("data-id"),n=num(el.getAttribute("data
  case "fxr":S.effects.forEach(function(e){if(e.id===id)e.rounds=Math.max(0,num(e.rounds)+n);});break;
  case "fxdel":S.effects=S.effects.filter(function(e){return e.id!==id;});break;
  case "lvl":S.level=Math.max(1,num(S.level)+n);logline("Character level "+S.level);break;
- case "cladd":S.classes.push({name:"New class",level:1,die:8});break;
+ case "cladd":S.classes.push({name:"New class",level:1,die:8,ea:[]});break;
  case "cldel":if(S.classes.length>1)S.classes.splice(n,1);break;
  case "hd":if(S.hd.cur<1){flash("No hit dice left");return;}S.hd.cur--;break;
  case "death":S.death[id]=S.death[id]>n?n:n+1;break;
  case "tough":S.hp.temp=Math.max(num(S.hp.temp),d.def.tough);logline("Overflow Toughness: "+d.def.tough+" temp HP");break;
- case "combatstart":S.round=1;S.infUsed=0;for(var ek in S.eco)S.eco[ek].left=S.eco[ek].max;(S.bats||[]).forEach(function(b){b.ch=num(b.chMax);});
+ case "combatstart":S.round=1;S.infUsed=0;syncEco(d);for(var ek in S.eco)S.eco[ek].left=S.eco[ek].max;if(S.eco.fl&&d.monkL>0)S.eco.fl.left=0;if(S.monk){S.monk.fl=0;S.monk.flMax=0;}(S.bats||[]).forEach(function(b){b.ch=num(b.chMax);});
   S.mor.start=S.mor.cur;S.mor.lost=0;S.combat={on:true,tough:d.def.tough};
   if(d.def.tough){S.hp.temp=Math.max(num(S.hp.temp),d.def.tough);}logline("Combat started"+(d.def.tough?": Overflow Toughness "+d.def.tough+" temp HP":""));break;
  case "udDie":S.udDie=n;break;
@@ -1910,7 +1984,7 @@ function initSync(){var CFG=window.FIREBASE_CONFIG||{},pill=$("syncPill");
  remoteSave=function(){if(applying)return;clearTimeout(pushT);pushT=setTimeout(push,400);};
  docRef.onSnapshot(function(snap){if(snap.metadata.hasPendingWrites)return;
   if(!snap.exists){push();return;}var data=snap.data();if(!data)return;
-  applying=true;try{if(data.schema===3){var ui=S.ui;S=defaults();deep(S,data);S.ui=ui;}
+  applying=true;try{if(data.schema===3){var ui=S.ui;S=defaults();deep(S,data);markRes(data);S.ui=ui;}
    else if(C.migrate&&!S.migratedRemote){C.migrate(data,S,api);S.migratedRemote=true;logline("Imported the v2 cloud save");}
    sanitize();store.set(KEY,JSON.stringify(S));renderAll();}catch(e){}applying=false;
   if(data.schema!==3){if(backedUp)push();else{backedUp=true;var bk=db.collection("campaigns").doc(window.CAMPAIGN_ID||"astrology-club").collection("characters").doc(C.id+"__backup_"+Date.now());
@@ -1920,7 +1994,7 @@ function initSync(){var CFG=window.FIREBASE_CONFIG||{},pill=$("syncPill");
 /* ===================== BOOT ===================== */
 function boot(){panes();renderRail();buildPanes();wirePal();load();
  if(C.hooks&&C.hooks.init)C.hooks.init(api);renderAll();
- $("foot").textContent=(C.name||"")+" · Covenant engine 1.6 · saves to this device"+(C.footNote?" · "+C.footNote:"");initSync();}
+ $("foot").textContent=(C.name||"")+" · Covenant engine 1.7 · saves to this device"+(C.footNote?" · "+C.footNote:"");initSync();}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot);else boot();
 window.__sheet={get S(){return S;},compute:compute,endTurn:endTurn,act:act,renderAll:renderAll,takeDamage:takeDamage,moraleChange:moraleChange,equip:equip,declareInf:declareInf};
 })();
