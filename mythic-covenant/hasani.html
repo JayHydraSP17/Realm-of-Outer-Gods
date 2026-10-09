@@ -641,7 +641,7 @@ var HZ_CLS=(function(){
  resources:[
   {id:"ld",name:"Leadership Dice",start:13,rest:"short",steps:[1],color:"#cf3a3a",
    maxFn:function(d,S){var l=lv(S,WLD);return l>=2?l:0;},
-   note:"Warlord: count = Warlord level, size d6 (2–10) · d8 (11–16) · d10 (17–20). Per-turn limit 1 · 2 at 6 · 3 at 11 · 4 at 17. All back on a short or long rest. Full console on the Warlord tab."},
+   note:"Warlord: count = Warlord level, d8 (11–16), Per-turn limit: 3. Full console on the Warlord tab."},
   {id:"loh",name:"Lay on Hands",start:55,rest:"long",steps:[1,5,10],color:"#e8cd87",
    maxFn:function(d,S){return 5*lv(S,PAL);},note:"Pool = 5 × Paladin level. Bonus action touch. 5 points removes Poisoned (Restoring Touch at Pal 14 adds more conditions)."},
   {id:"channel",name:"Channel Divinity",start:3,rest:"long",steps:[1],color:"#e8cd87",
