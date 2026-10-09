@@ -969,7 +969,8 @@ function sanitize(){
  var dfl=null;function D0(){return dfl||(dfl=defaults());}
  if(!S.school||!Array.isArray(S.school.classes))S.school=D0().school;["servants","clubs","learn"].forEach(function(k){if(!Array.isArray(S.school[k]))S.school[k]=[];});if(!S.school.scale)S.school.scale=clone(DEFAULT_SCALE);
  (S.classes||[]).forEach(function(c){if(!Array.isArray(c.ea)){var cc=(C.classes||[]).filter(function(x){return x.name===c.name&&Array.isArray(x.ea);})[0];c.ea=cc?cc.ea.slice():eaDefault(c.name);}});
- if(!S.mig17){S.mig17=true;(S.classes||[]).forEach(function(c){if(/monk/i.test(c.name||"")&&C.kiFormula!==false)c.die=10;});
+ if(!S.mig17){S.mig17=true;(S.classes||[]).forEach(function(c){if(/monk/i.test(c.name||"")&&C.kiFormula!==false)c.die=8;});
+  if(C.unarmored&&C.unarmored.die&&(S.classes||[]).some(function(c){return /monk/i.test(c.name||"");}))S.udDie=C.unarmored.die;
   if(S.atkBonus==null){var ca=cfgEco("atk"),base=1;(S.classes||[]).forEach(function(c){base+=(c.ea||[]).filter(function(x){return num(c.level)>=num(x);}).length;});S.atkBonus=(ca!=null&&ca>base)?ca-base:0;}
   if(S.drBonus==null){var cr=cfgEco("rx");S.drBonus=(cr!=null&&cr>3)?cr-3:0;}}
  if(S.atkBonus==null)S.atkBonus=0;if(S.drBonus==null)S.drBonus=0;if(!S.resInit)S.resInit={};if(!S.monk)S.monk={fl:0,flMax:0};

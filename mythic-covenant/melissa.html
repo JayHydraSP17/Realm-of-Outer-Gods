@@ -615,14 +615,14 @@ function render(api,d){var host;
 
 return {
  id:"melissa",name:"Melissa",epithet:"Seals of the Ancients",accent:"#e24a52",
- level:12,classes:[{name:"Monk",level:12,die:10},{name:"Fighter",level:12,die:10}],
+ level:12,classes:[{name:"Monk",level:12,die:8},{name:"Fighter",level:12,die:10}],
  stats:{str:13,dex:30,con:20,int:14,wis:26,cha:12},
  saves:{str:true,dex:true,con:true,int:true,wis:true,cha:true},
  skills:{"Acrobatics":1,"History":2,"Insight":1,"Intimidation":1,"Investigation":2,"Perception":1,"Stealth":1,"Survival":1},
  identityFields:["Name","Race","Age","Height","Alignment","Background","Deity","Languages","Defenses","Appearance"],
  identity:{"Name":"Melissa","Race":"Human","Age":"16","Height":"5'4\"","Alignment":"Neutral Good","Background":"Commoner / Inquisitive","Deity":"???","Languages":"Common, Infernal, Draconic","Defenses":"Resistant to psychic damage","Appearance":"Black hair, long and straight · gold eyes · white skin · composed"},
  spellStat:"wis",speed:50,hitDice:24,itemSlots:3,
- unarmored:{stats:["dex","wis"],die:10},
+ unarmored:{stats:["dex","wis"],die:8},
  economy:[{id:"atk",name:"Attacks",max:3},{id:"rx",name:"Reactions",max:3}],
  resources:[
   {id:"ki",name:"Ki",maxFn:function(d,S){return kiMax(S);},rest:"short",steps:[1,2],color:"#5fd2c0",note:"Ki Surge: 2 × Monk level + 5 per 10"},
@@ -637,7 +637,7 @@ return {
  barRes:["ki","sup","flow","tempo"],
  riders:[{n:"Tavern Brawler",e:"1d4+DEX"},{n:"Superiority die",e:"1d10"},{n:"Relentless d8",e:"1d8"}],
  tlStat:"wis",tlBonus:0,
- levelNote:"Character level 12 sets PB +4. The revised monk uses a d10 hit die, so Monk 12 + Fighter 12 give 360 max HP; her Google sheet (12d8 for Monk) lists 336 "+TBD+". Max TL assumes (CON + WIS) × 10 "+TBD+". AC uses the armor overhaul's Unarmored Defense (tier 2 bonus, cap 30); her Google sheet lists 28 "+TBD+".",
+ levelNote:"Character level 12 sets PB +4. Monks use a d8 hit die, so Monk 12 + Fighter 12 give 336 max HP, matching her Google sheet. Max TL assumes (CON + WIS) × 10 "+TBD+". AC uses the armor overhaul's Unarmored Defense (tier 2 bonus, cap 30); her Google sheet lists 28 "+TBD+".",
  effectPresets:[{name:"Stunned",rounds:1,note:"Stunning Strike · until the start of her next turn"},{name:"Extort Truth",rounds:100,note:"10 minutes · can't lie, CHA checks vs it have advantage"},{name:"Analyzed",rounds:0,note:"Extract Aspects · misses vs her trigger a reaction strike"},{name:"Prone",rounds:0,note:"Trip Attack"}],
  kitState:{seals:[],man:KNOWN0.slice(),rnd:{},manF:"all",autoTick:false,autoRel:true,composed:false},
  kitPanes:[
@@ -884,7 +884,8 @@ function sanitize(){
  var dfl=null;function D0(){return dfl||(dfl=defaults());}
  if(!S.school||!Array.isArray(S.school.classes))S.school=D0().school;["servants","clubs","learn"].forEach(function(k){if(!Array.isArray(S.school[k]))S.school[k]=[];});if(!S.school.scale)S.school.scale=clone(DEFAULT_SCALE);
  (S.classes||[]).forEach(function(c){if(!Array.isArray(c.ea)){var cc=(C.classes||[]).filter(function(x){return x.name===c.name&&Array.isArray(x.ea);})[0];c.ea=cc?cc.ea.slice():eaDefault(c.name);}});
- if(!S.mig17){S.mig17=true;(S.classes||[]).forEach(function(c){if(/monk/i.test(c.name||"")&&C.kiFormula!==false)c.die=10;});
+ if(!S.mig17){S.mig17=true;(S.classes||[]).forEach(function(c){if(/monk/i.test(c.name||"")&&C.kiFormula!==false)c.die=8;});
+  if(C.unarmored&&C.unarmored.die&&(S.classes||[]).some(function(c){return /monk/i.test(c.name||"");}))S.udDie=C.unarmored.die;
   if(S.atkBonus==null){var ca=cfgEco("atk"),base=1;(S.classes||[]).forEach(function(c){base+=(c.ea||[]).filter(function(x){return num(c.level)>=num(x);}).length;});S.atkBonus=(ca!=null&&ca>base)?ca-base:0;}
   if(S.drBonus==null){var cr=cfgEco("rx");S.drBonus=(cr!=null&&cr>3)?cr-3:0;}}
  if(S.atkBonus==null)S.atkBonus=0;if(S.drBonus==null)S.drBonus=0;if(!S.resInit)S.resInit={};if(!S.monk)S.monk={fl:0,flMax:0};
