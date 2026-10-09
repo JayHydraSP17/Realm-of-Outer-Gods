@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="robots" content="noindex,nofollow">
+<title>Seal a Page</title>
+<style>
+:root{--void:#070608;--line:#2e2638;--bone:#ece6d8;--dim:#a9a0b2;--ac:#c2abff}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--void);color:var(--bone);font-family:Georgia,serif;min-height:100vh;padding:40px 16px}
+.box{max-width:560px;margin:0 auto;border:1px solid var(--line);border-top:3px solid var(--ac);border-radius:14px;padding:22px;background:#130f19}
+h1{font-size:22px;margin-bottom:8px}p{color:var(--dim);font-size:15px;margin:8px 0}
+input{width:100%;font-size:15px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#0f0b14;color:var(--bone);margin:6px 0}
+button{font-size:15px;padding:9px 14px;border-radius:8px;border:1px solid var(--ac);background:#c2abff22;color:#fff;cursor:pointer;margin-top:8px}
+.msg{font-size:14px;margin-top:12px;color:var(--dim)}
+</style></head><body><div class="box">
+<h1>Seal a page</h1>
+<p>Turns a sheet into a passphrase-locked page that's safe to put in the public repo. Everything happens in this browser; nothing is uploaded.</p>
+<p>Use the same passphrase as the other DM sheets so "Remember on this device" covers them all. Save the result into <b>mythic-covenant/dm/</b> with a neutral name (s3.html, s4.html…), and make sure the sheet loads <code>../firebase-config.js</code>.</p>
+<input type="file" id="file" accept=".html,text/html">
+<input type="password" id="p1" placeholder="Passphrase">
+<input type="password" id="p2" placeholder="Passphrase again">
+<input type="text" id="out" placeholder="Output name, e.g. s3.html">
+<button id="go">Seal and download</button>
+<div class="msg" id="msg"></div>
+</div>
+<textarea id="tpl" hidden>&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;&lt;head&gt;
+&lt;meta charset=&quot;UTF-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+&lt;meta name=&quot;robots&quot; content=&quot;noindex,nofollow&quot;&gt;
+&lt;title&gt;Sealed&lt;/title&gt;
+&lt;style&gt;
+:root{--void:#070608;--line:#2e2638;--bone:#ece6d8;--dim:#a9a0b2;--ac:#c2abff;--blood:#d8434f}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:radial-gradient(900px 500px at 50% -10%,rgba(194,171,255,.08),transparent 60%),var(--void);color:var(--bone);font-family:Georgia,&#x27;Cormorant Garamond&#x27;,serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px}
+.box{width:min(380px,100%);border:1px solid var(--line);border-top:3px solid var(--ac);border-radius:14px;padding:22px;background:#130f19}
+h1{font-size:20px;letter-spacing:.08em;margin-bottom:6px}
+p{color:var(--dim);font-size:14px;margin-bottom:14px}
+input[type=password]{width:100%;font-size:16px;padding:9px 11px;border-radius:8px;border:1px solid var(--line);background:#0f0b14;color:var(--bone)}
+input[type=password]:focus{outline:none;border-color:var(--ac)}
+label{display:flex;gap:7px;align-items:center;font-size:13px;color:var(--dim);margin:10px 0 14px}
+button{width:100%;font-size:15px;padding:9px;border-radius:8px;border:1px solid var(--ac);background:#c2abff22;color:#fff;cursor:pointer}
+.err{color:#ffb3ba;font-size:13px;min-height:18px;margin-top:10px}
+&lt;/style&gt;
+&lt;/head&gt;&lt;body&gt;
+&lt;form class=&quot;box&quot; id=&quot;f&quot; autocomplete=&quot;off&quot;&gt;
+  &lt;h1&gt;Sealed page&lt;/h1&gt;
+  &lt;p&gt;Enter the passphrase to open it.&lt;/p&gt;
+  &lt;input type=&quot;password&quot; id=&quot;pw&quot; aria-label=&quot;Passphrase&quot; autofocus&gt;
+  &lt;label&gt;&lt;input type=&quot;checkbox&quot; id=&quot;rem&quot;&gt; Remember on this device&lt;/label&gt;
+  &lt;button type=&quot;submit&quot;&gt;Open&lt;/button&gt;
+  &lt;div class=&quot;err&quot; id=&quot;err&quot;&gt;&lt;/div&gt;
+&lt;/form&gt;
+&lt;script&gt;
+(function(){
+var P=/*__PAYLOAD__*/;
+var KEY=&quot;covenant-dm-pass&quot;;
+function b64(s){var b=atob(s),u=new Uint8Array(b.length);for(var i=0;i&lt;b.length;i++)u[i]=b.charCodeAt(i);return u;}
+function open(pass){
+  var enc=new TextEncoder();
+  return crypto.subtle.importKey(&quot;raw&quot;,enc.encode(pass),&quot;PBKDF2&quot;,false,[&quot;deriveKey&quot;]).then(function(k){
+    return crypto.subtle.deriveKey({name:&quot;PBKDF2&quot;,salt:b64(P.salt),iterations:P.iter,hash:&quot;SHA-256&quot;},k,{name:&quot;AES-GCM&quot;,length:256},false,[&quot;decrypt&quot;]);
+  }).then(function(key){return crypto.subtle.decrypt({name:&quot;AES-GCM&quot;,iv:b64(P.iv)},key,b64(P.ct));})
+  .then(function(buf){return new TextDecoder().decode(buf);});
+}
+function show(html){document.open();document.write(html);document.close();}
+var err=document.getElementById(&quot;err&quot;),f=document.getElementById(&quot;f&quot;);
+if(!window.crypto||!crypto.subtle){err.textContent=&quot;This browser can&#x27;t open sealed pages (it needs https or localhost).&quot;;}
+var saved=null;try{saved=localStorage.getItem(KEY);}catch(e){}
+if(saved){open(saved).then(show).catch(function(){try{localStorage.removeItem(KEY);}catch(e){}});}
+f.addEventListener(&quot;submit&quot;,function(e){e.preventDefault();var pw=document.getElementById(&quot;pw&quot;).value;if(!pw)return;err.textContent=&quot;Opening…&quot;;
+  var rem=document.getElementById(&quot;rem&quot;).checked;
+  open(pw).then(function(html){if(rem){try{localStorage.setItem(KEY,pw);}catch(x){}}show(html);},function(){err.textContent=&quot;That passphrase didn&#x27;t work.&quot;;});});
+})();
+&lt;/script&gt;
+&lt;/body&gt;&lt;/html&gt;
+</textarea>
+<script>
+(function(){
+function b(u){var s="";for(var i=0;i<u.length;i++)s+=String.fromCharCode(u[i]);return btoa(s);}
+var $=function(id){return document.getElementById(id);};
+$("go").addEventListener("click",function(){var f=$("file").files[0],p=$("p1").value,msg=$("msg");
+ if(!f){msg.textContent="Choose a sheet file first.";return;}if(!p||p!==$("p2").value){msg.textContent="The passphrases don't match.";return;}
+ msg.textContent="Sealing…";
+ f.text().then(function(html){
+  if(html.indexOf('src="firebase-config.js"')>-1)html=html.split('src="firebase-config.js"').join('src="../firebase-config.js"');
+  var enc=new TextEncoder(),salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12)),iter=600000;
+  return crypto.subtle.importKey("raw",enc.encode(p),"PBKDF2",false,["deriveKey"]).then(function(k){
+   return crypto.subtle.deriveKey({name:"PBKDF2",salt:salt,iterations:iter,hash:"SHA-256"},k,{name:"AES-GCM",length:256},false,["encrypt"]);
+  }).then(function(key){return crypto.subtle.encrypt({name:"AES-GCM",iv:iv},key,enc.encode(html));}).then(function(ct){
+   var page=$("tpl").value.replace("/*__PAYLOAD__*/",JSON.stringify({v:1,iter:iter,salt:b(salt),iv:b(iv),ct:b(new Uint8Array(ct))}));
+   var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([page],{type:"text/html"}));a.download=$("out").value||"sealed.html";a.click();
+   msg.textContent="Done. Upload "+a.download+" to mythic-covenant/dm/ and add a card to the DM launcher.";});
+ }).catch(function(e){msg.textContent="Couldn't seal: "+e.message;});});
+})();
+</script></body></html>
