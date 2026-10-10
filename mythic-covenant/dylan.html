@@ -1010,12 +1010,14 @@ function stAdd(k){var df=stDef(k),x;
  if(df){var same=(S.status||[]).filter(function(y){return y.k===k;})[0];
   if(same){var mx=num(same.m.maxStacks)||99;same.stacks=Math.min(mx,num(same.stacks,1)+1);logline(same.n+" stacks to "+same.stacks);return same;}
   x={id:uid("st"),k:k,n:df.n,fam:df.fam,cat:df.cat,t:df.t,stacks:1,rounds:0,m:clone(df.m||{}),note:""};}
- else x={id:uid("st"),k:"custom",n:"Custom status",fam:"Custom",cat:"physical",t:1,stacks:1,rounds:0,m:{},note:""};
+ else x={id:uid("st"),k:"custom",n:"Custom status",fam:"Custom",cat:(STATUS_COLORS[S.ui.stCat]?S.ui.stCat:"physical"),t:1,stacks:1,rounds:0,m:{},note:""};
  S.status.push(x);logline("Status: "+x.n+(x.t?" ("+ROMAN[x.t]+")":""));return x;}
 function stById(id){return (S.status||[]).filter(function(x){return x.id===id;})[0];}
 function stModalHtml(d){var h='';
  if(S.ui.stOpen){var x=stById(S.ui.stOpen);if(!x){S.ui.stOpen="";return "";}var df=stDef(x.k),c=STATUS_COLORS[x.cat]||"#a9a0b2";
   h+='<div class="stm-h" style="border-color:'+c+'"><div><span class="eb" style="color:'+c+'">'+esc((x.fam||"Custom")+" · "+((STATUS_CATS.filter(function(z){return z[0]===x.cat;})[0]||[,""])[1]))+'</span><h3>'+(x.k==="custom"?'<input type="text" data-st="'+x.id+'" data-f="n" value="'+esc(x.n)+'" style="font-family:Cinzel;font-size:18px">':esc(x.n)+(x.t?' · Tier '+ROMAN[x.t]:''))+'</h3></div><button class="btn sm" data-a="stclose">close</button></div>';
+  if(x.k==="custom"){h+='<div class="row" style="margin:4px 0 6px"><span class="lbl" style="margin:0">Type</span>';STATUS_CATS.forEach(function(z){var on=x.cat===z[0];h+='<button class="chip'+(on?' on':'')+'" style="color:'+STATUS_COLORS[z[0]]+(on?';border-color:'+STATUS_COLORS[z[0]]:'')+'" data-a="stsetcat" data-id="'+x.id+'" data-k="'+z[0]+'">'+z[1]+'</button>';});
+   h+='<span class="lbl" style="margin:0 0 0 12px">Tier</span>';[1,2,3,4].forEach(function(t){h+='<button class="chip'+(num(x.t,1)===t?' on':'')+'" data-a="stsettier" data-id="'+x.id+'" data-n="'+t+'">'+ROMAN[t]+'</button>';});h+='</div>';}
   if(df){h+='<ul class="stfx">'+df.fx.map(function(f){return '<li>'+esc(f)+'</li>';}).join("")+'</ul>';if(df.m&&df.m.stackNote)h+='<p class="sub">'+esc(df.m.stackNote)+'</p>';}
   h+='<div class="row" style="margin-top:10px"><span class="lbl" style="margin:0">Stacks</span><button class="btn sm" data-a="ststack" data-id="'+x.id+'" data-n="-1">−</button><span class="cur" style="font-size:18px">'+num(x.stacks,1)+'</span><button class="btn sm" data-a="ststack" data-id="'+x.id+'" data-n="1">+</button>'+(x.m.maxStacks?'<span class="sub" style="margin:0">max '+x.m.maxStacks+'</span>':'')+(x.m.tick?'<span class="chip warn">+1 stack each end of turn</span>':'')+
    '<span class="lbl" style="margin:0 0 0 14px">Rounds left</span><button class="btn sm" data-a="stround" data-id="'+x.id+'" data-n="-1">−</button><span class="cur" style="font-size:18px">'+(num(x.rounds)||"∞")+'</span><button class="btn sm" data-a="stround" data-id="'+x.id+'" data-n="1">+</button><span class="sub" style="margin:0">ticks on End turn · ∞ = until removed</span></div>';
@@ -1057,6 +1059,8 @@ function statusAct(a,el,d){var id=el.getAttribute("data-id"),n=num(el.getAttribu
  case "stopen":S.ui.stOpen=id;S.ui.stPick=false;return true;
  case "stdel":x=stById(id);if(x)logline(x.n+" removed");S.status=S.status.filter(function(y){return y.id!==id;});S.ui.stOpen="";return true;
  case "ststack":x=stById(id);if(!x)return false;var mx=num(x.m.maxStacks)||99;x.stacks=clamp(num(x.stacks,1)+n,1,mx);return true;
+ case "stsetcat":x=stById(id);var ck=el.getAttribute("data-k");if(!x||!STATUS_COLORS[ck])return false;x.cat=ck;return true;
+ case "stsettier":x=stById(id);if(!x)return false;x.t=clamp(n,1,4);return true;
  case "stround":x=stById(id);if(!x)return false;x.rounds=Math.max(0,num(x.rounds)+n);return true;
  case "stswap":x=stById(id);var df=stDef(el.getAttribute("data-k"));if(!x||!df)return false;logline(x.n+" → "+df.n);x.k=df.k;x.n=df.n;x.t=df.t;x.m=clone(df.m||{});x.stacks=1;return true;
  case "stdot":x=stById(id);var dt=x&&stDot(x,d.hpMax);if(!dt)return false;takeDamage(dt.v,false);logline(x.n+": "+dt.v+" start-of-turn damage");return true;
