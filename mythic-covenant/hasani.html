@@ -470,8 +470,8 @@ var HZ=(function(){
   o+='<div class="hz-row"><button class="btn sm" data-a="hz-hop" data-n="'+i+'" data-id="p1" title="First Cut, a crit with Hollow damage, a Senseless hit, or an ability that applies stacks">+1 direct</button>'+
    '<button class="btn sm" data-a="hz-hop" data-n="'+i+'" data-id="up" title="Magnum Hollow / Hollowed Cleave / Hollow Pulse">↑ next tier</button>'+
    '<button class="btn sm" data-a="hz-hop" data-n="'+i+'" data-id="hol" title="Claim of the Hollow">→ Hollowed</button>'+
-   '<button class="btn sm" data-a="hz-hop" data-n="'+i+'" data-id="m1" title="Rally: CHA save beats the DC">Rally −1</button>'+
-   '<button class="btn sm" data-a="hz-hop" data-n="'+i+'" data-id="m2" title="Rally beats the DC by 5+ or nat 20">−2</button>'+
+   '<button class="btn sm" data-a="hz-hop" data-n="'+i+'" data-id="m1" title="Reclaim Purpose: CHA save beats the DC">Reclaim −1</button>'+
+   '<button class="btn sm" data-a="hz-hop" data-n="'+i+'" data-id="m2" title="Reclaim Purpose beats the DC by 5+ or nat 20">−2</button>'+
    '<button class="btn sm" data-a="hz-hop" data-n="'+i+'" data-id="die" title="The creature dies — Contagion +2 if it was Hollowed within 10 ft">dies</button></div>';
   return o+'</div>';}
  function lingerCount(h){return tgts(h).filter(function(t){return t.near&&tierOf(t.st)===3;}).length;}
@@ -506,7 +506,7 @@ var HZ=(function(){
    case "p1":addStacks(api,h,t,1,"direct");return true;
    case "up":var nx=[1,3,5,6][tierOf(t.st)];if(nx>t.st)addStacks(api,h,t,nx-t.st,"next tier");return true;
    case "hol":if(t.st<5)addStacks(api,h,t,5-t.st,"becomes Hollowed");return true;
-   case "m1":case "m2":addStacks(api,h,t,id==="m2"?-2:-1,"Rally");return true;
+   case "m1":case "m2":addStacks(api,h,t,id==="m2"?-2:-1,"Reclaim Purpose");return true;
    case "die":var wasH=tierOf(t.st)===3&&t.near;T.splice(n,1);
     if(wasH)h.pend.push({id:"p"+Math.random().toString(36).slice(2,8),src:t.id,n:t.n,amt:2,got:[],echo:false});
     api.log(t.n+" died"+(wasH?" while Hollowed within Wilting Breath — Contagion +2":""));return true;
@@ -910,7 +910,7 @@ window.CHAR={
   {id:"hollowrules",title:"The Scythe of Necrolien · Hollow",sub:"Rayth's special damage type & status",items:[
    {n:"Hollow (Special Damage Type)",k:"passive",text:`Necrotic damage drains the body; <b>Hollow damage empties the soul of meaning.</b> Hollow is unique to Rayth, the Senseless God, and Hasani is its only bearer. Creatures <b>immune to necrotic have resistance</b> to Hollow instead, and creatures <b>resistant to necrotic take normal damage</b>. <b>Soulless</b> creatures take Hollow damage normally but never gain Hollow stacks. True resistance is very rare — only creatures with an absolute, unshakeable purpose (divine avatars, beings bound by a core oath). Separate from Soul Erosion: Soul Erosion breaks the soul, Hollow erases its will — Hollow damage does <b>not</b> bypass temp HP and never applies Soul Erosion. <b>Critical hit</b> with Hollow damage: +1 stack automatically, on top of the save. <b>Direct stacks:</b> abilities that say "applies X stacks" add them with no save.`},
    {n:"Emptying Save",k:"passive",text:`<b>Once per round</b>, when a creature takes Hollow damage from Hasani, he can force a <b>CHA save vs. his spell save DC (25)</b>, adjusted by its Morale and Rayth's Tithes. <b>Fail:</b> +1 Hollow stack · <b>fail by 10+:</b> +2. <b>Success:</b> no stack, and it can't be forced again until the next round. <b>Morale:</b> Heroic −4 · Driven −2 · Steady +0 · Shaken +2 · Broken +4. <b>Toll of the Tithe:</b> +2 per Tithe (max +6). Track it on the <b>Hollow Console</b> (Turn tab).`},
-   {n:"Hollow (Status Effect)",k:"passive",text:`Stacks per target, max 6. <b>I · Meaning Lost</b> (up to 2): healing −30%, morale penalties an extra −5, no Inspiration, morale boosts or Rally effects. <b>II · Purpose Erased</b> (up to 4): healing −40%, −5 to saving throws, below 50% HP disadvantage on attack rolls. <b>III · Hollowed</b> (up to 6): healing −50%, can't gain temp HP, below 25% HP disadvantage on all rolls. <b>Decay:</b> a creature that <b>takes no Hollow damage</b> in a round loses 1 stack. <b>Hollowed Hold:</b> on reaching Tier III it stays Hollowed for 1 full round before decay resumes. <b>Removal:</b> a creature may rally itself or an ally — CHA save vs. Hasani's spell save DC; success −1 stack (−2 on beating the DC by 5+ or a natural 20).`}
+   {n:"Hollow (Status Effect)",k:"passive",text:`Stacks per target, max 6. <b>I · Meaning Lost</b> (up to 2): healing −30%, morale penalties an extra −5, no Inspiration, morale boosts or Rally effects. <b>II · Purpose Erased</b> (up to 4): healing −40%, −5 to saving throws, below 50% HP disadvantage on attack rolls. <b>III · Hollowed</b> (up to 6): healing −50%, can't gain temp HP, below 25% HP disadvantage on all rolls. <b>Decay:</b> a creature that <b>takes no Hollow damage</b> in a round loses 1 stack. <b>Hollowed Hold:</b> on reaching Tier III it stays Hollowed for 1 full round before decay resumes. <b>Removal:</b> a creature may use its action to <b>Reclaim Purpose</b> for itself or an ally — CHA save vs. Hasani's spell save DC; success −1 stack (−2 on beating the DC by 5+ or a natural 20).`}
   ]},
   /* ===== GENERAL PASSIVES (Kit tab) ===== */
   {id:"passives",title:"General Passives",sub:"always on",items:[
