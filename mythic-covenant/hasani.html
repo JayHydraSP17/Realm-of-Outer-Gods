@@ -428,14 +428,29 @@ var HZ=(function(){
  var TCOL=["#6f6679","#b9a4e6","#9b7bd4","#d04dff"];
  function tierOf(n){return n>=5?3:n>=3?2:n>=1?1:0;}
  function raythWielded(api){return (api.S().items||[]).some(function(i){return /^Rayth\b/.test(i.name||"")&&(i.loc==="w1"||i.loc==="w2");});}
- function tgts(h){if(!Array.isArray(h.tg))h.tg=[];return h.tg;}
+ function tgts(h){if(!Array.isArray(h.tg))h.tg=[];h.tg.forEach(function(t){if(!t.id)t.id="t"+Math.random().toString(36).slice(2,8);});if(!Array.isArray(h.pend))h.pend=[];return h.tg;}
+ function tgById(h,id){return tgts(h).filter(function(t){return t.id===id;})[0];}
  function emDC(api,t){var d=api.compute(),m=MOR[t.mor==null?2:t.mor][1],ign=false;
   if(m<0&&api.res("hollow")>=4){m=0;ign=true;}var ti=raythWielded(api)?2*api.res("tithe"):0;
   return {dc:d.dc+m+ti,base:d.dc,m:m,ti:ti,ign:ign};}
- function addStacks(api,h,t,n,why){var b=tierOf(t.st);t.st=clamp((+t.st||0)+n,0,6);if(n>0)t.gain=true;var a=tierOf(t.st),extra="";
-  if(a===3&&b<3){t.hold=1;api.addRes("hollow",1);extra=" · HOLLOWED (holds 1 round) · +1 Emptiness";
-   if(raythWielded(api)&&!t.tithed){if(api.res("tithe")<3){api.addRes("tithe",1);extra+=" · +1 Tithe";}t.tithed=true;}}
+ function becameHollowed(api,h,t){t.hold=1;t.fresh=true;api.addRes("hollow",1);var x=" · HOLLOWED (holds 1 round) · +1 Emptiness";
+  if(raythWielded(api)&&!t.tithed){if(api.res("tithe")<3){api.addRes("tithe",1);x+=" · +1 Tithe";}t.tithed=true;}
+  var p={id:"p"+Math.random().toString(36).slice(2,8),src:t.id,n:t.n,amt:t.near?1:0,got:[],echo:!t.echoed&&api.res("echo")>0};
+  if(p.amt||p.echo)h.pend.push(p);if(t.near)x+=" · Contagion ready";return x;}
+ function addStacks(api,h,t,n,why){var b=tierOf(t.st);t.st=clamp((+t.st||0)+n,0,6);var a=tierOf(t.st),extra="";
+  if(a===3&&b<3)extra=becameHollowed(api,h,t);
   api.log(t.n+": "+(n>0?"+":"")+n+" Hollow ("+why+") → "+t.st+" stack"+(t.st===1?"":"s")+", Tier "+["0","I","II","III"][a]+extra);}
+ function pendHTML(api,h){var T=tgts(h);if(!h.pend.length)return "";var o="";
+  h.pend.forEach(function(p){var src=tgById(h,p.src);
+   o+='<div class="hz-alert" style="--al:#d04dff"><b>'+esc(p.n)+(p.amt===2?' died while Hollowed':' became Hollowed')+'.</b> <button class="btn sm" data-a="hz-hpend" data-id="'+p.id+'" data-n="-1" style="float:right">done</button>';
+   if(p.amt){var others=T.filter(function(t){return t.id!==p.src;});
+    o+='<div class="hz-row"><span class="hz-lbl">Contagion +'+p.amt+'</span>'+(others.length?others.map(function(t){var dn=p.got.indexOf(t.id)>=0;
+     return '<button class="chip'+(dn?' on':'')+'" data-a="hz-hcon" data-id="'+p.id+'" data-n="'+t.id+'"'+(dn?' disabled':'')+'>'+esc(t.n)+(dn?' ✓':' +'+p.amt)+'</button>';}).join(""):'<span class="hz-cost">no other targets listed — add them, then tap</span>')+
+     '<span class="hz-cost">every other enemy within 10 ft of it that can see it</span></div>';}
+   if(p.echo&&src&&!src.echoed)o+='<div class="hz-row"><span class="hz-lbl">Hollowed Echo · '+api.res("echo")+' left</span>'+ORDER.filter(function(k){return k!=="white"&&k!=="black";}).map(function(k){
+     return '<button class="hz-chip hz-btn" style="--sc:'+COL[k][1]+'" data-a="hz-hecho" data-id="'+p.id+'" data-n="'+k+'">'+COL[k][0]+'</button>';}).join("")+'<span class="hz-cost">take its soul colour without killing it</span></div>';
+   o+='</div>';});
+  return o;}
  function tgRow(api,h,t,i){var tr=tierOf(t.st),E=emDC(api,t),col=TCOL[tr],o='<div class="hz-tg" style="--tc:'+col+'">';
   o+='<div class="hz-row" style="margin-top:0"><input class="hz-tgn" data-b="hz.tg.'+i+'.n" value="'+esc(t.n)+'" aria-label="Target name">'+
    '<span class="hz-tier">'+TIERN[tr]+'</span>'+(t.hold>0&&tr===3?'<span class="hz-chip" style="--sc:#d04dff">hold '+t.hold+'</span>':'')+
@@ -448,23 +463,36 @@ var HZ=(function(){
   o+='<div class="hz-row"><button class="chip'+(t.via==="r"?'':' on')+'" data-a="hz-hop" data-n="'+i+'" data-id="via">'+(t.via==="r"?'via Puppet Recoil':'via strike')+'</button>'+
    '<span class="hz-flag'+(t.sv?' on':'')+'">save '+(t.sv?'used':'open')+'</span><span class="hz-flag'+(t.rc?' on':'')+'">recoil '+(t.rc?'used':'open')+'</span>'+
    '<button class="btn sm pri" data-a="hz-hop" data-n="'+i+'" data-id="f1">Fail · +1</button><button class="btn sm pri" data-a="hz-hop" data-n="'+i+'" data-id="f2">Fail by 10+ · +2</button><button class="btn sm" data-a="hz-hop" data-n="'+i+'" data-id="ok">Success</button></div>';
-  o+='<div class="hz-row"><button class="btn sm" data-a="hz-hop" data-n="'+i+'" data-id="p1" title="Critical hit with Hollow damage, a Senseless hit, or an ability that applies stacks">+1 direct</button>'+
+  o+='<div class="hz-row"><button class="chip'+(t.hit?' on':'')+'" data-a="hz-hop" data-n="'+i+'" data-id="hit" title="Took Hollow damage this round — it won\'t decay at End Turn (saves tick this for you)">Hollow dmg this round</button>'+
+   '<button class="chip'+(t.near?' on':'')+'" data-a="hz-hop" data-n="'+i+'" data-id="near" title="Within 10 ft of Hasani: Wilting Breath (no decay, Contagion) and Lingering Emptiness">within 10 ft</button>'+
+   '<button class="chip'+(t.frz?' on':'')+'" data-a="hz-hop" data-n="'+i+'" data-id="frz" title="Trapped in a Red Soul Bind — stacks don\'t decay">Red bubble</button>'+
+   '<button class="chip'+(t.wk?' on':'')+'" data-a="hz-hop" data-n="'+i+'" data-id="wk">Weaken Mind</button></div>';
+  o+='<div class="hz-row"><button class="btn sm" data-a="hz-hop" data-n="'+i+'" data-id="p1" title="First Cut, a crit with Hollow damage, a Senseless hit, or an ability that applies stacks">+1 direct</button>'+
    '<button class="btn sm" data-a="hz-hop" data-n="'+i+'" data-id="up" title="Magnum Hollow / Hollowed Cleave / Hollow Pulse">↑ next tier</button>'+
    '<button class="btn sm" data-a="hz-hop" data-n="'+i+'" data-id="hol" title="Claim of the Hollow">→ Hollowed</button>'+
    '<button class="btn sm" data-a="hz-hop" data-n="'+i+'" data-id="m1" title="Rally: CHA save beats the DC">Rally −1</button>'+
    '<button class="btn sm" data-a="hz-hop" data-n="'+i+'" data-id="m2" title="Rally beats the DC by 5+ or nat 20">−2</button>'+
-   '<button class="chip'+(t.frz?' on':'')+'" data-a="hz-hop" data-n="'+i+'" data-id="frz" title="Wilting Breath (within 5 ft) or trapped in a Red Soul Bind">no decay</button>'+
-   '<button class="chip'+(t.wk?' on':'')+'" data-a="hz-hop" data-n="'+i+'" data-id="wk">Weaken Mind</button></div>';
+   '<button class="btn sm" data-a="hz-hop" data-n="'+i+'" data-id="die" title="The creature dies — Contagion +2 if it was Hollowed within 10 ft">dies</button></div>';
   return o+'</div>';}
- function hollowConsole(api){var h=st(api),T=tgts(h),w=raythWielded(api),o='<div class="card hz-card" style="--bd:#d04dff;grid-column:1/-1"><div class="hz-h">Hollow Console <span class="hz-tag">Rayth · Hollow stacks per target · tiers at 1–2 / 3–4 / 5–6</span>'+
+ function lingerCount(h){return tgts(h).filter(function(t){return t.near&&tierOf(t.st)===3;}).length;}
+ function hollowConsole(api){var h=st(api),T=tgts(h),w=raythWielded(api),L=lingerCount(h),o='<div class="card hz-card" style="--bd:#d04dff;grid-column:1/-1"><div class="hz-h">Hollow Console <span class="hz-tag">Rayth · Hollow stacks per target · tiers at 1–2 / 3–4 / 5–6</span>'+
    '<span class="hz-row" style="margin:0 0 0 auto"><button class="btn sm pri" data-a="hz-hadd">+ target</button>'+(T.length?'<button class="btn sm" data-a="hz-hclr">clear</button>':'')+'</span></div>';
-  o+='<div class="hz-sub">Once per round, when a creature takes <b>Hollow damage</b>, force a <b>CHA save vs. DC '+api.compute().dc+'</b> (±Morale'+(w?', +2 per Tithe':'')+'). Fail +1 stack, fail by 10+ +2, success: no stack and no second save until next round. Puppet Recoil gets its own once-per-round save. End Turn decays 1 stack on any target that gained none (Hollowed holds 1 round first).'+(w?'':' <b class="hz-amber">Rayth isn\'t wielded — no Tithes or Toll of the Tithe.</b>')+'</div>';
+  o+='<div class="hz-sub">Once per round, when a creature takes <b>Hollow damage</b>, force a <b>CHA save vs. DC '+api.compute().dc+'</b> (±Morale'+(w?', +2 per Tithe':'')+'). Fail +1 stack, fail by 10+ +2. Puppet Recoil gets its own save. <b>End Turn:</b> a target that took no Hollow damage loses 1 stack, unless it\'s within 10 ft (Wilting Breath) or in a Red bubble; Hollowed holds 1 round first.'+(w?'':' <b class="hz-amber">Rayth isn\'t wielded — no Tithes or Toll of the Tithe.</b>')+'</div>';
+  o+='<div class="hz-row"><button class="btn sm'+(L?' pri':'')+'" data-a="hz-hling"'+(L?'':' disabled')+' title="Start of Hasani\'s turn">Lingering Emptiness · +'+L+'</button><span class="hz-cost">start of your turn: +1 Emptiness per Hollowed creature within 10 ft (aura)</span></div>';
+  o+=pendHTML(api,h);
   if(!T.length)o+='<div class="hz-sub">No targets yet — tap <b>+ target</b> when a creature takes Hollow damage.</div>';
   T.forEach(function(t,i){o+=tgRow(api,h,t,i);});
   return o+'</div>';}
- function hollowAct(api,h,a,id,n){var T=tgts(h),t=T[n];
-  if(a==="hz-hadd"){T.push({n:"Target "+(T.length+1),st:0,mor:2,via:"s",sv:false,rc:false,gain:false,hold:0,tithed:false,frz:false,wk:false});return true;}
-  if(a==="hz-hclr"){h.tg=[];api.log("Hollow console cleared");return true;}
+ function hollowAct(api,h,a,id,n,el){var T=tgts(h),t=T[n],p,raw=el?el.getAttribute("data-n"):"";
+  if(a==="hz-hadd"){T.push({id:"t"+Math.random().toString(36).slice(2,8),n:"Target "+(T.length+1),st:0,mor:2,via:"s",sv:false,rc:false,hit:false,hold:0,tithed:false,echoed:false,near:false,frz:false,wk:false});return true;}
+  if(a==="hz-hclr"){h.tg=[];h.pend=[];api.log("Hollow console cleared");return true;}
+  if(a==="hz-hling"){var L=lingerCount(h);if(!L)return false;api.addRes("hollow",L);api.log("Lingering Emptiness: +"+L+" Emptiness");return true;}
+  if(a==="hz-hpend"){h.pend=h.pend.filter(function(x){return x.id!==id;});return true;}
+  if(a==="hz-hcon"||a==="hz-hecho"){p=h.pend.filter(function(x){return x.id===id;})[0];if(!p)return false;
+   if(a==="hz-hcon"){var tt=tgById(h,raw);if(!tt||p.got.indexOf(tt.id)>=0)return false;p.got.push(tt.id);addStacks(api,h,tt,p.amt,"Contagion from "+p.n);return true;}
+   var src=tgById(h,p.src),k=String(raw);if(!src||src.echoed)return false;if(api.res("echo")<1){api.flash("No Hollowed Echoes left this long rest");return false;}
+   for(var j=0;j<4;j++)if(!h.souls[j])break;if(j>=4){api.flash("Arsenal full — discard a soul first");return false;}
+   h.souls[j]=k;src.echoed=true;p.echo=false;api.addRes("echo",-1);api.log("Hollowed Echo: took a "+COL[k][0]+" soul from "+src.n);return true;}
   if(!t)return false;
   if(a==="hz-hdel"){T.splice(n,1);return true;}
   if(a==="hz-hmor"){t.mor=+id;return true;}
@@ -473,18 +501,23 @@ var HZ=(function(){
    case "via":t.via=t.via==="r"?"s":"r";return true;
    case "f1":case "f2":case "ok":var fl=t.via==="r"?"rc":"sv";
     if(t[fl]){api.flash(t.n+" already used its "+(fl==="rc"?"Puppet Recoil ":"")+"Emptying Save this round");return false;}
-    t[fl]=true;if(id==="ok"){api.log(t.n+" passed the Emptying Save (DC "+emDC(api,t).dc+")");return true;}
+    t[fl]=true;t.hit=true;if(id==="ok"){api.log(t.n+" passed the Emptying Save (DC "+emDC(api,t).dc+")");return true;}
     addStacks(api,h,t,id==="f2"?2:1,"Emptying Save, DC "+emDC(api,t).dc);return true;
    case "p1":addStacks(api,h,t,1,"direct");return true;
    case "up":var nx=[1,3,5,6][tierOf(t.st)];if(nx>t.st)addStacks(api,h,t,nx-t.st,"next tier");return true;
    case "hol":if(t.st<5)addStacks(api,h,t,5-t.st,"becomes Hollowed");return true;
    case "m1":case "m2":addStacks(api,h,t,id==="m2"?-2:-1,"Rally");return true;
+   case "die":var wasH=tierOf(t.st)===3&&t.near;T.splice(n,1);
+    if(wasH)h.pend.push({id:"p"+Math.random().toString(36).slice(2,8),src:t.id,n:t.n,amt:2,got:[],echo:false});
+    api.log(t.n+" died"+(wasH?" while Hollowed within Wilting Breath — Contagion +2":""));return true;
+   case "hit":t.hit=!t.hit;return true;
+   case "near":t.near=!t.near;return true;
    case "frz":t.frz=!t.frz;return true;
    case "wk":t.wk=!t.wk;return true;}
   return false;}
  function hollowTurn(api,h){var parts=[];tgts(h).forEach(function(t){
-   if(!t.gain){if(t.hold>0)t.hold--;else if(!t.frz&&t.st>0){t.st--;parts.push(t.n+" → "+t.st);}}
-   t.gain=false;t.sv=false;t.rc=false;});
+   if(t.fresh){t.fresh=false;}else if(!t.hit){if(t.hold>0)t.hold--;else if(!t.frz&&!t.near&&t.st>0){t.st--;parts.push(t.n+" → "+t.st);}}
+   t.hit=false;t.sv=false;t.rc=false;});
   if(parts.length)api.log("Hollow decay: "+parts.join(", "));}
  /* ---------- class progression · auto-unlock ---------- */
  var CODES={Pal:{re:/^paladin/i,name:"Paladin",sub:"Oath of the Crown",sec:"pal",pane:"paladin",col:"#e8cd87"},
@@ -642,7 +675,7 @@ var HZ=(function(){
    var old=document.querySelectorAll("#body-warlord .hz-ldc");for(var q=1;q<old.length;q++)old[q].remove();
    if(syncUnlocks(api,false))setTimeout(function(){var b=document.getElementById("hz-noop");if(b)b.click();},0);},
   endTurn:function(api){var h=st(api);hollowTurn(api,h);h.ldTurn=0;if(h.demo>0){h.demoRd=(h.demoRd||10)-1;if(h.demoRd<=0){api.log("Demoralization Dice faded ("+h.demo+" unused)");h.demo=0;h.demoRd=0;}}},
-  longRest:function(api){var h=st(api);h.tg=[];h.grief=-1;h.brk=0;h.mad=0;h.cycMP=0;h.txd=false;h.gUsed=false;h.ldTurn=0;h.demo=0;h.demoRd=0;},
+  longRest:function(api){var h=st(api);h.tg=[];h.pend=[];h.grief=-1;h.brk=0;h.mad=0;h.cycMP=0;h.txd=false;h.gUsed=false;h.ldTurn=0;h.demo=0;h.demoRd=0;},
   shortRest:function(api){var h=st(api);h.txd=false;h.ldTurn=0;h.demo=0;h.demoRd=0;if(resMaxOf2(api,"channel")>0)api.addRes("channel",1);},
   act:function(a,el,api){if(String(a).indexOf("hz-")!==0)return false;
    var h=st(api),id=el.getAttribute("data-id"),n=+el.getAttribute("data-n"),i,s;
@@ -692,7 +725,7 @@ var HZ=(function(){
     case "hz-mad":if(id==="restab"){if(api.res("mp")<n){api.flash("Not enough MP ("+n+" needed)");return false;}api.addRes("mp",-n);api.log("Restabilized from Madness, "+n+" MP");h.mad=0;h.brk=0;break;}
      h.mad=n;break;
     case "hz-noop":break;
-    case "hz-hadd":case "hz-hclr":case "hz-hdel":case "hz-hmor":case "hz-hset":case "hz-hop":if(!hollowAct(api,h,a,id,n))return false;break;
+    case "hz-hadd":case "hz-hclr":case "hz-hdel":case "hz-hmor":case "hz-hset":case "hz-hop":case "hz-hling":case "hz-hpend":case "hz-hcon":case "hz-hecho":if(!hollowAct(api,h,a,id,n,el))return false;break;
     case "hz-mpb":h.mpBonus=(h.mpBonus!=null?+h.mpBonus:8)+n;api.setRes("mp",api.res("mp"));api.log("MP bonus/deficit → "+sgn(h.mpBonus));break;
     case "hz-lvl":var K=CODES[id];if(!K)return false;var cl=(api.S().classes||[]).filter(function(x){return K.re.test(x.name||"");})[0];if(!cl)return false;
      cl.level=clamp((+cl.level||0)+n,0,20);syncUnlocks(api,true);api.log(K.name+" level → "+cl.level);break;
@@ -858,6 +891,7 @@ window.CHAR={
   {id:"sand",name:"Hourglass · Sand",max:6,steps:[1],color:"#e8b45a",note:"Orion's Decay spends Sand. Start 6; grows via the upgrade tree. Sand does not refill."},
   {id:"carn",start:0,name:"Carnage",max:5,steps:[1],rest:"empty",color:"#cf3a3a",note:"+1 whenever anything within 20 ft takes damage. At 5, next attack explodes (force+necrotic = CHA × creatures within 10 ft), then resets."},
   {id:"hollow",start:0,name:"Emptiness",max:5,steps:[1],rest:"empty",color:"#9b7bd4",note:"The Emptiness that Follows: +1 each time a creature becomes Hollowed (Tier III). At 5 → Senseless State. Resets when Senseless ends."},
+  {id:"echo",name:"Hollowed Echoes",start:5,rest:"long",steps:[1],color:"#d04dff",maxFn:function(d){return d.pb;},note:"Once per creature, when it becomes Hollowed, take an echo of its soul without killing it. Uses = PB, back on a long rest. Take them from the Hollow Console."},
   {id:"tithe",start:0,name:"Rayth · Tithes",max:3,steps:[1],rest:"empty",color:"#d9b154",note:"+1 when a creature becomes Hollowed (once per creature, max 3). Each: +2 die, +2 Emptying Save DC (Toll of the Tithe), −25% healing. Resets on stun or when Hollowed Cleave fires."}
  ]),
  barRes:["mp","ld","sand"],
@@ -876,7 +910,7 @@ window.CHAR={
   {id:"hollowrules",title:"The Scythe of Necrolien · Hollow",sub:"Rayth's special damage type & status",items:[
    {n:"Hollow (Special Damage Type)",k:"passive",text:`Necrotic damage drains the body; <b>Hollow damage empties the soul of meaning.</b> Hollow is unique to Rayth, the Senseless God, and Hasani is its only bearer. Creatures <b>immune to necrotic have resistance</b> to Hollow instead, and creatures <b>resistant to necrotic take normal damage</b>. <b>Soulless</b> creatures take Hollow damage normally but never gain Hollow stacks. True resistance is very rare — only creatures with an absolute, unshakeable purpose (divine avatars, beings bound by a core oath). Separate from Soul Erosion: Soul Erosion breaks the soul, Hollow erases its will — Hollow damage does <b>not</b> bypass temp HP and never applies Soul Erosion. <b>Critical hit</b> with Hollow damage: +1 stack automatically, on top of the save. <b>Direct stacks:</b> abilities that say "applies X stacks" add them with no save.`},
    {n:"Emptying Save",k:"passive",text:`<b>Once per round</b>, when a creature takes Hollow damage from Hasani, he can force a <b>CHA save vs. his spell save DC (25)</b>, adjusted by its Morale and Rayth's Tithes. <b>Fail:</b> +1 Hollow stack · <b>fail by 10+:</b> +2. <b>Success:</b> no stack, and it can't be forced again until the next round. <b>Morale:</b> Heroic −4 · Driven −2 · Steady +0 · Shaken +2 · Broken +4. <b>Toll of the Tithe:</b> +2 per Tithe (max +6). Track it on the <b>Hollow Console</b> (Turn tab).`},
-   {n:"Hollow (Status Effect)",k:"passive",text:`Stacks per target, max 6. <b>I · Meaning Lost</b> (up to 2): healing −30%, morale penalties an extra −5, no Inspiration, morale boosts or Rally effects. <b>II · Purpose Erased</b> (up to 4): healing −40%, −5 to saving throws, below 50% HP disadvantage on attack rolls. <b>III · Hollowed</b> (up to 6): healing −50%, can't gain temp HP, below 25% HP disadvantage on all rolls. <b>Decay:</b> a creature that gains no stacks in a round loses 1. <b>Hollowed Hold:</b> on reaching Tier III it stays Hollowed for 1 full round before decay resumes. <b>Removal:</b> a creature may rally itself or an ally — CHA save vs. Hasani's spell save DC; success −1 stack (−2 on beating the DC by 5+ or a natural 20).`}
+   {n:"Hollow (Status Effect)",k:"passive",text:`Stacks per target, max 6. <b>I · Meaning Lost</b> (up to 2): healing −30%, morale penalties an extra −5, no Inspiration, morale boosts or Rally effects. <b>II · Purpose Erased</b> (up to 4): healing −40%, −5 to saving throws, below 50% HP disadvantage on attack rolls. <b>III · Hollowed</b> (up to 6): healing −50%, can't gain temp HP, below 25% HP disadvantage on all rolls. <b>Decay:</b> a creature that <b>takes no Hollow damage</b> in a round loses 1 stack. <b>Hollowed Hold:</b> on reaching Tier III it stays Hollowed for 1 full round before decay resumes. <b>Removal:</b> a creature may rally itself or an ally — CHA save vs. Hasani's spell save DC; success −1 stack (−2 on beating the DC by 5+ or a natural 20).`}
   ]},
   /* ===== GENERAL PASSIVES (Kit tab) ===== */
   {id:"passives",title:"General Passives",sub:"always on",items:[
@@ -886,11 +920,12 @@ window.CHAR={
    {n:"Carnage Feedback Loop",k:"passive",text:`Whenever any creature within 20 ft (incl. you/allies) takes damage from any source, gain a Carnage stack. At 5, your next attack explodes: bonus force + necrotic = CHA × creatures within 10 ft (incl. self); all stacks reset. <i>(Live tracker on the Turn tab.)</i>`},
    {n:"State of Existing",k:"passive",req:"Legend",text:`Half-affected by the rain — resistance to <b>Soak</b>.`},
    {n:"Necrotic Blood",k:"passive",text:`When kissing, bleeding, or any exchange of bodily fluid, deals <b>1d10 necrotic poisoning</b>.`},
-   {n:"Wilting Breath",k:"passive",text:`With just his breath, Hasani keeps the emptiness from leaving: creatures within 5 ft of him <b>don't lose Hollow stacks to decay</b>. No stacks are applied.`},
+   {n:"Wilting Breath",k:"passive",text:`With just his breath, Hasani keeps the emptiness from leaving: creatures within <b>10 ft</b> of him <b>don't lose Hollow stacks to decay</b>. <b>Contagion:</b> when a creature within Wilting Breath <b>becomes Hollowed</b>, every other enemy within 10 ft of that creature that can see it gains <b>1 Hollow stack</b>; if a Hollowed creature <b>dies</b> within Wilting Breath, they gain <b>2</b> instead. (The Hollow Console offers the Contagion stacks when it happens.)`},
+   {n:"Hollowed Echoes",k:"passive",text:`Once per creature, when a creature becomes Hollowed, Hasani can take an <b>echo of its soul</b> without killing it — it goes into a temporary Soul Arsenal slot. Uses equal to <b>PB</b>, reset on a long rest.`},
    {n:"Primal Claws",k:"attack",dmg:"1d10",text:`Sharpen nails/teeth — melee spell attack within 5 ft, <b>1d10 acid</b>. If infused with blood it explodes for an extra <b>1d12 acid</b>, spreading within 5 ft. <i>(Sun Never Rises: 3d5, radius +5 ft.)</i>`},
    {n:"The Sun NEVER Rises",k:"passive",text:`When there is no sun, power rises at the cost of sanity: gain <b>75 temp HP</b> and <b>50 temp TL</b>; Primal Claws → 3d5 (radius +5 ft); Fugue attacks → 1d10, dealt as <b>Hollow damage</b>, no TL cost. Lose <b>3 MP</b> each round of combat.`},
    {n:"Pushing the Limits",k:"passive",cost:"C",text:`Twice per long rest, take an extra <b>bonus action</b>. Once per long rest, ignore all exhaustion for one round.`},
-   {n:"The Emptiness that Follows",k:"passive",text:`Whenever a creature <b>becomes Hollowed (reaches Tier III)</b>, Hasani gains 1 <b>Emptiness</b> (live tracker on the Turn tab): <b>1</b> +1 dmg die / −3 MP&morale checks · <b>2</b> +2 damage reduction / no Disengage · <b>3</b> +10 ft move / must move toward nearest enemy · <b>4</b> the Emptying Save ignores a favorable Morale modifier / disadv. WIS saves · <b>5</b> enter <b>Senseless State</b>. Resets when Senseless ends.`},
+   {n:"The Emptiness that Follows",k:"passive",text:`Whenever a creature <b>becomes Hollowed (reaches Tier III)</b>, Hasani gains 1 <b>Emptiness</b>. <b>Lingering Emptiness:</b> at the start of his turn, +1 Emptiness for each Hollowed creature within his Paladin aura (10 ft). (Live tracker on the Turn tab.) <b>1</b> +1 dmg die / −3 MP&morale checks · <b>2</b> +2 damage reduction / no Disengage · <b>3</b> +10 ft move / must move toward nearest enemy · <b>4</b> the Emptying Save ignores a favorable Morale modifier / disadv. WIS saves · <b>5</b> enter <b>Senseless State</b>. Resets when Senseless ends.`},
    {n:"The Senseless State",k:"passive",text:`<b>1 round. POWER:</b> +CHA <b>Hollow</b> damage; every hit applies <b>1 Hollow stack directly</b> (no save), in addition to the Emptying Save; temp HP = CHA × creatures within 10 ft; +10 ft move; crits trigger Hellfire I. <b>But:</b> must move toward & attack the nearest creature; no Defensive/Dodge/Disengage. <b>After:</b> lose half remaining temp HP, −3 AC to start of next turn, <b>−PB MP</b>.`}
   ]},
 
