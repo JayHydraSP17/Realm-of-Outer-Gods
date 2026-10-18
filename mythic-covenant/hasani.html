@@ -294,8 +294,9 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--ac);}
 var HZ=(function(){
  var COL={red:["Red","#ff8b8b","#9e1b1b"],blue:["Blue","#9bd0ff","#1b4d8a"],green:["Green","#9bf0c9","#1b6e4d"],
   purple:["Purple","#d6b8ff","#5e438f"],cyan:["Cyan","#bff0ff","#2a8ba8"],yellow:["Yellow","#fff0a8","#a8881b"],
-  white:["White","#ffffff","#8d8d8d"],black:["Black","#b4b4b4","#000000"]};
- var ORDER=["red","blue","green","purple","cyan","yellow","white","black"];
+  pink:["Pink","#ffb3dc","#9c2d6b"],white:["White","#ffffff","#8d8d8d"],black:["Black","#b4b4b4","#000000"]};
+ var ORDER=["red","blue","green","purple","cyan","yellow","pink","white","black"];
+ var BASE={red:1,blue:1,green:1};
  var STAGES=["Denial","Anger","Bargaining","Depression","Acceptance"];
  var EMP=[[10,1],[20,2],[30,1],[40,2],[50,3]];          /* per-stage Enhanced cost: [TL, MP] from each stage's text */
  var HOLLOW=[["+1 damage die","−3 to MP & morale checks"],["+2 damage reduction","No Disengage"],
@@ -322,9 +323,11 @@ var HZ=(function(){
    while((m=re.exec(a.cost||"")))need[m[2].toLowerCase()]=(need[m[2].toLowerCase()]||0)+(+m[1]);
    out.push({n:a.n,need:need,tl:(a.pay&&a.pay.tl)||0});});});return out;}
  function counts(h){var c={};for(var i=0;i<4;i++){var s=h.souls[i];if(s)c[s]=(c[s]||0)+1;}return c;}
- function afford(h,need){var c=counts(h),def=0;for(var k in need)def+=Math.max(0,need[k]-(c[k]||0));return def<=(c.white||0);}
- function consume(h,need){var def=0;for(var k in need){var left=need[k];
-   for(var i=0;i<4&&left>0;i++)if(h.souls[i]===k){h.souls[i]=null;left--;}def+=left;}
+ function afford(h,need){var c=counts(h),bdef=0,def=0;for(var k in need){var m=Math.max(0,need[k]-(c[k]||0));if(BASE[k])bdef+=m;else def+=m;}
+  var pk=Math.min(bdef,c.pink||0);return (bdef-pk)+def<=(c.white||0);}
+ function consume(h,need){var def=0,bdef=0;for(var k in need){var left=need[k];
+   for(var i=0;i<4&&left>0;i++)if(h.souls[i]===k){h.souls[i]=null;left--;}if(BASE[k])bdef+=left;else def+=left;}
+  for(var q=0;q<4&&bdef>0;q++)if(h.souls[q]==="pink"){h.souls[q]=null;bdef--;}def+=bdef;
   for(var j=0;j<4&&def>0;j++)if(h.souls[j]==="white"){h.souls[j]=null;def--;}}
  function needChips(need){return Object.keys(need).map(function(k){return '<span class="hz-chip" style="--sc:'+COL[k][1]+'">'+need[k]+' '+COL[k][0]+'</span>';}).join("");}
  function slotsHTML(h){var o='<div class="hz-slots">';
@@ -397,7 +400,7 @@ var HZ=(function(){
    '<button class="chip'+(h.castTL?' on':'')+'" data-a="hz-casttl" style="margin-left:auto">'+(h.castTL?'souls + TL':'souls only')+'</button></div><table><tr><th>Ability</th><th>Souls</th><th class="n">TL</th><th></th></tr>';
   list.forEach(function(a,i){var ok=afford(h,a.need);
    o+='<tr><td>'+esc(a.n)+'</td><td>'+needChips(a.need)+'</td><td class="n">'+a.tl+'</td><td><button class="btn sm'+(ok?' pri':'')+'" data-a="hz-cast" data-n="'+i+'"'+(ok?'':' disabled')+'>'+(ok?'cast':'need souls')+'</button></td></tr>';});
-  o+='</table><div class="hz-sub">Maddening Soul Enhancement: discard one extra soul with × on its slot when you add it to an enhancement.</div></div>';
+  o+='</table><div class="hz-sub">Maddening Soul Enhancement: discard one extra soul with × on its slot when you add it to an enhancement. <b style="color:#ffb3dc">Pink</b> disguises itself as any Red, Blue or Green soul when paying costs.</div></div>';
   var w=(c.red&&c.blue&&c.green),b=(c.purple&&c.cyan&&c.yellow);
   o+='<div class="card hz-card" style="--bd:#5fe6b8"><div class="hz-h">Forge an artificial soul</div><div class="hz-row">'+
    '<button class="btn sm'+(w?' pri':'')+'" data-a="hz-forge" data-id="white"'+(w?'':' disabled')+'>Artificial White · Red + Blue + Green</button>'+
@@ -447,7 +450,7 @@ var HZ=(function(){
     o+='<div class="hz-row"><span class="hz-lbl">Contagion +'+p.amt+'</span>'+(others.length?others.map(function(t){var dn=p.got.indexOf(t.id)>=0;
      return '<button class="chip'+(dn?' on':'')+'" data-a="hz-hcon" data-id="'+p.id+'" data-n="'+t.id+'"'+(dn?' disabled':'')+'>'+esc(t.n)+(dn?' ✓':' +'+p.amt)+'</button>';}).join(""):'<span class="hz-cost">no other targets listed — add them, then tap</span>')+
      '<span class="hz-cost">every other enemy within 10 ft of it that can see it</span></div>';}
-   if(p.echo&&src&&!src.echoed)o+='<div class="hz-row"><span class="hz-lbl">Hollowed Echo · '+api.res("echo")+' left</span>'+ORDER.filter(function(k){return k!=="white"&&k!=="black";}).map(function(k){
+   if(p.echo&&src&&!src.echoed)o+='<div class="hz-row"><span class="hz-lbl">Hollowed Echo · '+api.res("echo")+' left</span>'+ORDER.filter(function(k){return k!=="white";}).map(function(k){
      return '<button class="hz-chip hz-btn" style="--sc:'+COL[k][1]+'" data-a="hz-hecho" data-id="'+p.id+'" data-n="'+k+'">'+COL[k][0]+'</button>';}).join("")+'<span class="hz-cost">take its soul colour without killing it</span></div>';
    o+='</div>';});
   return o;}
@@ -916,12 +919,12 @@ window.CHAR={
   {id:"passives",title:"General Passives",sub:"always on",items:[
    {n:"Connector (Defining Trait)",k:"passive",text:`Within 10 ft of a character he shares a relationship with, Hasani's weapon die increases proportionally to that relationship (0–5 / F–S). Applies to only one character — automatically the highest-tiered ally in range. Set party tiers on the Relationships tab.`},
    {n:"Peer into Orioul",k:"passive",cost:"D",text:`See the souls of living creatures; the colour shows their main stats — <b>Red</b> STR&DEX · <b>Blue</b> WIS&INT · <b>Green</b> CON · <b>Pink</b> CHA · <b>Black</b> all. <b>Show Me YOUR Legacy (5 TL):</b> peer deeper for alignment as a highlighted colour; DM may ask for an Insight check for more of the creature's past.`},
-   {n:"Soul Arsenal",k:"passive",text:`Harvest souls of creatures he kills to power abilities at the cost of TL. Holds <b>4 temporary + 1 permanent</b> soul in his core; taking a soul with full slots forces a discard. <i>(Interactive arsenal on the Turn and Angel of Death tabs.)</i>`},
+   {n:"Soul Arsenal",k:"passive",text:`Harvest souls of creatures he kills to power abilities at the cost of TL. Holds <b>4 temporary + 1 permanent</b> soul in his core; taking a soul with full slots forces a discard. <i>(Interactive arsenal on the Turn and Angel of Death tabs.)</i> <b>Pink</b> (CHA) souls disguise themselves: a Pink soul can be spent as any Red, Blue or Green soul.`},
    {n:"Carnage Feedback Loop",k:"passive",text:`Whenever any creature within 20 ft (incl. you/allies) takes damage from any source, gain a Carnage stack. At 5, your next attack explodes: bonus force + necrotic = CHA × creatures within 10 ft (incl. self); all stacks reset. <i>(Live tracker on the Turn tab.)</i>`},
    {n:"State of Existing",k:"passive",req:"Legend",text:`Half-affected by the rain — resistance to <b>Soak</b>.`},
    {n:"Necrotic Blood",k:"passive",text:`When kissing, bleeding, or any exchange of bodily fluid, deals <b>1d10 necrotic poisoning</b>.`},
    {n:"Wilting Breath",k:"passive",text:`With just his breath, Hasani keeps the emptiness from leaving: creatures within <b>10 ft</b> of him <b>don't lose Hollow stacks to decay</b>. <b>Contagion:</b> when a creature within Wilting Breath <b>becomes Hollowed</b>, every other enemy within 10 ft of that creature that can see it gains <b>1 Hollow stack</b>; if a Hollowed creature <b>dies</b> within Wilting Breath, they gain <b>2</b> instead. (The Hollow Console offers the Contagion stacks when it happens.)`},
-   {n:"Hollowed Echoes",k:"passive",text:`Once per creature, when a creature becomes Hollowed, Hasani can take an <b>echo of its soul</b> without killing it — it goes into a temporary Soul Arsenal slot. Uses equal to <b>PB</b>, reset on a long rest.`},
+   {n:"Hollowed Echoes",k:"passive",text:`Once per creature, when a creature becomes Hollowed, Hasani can take an <b>echo of its soul</b> without killing it — it goes into a temporary Soul Arsenal slot. Any soul colour can be echoed, including <b>Black</b> and <b>Pink</b>. Uses equal to <b>PB</b>, reset on a long rest.`},
    {n:"Primal Claws",k:"attack",dmg:"1d10",text:`Sharpen nails/teeth — melee spell attack within 5 ft, <b>1d10 acid</b>. If infused with blood it explodes for an extra <b>1d12 acid</b>, spreading within 5 ft. <i>(Sun Never Rises: 3d5, radius +5 ft.)</i>`},
    {n:"The Sun NEVER Rises",k:"passive",text:`When there is no sun, power rises at the cost of sanity: gain <b>75 temp HP</b> and <b>50 temp TL</b>; Primal Claws → 3d5 (radius +5 ft); Fugue attacks → 1d10, dealt as <b>Hollow damage</b>, no TL cost. Lose <b>3 MP</b> each round of combat.`},
    {n:"Pushing the Limits",k:"passive",cost:"C",text:`Twice per long rest, take an extra <b>bonus action</b>. Once per long rest, ignore all exhaustion for one round.`},
