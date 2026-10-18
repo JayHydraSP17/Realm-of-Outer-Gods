@@ -341,6 +341,36 @@ var HZ=(function(){
   return '<button class="hz-chip hz-btn" style="--sc:'+COL[k][1]+'" data-a="hz-harv" data-id="'+k+'">+ '+COL[k][0]+'</button>';}).join("")+'</div>';}
  function soulSummary(h){var c=counts(h),n=0;for(var k in c)n+=c[k];
   return '<div class="hz-sub">Temp '+n+'/4 · Permanent: '+(h.souls[4]?COL[h.souls[4]][0]:'—')+(n>=4?' · <b class="hz-amber">full — discard before harvesting</b>':'')+'</div>';}
+ /* ---------- merging & core slot ---------- */
+ var HIGH={"blue|red":"purple","blue|green":"cyan","green|red":"yellow"};
+ var SHARE={"purple|yellow":"red","cyan|purple":"blue","cyan|yellow":"green"};
+ var PINKTO={red:["purple","yellow"],blue:["purple","cyan"],green:["cyan","yellow"]};
+ var CORE_OPT={red:[["str","dex"]],blue:[["int","wis"]],green:[["con"]],purple:[["str","dex"],["int","wis"]],cyan:[["int","wis"],["con"]],yellow:[["str","dex"],["con"]]};
+ var STN={str:"STR",dex:"DEX",con:"CON",int:"INT",wis:"WIS",cha:"CHA"};
+ function mergeOpts(h){var out=[],seen={};
+  for(var i=0;i<4;i++)for(var j=i+1;j<4;j++){var a=h.souls[i],b=h.souls[j];if(!a||!b||a===b)continue;var k=[a,b].sort().join("|"),res=[];
+   if(BASE[a]&&BASE[b])res.push({to:HIGH[k],two:false});
+   else if(a==="pink"&&BASE[b])PINKTO[b].forEach(function(x){res.push({to:x,two:false});});
+   else if(b==="pink"&&BASE[a])PINKTO[a].forEach(function(x){res.push({to:x,two:false});});
+   else if(SHARE[k])res.push({to:SHARE[k],two:true});
+   res.forEach(function(r){var lab=COL[a][0]+" + "+COL[b][0]+" → "+(r.two?"2 "+COL[r.to][0]:COL[r.to][0]);if(seen[lab])return;seen[lab]=1;out.push({i:i,j:j,to:r.to,two:r.two,lab:lab});});}
+  return out;}
+ function mergeHTML(h){var ops=mergeOpts(h),lock=h.mT&&!h.ooc;
+  var o='<div class="card hz-card" style="--bd:#5fe6b8"><div class="hz-h">Merge souls <span class="hz-tag">'+(h.ooc?'outside combat · free':'free action · once per turn')+'</span>'+
+   '<button class="chip'+(h.ooc?' on':'')+'" data-a="hz-ooc" style="margin-left:auto">'+(h.ooc?'outside combat':'in combat')+'</button></div>';
+  if(lock)o+='<div class="hz-sub hz-amber">Already merged this turn — End Turn to merge again.</div>';
+  o+='<div class="hz-row">'+(ops.length?ops.map(function(m,x){return '<button class="btn sm'+(lock?'':' pri')+'" data-a="hz-merge" data-n="'+x+'"'+(lock?' disabled':'')+'>'+esc(m.lab)+'</button>';}).join(""):'<span class="hz-cost">No valid merges in the temporary slots.</span>')+'</div>';
+  return o+'<div class="hz-sub">Base + different base → higher · Pink + base → either higher that base belongs to · two different higher souls → 2 of their shared base. A merged soul can be spent the same turn but can never be split.</div></div>';}
+ function coreBonusOf(h){var c=h.souls&&h.souls[4],b={};if(!c)return b;
+  if(c==="pink"){b.cha=2;return b;}
+  if(c==="white"||c==="black"){["str","dex","con","int","wis","cha"].forEach(function(k){b[k]=c==="black"?2:1;});return b;}
+  (CORE_OPT[c]||[]).forEach(function(g,gi){var pick=(h.core||[])[gi];if(g.indexOf(pick)<0)pick=g[0];b[pick]=(b[pick]||0)+2;});return b;}
+ function coreHTML(h){var c=h.souls[4],b=coreBonusOf(h),o='<div class="card hz-card" style="--bd:var(--gold)"><div class="hz-h">Core soul bonus <span class="hz-tag">permanent slot · applied to his ability scores</span></div>';
+  if(!c)return o+'<div class="hz-sub">Empty — tap the gold Permanent slot to choose its colour.</div></div>';
+  o+='<div class="hz-row"><span class="hz-chip" style="--sc:'+COL[c][1]+'">'+COL[c][0]+'</span><b class="hz-gold">'+Object.keys(b).map(function(k){return '+'+b[k]+' '+STN[k];}).join(" · ")+'</b></div>';
+  (CORE_OPT[c]||[]).forEach(function(g,gi){if(g.length<2)return;var cur=(h.core||[])[gi];if(g.indexOf(cur)<0)cur=g[0];
+   o+='<div class="hz-row"><span class="hz-lbl">'+(CORE_OPT[c].length>1?'Stat '+(gi+1):'Stat')+'</span>'+g.map(function(k){return '<button class="chip'+(k===cur?' on':'')+'" data-a="hz-core" data-n="'+gi+'" data-id="'+k+'">'+STN[k]+'</button>';}).join("")+'</div>';});
+  return o+'<div class="hz-sub">Base +2 to one of its stats · Pink +2 CHA · higher +2 to one stat from each parent colour · White +1 all · Black +2 all.</div></div>';}
  /* ---------- pip trackers ---------- */
  function pips(api,id,max,color){var v=api.res(id),o='<div class="pips hz-pips" style="--ac:'+color+';--ac-line:'+color+'66">';
   for(var n=1;n<=max;n++)o+='<button class="pip'+(n<=v?' live':'')+'" data-a="hz-pip" data-id="'+id+'" data-n="'+n+'" title="'+n+'"></button>';
@@ -391,16 +421,16 @@ var HZ=(function(){
  /* ---------- sections ---------- */
  function liveHTML(api){var h=st(api);
   return '<section class="hz-live"><h2>Live Trackers <span class="sub2">Hasani · tap to track</span></h2><div class="grid3">'+
-   '<div class="card hz-card" style="--bd:#5fe6b8;grid-column:1/-1"><div class="hz-h">Soul Arsenal <span class="hz-tag">4 temporary + 1 permanent</span> <button class="chip" data-a="pane" data-id="angel" style="margin-left:auto">Cast &amp; forge →</button></div>'+slotsHTML(h)+harvHTML()+soulSummary(h)+'</div>'+ldCard(api)+
+   '<div class="card hz-card" style="--bd:#5fe6b8;grid-column:1/-1"><div class="hz-h">Soul Arsenal <span class="hz-tag">4 temporary + 1 permanent</span> <button class="chip" data-a="pane" data-id="angel" style="margin-left:auto">Cast &amp; forge →</button></div>'+slotsHTML(h)+harvHTML()+soulSummary(h)+'</div>'+'<div style="grid-column:1/-1">'+mergeHTML(h)+'</div>'+ldCard(api)+
    hollowConsole(api)+carnCard(api)+hollowCard(api)+titheCard(api)+sandCard(api,true)+griefCard(api,false)+'</div></section>';}
  function arsenalHTML(api){var h=st(api),list=soulAbilities(),c=counts(h);
   var o='<section class="hz-ars"><h2>Soul Arsenal <span class="sub2">harvest · cast · forge</span></h2><div class="card hz-card" style="--bd:#5fe6b8">'+slotsHTML(h)+harvHTML()+soulSummary(h)+
-   '<div class="hz-row" style="margin-top:10px"><span class="hz-lbl">Souls toward next level</span><button class="btn sm" data-a="hz-prog" data-n="-1">−</button><b class="hz-val">'+h.prog+'<span>/20</span></b><button class="btn sm" data-a="hz-prog" data-n="1">+</button></div></div>';
+   '<div class="hz-row" style="margin-top:10px"><span class="hz-lbl">Souls toward next level</span><button class="btn sm" data-a="hz-prog" data-n="-1">−</button><b class="hz-val">'+h.prog+'<span>/20</span></b><button class="btn sm" data-a="hz-prog" data-n="1">+</button></div></div>'+mergeHTML(h)+coreHTML(h);
   o+='<div class="card hz-card" style="--bd:#5fe6b8"><div class="hz-h">Cast a soul ability <span class="hz-tag">spends temp souls · White counts as any</span>'+
    '<button class="chip'+(h.castTL?' on':'')+'" data-a="hz-casttl" style="margin-left:auto">'+(h.castTL?'souls + TL':'souls only')+'</button></div><table><tr><th>Ability</th><th>Souls</th><th class="n">TL</th><th></th></tr>';
   list.forEach(function(a,i){var ok=afford(h,a.need);
    o+='<tr><td>'+esc(a.n)+'</td><td>'+needChips(a.need)+'</td><td class="n">'+a.tl+'</td><td><button class="btn sm'+(ok?' pri':'')+'" data-a="hz-cast" data-n="'+i+'"'+(ok?'':' disabled')+'>'+(ok?'cast':'need souls')+'</button></td></tr>';});
-  o+='</table><div class="hz-sub">Maddening Soul Enhancement: discard one extra soul with × on its slot when you add it to an enhancement. <b style="color:#ffb3dc">Pink</b> disguises itself as any Red, Blue or Green soul when paying costs.</div></div>';
+  o+='</table><div class="hz-sub">Maddening Soul Enhancement: discard one extra soul with × on its slot when you add it to an enhancement. <b style="color:#ffb3dc">Pink</b> disguises itself as any Red, Blue or Green soul when paying costs; as the extra enhancement soul it only gives the Pink line.</div></div>';
   var w=(c.red&&c.blue&&c.green),b=(c.purple&&c.cyan&&c.yellow);
   o+='<div class="card hz-card" style="--bd:#5fe6b8"><div class="hz-h">Forge an artificial soul</div><div class="hz-row">'+
    '<button class="btn sm'+(w?' pri':'')+'" data-a="hz-forge" data-id="white"'+(w?'':' disabled')+'>Artificial White · Red + Blue + Green</button>'+
@@ -434,8 +464,8 @@ var HZ=(function(){
  function tgts(h){if(!Array.isArray(h.tg))h.tg=[];h.tg.forEach(function(t){if(!t.id)t.id="t"+Math.random().toString(36).slice(2,8);});if(!Array.isArray(h.pend))h.pend=[];return h.tg;}
  function tgById(h,id){return tgts(h).filter(function(t){return t.id===id;})[0];}
  function emDC(api,t){var d=api.compute(),m=MOR[t.mor==null?2:t.mor][1],ign=false;
-  if(m<0&&api.res("hollow")>=4){m=0;ign=true;}var ti=raythWielded(api)?2*api.res("tithe"):0;
-  return {dc:d.dc+m+ti,base:d.dc,m:m,ti:ti,ign:ign};}
+  if(m<0&&api.res("hollow")>=4){m=0;ign=true;}var ti=raythWielded(api)?2*api.res("tithe"):0,pk=t.pk?d.pb:0;
+  return {dc:d.dc+m+ti+pk,base:d.dc,m:m,ti:ti,ign:ign,pk:pk};}
  function becameHollowed(api,h,t){t.hold=1;t.fresh=true;api.addRes("hollow",1);var x=" · HOLLOWED (holds 1 round) · +1 Emptiness";
   if(raythWielded(api)&&!t.tithed){if(api.res("tithe")<3){api.addRes("tithe",1);x+=" · +1 Tithe";}t.tithed=true;}
   var p={id:"p"+Math.random().toString(36).slice(2,8),src:t.id,n:t.n,amt:t.near?1:0,got:[],echo:!t.echoed&&api.res("echo")>0};
@@ -462,14 +492,15 @@ var HZ=(function(){
   o+='</span><b class="hz-val">'+t.st+'<span>/6</span></b><button class="hz-x" style="position:static" data-a="hz-hdel" data-n="'+i+'" title="Remove target">×</button></div>';
   if(tr)o+='<div class="hz-sub" style="margin-top:4px;color:#d9d0e4">'+TFX[tr]+'</div>';
   o+='<div class="hz-row"><span class="hz-lbl">Morale</span>'+MOR.map(function(m,k){return '<button class="chip'+((t.mor==null?2:t.mor)===k?' on':'')+'" data-a="hz-hmor" data-n="'+i+'" data-id="'+k+'">'+m[0]+' '+sgn(m[1])+'</button>';}).join("")+'</div>';
-  o+='<div class="hz-row"><span class="hz-lbl">Emptying Save</span><b class="hz-dc">CHA DC '+E.dc+'</b><span class="hz-cost">spell DC '+E.base+' · Morale '+sgn(E.m)+(E.ign?' (favorable ignored · Emptiness 4)':'')+(E.ti?' · Toll of the Tithe '+sgn(E.ti):'')+(t.wk?' · <b class="hz-amber">disadvantage (Weaken Mind)</b>':'')+'</span></div>';
+  o+='<div class="hz-row"><span class="hz-lbl">Emptying Save</span><b class="hz-dc">CHA DC '+E.dc+'</b><span class="hz-cost">spell DC '+E.base+' · Morale '+sgn(E.m)+(E.ign?' (favorable ignored · Emptiness 4)':'')+(E.ti?' · Toll of the Tithe '+sgn(E.ti):'')+(E.pk?' · <b style="color:#ffb3dc">Pink '+sgn(E.pk)+'</b>':'')+(t.wk?' · <b class="hz-amber">disadvantage (Weaken Mind)</b>':'')+'</span></div>';
   o+='<div class="hz-row"><button class="chip'+(t.via==="r"?'':' on')+'" data-a="hz-hop" data-n="'+i+'" data-id="via">'+(t.via==="r"?'via Puppet Recoil':'via strike')+'</button>'+
    '<span class="hz-flag'+(t.sv?' on':'')+'">save '+(t.sv?'used':'open')+'</span><span class="hz-flag'+(t.rc?' on':'')+'">recoil '+(t.rc?'used':'open')+'</span>'+
    '<button class="btn sm pri" data-a="hz-hop" data-n="'+i+'" data-id="f1">Fail · +1</button><button class="btn sm pri" data-a="hz-hop" data-n="'+i+'" data-id="f2">Fail by 10+ · +2</button><button class="btn sm" data-a="hz-hop" data-n="'+i+'" data-id="ok">Success</button></div>';
   o+='<div class="hz-row"><button class="chip'+(t.hit?' on':'')+'" data-a="hz-hop" data-n="'+i+'" data-id="hit" title="Took Hollow damage this round — it won\'t decay at End Turn (saves tick this for you)">Hollow dmg this round</button>'+
    '<button class="chip'+(t.near?' on':'')+'" data-a="hz-hop" data-n="'+i+'" data-id="near" title="Within 10 ft of Hasani: Wilting Breath (no decay, Contagion) and Lingering Emptiness">within 10 ft</button>'+
    '<button class="chip'+(t.frz?' on':'')+'" data-a="hz-hop" data-n="'+i+'" data-id="frz" title="Trapped in a Red Soul Bind — stacks don\'t decay">Red bubble</button>'+
-   '<button class="chip'+(t.wk?' on':'')+'" data-a="hz-hop" data-n="'+i+'" data-id="wk">Weaken Mind</button></div>';
+   '<button class="chip'+(t.wk?' on':'')+'" data-a="hz-hop" data-n="'+i+'" data-id="wk">Weaken Mind</button>'+
+   '<button class="chip'+(t.pk?' on':'')+'" data-a="hz-hop" data-n="'+i+'" data-id="pk" title="This ability was enhanced with a Pink soul: DC +PB. If his CHA mod beats the target\'s by 10+, the attack is effective (×1.5).">Pink-enhanced</button></div>';
   o+='<div class="hz-row"><button class="btn sm" data-a="hz-hop" data-n="'+i+'" data-id="p1" title="First Cut, a crit with Hollow damage, a Senseless hit, or an ability that applies stacks">+1 direct</button>'+
    '<button class="btn sm" data-a="hz-hop" data-n="'+i+'" data-id="up" title="Magnum Hollow / Hollowed Cleave / Hollow Pulse">↑ next tier</button>'+
    '<button class="btn sm" data-a="hz-hop" data-n="'+i+'" data-id="hol" title="Claim of the Hollow">→ Hollowed</button>'+
@@ -516,11 +547,12 @@ var HZ=(function(){
    case "hit":t.hit=!t.hit;return true;
    case "near":t.near=!t.near;return true;
    case "frz":t.frz=!t.frz;return true;
-   case "wk":t.wk=!t.wk;return true;}
+   case "wk":t.wk=!t.wk;return true;
+   case "pk":t.pk=!t.pk;return true;}
   return false;}
  function hollowTurn(api,h){var parts=[];tgts(h).forEach(function(t){
    if(t.fresh){t.fresh=false;}else if(!t.hit){if(t.hold>0)t.hold--;else if(!t.frz&&!t.near&&t.st>0){t.st--;parts.push(t.n+" → "+t.st);}}
-   t.hit=false;t.sv=false;t.rc=false;});
+   t.hit=false;t.sv=false;t.rc=false;t.pk=false;});
   if(parts.length)api.log("Hollow decay: "+parts.join(", "));}
  /* ---------- class progression · auto-unlock ---------- */
  var CODES={Pal:{re:/^paladin/i,name:"Paladin",sub:"Oath of the Crown",sec:"pal",pane:"paladin",col:"#e8cd87"},
@@ -665,6 +697,7 @@ var HZ=(function(){
   var a=anchor?host.querySelector(anchor):null;if(a)a.insertAdjacentHTML(where,html);else host.insertAdjacentHTML("afterbegin",html);}
  return {
   /* One-time fix: engine 1.7 stored the Rayth attack as a flat +1 "other attacks". It now comes from Rayth being wielded. */
+  coreBonus:function(S){return coreBonusOf((S&&S.hz)||{});},
   sanitize:function(S){S.kit=S.kit||{};if(!S.kit.raythAtkFix){S.kit.raythAtkFix=1;if(Number(S.atkBonus)===1)S.atkBonus=0;
    (S.items||[]).forEach(function(i){if(/^Rayth\b/.test(i.name||"")&&String(i.desc||"").indexOf("While wielded: +1 attack")<0)i.desc=String(i.desc||"")+" While wielded: +1 attack with the Attack action (4 total instead of 3).";});}},
   init:function(api){st(api);syncUnlocks(api,true);if(!document.getElementById("hz-css")){var s=document.createElement("style");s.id="hz-css";s.textContent=CSS;document.head.appendChild(s);}
@@ -677,7 +710,7 @@ var HZ=(function(){
    ["Pal","Wld","Wlk"].forEach(function(k){inject(document.getElementById("body-"+CODES[k].pane),"hz-cls",clsHeader(api,k)+(k==="Wld"?ldConsole(api):""),"afterbegin",null);});
    var old=document.querySelectorAll("#body-warlord .hz-ldc");for(var q=1;q<old.length;q++)old[q].remove();
    if(syncUnlocks(api,false))setTimeout(function(){var b=document.getElementById("hz-noop");if(b)b.click();},0);},
-  endTurn:function(api){var h=st(api);hollowTurn(api,h);h.ldTurn=0;if(h.demo>0){h.demoRd=(h.demoRd||10)-1;if(h.demoRd<=0){api.log("Demoralization Dice faded ("+h.demo+" unused)");h.demo=0;h.demoRd=0;}}},
+  endTurn:function(api){var h=st(api);hollowTurn(api,h);h.mT=false;h.ldTurn=0;if(h.demo>0){h.demoRd=(h.demoRd||10)-1;if(h.demoRd<=0){api.log("Demoralization Dice faded ("+h.demo+" unused)");h.demo=0;h.demoRd=0;}}},
   longRest:function(api){var h=st(api);h.tg=[];h.pend=[];h.grief=-1;h.brk=0;h.mad=0;h.cycMP=0;h.txd=false;h.gUsed=false;h.ldTurn=0;h.demo=0;h.demoRd=0;},
   shortRest:function(api){var h=st(api);h.txd=false;h.ldTurn=0;h.demo=0;h.demoRd=0;if(resMaxOf2(api,"channel")>0)api.addRes("channel",1);},
   act:function(a,el,api){if(String(a).indexOf("hz-")!==0)return false;
@@ -728,6 +761,10 @@ var HZ=(function(){
     case "hz-mad":if(id==="restab"){if(api.res("mp")<n){api.flash("Not enough MP ("+n+" needed)");return false;}api.addRes("mp",-n);api.log("Restabilized from Madness, "+n+" MP");h.mad=0;h.brk=0;break;}
      h.mad=n;break;
     case "hz-noop":break;
+    case "hz-ooc":h.ooc=!h.ooc;break;
+    case "hz-merge":if(h.mT&&!h.ooc){api.flash("Already merged this turn");return false;}var mo=mergeOpts(h)[n];if(!mo)return false;
+     if(mo.two){h.souls[mo.i]=mo.to;h.souls[mo.j]=mo.to;}else{h.souls[mo.i]=mo.to;h.souls[mo.j]=null;}if(!h.ooc)h.mT=true;api.log("Merged souls: "+mo.lab);break;
+    case "hz-core":if(!Array.isArray(h.core))h.core=[];h.core[n]=id;break;
     case "hz-hadd":case "hz-hclr":case "hz-hdel":case "hz-hmor":case "hz-hset":case "hz-hop":case "hz-hling":case "hz-hpend":case "hz-hcon":case "hz-hecho":if(!hollowAct(api,h,a,id,n,el))return false;break;
     case "hz-mpb":h.mpBonus=(h.mpBonus!=null?+h.mpBonus:8)+n;api.setRes("mp",api.res("mp"));api.log("MP bonus/deficit → "+sgn(h.mpBonus));break;
     case "hz-lvl":var K=CODES[id];if(!K)return false;var cl=(api.S().classes||[]).filter(function(x){return K.re.test(x.name||"");})[0];if(!cl)return false;
@@ -884,7 +921,7 @@ window.CHAR={
  skills:{Athletics:1,Deception:1,History:1,Insight:2,Intimidation:1,Persuasion:1,Religion:1},
  spellStat:"cha",speed:30,hitDice:26,itemSlots:3,
  tlStat:"cha",tlBonus:70,   /* Max TL = (CON +7 + CHA +12) × 10 + 70 = 260 — matches his doc exactly with the real stats. */
- hooks:HZ,
+ hooks:HZ, statBonus:function(S){return HZ.coreBonus(S);},
  identity:{Name:"Hasani Phepolo Eldesteen von Hollon",Race:"Human",Alignment:"Neutral Good",Background:"Noble (Offspring) · Death Candidate",Pronouns:"He/Him",Deity:"Necrolien (Dr. Death)",Birthday:"November 11th",Heirloom:"Mother's Pendant"},
  levelNote:"<b>Gestalt, character level 13</b> (PB +5) — Track A: <b>Paladin 11 + Warlock 2</b> · Track B: <b>Warlord 13</b>. Class features sit in the Paladin, Warlord and Warlock tabs and <b>unlock automatically from these class levels</b>; raise Warlock to 3 to bring Hexblade online. HP 438 = class dice (110 + 16 + 130) + 26 × CON 7, matching his sheet. <b>Flags:</b> Warlord hit die is d8 in the PDF but d10 on his sheet (kept d10 so HP stays 438); AC follows the Armor Overhaul (27 + Tier +2 + CON cap 5 + Defense 1 = 35 — his sheet's 33 skipped the Tier Bonus).",
  economy:[{id:"atk",name:"Attacks",max:3},{id:"rx",name:"Reactions",max:1}],   /* 3 from classes (Paladin 5 + Warlord 5, gestalt stacking); Rayth adds the 4th only while wielded (extraAttacks below) */
@@ -913,18 +950,21 @@ window.CHAR={
   {id:"hollowrules",title:"The Scythe of Necrolien · Hollow",sub:"Rayth's special damage type & status",items:[
    {n:"Hollow (Special Damage Type)",k:"passive",text:`Necrotic damage drains the body; <b>Hollow damage empties the soul of meaning.</b> Hollow is unique to Rayth, the Senseless God, and Hasani is its only bearer. Creatures <b>immune to necrotic have resistance</b> to Hollow instead, and creatures <b>resistant to necrotic take normal damage</b>. <b>Soulless</b> creatures take Hollow damage normally but never gain Hollow stacks. True resistance is very rare — only creatures with an absolute, unshakeable purpose (divine avatars, beings bound by a core oath). Separate from Soul Erosion: Soul Erosion breaks the soul, Hollow erases its will — Hollow damage does <b>not</b> bypass temp HP and never applies Soul Erosion. <b>Critical hit</b> with Hollow damage: +1 stack automatically, on top of the save. <b>Direct stacks:</b> abilities that say "applies X stacks" add them with no save.`},
    {n:"Emptying Save",k:"passive",text:`<b>Once per round</b>, when a creature takes Hollow damage from Hasani, he can force a <b>CHA save vs. his spell save DC (25)</b>, adjusted by its Morale and Rayth's Tithes. <b>Fail:</b> +1 Hollow stack · <b>fail by 10+:</b> +2. <b>Success:</b> no stack, and it can't be forced again until the next round. <b>Morale:</b> Heroic −4 · Driven −2 · Steady +0 · Shaken +2 · Broken +4. <b>Toll of the Tithe:</b> +2 per Tithe (max +6). Track it on the <b>Hollow Console</b> (Turn tab).`},
-   {n:"Hollow (Status Effect)",k:"passive",text:`Stacks per target, max 6. <b>I · Meaning Lost</b> (up to 2): healing −30%, morale penalties an extra −5, no Inspiration, morale boosts or Rally effects. <b>II · Purpose Erased</b> (up to 4): healing −40%, −5 to saving throws, below 50% HP disadvantage on attack rolls. <b>III · Hollowed</b> (up to 6): healing −50%, can't gain temp HP, below 25% HP disadvantage on all rolls. <b>Decay:</b> a creature that <b>takes no Hollow damage</b> in a round loses 1 stack. <b>Hollowed Hold:</b> on reaching Tier III it stays Hollowed for 1 full round before decay resumes. <b>Removal:</b> a creature may use its action to <b>Reclaim Purpose</b> for itself or an ally — CHA save vs. Hasani's spell save DC; success −1 stack (−2 on beating the DC by 5+ or a natural 20).`}
+   {n:"Hollow (Status Effect)",k:"passive",text:`Stacks per target, max 6. <b>I · Meaning Lost</b> (up to 2): healing −30%, morale penalties an extra −5, no Inspiration, morale boosts or Rally effects. <b>II · Purpose Erased</b> (up to 4): healing −40%, −5 to saving throws, below 50% HP disadvantage on attack rolls. <b>III · Hollowed</b> (up to 6): healing −50%, can't gain temp HP, below 25% HP disadvantage on all rolls. <b>Decay:</b> a creature that <b>takes no Hollow damage</b> in a round loses 1 stack. <b>Hollowed Hold:</b> on reaching Tier III it stays Hollowed for 1 full round before decay resumes. <b>Removal:</b> a creature may use a <b>bonus action</b> to <b>Reclaim Purpose</b> within itself or an ally — CHA save vs. Hasani's spell save DC; success −1 stack (−2 on beating the DC by 5+ or a natural 20).`}
   ]},
   /* ===== GENERAL PASSIVES (Kit tab) ===== */
   {id:"passives",title:"General Passives",sub:"always on",items:[
    {n:"Connector (Defining Trait)",k:"passive",text:`Within 10 ft of a character he shares a relationship with, Hasani's weapon die increases proportionally to that relationship (0–5 / F–S). Applies to only one character — automatically the highest-tiered ally in range. Set party tiers on the Relationships tab.`},
-   {n:"Peer into Orioul",k:"passive",cost:"D",text:`See the souls of living creatures; the colour shows their main stats — <b>Red</b> STR&DEX · <b>Blue</b> WIS&INT · <b>Green</b> CON · <b>Pink</b> CHA · <b>Black</b> all. <b>Show Me YOUR Legacy (5 TL):</b> peer deeper for alignment as a highlighted colour; DM may ask for an Insight check for more of the creature's past.`},
-   {n:"Soul Arsenal",k:"passive",text:`Harvest souls of creatures he kills to power abilities at the cost of TL. Holds <b>4 temporary + 1 permanent</b> soul in his core; taking a soul with full slots forces a discard. <i>(Interactive arsenal on the Turn and Angel of Death tabs.)</i> <b>Pink</b> (CHA) souls disguise themselves: a Pink soul can be spent as any Red, Blue or Green soul.`},
+   {n:"Peer into Orioul",k:"passive",cost:"D",text:`See the souls of living creatures; the colour shows their main stats. <b>Base:</b> Red STR&DEX · Blue WIS&INT · Green CON · Pink CHA. <b>Higher:</b> Purple = Red + Blue · Cyan = Blue + Green · Yellow = Red + Green · White = Red + Blue + Green (counts as any soul) · Black = Purple + Cyan + Yellow (enhances abilities twofold). <b>Show Me YOUR Legacy (5 TL):</b> peer deeper for alignment as a highlighted colour; DM may ask for an Insight check for more of the creature's past.`},
+   {n:"Soul Arsenal",k:"passive",text:`Harvest souls of creatures he kills to power abilities at the cost of TL. Holds <b>4 temporary + 1 permanent</b> soul in his core; taking a soul with full slots forces a discard. <b>Temporary souls disappear after a long rest.</b> <b>Permanent slot bonuses</b> (applied to his scores automatically): base +2 to one stat of that colour (choose when slotted) · Pink +2 CHA · higher +2 to two stats from its two parent colours · White +1 to every stat · Black +2 to every stat. <i>(Interactive arsenal on the Turn and Angel of Death tabs.)</i>`},
+   {n:"Harvesting",k:"passive",text:`Any creature echoed or killed can drop a <b>base or higher</b> soul, based on its strongest stats. Exception: a natural <b>White</b> soul only comes from the purest of beings, those with no status yet (e.g. children).`},
+   {n:"Merging Souls",k:"free",cost:"once per turn",text:`Once per turn, merge two souls in the arsenal into one higher soul (Red + Blue → Purple, Blue + Green → Cyan, Red + Green → Yellow), freeing a temporary slot; it can be spent the same turn. <b>Merging two different higher souls returns 2 of their shared base</b> (Purple + Yellow → 2 Red). A merged soul can never be split — discarding it loses both. Outside combat or in planning, merge freely. The permanent core slot can hold a merged soul.`},
+   {n:"Pink Soul (Identity)",k:"passive",text:`A Pink soul can stand in for <b>one base soul</b> (Red, Blue or Green) in a cost. It merges into either higher soul its partner belongs to (Pink + Red → Purple or Yellow · Pink + Blue → Purple or Cyan · Pink + Green → Cyan or Yellow); it can't merge with another Pink or a higher soul. <b>Pink enhancement:</b> the DC of the ability's effects and its Emptying Save increase by <b>PB</b>, and if Hasani's CHA mod beats the creature's by <b>10+</b>, the attack is <b>effective (×1.5)</b>.`},
    {n:"Carnage Feedback Loop",k:"passive",text:`Whenever any creature within 20 ft (incl. you/allies) takes damage from any source, gain a Carnage stack. At 5, your next attack explodes: bonus force + necrotic = CHA × creatures within 10 ft (incl. self); all stacks reset. <i>(Live tracker on the Turn tab.)</i>`},
    {n:"State of Existing",k:"passive",req:"Legend",text:`Half-affected by the rain — resistance to <b>Soak</b>.`},
    {n:"Necrotic Blood",k:"passive",text:`When kissing, bleeding, or any exchange of bodily fluid, deals <b>1d10 necrotic poisoning</b>.`},
    {n:"Wilting Breath",k:"passive",text:`With just his breath, Hasani keeps the emptiness from leaving: creatures within <b>10 ft</b> of him <b>don't lose Hollow stacks to decay</b>. <b>Contagion:</b> when a creature within Wilting Breath <b>becomes Hollowed</b>, every other enemy within 10 ft of that creature that can see it gains <b>1 Hollow stack</b>; if a Hollowed creature <b>dies</b> within Wilting Breath, they gain <b>2</b> instead. (The Hollow Console offers the Contagion stacks when it happens.)`},
-   {n:"Hollowed Echoes",k:"passive",text:`Once per creature, when a creature becomes Hollowed, Hasani can take an <b>echo of its soul</b> without killing it — it goes into a temporary Soul Arsenal slot. Any soul colour can be echoed, including <b>Black</b> and <b>Pink</b>. Uses equal to <b>PB</b>, reset on a long rest.`},
+   {n:"Hollowed Echoes",k:"passive",text:`Once per creature, when a creature becomes Hollowed, Hasani can take an <b>echo of its soul</b> without killing it — it goes into a temporary Soul Arsenal slot. Any soul colour can be echoed, including <b>Black</b> and <b>Pink</b>. Echoes <b>do not count</b> toward transformation progress — Rayth must taste the true soul, not a mere echo. Uses equal to <b>PB</b>, reset on a long rest.`},
    {n:"Primal Claws",k:"attack",dmg:"1d10",text:`Sharpen nails/teeth — melee spell attack within 5 ft, <b>1d10 acid</b>. If infused with blood it explodes for an extra <b>1d12 acid</b>, spreading within 5 ft. <i>(Sun Never Rises: 3d5, radius +5 ft.)</i>`},
    {n:"The Sun NEVER Rises",k:"passive",text:`When there is no sun, power rises at the cost of sanity: gain <b>75 temp HP</b> and <b>50 temp TL</b>; Primal Claws → 3d5 (radius +5 ft); Fugue attacks → 1d10, dealt as <b>Hollow damage</b>, no TL cost. Lose <b>3 MP</b> each round of combat.`},
    {n:"Pushing the Limits",k:"passive",cost:"C",text:`Twice per long rest, take an extra <b>bonus action</b>. Once per long rest, ignore all exhaustion for one round.`},
@@ -938,16 +978,16 @@ window.CHAR={
    {n:"Wings of Finality",k:"bonus",cost:"40 TL",pay:{tl:40},text:`Two black wings sprout from Hasani's back — <b>40 ft of flight</b>.`},
    {n:"Maddening Soul Enhancement",k:"passive",text:`After enhancing a soul ability, Hasani may add one additional soul for an extra effect (one soul per enhancement).`}
   ]},
-  {id:"souls",title:"Soul Abilities",pane:"angel",blurb:"Soul-colour enhancements stack with the base TL enhancement; Maddening Soul Enhancement allows one extra soul.",items:[
-   {n:"Soul Bomba",k:"action",cost:"30 TL · 2 Red",pay:{tl:30},dmg:"1d30",text:`20 ft blast; DEX save — fail <b>1d30 Hollow</b>, success half. <b>Enh (10 TL):</b> +10 ft range, +1d10. <b>Red</b> +1d10 · <b>Blue</b> +1d8 DC · <b>Green</b> +10 ft.`},
-   {n:"Weaken Mind",k:"action",cost:"30 TL · 2 Blue",pay:{tl:30},text:`Up to 3 creatures within 30 ft; WIS save — fail: −20 morale (or 5 MP), <b>vulnerable to Hollow damage and disadvantage on the Emptying Save</b>, no bonus action (2 rds); success: −10 morale (or 3 MP). <b>Enh (10 TL):</b> +1 target, +10 morale (still capped at 30 per round by the Swing Cap). <b>Red</b> −1 reaction · <b>Blue</b> +1d8 DC · <b>Green</b> +1 round.`},
-   {n:"Soul Invigoration",k:"action",cost:"30 TL · 2 Green",pay:{tl:30},text:`Resistant to all damage except Force; cleanse up to III tiers of status (cumulative; tiers don't decay until it ends). 2 rounds. <b>Enh (10 TL):</b> +1 rd, adv CON saves. <b>Red</b> adv STR/DEX · <b>Blue</b> restore ½ MP · <b>Green</b> +1 rd & +1 cleanse tier.`},
-   {n:"Soul Bind",k:"action",cost:"50 TL · 1 Purple",pay:{tl:50},text:`Target DEX save vs spell DC — fail: engulfed, <b>restrained</b>, and <b>invisible</b> to most (true/divine sight & undead see it); it sees out normally. Escape: action, STR save. Destroy: AC = spell DC, HP = spell mod ×3. <b>Enh (10 TL):</b> <b>Red</b> 1d8 Hollow/rd inside, and its stacks don't decay while trapped · <b>Blue</b> +1 bubble · <b>Green</b> +3 bubble AC.`},
-   {n:"Soul Haste",k:"action",cost:"50 TL · 1 Cyan",pay:{tl:50},text:`Haste: +2 AC, adv DEX saves, one extra action (Attack ×1 / Dash / Disengage / Hide / Use Object), +10 morale/rd. When it ends, can't move or act until after next turn. 2 rounds. <b>Enh (15 TL):</b> +1 rd, adv STR saves. <b>Red</b> +CHA dmg · <b>Blue</b> +1 rd · <b>Green</b> ignore end penalty.`},
-   {n:"Precision Compounded",k:"action",cost:"50 TL · 1 Yellow",pay:{tl:50},text:`+1 crit chance. Each consecutive hit → 1 <b>Ruthlessness</b> (max 3), +1d6 next attack each; resets on miss/no-attack. While active, cannot be forcibly Slowed. 2 rounds. <b>Enh (15 TL):</b> cap → 5. <b>Red</b> +1d10 · <b>Blue</b> crit → attack again · <b>Green</b> +1 rd.`},
-   {n:"Magnum Hollow",k:"action",cost:"75 TL · 2 Purple",pay:{tl:75},dmg:"3d30+CHA",text:`30 ft cone; CON save — fail <b>3d30 + CHA Hollow</b> & 2 Hollow stacks (a creature that already has Hollow stacks <b>increases to the next tier</b>), success half & 1 stack. If it triggers Senseless, form +2 rounds. <b>Enh (20 TL):</b> 40 ft, +1d30. <b>Red</b> +1d30 · <b>Blue</b> lose reactions (fail) · <b>Green</b> +1 Senseless rd.`},
-   {n:"Mind Over Matter",k:"bonus",cost:"75 TL · 2 Cyan",pay:{tl:75},dmg:"1d20",text:`Up to 3 Large-or-smaller within 60 ft; STR save — fail: moved up to 20 ft; into an obstacle → <b>1d20</b> bludgeoning & <b>Restrained</b> to end of next turn. <b>Enh (20 TL):</b> +1 target, +10 ft. <b>Red</b> crash 2d15 · <b>Blue</b> −1 reaction & concentration · <b>Green</b> +1d20 temp HP per restrained.`},
-   {n:"Undying Harvest",k:"action",cost:"75 TL · 2 Yellow",pay:{tl:75},text:`+1 crit; on crit, double damage a second time. Each consecutive hit → 1d10 temp HP; above 50 temp HP, sacrifice excess (≤50) → add to next damage as <b>Hollow</b> damage (1/turn). 1 round. <b>Enh (20 TL):</b> +1 rd, +CHA to temp HP. <b>Red</b> cap 80 · <b>Blue</b> adv above threshold · <b>Green</b> +1 rd, temp HP doubled.`},
+  {id:"souls",title:"Soul Abilities",pane:"angel",blurb:"Soul-colour enhancements stack with the base TL enhancement; Maddening Soul Enhancement adds one extra soul (Red, Blue, Green or Pink) for its line.",items:[
+   {n:"Soul Bomba",k:"action",cost:"30 TL · 2 Red",pay:{tl:30},dmg:"1d30",text:`20 ft blast; DEX save — fail <b>1d30 Hollow</b>, success half. <b>Enh (10 TL):</b> +10 ft range, +1d10. <b>Red</b> +1d10 · <b>Blue</b> +5 DC · <b>Green</b> +10 ft · <b>Pink</b> creatures that fail drop one Morale tier (Tier Lock applies).`},
+   {n:"Weaken Mind",k:"action",cost:"30 TL · 2 Blue",pay:{tl:30},text:`Up to 3 creatures within 30 ft; WIS save — fail: −20 morale (or 5 MP), <b>vulnerable to Hollow damage and disadvantage on the Emptying Save</b>, no bonus action (2 rds); success: −10 morale (or 3 MP). <b>Enh (10 TL):</b> +1 target, +10 morale (still capped at 30 per round by the Swing Cap). <b>Red</b> −1 reaction · <b>Blue</b> +5 DC · <b>Green</b> +1 round · <b>Pink</b> creatures count their Morale one tier lower for the Emptying Save.`},
+   {n:"Soul Invigoration",k:"action",cost:"30 TL · 2 Green",pay:{tl:30},text:`Resistant to all damage except Force; cleanse up to III tiers of status (cumulative; tiers don't decay until it ends). 2 rounds. <b>Enh (10 TL):</b> +1 rd, adv CON saves. <b>Red</b> adv STR/DEX · <b>Blue</b> restore ½ MP · <b>Green</b> +1 rd & +1 cleanse tier · <b>Pink</b> Tier I mental statuses (Frightened, Charmed, Rattled) don't count toward the cleanse limit.`},
+   {n:"Soul Bind",k:"action",cost:"50 TL · 1 Purple",pay:{tl:50},text:`Target DEX save vs spell DC — fail: engulfed, <b>restrained</b>, and <b>invisible</b> to most (true/divine sight & undead see it); it sees out normally. Escape: action, STR save. Destroy: AC = spell DC, HP = spell mod ×3. <b>Enh (10 TL):</b> bubble HP = spell mod ×5. <b>Red</b> 1d8 Hollow/rd inside, and its stacks don't decay while trapped · <b>Blue</b> +1 bubble · <b>Green</b> +3 bubble AC · <b>Pink</b> the trapped creature makes the Emptying Save with disadvantage at the end of its turn, even without Hollow damage.`},
+   {n:"Soul Haste",k:"action",cost:"50 TL · 1 Cyan",pay:{tl:50},text:`Haste: +2 AC, adv DEX saves, one extra action (Attack ×1 / Dash / Disengage / Hide / Use Object), +10 morale/rd. When it ends, can't move or act until after next turn. 2 rounds. <b>Enh (15 TL):</b> +1 rd, adv STR saves. <b>Red</b> +CHA dmg · <b>Blue</b> +1 rd · <b>Green</b> ignore end penalty · <b>Pink</b> Heroic Inspiration once per round (doesn't stack).`},
+   {n:"Precision Compounded",k:"action",cost:"50 TL · 1 Yellow",pay:{tl:50},text:`+1 crit chance. Each consecutive hit → 1 <b>Ruthlessness</b> (max 3), +1d6 next attack each; resets on miss/no-attack. While active, cannot be forcibly Slowed. 2 rounds. <b>Enh (15 TL):</b> cap → 5. <b>Red</b> +1d10 · <b>Blue</b> crit → attack again · <b>Green</b> +1 rd · <b>Pink</b> each Ruthlessness stack adds +1 to the next Emptying Save DC against that target.`},
+   {n:"Magnum Hollow",k:"action",cost:"75 TL · 2 Purple",pay:{tl:75},dmg:"3d30+CHA",text:`30 ft cone; CON save — fail <b>3d30 + CHA Hollow</b> & 2 Hollow stacks (a creature that already has Hollow stacks <b>increases to the next tier</b>), success half & 1 stack. If it triggers Senseless, form +2 rounds. <b>Enh (20 TL):</b> 40 ft, +1d30. <b>Red</b> +1d30 · <b>Blue</b> lose reactions (fail) · <b>Green</b> +1 Senseless rd · <b>Pink</b> failed creatures can't Reclaim Purpose until the end of their next turn.`},
+   {n:"Mind Over Matter",k:"bonus",cost:"75 TL · 2 Cyan",pay:{tl:75},dmg:"1d20",text:`Up to 3 Large-or-smaller within 60 ft; STR save — fail: moved up to 20 ft; into an obstacle → <b>1d20</b> bludgeoning & <b>Restrained</b> to end of next turn. <b>Enh (20 TL):</b> +1 target, +10 ft. <b>Red</b> crash 2d15 · <b>Blue</b> −1 reaction & concentration · <b>Green</b> +1d20 temp HP per restrained · <b>Pink</b> each moved creature that hits an obstacle makes the Emptying Save at disadvantage.`},
+   {n:"Undying Harvest",k:"action",cost:"75 TL · 2 Yellow",pay:{tl:75},text:`+1 crit; on crit, double damage a second time. Each consecutive hit → 1d10 temp HP; above 50 temp HP, sacrifice excess (≤50) → add to next damage as <b>Hollow</b> damage (1/turn). 1 round. <b>Enh (20 TL):</b> +1 rd, +CHA to temp HP. <b>Red</b> cap 80 · <b>Blue</b> adv above threshold · <b>Green</b> +1 rd, temp HP doubled · <b>Pink</b> consecutive hits give +3 MP (+6 above the threshold).`},
    {n:"Artificial White",k:"free",cost:"1 Red · 1 Blue · 1 Green",text:`Create a white orb that counts as any soul — free arsenal space or make souls you lack.`},
    {n:"Artificial Black",k:"free",cost:"1 Purple · 1 Cyan · 1 Yellow",text:`Black souls enhance abilities — some say twofold.`}
   ]},
@@ -1502,7 +1542,8 @@ function itemMods(){var m={tl:0,ac:0,init:0,speed:0,hp:0,itemSlots:0};
  equipped().forEach(function(it){for(var k in m)m[k]+=num((it.mods||{})[k]);if(it.cat==="weapon"&&hasProp(it,"Swift"))m.init+=2;});return m;}
 function compute(){
  var d={mod:{},save:{},skill:{}};d.stat=statusAgg();
- STATS.forEach(function(s){d.mod[s[0]]=mod(S.stats[s[0]]);});
+ d.statBonus={};if(typeof C.statBonus==="function"){try{d.statBonus=C.statBonus(S)||{};}catch(e){d.statBonus={};}}
+ STATS.forEach(function(s){d.mod[s[0]]=mod(num(S.stats[s[0]])+num(d.statBonus[s[0]]));});
  d.level=Math.max(1,num(S.level,1));d.pb=2+Math.floor((d.level-1)/4);
  d.totalLv=0;d.dieSum=0;S.classes.forEach(function(c){var l=Math.max(0,num(c.level));d.totalLv+=l;d.dieSum+=l*num(c.die,8);});
  d.im=itemMods();
