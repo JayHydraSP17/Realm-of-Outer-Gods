@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>Nameless God — DM Index</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;900&family=Spectral:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#05090d;--panel:#0d1822;--panel2:#0a141c;--line:#20353f;--line2:#2f4b58;
+    --paper:#e8eff3;--dim:#8ba6b3;--dimmer:#5d7884;
+    --turq:#3fcad6;--moon:#ecdcae;--amber:#e0b24a;
+    --shadow:0 8px 30px rgba(0,0,0,.6);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{background:var(--ink)}
+  body{font-family:'Spectral',Georgia,serif;background:
+    radial-gradient(1100px 560px at 82% -8%, rgba(63,202,214,.08), transparent 60%),
+    radial-gradient(900px 500px at -8% 108%, rgba(236,220,174,.05), transparent 60%),var(--ink);
+    color:var(--paper);font-size:17px;line-height:1.5;min-height:100vh;padding:40px 16px 90px}
+  .wrap{max-width:1080px;margin:0 auto}
+  header{text-align:center;margin-bottom:8px}
+  .eyebrow{font-family:'Cinzel',serif;letter-spacing:6px;font-size:12px;text-transform:uppercase;color:var(--turq);margin-bottom:10px}
+  h1{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(32px,6vw,58px);line-height:1;color:#fff;text-shadow:0 0 40px rgba(63,202,214,.25)}
+  .sub{font-family:'Cinzel',serif;color:var(--dim);margin-top:12px;font-size:15px;letter-spacing:1px}
+  .note{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--dimmer);margin-top:14px}
+  .note b{color:var(--moon);font-weight:500}
+  h2.grouphead{font-family:'Cinzel',serif;font-size:14px;letter-spacing:2px;text-transform:uppercase;color:var(--moon);
+    margin:38px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+  h2.grouphead::before{content:"";width:9px;height:9px;transform:rotate(45deg);background:var(--turq);box-shadow:0 0 10px var(--turq)}
+  .grid{display:grid;gap:15px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+  a.sheet{display:block;text-decoration:none;color:inherit;background:linear-gradient(180deg,var(--panel),var(--panel2));
+    border:1px solid var(--line);border-radius:14px;padding:20px 20px 38px;box-shadow:var(--shadow);position:relative;overflow:hidden;transition:.16s}
+  a.sheet::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c,var(--turq));opacity:.6;transition:.16s}
+  a.sheet:hover,a.sheet:focus-visible{transform:translateY(-3px);border-color:var(--c,var(--turq));box-shadow:0 0 18px -4px var(--c,var(--turq));outline:none}
+  a.sheet:hover::before{opacity:1}
+  a.sheet .nm{font-family:'Cinzel',serif;font-weight:700;font-size:22px;color:#fff;line-height:1.1}
+  a.sheet .ti{font-family:'Cinzel',serif;font-size:13px;color:var(--moon);margin-top:7px;letter-spacing:.5px}
+  a.sheet .meta{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--dim);margin-top:10px;line-height:1.6}
+  a.sheet .go{position:absolute;right:16px;bottom:14px;color:var(--dimmer);font-family:'IBM Plex Mono',monospace;font-size:12px;transition:.16s}
+  a.sheet:hover .go{color:var(--c,var(--turq))}
+  .empty{color:var(--dimmer);font-style:italic;font-size:15px}
+  .footer{text-align:center;margin-top:46px;padding-top:18px;border-top:1px solid var(--line);color:var(--dimmer);font-size:12px;font-family:'IBM Plex Mono',monospace;line-height:1.7}
+  .footer a{color:var(--dim)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">DM Index</div>
+    <h1>The Nameless God</h1>
+    <div class="sub">Party sheets · live combat &amp; ability references</div>
+    <div class="note">Separate from Mythic Covenant · sheets here run on <b>Nameless God rulings</b> · each sheet saves to the device it's opened on</div>
+  </header>
+
+  <h2 class="grouphead">Player Characters</h2>
+  <div class="grid" id="grid-players"></div>
+
+  <h2 class="grouphead">Reference</h2>
+  <div class="grid" id="grid-reference"></div>
+
+  <h2 class="grouphead">DM Tools</h2>
+  <div class="grid" id="grid-tools"></div>
+
+  <div class="footer">The Nameless God · add a sheet by dropping its file in this folder and adding a line to the SHEETS array at the bottom of this page.<br>Mythic Covenant sheets live in <a href="../mythic-covenant/">mythic-covenant/</a>.</div>
+</div>
+
+<script>
+/* ===== EDIT ME: `file` is relative to this folder. ===== */
+var SHEETS = [
+  { group:'players', file:'aysu.html', name:'Aysu Harika', subtitle:'Wanderer Trained', color:'#4fb0d6',
+    meta:'Level 52 · Monk 26 (Long Death) · Druid 18 (Moon) · Rogue 8 (Inquisitive)' },
+  { group:'tools', file:'../tools/lock.html', name:'Seal a Page', subtitle:'Passphrase-lock a sheet for the public repo', color:'#ecdcae',
+    meta:'Runs in your browser · nothing is uploaded' }
+];
+
+function card(s){
+  var a=document.createElement('a');
+  a.className='sheet';a.href=s.file;
+  if(s.color)a.style.setProperty('--c',s.color);
+  a.innerHTML='<div class="nm"></div><div class="ti"></div>'+(s.meta?'<div class="meta"></div>':'')+'<div class="go">open →</div>';
+  a.querySelector('.nm').textContent=s.name;
+  a.querySelector('.ti').textContent=s.subtitle||'';
+  if(s.meta)a.querySelector('.meta').textContent=s.meta;
+  return a;
+}
+SHEETS.forEach(function(s){var g=document.getElementById('grid-'+s.group);if(g)g.appendChild(card(s));});
+['players','reference','tools'].forEach(function(k){var g=document.getElementById('grid-'+k);
+  if(g&&!g.children.length){var p=document.createElement('p');p.className='empty';p.textContent='Nothing here yet.';g.appendChild(p);}});
+</script>
+</body>
+</html>
