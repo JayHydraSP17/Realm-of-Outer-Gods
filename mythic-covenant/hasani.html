@@ -370,7 +370,7 @@ var HZ=(function(){
   o+='<div class="hz-row"><span class="hz-chip" style="--sc:'+COL[c][1]+'">'+COL[c][0]+'</span><b class="hz-gold">'+Object.keys(b).map(function(k){return '+'+b[k]+' '+STN[k];}).join(" · ")+'</b></div>';
   (CORE_OPT[c]||[]).forEach(function(g,gi){if(g.length<2)return;var cur=(h.core||[])[gi];if(g.indexOf(cur)<0)cur=g[0];
    o+='<div class="hz-row"><span class="hz-lbl">'+(CORE_OPT[c].length>1?'Stat '+(gi+1):'Stat')+'</span>'+g.map(function(k){return '<button class="chip'+(k===cur?' on':'')+'" data-a="hz-core" data-n="'+gi+'" data-id="'+k+'">'+STN[k]+'</button>';}).join("")+'</div>';});
-  return o+'<div class="hz-sub">Base +2 to one of its stats · Pink +2 CHA · higher +2 to one stat from each parent colour · White +1 all · Black +2 all.</div></div>';}
+  return o+'<div class="hz-sub">Bonuses add to the ability <b>scores</b> (not the modifiers): base +2 to one of its stats · Pink +2 CHA · higher +2 to one stat from each parent colour · White +1 all · Black +2 all. Enter his <b>base</b> scores on the Character tab; the core bonus is added on top.</div></div>';}
  /* ---------- pip trackers ---------- */
  function pips(api,id,max,color){var v=api.res(id),o='<div class="pips hz-pips" style="--ac:'+color+';--ac-line:'+color+'66">';
   for(var n=1;n<=max;n++)o+='<button class="pip'+(n<=v?' live':'')+'" data-a="hz-pip" data-id="'+id+'" data-n="'+n+'" title="'+n+'"></button>';
@@ -698,7 +698,7 @@ var HZ=(function(){
  return {
   /* One-time fix: engine 1.7 stored the Rayth attack as a flat +1 "other attacks". It now comes from Rayth being wielded. */
   coreBonus:function(S){return coreBonusOf((S&&S.hz)||{});},
-  sanitize:function(S){S.kit=S.kit||{};if(!S.kit.raythAtkFix){S.kit.raythAtkFix=1;if(Number(S.atkBonus)===1)S.atkBonus=0;
+  sanitize:function(S){S.kit=S.kit||{};S.hz=S.hz||{};if(!S.kit.blackCore){S.kit.blackCore=1;if(!Array.isArray(S.hz.souls)||S.hz.souls.length!==5)S.hz.souls=[null,null,null,null,null];if(!S.hz.souls[4])S.hz.souls[4]="black";}if(!S.kit.raythAtkFix){S.kit.raythAtkFix=1;if(Number(S.atkBonus)===1)S.atkBonus=0;
    (S.items||[]).forEach(function(i){if(/^Rayth\b/.test(i.name||"")&&String(i.desc||"").indexOf("While wielded: +1 attack")<0)i.desc=String(i.desc||"")+" While wielded: +1 attack with the Attack action (4 total instead of 3).";});}},
   init:function(api){st(api);syncUnlocks(api,true);if(!document.getElementById("hz-css")){var s=document.createElement("style");s.id="hz-css";s.textContent=CSS;document.head.appendChild(s);}
    if(!document.getElementById("hz-noop")){var b=document.createElement("button");b.id="hz-noop";b.setAttribute("data-a","hz-noop");b.hidden=true;document.body.appendChild(b);}},
@@ -2125,7 +2125,7 @@ function renderChar(d){var h='<section id="identity"><h2>Identity</h2><div class
   '<p style="margin-top:8px"><b class="cz">Unit tags.</b> '+unitTags(d).map(function(t){return '<span class="chip warn">'+esc(t)+'</span>';}).join(" ")+' <input type="text" id="tagIn" placeholder="add tag" style="width:130px;display:inline-block"> <button class="btn sm" data-a="tagadd">add</button></p>'+
   (S.tags.length?'<p class="sub">'+S.tags.map(function(t,i){return esc(t)+' <button class="btn sm" data-a="tagdel" data-n="'+i+'">×</button>';}).join(" ")+'</p>':'')+'</div>'+(C.defenseNote?'<div class="flag">'+C.defenseNote+'</div>':'')+'</section>';
  h+='<section id="abilities"><h2>Ability scores &amp; saves <span class="sub2">tap a save to toggle proficiency</span></h2><div class="stats">';
- STATS.forEach(function(s){h+='<div class="stat"><div class="lb">'+s[1]+'</div><div class="mo">'+sgn(d.mod[s[0]])+'</div><input class="num" type="number" data-b="stats.'+s[0]+'" value="'+S.stats[s[0]]+'"><div class="sv'+(S.saves[s[0]]?' p':'')+'" data-a="savetog" data-id="'+s[0]+'" role="button" tabindex="0">save '+sgn(d.save[s[0]])+'</div></div>';});
+ STATS.forEach(function(s){h+='<div class="stat"><div class="lb">'+s[1]+'</div><div class="mo">'+sgn(d.mod[s[0]])+'</div><input class="num" type="number" data-b="stats.'+s[0]+'" value="'+S.stats[s[0]]+'">'+(num((d.statBonus||{})[s[0]])?'<div class="sub" style="margin:2px 0 0;font-size:11px;color:var(--gold)" title="Core soul bonus to the ability score">+'+num(d.statBonus[s[0]])+' core = '+(num(S.stats[s[0]])+num(d.statBonus[s[0]]))+'</div>':'')+'<div class="sv'+(S.saves[s[0]]?' p':'')+'" data-a="savetog" data-id="'+s[0]+'" role="button" tabindex="0">save '+sgn(d.save[s[0]])+'</div></div>';});
  h+='</div><h3 class="cz" style="font-size:16px;margin-top:14px">Skills</h3><p class="note">Circle: once for proficiency, twice for expertise. The small box is a misc bonus.</p><div class="skl">';
  SKILLS.forEach(function(k){var l=S.skills[k[0]]||0;h+='<div class="sk"><button class="pp '+(l===1?"p":l===2?"e":"")+'" data-a="skill" data-id="'+esc(k[0])+'">'+(l===2?"E":"")+'</button><span class="nm">'+k[0]+'</span><span class="ab">'+k[1]+'</span><input class="num" style="width:36px;font-size:11px" type="number" data-b="skillMisc.'+k[0]+'" value="'+num(S.skillMisc[k[0]])+'"><span class="vl">'+sgn(d.skill[k[0]])+'</span></div>';});
  h+='</div></section><section id="charnotes"><h2>Player notes</h2><textarea data-b="notes.char">'+esc(S.notes.char)+'</textarea></section>';
