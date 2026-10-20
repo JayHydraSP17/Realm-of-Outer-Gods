@@ -1303,7 +1303,7 @@ function compute(){
  d.init=stApply(d.mod.dex+(C.initAddsPB?d.pb:0)+num(S.initMisc)+d.im.init,"init",d.stat);
  var tls=S.tl.stat&&d.mod[S.tl.stat]!=null?S.tl.stat:"wis";d.tlStat=tls;d.tlBase=(d.mod.con+d.mod[tls])*10;d.tlFormula=d.tlBase+num(S.tl.bonus);
  if(C.tlStat==null&&C.tx&&typeof C.tx.tlMax==="function"){d.tlFormula=C.tx.tlMax(d);d.tlLegacy=true;}
- d.tlMax=(C.tl!==false)?Math.max(1,d.tlFormula+d.im.tl+num(S.tl.adj)):0;
+ d.tlMax=(C.tl!==false)?Math.max(1,d.tlFormula+d.im.tl+num(S.tl.adj)):0;if(d.tlMax&&C.hooks&&C.hooks.tlMax)d.tlMax=Math.max(1,Math.round(num(C.hooks.tlMax(d,S),d.tlMax)));
  d.st=strain(d);d.def=defense(d);
  d.speed=num(S.speed)+d.im.speed+(d.st?d.st.speed:0);
  d.itemSlots=Math.max(0,num(S.itemSlotsBase,3)+d.im.itemSlots);
@@ -1316,8 +1316,9 @@ function compute(){
 }
 function strain(d){if(!(C.tl!==false))return null;var max=d.tlMax||1,cur=num(S.tl.cur),p=cur/max;
  var lvl=cur<=0?3:p<0.25?2:p<0.5?1:0,on=!!(C.tx&&S.tx.on);
- return {lvl:lvl,pct:p,on:on,sur:on?(lvl>=2?10:lvl===1?5:0):0,speed:on?(lvl>=2?-15:lvl===1?-10:0):0,
-  name:!on?(C.tx?"Dormant":["Full","Below half","Below quarter","Empty"][lvl]):["Stable","Strained","Fractured","Collapse"][lvl]};}
+ var T2=(C.tx&&C.tx.tier2)||{};
+ return {lvl:lvl,pct:p,on:on,sur:on?(lvl>=2?num(T2.sur,10):lvl===1?5:0):0,speed:on?(lvl>=2?num(T2.speed,-15):lvl===1?-10:0):0,
+  name:!on?(C.tx?"Dormant":["Full","Below half","Below quarter","Empty"][lvl]):["Stable","Strained",T2.name||"Fractured","Collapse"][lvl]};}
 function defense(d){
  var armor=slotItem("armor"),o={};var ct=clamp(Math.ceil(d.level/10),1,5);
  if(!armor||!armor.armor||!armor.armor.kind){
@@ -1347,16 +1348,17 @@ function tlCostFor(cost,isAb){var d=compute();return Math.max(0,num(cost)-(isAb?
 function upkeep(d){if(!C.tx)return {cost:0,gain:0,base:0};
  var m=S.tx.mode&&C.tx.modes?C.tx.modes.filter(function(x){return x.id===S.tx.mode;})[0]:null;
  var base=m?num(m.upkeep):num(C.tx.upkeep),cut=0,gain=0,add=0;
- togOn().forEach(function(t){cut+=num(t.cut);gain+=num(t.gain);add+=num(t.add);});
+ togOn().forEach(function(t){cut+=num(t.cut);gain+=num(t.gain);add+=num(t.add);});if(C.hooks&&C.hooks.txGain)gain+=num(C.hooks.txGain(d,S));
  return {base:base,cut:cut,gain:gain,add:add,cost:Math.max(0,base-cut)+add,mode:m};}
 function spendTL(cost,isAb,what){var c=tlCostFor(cost,isAb);
  if(num(S.tl.cur)<c){flash("Not enough TL ("+c+" needed)");return false;}
  S.tl.cur=num(S.tl.cur)-c;if(what)logline(what+", "+c+" TL");afterTL();return true;}
 function afterTL(){var d=compute();S.tl.cur=clamp(num(S.tl.cur),0,d.tlMax);if(!C.tx)return;
  if(!S.tx.on)return;var p=S.tl.cur/d.tlMax;
- if(!S.tx.fractured&&p<0.25){var amt=Math.floor(d.hpMax*0.2);S.hp.scar=num(S.hp.scar)+amt;S.hp.cur=Math.max(0,num(S.hp.cur)-amt);
+ if(!S.tx.fractured&&p<0.25&&!(C.tx.tier2&&C.tx.tier2.noScar)){var amt=Math.floor(d.hpMax*0.2);S.hp.scar=num(S.hp.scar)+amt;S.hp.cur=Math.max(0,num(S.hp.cur)-amt);
   S.tx.fractured=true;S.tx.fracAmt=amt;logline("Fractured: "+amt+" non-regenerable damage (20% of max HP)");}
- if(S.tl.cur<=0&&!S.tx.burning&&!S.tx.collapse){S.tx.collapse="pending";logline("TL hit 0. Collapse: choose Revert or Burn");}}
+ if(S.tl.cur<=0&&!S.tx.burning&&!S.tx.collapse){S.tx.collapse="pending";logline("TL hit 0. Collapse: choose Revert or Burn");}
+ if(C.hooks&&C.hooks.afterTL)C.hooks.afterTL(api,p);}
 function txStart(){if(S.tx.locked){flash("Collapsed earlier. No transforming until a long rest");return;}
  if(!spendTL(C.tx.activate||0,false,C.tx.name+" raised"))return;S.tx.on=true;afterTL();}
 function txEnd(why){S.tx.on=false;S.tx.mode="";S.tx.fractured=false;S.tx.burning=false;S.tx.collapse="";
@@ -1568,7 +1570,7 @@ function renderTx(d){var T=C.tx,st=d.st,u=upkeep(d),h='<section id="transform"><
  h+='<p class="cost" style="margin-top:10px">Upkeep '+u.base+(u.cut?' − '+u.cut:'')+(u.add?' + '+u.add:'')+' = <b>'+u.cost+'</b>'+(u.gain?' · gain +'+u.gain:'')+' · net '+sgn(net)+' a round'+(S.tx.on&&net<0?' · about '+Math.floor(num(S.tl.cur)/-net)+' rounds left':'')+(abCut()?' · abilities −'+abCut():'')+(st.on&&st.sur?' · strain +'+st.sur:'')+'</p>';
  h+='<div class="ladder">';
  [["Strained","TL < 50% · < "+Math.ceil(d.tlMax/2),["Disadvantage on CON saves to maintain concentration","Transformation abilities cost +5 TL","−10 ft speed"],""],
-  ["Fractured","TL < 25% · < "+Math.ceil(d.tlMax/4),["Takes 20% of max HP as non-regenerable damage"+(S.tx.fracAmt&&S.tx.fractured?" ("+S.tx.fracAmt+" applied)":""),"Transformation abilities cost +10 TL total","Disadvantage on all CON checks","−15 ft movement"],"frac"],
+  (T.tier2&&T.tier2.lines)?[T.tier2.name,"TL < 25% · < "+Math.ceil(d.tlMax/4),T.tier2.lines,"frac"]:["Fractured","TL < 25% · < "+Math.ceil(d.tlMax/4),["Takes 20% of max HP as non-regenerable damage"+(S.tx.fracAmt&&S.tx.fractured?" ("+S.tx.fracAmt+" applied)":""),"Transformation abilities cost +10 TL total","Disadvantage on all CON checks","−15 ft movement"],"frac"],
   ["Collapse","TL = 0",["Revert: transformation ends, stunned 1 round, no retransforming until a long rest","Burn: stay transformed, pay upkeep out of max HP. Max HP 0 means death, no save"],"col"]].forEach(function(r,i){
   var on=st.on&&st.lvl>=i+1;h+='<div class="lad'+(on?' on '+r[3]:'')+'"><div class="nm">'+r[0]+'<small>'+r[1]+'</small></div><ul>'+r[2].map(function(x){return '<li>'+esc(x)+'</li>';}).join("")+'</ul></div>';});
  h+='</div>';
