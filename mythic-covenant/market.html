@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mythic Covenant — Market</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:radial-gradient(1100px 560px at 82% -12%,rgba(217,177,84,.07),transparent 60%),#070608;color:#ece6d8;font-family:'Cormorant Garamond',Georgia,serif;font-size:18px;line-height:1.5;min-height:100vh}
+.topnav{max-width:1100px;margin:0 auto;padding:16px 18px 0;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.topnav a{font-family:'Cinzel',serif;font-size:13px;color:#b3aca0;text-decoration:none;border:1px solid #332e38;border-radius:20px;padding:4px 13px}
+.topnav a:hover{color:#d9b154;border-color:#d9b154}
+.syncpill{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#a9a0b2;border:1px solid #332e38;border-radius:20px;padding:3px 10px}
+.syncpill.ok{color:#7c7;border-color:#3c6a3c}
+.syncpill.bad{color:#f08a92;border-color:#5a2a33}
+.pv .pm-updated{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#7a7288;margin-top:8px}
+.waiting{text-align:center;padding:80px 18px;color:#a9a0b2;font-style:italic}
+.waiting h1{font-family:'Cinzel Decorative',serif;font-style:normal;color:#fff;font-size:clamp(26px,5vw,40px);margin-bottom:10px}
+
+.pv{max-width:1100px;margin:0 auto;padding:26px 18px 60px;color:#ece6d8;}
+.pv h1,.pv h2,.pv h4{font-family:'Cinzel',serif;font-weight:600;letter-spacing:.02em;}
+.pv .pm-head{text-align:center;margin-bottom:26px;}
+.pv .pm-eb{font-family:'Cinzel';font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:#d9b154;}
+.pv .pm-head h1{font-family:'Cinzel Decorative','Cinzel',serif;font-weight:900;font-size:clamp(28px,5vw,44px);color:#fff;margin:8px 0 4px;line-height:1.1;}
+.pv .pm-sub{font-style:italic;color:#a9a0b2;font-size:19px;}
+.pv .pm-sale{display:inline-block;margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#1a1206;background:#d9b154;border-radius:20px;padding:3px 14px;}
+.pv .pm-nav{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-top:16px;}
+.pv .pm-nav a{font-family:'Cinzel';font-size:12.5px;color:#ece6d8;text-decoration:none;border:1px solid #453a52;border-radius:20px;padding:4px 13px;background:#150f1c;}
+.pv .pm-nav a:hover{border-color:#d9b154;color:#d9b154;}
+.pv .pm-shop{background:linear-gradient(180deg,#17131e,#130f19);border:1px solid #2e2638;border-radius:14px;padding:18px 18px 10px;margin-bottom:20px;scroll-margin-top:16px;}
+.pv .pm-sh{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap;}
+.pv .pm-ic{width:44px;height:44px;border-radius:11px;border:1px solid #d9b15466;background:#100c15;color:#d9b154;font-size:22px;display:flex;align-items:center;justify-content:center;flex:none;}
+.pv .pm-sh h2{font-size:21px;color:#fff;line-height:1.15;}
+.pv .pm-sh small{display:block;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#a9a0b2;font-weight:400;letter-spacing:0;}
+.pv .pm-off{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#d9b154;border:1px solid #d9b15466;border-radius:20px;padding:2px 10px;}
+.pv table{width:100%;border-collapse:collapse;font-size:16px;}
+.pv th{font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#d9b154;text-align:left;padding:7px 8px;border-bottom:1px solid #453a52;}
+.pv td{padding:8px;border-bottom:1px solid #1f1927;vertical-align:top;}
+.pv td.pm-n{font-family:'IBM Plex Mono',monospace;font-size:12px;color:#7a7288;width:30px;}
+.pv .pm-r{text-align:right;white-space:nowrap;}
+.pv .pm-name{font-weight:600;color:#fff;font-size:17px;}
+.pv .pm-k{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#a9a0b2;}
+.pv .pm-price{font-family:'IBM Plex Mono',monospace;font-size:13px;color:#fff;}
+.pv .pm-price s{color:#7a7288;font-size:11px;margin-right:4px;}
+.pv .pm-sold{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#f08a92;border:1px solid #5a2a33;border-radius:4px;padding:0 5px;}
+.pv tr.pm-x td{opacity:.45;}
+.pv tr.pm-f td{background:linear-gradient(90deg,#d9b15420,transparent);}
+.pv .pm-star{font-family:'IBM Plex Mono',monospace;font-size:10px;color:#1a1206;background:#d9b154;border-radius:4px;padding:0 5px;margin-left:6px;white-space:nowrap;}
+.pv .pm-rb{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:9.5px;border:1px solid;border-radius:20px;padding:0 7px;margin-left:6px;vertical-align:2px;white-space:nowrap;}
+.pv .r0{color:#b9b2c2;border-color:#b9b2c255;} .pv .r1{color:#6fcf8e;border-color:#6fcf8e55;} .pv .r2{color:#6aa8ff;border-color:#6aa8ff55;} .pv .r3{color:#c2abff;border-color:#c2abff66;} .pv .r4{color:#d9b154;border-color:#d9b15477;}
+.pv details{margin-top:3px;}
+.pv summary{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#7a7288;cursor:pointer;}
+.pv details p{font-style:italic;color:#a9a0b2;font-size:15px;margin-top:3px;}
+.pv .pm-empty,.pv .pm-foot{text-align:center;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#7a7288;margin-top:18px;}
+.pv .pm-bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;padding-bottom:8px;}
+.pv .pm-bat{border:1px solid #2e2638;border-top:3px solid var(--tc,#d9b154);border-radius:12px;padding:12px 14px;background:#120f17;display:flex;flex-direction:column;}
+.pv .pm-bat.Bronze{--tc:#c08457;} .pv .pm-bat.Silver{--tc:#c9ced6;} .pv .pm-bat.Gold{--tc:#d9b154;}
+.pv .pm-bh{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+.pv .pm-tier{font-family:'Cinzel';font-weight:700;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--tc);}
+.pv .pm-type{font-family:'IBM Plex Mono',monospace;font-size:9.5px;border:1px solid #453a52;border-radius:20px;padding:0 7px;color:#a9a0b2;}
+.pv .pm-type.Physical{color:#f0a37a;border-color:#f0a37a55;} .pv .pm-type.Magical{color:#c2abff;border-color:#c2abff55;} .pv .pm-type.Support{color:#5fd2c0;border-color:#5fd2c055;}
+.pv .pm-bat h4{font-size:17px;color:#fff;margin:6px 0 2px;line-height:1.2;}
+.pv .pm-gam{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#a9a0b2;}
+.pv .pm-gam b{color:#ece6d8;font-weight:500;}
+.pv .pm-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0 8px;}
+.pv .pm-stats div{background:#17131e;border:1px solid #2e2638;border-radius:8px;padding:5px 4px;text-align:center;}
+.pv .pm-stats small{display:block;font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;color:#7a7288;}
+.pv .pm-stats b{font-family:'Cinzel';font-size:18px;color:#fff;}
+.pv .pm-dep,.pv .pm-acc{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#ece6d8;margin-bottom:4px;}
+.pv .pm-dep small{color:#7a7288;text-transform:uppercase;letter-spacing:.08em;font-size:9px;margin-right:4px;}
+.pv .pm-acc{color:#d9b154;}
+.pv .pm-bat p{font-size:15.5px;margin:4px 0 8px;flex:1;}
+.pv .pm-bf{display:flex;justify-content:space-between;align-items:center;border-top:1px solid #2e2638;padding-top:7px;}
+@media(max-width:720px){
+  .pv table,.pv tbody,.pv tr,.pv td{display:block;width:100%;}
+  .pv thead{display:none;}
+  .pv tr{border:1px solid #2e2638;border-radius:10px;padding:6px 4px;margin-bottom:8px;}
+  .pv td{border:0;padding:3px 8px;}
+  .pv td.pm-n{display:none;}
+  .pv td[data-l]{display:flex;gap:10px;align-items:baseline;}
+  .pv td[data-l]:before{content:attr(data-l);flex:0 0 92px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:#7a7288;}
+  .pv td[data-l="Item"]{display:block;padding-bottom:5px;}
+  .pv td[data-l="Item"]:before{display:none;}
+  .pv .pm-r{text-align:left;}
+}
+
+</style>
+</head>
+<body>
+<div class="topnav"><a href="index.html">← Party Sheets</a><span class="syncpill" id="pill">connecting…</span></div>
+<div id="out"><div class="waiting"><h1>Market</h1><p>Loading today's stalls…</p></div></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+(function(){
+var RAR=['Common','Uncommon','Rare','Very Rare','Legendary'];
+var RC={'Common':'r0','Uncommon':'r1','Rare':'r2','Very Rare':'r3','Legendary':'r4'};
+var TPL={
+  weapons:{cols:[['dmg','Damage & Properties'],['imbue','Imbued'],['rank','Rank'],['dur','Dur.'],['eff','Effective vs.']],desc:'Notes'},
+  armor:{cols:[['slot','Slot / Type'],['ac','Base AC']],desc:'Properties / Effect'},
+  alchemy:{cols:[],desc:'Effect'},
+  tomes:{cols:[['cat','Type'],['rank','Rank'],['eff','Effective vs.']],desc:'Effect'},
+  ores:{cols:[['origin','Origin']],desc:'Forged property'},
+  greenhouse:{cols:[['cat','Type'],['origin','Origin']],desc:'Use'},
+  fish:{cols:[['origin','Origin']],desc:'Use'},
+  battalions:{batt:true,cols:[],desc:'Gambit effect'},
+  generic:{cols:[['tag','Tag']],desc:'Description'}
+};
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function nice(x){if(!(x>0))return 0;if(x<1)return Math.max(0.1,Math.round(x*10)/10);if(x<10)return Math.round(x*2)/2;if(x<200)return Math.max(10,Math.round(x/5)*5);if(x<2000)return Math.round(x/10)*10;return Math.round(x/50)*50;}
+function fmt(g){g=+g||0;if(g<1)return Math.max(0,Math.round(g*10))+' sp';var w=Math.floor(g),sp=Math.round((g-w)*10);return w.toLocaleString('en-US')+' gp'+(sp?' '+sp+' sp':'');}
+function discOf(st,s){return (s.disc!==null&&s.disc!==undefined&&s.disc!=='')?+s.disc:(+st.discount||0);}
+function cur(it){return it.cur||{price:it.price,qty:it.qty};}
+function finalPrice(st,s,it){var d=discOf(st,s),p=cur(it).price;return d>0?nice(p*(1-d/100)):p;}
+function stocked(s){return (s.items||[]).slice().sort(function(a,b){return RAR.indexOf(a.rarity)-RAR.indexOf(b.rarity)||cur(a).price-cur(b).price||String(a.name).localeCompare(b.name);});}
+function battCard(st,s,it){
+  var f=it.f||{},tier=['Bronze','Silver','Gold'].indexOf(f.tier)>-1?f.tier:'Gold',typ=['Physical','Magical','Support'].indexOf(f.type)>-1?f.type:'Physical',d=discOf(st,s),q=cur(it).qty;
+  return '<div class="pm-bat '+tier+'"><div class="pm-bh"><span class="pm-tier">'+tier+'</span><span class="pm-type '+typ+'">'+typ+'</span>'+(s.feat===it.id?'<span class="pm-star">★ Featured</span>':'')+'</div>'+
+    '<h4>'+esc(it.name)+'</h4><div class="pm-gam">Gambit · <b>'+esc(f.gambit||it.name)+'</b></div>'+
+    '<div class="pm-stats"><div><small>Endurance</small><b>'+esc(f.end||'—')+'</b></div><div><small>Charges</small><b>'+esc(f.charges||'—')+'</b></div><div><small>End. / use</small><b>'+esc(f.gcost||'—')+'</b></div></div>'+
+    '<div class="pm-dep"><small>Deploy</small>+'+esc(f.dhit||0)+' hit · +'+esc(f.dac||0)+' AC · +'+esc(f.dsave||0)+' '+esc(f.dstat||'')+' save</div>'+
+    '<div class="pm-acc">'+esc(f.acc||'')+'</div><p>'+esc(it.desc)+'</p>'+
+    '<div class="pm-bf"><span class="pm-price">'+(d>0?'<s>'+fmt(cur(it).price)+'</s>':'')+fmt(finalPrice(st,s,it))+'</span>'+(q<=0?'<span class="pm-sold">Sold out</span>':'<span class="pm-k">Qty '+q+'</span>')+'</div></div>';
+}
+function shopHTML(st,s){
+  var t=TPL[s.tpl]||TPL.generic,items=stocked(s),d=discOf(st,s),body;
+  if(t.batt){body='<div class="pm-bgrid">'+items.map(function(it){return battCard(st,s,it);}).join('')+'</div>';}
+  else{
+    body='<table><thead><tr><th>#</th><th>Item</th>'+t.cols.map(function(c){return '<th>'+esc(c[1])+'</th>';}).join('')+'<th>'+esc(t.desc)+'</th><th class="pm-r">Price</th><th class="pm-r">Qty</th></tr></thead><tbody>'+
+    items.map(function(it,i){var q=cur(it).qty;
+      return '<tr class="'+(q<=0?'pm-x':'')+' '+(s.feat===it.id?'pm-f':'')+'"><td class="pm-n">'+(i+1)+'</td>'+
+      '<td data-l="Item"><span class="pm-name">'+esc(it.name)+'</span><span class="pm-rb '+RC[it.rarity]+'">'+esc(it.rarity)+'</span>'+(s.feat===it.id?'<span class="pm-star">★ Featured</span>':'')+(it.lore?'<details><summary>lore</summary><p>'+esc(it.lore)+'</p></details>':'')+'</td>'+
+      t.cols.map(function(c){return '<td data-l="'+esc(c[1])+'" class="pm-k">'+esc((it.f||{})[c[0]]||'—')+'</td>';}).join('')+
+      '<td data-l="'+esc(t.desc)+'">'+esc(it.desc)+'</td>'+
+      '<td data-l="Price" class="pm-r pm-price">'+(d>0?'<s>'+fmt(cur(it).price)+'</s>':'')+fmt(finalPrice(st,s,it))+'</td>'+
+      '<td data-l="Qty" class="pm-r">'+(q<=0?'<span class="pm-sold">Sold out</span>':'<span class="pm-price">'+q+'</span>')+'</td></tr>';}).join('')+'</tbody></table>';
+  }
+  return '<section class="pm-shop" id="shop-'+esc(s.id)+'"><div class="pm-sh"><div class="pm-ic">'+esc(s.icon)+'</div><h2>'+esc(s.name)+(s.keeper?'<small>'+esc(s.keeper)+'</small>':'')+'</h2>'+(d>0?'<span class="pm-off">'+d+'% off</span>':'')+'</div>'+body+'</section>';
+}
+function render(st){
+  var shops=(st.shops||[]).filter(function(s){return s.items&&s.items.length;});
+  var when=st.at?new Date(st.at).toLocaleString([], {weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'';
+  document.getElementById('out').innerHTML='<div class="pv"><header class="pm-head"><div class="pm-eb">Mythic Covenant · Palmora</div><h1>'+esc(st.title||'Market')+'</h1>'+(st.sub?'<p class="pm-sub">'+esc(st.sub)+'</p>':'')+
+    (st.discount>0?'<div class="pm-sale">Market-wide sale · '+st.discount+'% off</div>':'')+(when?'<div class="pm-updated">Stock updated '+esc(when)+'</div>':'')+
+    (shops.length>1?'<nav class="pm-nav">'+shops.map(function(s){return '<a href="#shop-'+esc(s.id)+'">'+esc(s.icon)+' '+esc(s.name)+'</a>';}).join('')+'</nav>':'')+'</header>'+
+    (shops.map(function(s){return shopHTML(st,s);}).join('')||'<p class="pm-empty">The market is closed today.</p>')+
+    '<footer class="pm-foot">Prices in gp (sp where noted). 1 pp = 10 gp. Quantities are what is left on the shelf and update live.</footer></div>';
+}
+function closed(msg){document.getElementById('out').innerHTML='<div class="waiting"><h1>Market</h1><p>'+esc(msg)+'</p></div>';}
+var pill=document.getElementById('pill');
+function setPill(t,c){pill.textContent=t;pill.className='syncpill '+(c||'');}
+var CFG=window.FIREBASE_CONFIG;
+if(!(CFG&&CFG.apiKey&&window.firebase)){setPill('○ offline','bad');closed("Can't reach the market right now. Check your connection and refresh.");return;}
+try{
+  if(!firebase.apps.length)firebase.initializeApp(CFG);
+  var ref=firebase.firestore().collection('campaigns').doc(window.CAMPAIGN_ID||'mythic-covenant').collection('market').doc('live');
+  ref.onSnapshot(function(snap){
+    if(!snap.exists){setPill('● live','ok');closed("The stalls aren't open yet. Check back when the DM opens the market.");return;}
+    render(snap.data()||{});setPill('● live','ok');
+  },function(){setPill('○ offline','bad');closed("Can't reach the market right now. Check your connection and refresh.");});
+}catch(e){setPill('○ sync error','bad');closed("Can't reach the market right now.");}
+})();
+</script>
+</body>
+</html>
