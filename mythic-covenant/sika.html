@@ -1034,7 +1034,7 @@ function defaults(){
   inf:clone(C.infusions||[]),infUsed:0,unarmed:{cur:C.unarmedDur||10,max:C.unarmedDur||10},itemSlotsBase:C.itemSlots||3,
   rels:clone(C.rels||[]),wealth:clone(C.wealth||{cp:0,sp:0,gp:0,pp:0}),subs:(C.subs||[]).map(function(x,i){return {id:"sub"+i,name:x.name,amt:x.amt,type:x.type||"expense",on:x.on!==false};}),cycle:C.cycle||"Week",wlog:[],notes:{fight:"",char:"",story:""},
   kitPin:clone(C.kitPin||{}),bats:(C.battalions||[]).map(function(o,i){var x=clone(o);x.id=x.id||"bt"+i;return mkBat(x);}),batAllies:0,batBoost:C.batBoost||0,batAuto:false,batRepair:C.batRepair||0,school:schoolDefaults(),comps:(C.companions||[]).map(function(c,i){var o=clone(c);o.id=o.id||"cp"+i;if(o.hp==null)o.hp=o.hpMax;return o;}),spells:{slots:clone(C.spellSlots||{}),list:(C.spells||[]).map(function(x,i){var o=clone(x);o.id="sp"+i;return o;})},kitOwn:{},kitCustom:[],log:[],dead:false,kit:clone(C.kitState||{}),
-  status:[],links:[],linkLimit:1,linkShield:0,linkLast:0,
+  status:[],links:[],linkLimit:1,packLocal:null,porterUse:{},linkShield:0,linkLast:0,
   ui:{stQ:"",stCat:"all",stPick:false,stOpen:"",gambit:"",spell:-1,cls:"",pane:"turn",fold:false,slot:"",item:"",storeCat:"all",storeQ:"",relFilter:"all",kitKind:"all",kitQ:""}};
  SKILLS.forEach(function(k){s.skills[k[0]]=(C.skills&&C.skills[k[0]]!=null)?C.skills[k[0]]:0;});
  econDefs().forEach(function(e){s.eco[e.id]={max:e.max,left:e.max};});
@@ -1412,6 +1412,114 @@ function linkInput(el){var l=(S.links||[]).filter(function(x){return x.id===el.g
  if(f==="tier")l.tier=clamp(num(el.value),0,5);else if(f==="hp"||f==="hpMax"){l[f]=el.value===""?null:Math.max(0,num(el.value));if(f==="hpMax"&&l.hp==null&&l.hpMax!=null)l.hp=l.hpMax;if(f==="hp"&&l.hp!=null&&l.hp<=0&&num(l.hpMax)>0){var p=[];linkIncap(l,p);logline(p.join(", "));}}
  save();}
 
+/* ===================== THE PORTER & TRADING (patch notes) =====================
+   The Pack is shared by the whole party: it lives in one cloud document (campaigns/{id}/shared/pack) that every sheet
+   reads. Items handed to another character travel through that document's inbox and land in their storage. */
+var PACK_OK={consumable:1,weapon:1,accessory:1,material:1,resource:1,other:1,key:1};
+var PK=null,packRef=null,packOnline=false,packMe=null;
+function packDM(){return /\/dm\//.test(String(location.pathname||""));}
+function packBlank(){return {size:6,slots:[],sealed:false,commander:null,dropped:[],inbox:{},roster:{}};}
+function packGet(){var p=packOnline?(PK||packBlank()):(S.packLocal||(S.packLocal=packBlank()));p.slots=p.slots||[];p.dropped=p.dropped||[];p.inbox=p.inbox||{};p.roster=p.roster||{};p.size=Math.max(6,num(p.size,6));while(p.slots.length<p.size)p.slots.push(null);return p;}
+function packWrite(fn){var p=clone(packGet());fn(p);if(packOnline&&packRef){PK=p;packRef.set(JSON.parse(JSON.stringify(p))).catch(function(){flash("Couldn't reach the shared Pack");});}else{S.packLocal=p;}save();}
+function porterBat(){return (S.bats||[]).filter(function(b){return b.porter;})[0]||null;}
+function isCommander(){var b=porterBat();return !!(b&&b.on);}
+function porterLive(){var b=porterBat();return !!(b&&b.on&&num(b.end)>0&&num(S.hp.cur)>0);}
+function packItemLabel(it){return esc(it.name||"Item")+' <span class="sub2">'+esc(CATN[it.cat]||it.cat||"")+'</span>';}
+function packCanStow(it){return !!PACK_OK[it.cat]&&!/^(head|armor|legs|feet)$/.test(it.loc||"");}
+function packStow(it,how){var p=packGet(),idx=p.slots.indexOf(null);if(idx<0){flash("The Pack is full");return false;}
+ var one=num(it.qty,1)>1?splitOne(it):it;var copy=clone(one);delete copy.hand;copy.loc="pack";S.items.splice(S.items.indexOf(one),1);
+ packWrite(function(q){var i=q.slots.indexOf(null);q.slots[i]=copy;});logline("Stowed "+copy.name+" in the Pack ("+how+")");return true;}
+function packTake(idx,how){var p=packGet(),it=p.slots[idx];if(!it)return false;var mine=mkItem(clone(it));mine.id=uid("i");mine.loc="storage";mine.qty=1;mine.hand=true;
+ packWrite(function(q){q.slots[idx]=null;});S.items.push(mine);logline("Took "+mine.name+" from the Pack ("+how+")");return true;}
+function packSend(item,to,from,opts){opts=opts||{};var copy=clone(item);delete copy.hand;copy.loc="storage";
+ packWrite(function(q){(q.inbox[to]=q.inbox[to]||[]).push({item:copy,from:from,why:opts.why||"",charge:!!opts.charge});});}
+function packIngest(){if(!packOnline||!PK||!packMe)return;var box=(PK.inbox||{})[packMe];if(!box||!box.length)return;
+ var got=[];box.forEach(function(e){var it=mkItem(clone(e.item));it.id=uid("i");it.loc="storage";it.qty=1;it.hand=true;S.items.push(it);got.push(it.name+(e.from?" from "+e.from:""));
+  if(e.charge&&S.eco.bon){S.eco.bon.left=Math.max(0,S.eco.bon.left-1);got[got.length-1]+=" (your bonus action)";}});
+ logline("Received "+got.join(", "));flash("Received "+got.length+" item"+(got.length>1?"s":""));
+ packWrite(function(q){q.inbox[packMe]=[];});}
+function packAutoSeal(){var p=packGet();if(!isCommander()||p.sealed)return;var b=porterBat();
+ if(num(b.end)<=0||num(S.hp.cur)<=0){packWrite(function(q){q.sealed=true;});logline("The Pack is sealed ("+(num(b.end)<=0?"Porter Routed":"commander at 0 HP")+")");}}
+function packSpend(kind){var e=S.eco[kind];if(e&&e.left<1&&!window.confirm("No "+(kind==="bon"?"Bonus Action":kind==="rx"?"Dynamic Reaction":"Action")+" left. Do it anyway?"))return false;if(e)e.left=Math.max(0,e.left-1);return true;}
+function packOthers(){var p=packGet(),r=p.roster||{};return Object.keys(r).filter(function(k){return k!==packMe;}).map(function(k){return {id:k,name:r[k].name||k};});}
+function renderPack(d){var p=packGet(),cmd=p.commander,me=isCommander(),live=porterLive(),load=!!S.ui.packLoad,sealed=!!p.sealed,used=!!(S.porterUse||{}).convoy;
+ var h='<section id="pack"><h2>The Pack &amp; Trading <span class="sub2">'+(packOnline?'shared by the party':'this device only · cloud sync is off')+'</span></h2>';
+ h+='<div class="row" style="margin-bottom:8px">'+(cmd?'<span class="chip'+(sealed?' bad':' ok')+'">Convoy: '+esc(cmd.name)+(me?' (you)':'')+'</span>':'<span class="chip">No Porter deployed</span>')+(sealed?'<span class="chip bad">Sealed</span>':'')+
+  '<button class="chip'+(load?' on':'')+'" data-a="packload" title="Pre-combat equipment swap: load and unload without spending actions">Loading phase</button>'+
+  (!me&&cmd&&!load?'<label class="sub" style="margin:0"><input type="checkbox" data-b="ui.packAdj"'+(S.ui.packAdj?' checked':'')+'> adjacent to '+esc(cmd.name)+' (Supply Hub)</label>':'')+
+  (me?'<span class="sub" style="margin:0">Convoy Access: '+(used?'used this turn':'1 free take or stow this turn')+'</span>':'')+'</div>';
+ var canUse=!sealed&&(load||(me&&live&&!used)||(!me&&cmd&&S.ui.packAdj));
+ h+='<div class="packgrid">';
+ p.slots.slice(0,p.size).forEach(function(it,i){h+='<div class="pslot'+(it?'':' empty')+'"><span class="lbl" style="margin:0">'+(i+1)+'</span>'+(it?'<div class="pit">'+packItemLabel(it)+'</div><button class="btn sm" data-a="packtake" data-n="'+i+'"'+(canUse?'':' disabled')+'>take</button>'+(me&&live&&!sealed?'<button class="btn sm" data-a="packresup" data-n="'+i+'" title="Resupply gambit: send to an ally within 30 ft">resupply</button>':''):'<div class="pit sub">empty</div>')+'</div>';});
+ h+='</div>';
+ if(me)h+='<div class="row" style="margin-top:6px"><span class="lbl" style="margin:0">Pack slots</span><button class="btn sm" data-a="packsize" data-n="-1">−</button><b>'+p.size+'</b><button class="btn sm" data-a="packsize" data-n="1">+</button>'+
+  '<select class="sel" id="packTo" data-b="ui.pkTo" title="Resupply target"><option value="">resupply to…</option>'+packOthers().map(function(o){return '<option value="'+esc(o.id)+'"'+(S.ui.pkTo===o.id?' selected':'')+'>'+esc(o.name)+'</option>';}).join("")+'</select><button class="btn sm" data-a="packcrit"'+(p.slots.some(Boolean)?'':' disabled')+' title="When you take a critical hit, one random Pack item falls next to you">took a crit: drop an item</button>'+(sealed?'<button class="btn sm" data-a="packunseal"'+(live?'':' disabled')+'>unseal</button>':'')+'</div>';
+ var stowable=S.items.filter(packCanStow);
+ h+='<div class="row" style="margin-top:8px"><select class="sel" id="packStowSel" data-b="ui.pkStow"><option value="">— stow one of your items —</option>'+stowable.map(function(it){return '<option value="'+it.id+'"'+(S.ui.pkStow===it.id?' selected':'')+'>'+esc(it.name)+(num(it.qty,1)>1?' ×'+it.qty:'')+(SLOTCAT[it.loc]?' (equipped)':'')+(it.hand?' · moved this round':'')+'</option>';}).join("")+'</select><button class="btn sm" data-a="packstow"'+(canUse&&p.slots.indexOf(null)>=0?'':' disabled')+'>stow</button>'+
+  '<span class="sub" style="margin:0">'+(sealed?'sealed: no access':load?'loading: free':me?'Convoy Access: free, once per turn':cmd?'Supply Hub: bonus action, adjacent to '+esc(cmd.name):'deploy a Porter to use the Pack in combat')+'</span></div>';
+ if(p.dropped.length){h+='<div class="card" style="margin:8px 0;border-color:#d8434f88"><b class="cz" style="color:#ffb3ba">On the ground</b>';
+  p.dropped.forEach(function(it,i){h+='<div class="row" style="margin-top:4px"><span>'+packItemLabel(it)+'</span><button class="btn sm" data-a="packpick" data-n="'+i+'" title="Pick it up as a reaction">pick up (reaction)</button><button class="btn sm dgr" data-a="packlost" data-n="'+i+'">an enemy took it</button></div>';});h+='</div>';}
+ /* trading */
+ var others=packOthers(),mine=S.items.filter(function(it){return !/^(head|armor|legs|feet)$/.test(it.loc||"");});
+ h+='<h4 class="cz" style="margin-top:12px;font-size:14px;color:var(--gold)">Trade <span class="sub2">bonus action · adjacent, willing ally · the receiver spends nothing</span></h4>';
+ if(!packOnline)h+='<p class="sub">Trading between sheets needs cloud sync.</p>';
+ else{h+='<div class="form"><div class="fld"><span class="lbl">Give</span><select class="sel" id="trItem" data-b="ui.pkTrItem"><option value="">— item —</option>'+mine.map(function(it){return '<option value="'+it.id+'"'+(S.ui.pkTrItem===it.id?' selected':'')+'>'+esc(it.name)+(num(it.qty,1)>1?' ×'+it.qty:'')+(it.hand?' · moved this round':'')+'</option>';}).join("")+'</select></div>'+
+  '<div class="fld"><span class="lbl">To</span><select class="sel" id="trTo" data-b="ui.pkTrTo"><option value="">— ally —</option>'+others.map(function(o){return '<option value="'+esc(o.id)+'"'+(S.ui.pkTrTo===o.id?' selected':'')+'>'+esc(o.name)+'</option>';}).join("")+'</select></div>'+
+  '<div class="fld"><span class="lbl">Who spends the bonus action</span><select class="sel" id="trCost" data-b="ui.pkTrCost">'+[["me","I do (I give)"],["them","They do (they take it)"],["none","Nobody (finishing a swap)"]].map(function(o){return '<option value="'+o[0]+'"'+((S.ui.pkTrCost||"me")===o[0]?' selected':'')+'>'+o[1]+'</option>';}).join("")+'</select></div>'+
+  '<button class="btn" data-a="trgive">Trade</button></div>';
+  if(!others.length)h+='<p class="sub">Allies appear here once their sheet has been opened with sync on.</p>';}
+ var w1=slotItem("w1"),w2=slotItem("w2");
+ h+='<div class="row" style="margin-top:8px"><button class="btn sm" data-a="wswap"'+((w1||w2)&&!(w1&&w1.twoSlot)?'':' disabled')+'>⇄ Weapon swap</button><span class="sub" style="margin:0">free object interaction · swaps your two weapon slots'+(w1&&w1.twoSlot?' (a two-slot weapon fills both)':(w1||w2?' ('+esc(w1?w1.name:'empty')+' ⇄ '+esc(w2?w2.name:'empty')+')':''))+'</span></div>';
+ h+='<details class="note" style="margin-top:8px"><summary>Rules</summary><ul style="font-size:15px">'+
+  '<li><b>The Porter</b> is a support battalion: a character can take it instead of a normal battalion, with no Deploy Bonus. Only one Porter per combat. The Pack is loaded during the pre-combat equipment swap.</li>'+
+  '<li><b>The Pack:</b> 6+ shared slots, no stacking. Consumables, weapons, accessories, and loose items or resources.</li>'+
+  '<li><b>Convoy Access</b> (commander): once per turn, take or stow 1 Pack item as a free interaction. <b>Supply Hub:</b> allies adjacent to the commander may take or stow 1 Pack item as a Bonus Action.</li>'+
+  '<li><b>Pack Sealed:</b> when the Porter is Routed or the commander drops to 0 HP, the Pack is sealed. Nothing is lost, but whenever the commander takes a critical hit, 1 random item falls adjacent; an ally or enemy can pick it up as a reaction.</li>'+
+  '<li><b>Resupply</b> (Porter gambit, Bonus Action): send 1 Pack item to an ally within 30 ft of the commander.</li>'+
+  '<li><b>Trade</b> (everyone, Bonus Action): give, take, or swap 1 item with an adjacent, willing ally; the receiver spends nothing. <b>Weapon Swap:</b> free object interaction between your own 2 weapon slots.</li>'+
+  '<li>Each item can change hands only once per round. Using an item still costs its normal action. Reactions are never used for trading.</li></ul></details></section>';
+ return h;}
+function packAct(a,el,d){var n=num(el.getAttribute("data-n")),p=packGet(),me=isCommander(),load=!!S.ui.packLoad;
+ S.porterUse=S.porterUse||{};
+ function access(){if(p.sealed){flash("The Pack is sealed");return null;}if(load)return "loading";
+  if(me){if(!porterLive()){flash("Your Porter can't reach the Pack right now");return null;}if(S.porterUse.convoy){flash("Convoy Access already used this turn");return null;}S.porterUse.convoy=true;return "Convoy Access";}
+  if(!p.commander){flash("No Porter is deployed");return null;}if(!S.ui.packAdj){flash("You need to be adjacent to "+p.commander.name);return null;}
+  if(!packSpend("bon"))return null;return "Supply Hub, bonus action";}
+ switch(a){
+ case "packload":S.ui.packLoad=!S.ui.packLoad;return true;
+ case "packtake":if(!p.slots[n])return false;var how=access();if(!how)return false;packTake(n,how);return true;
+ case "packstow":var it=itemById(val("packStowSel"));if(!it){flash("Pick an item to stow");return false;}if(!packCanStow(it)){flash("Armor can't go in the Pack");return false;}
+  if(it.hand&&!load&&!window.confirm(it.name+" already changed hands this round. Stow it anyway?"))return false;
+  if(p.slots.indexOf(null)<0){flash("The Pack is full");return false;}var how2=access();if(!how2)return false;packStow(it,how2);S.ui.pkStow="";return true;
+ case "packsize":if(!me)return false;packWrite(function(q){q.size=Math.max(6,num(q.size,6)+n);if(q.slots.length>q.size&&!q.slots.slice(q.size).some(Boolean))q.slots.length=q.size;});return true;
+ case "packcrit":if(!me)return false;var full=[];p.slots.forEach(function(x,i){if(x)full.push(i);});if(!full.length)return false;var k=full[Math.floor(Math.random()*full.length)],nm=p.slots[k].name;
+  packWrite(function(q){q.dropped.push(q.slots[k]);q.slots[k]=null;});logline("Critical hit: "+nm+" fell from the Pack next to you");return true;
+ case "packunseal":if(!me||!porterLive())return false;packWrite(function(q){q.sealed=false;});logline("The Pack is unsealed");return true;
+ case "packpick":var dr=p.dropped[n];if(!dr)return false;if(!packSpend("rx"))return false;var mine=mkItem(clone(dr));mine.id=uid("i");mine.loc="storage";mine.qty=1;mine.hand=true;
+  packWrite(function(q){q.dropped.splice(n,1);});S.items.push(mine);logline("Picked up "+mine.name+" (reaction)");return true;
+ case "packlost":var dl=p.dropped[n];if(!dl||!window.confirm("Mark "+dl.name+" as taken by an enemy? It leaves the Pack for good."))return false;packWrite(function(q){q.dropped.splice(n,1);});logline(dl.name+" was taken by an enemy");return true;
+ case "packresup":if(!me||!porterLive()||p.sealed)return false;var pb=porterBat(),src=p.slots[n];if(!src)return false;
+  if(num(pb.ch)<1&&!window.confirm("No gambit charges left. Resupply anyway?"))return false;var others=packOthers();
+  if(!others.length){flash("No allies on the roster yet");return false;}
+  var tid=val("packTo"),oi=-1;others.forEach(function(o,i){if(o.id===tid)oi=i;});if(oi<0){flash("Choose who to resupply first");return false;}
+  if(!packSpend("bon"))return false;pb.ch=Math.max(0,num(pb.ch)-1);
+  packWrite(function(q){var x=q.slots[n];q.slots[n]=null;(q.inbox[others[oi].id]=q.inbox[others[oi].id]||[]).push({item:x,from:(C.name||"")+"'s Porter",why:"Resupply",charge:false});});
+  logline(pb.name+": Resupply sent "+src.name+" to "+others[oi].name);return true;
+ case "trgive":var ti=itemById(val("trItem")),to=val("trTo"),cost=val("trCost")||"me";if(!ti||!to){flash("Pick an item and an ally");return false;}
+  if(ti.hand&&!window.confirm(ti.name+" already changed hands this round. Trade it anyway?"))return false;
+  if(cost==="me"&&!packSpend("bon"))return false;var one=num(ti.qty,1)>1?splitOne(ti):ti;var nmT=one.name,whoN=(packGet().roster[to]||{}).name||to;
+  packSend(one,to,C.name||"",{why:"Trade",charge:cost==="them"});S.items.splice(S.items.indexOf(one),1);S.ui.pkTrItem="";logline("Traded "+nmT+" to "+whoN+(cost==="me"?" (your bonus action)":cost==="them"?" (their bonus action)":" (completes a swap)"));return true;
+ case "wswap":var a1=slotItem("w1"),a2=slotItem("w2");if(a1&&a1.twoSlot)return false;if(a1)a1.loc="w2";if(a2)a2.loc="w1";logline("Weapon swap: "+(a2?a2.name:"empty")+" ⇄ "+(a1?a1.name:"empty"));return true;
+ case "porteradd":if(porterBat()){flash("You already have a Porter");return false;}
+  S.bats.push(mkBat({id:uid("bt"),name:"The Porter",tier:"Bronze",porter:true,dep:{hit:0,ac:0,save:"wis",sv:0},gambits:[{id:uid("g"),name:"Resupply",type:"support",cost:0,range:"30 ft of the commander",area:"",dmg:"",desc:"The Porter sends 1 Pack item to an ally within 30 ft of the Commander. Use the resupply button on a Pack slot (Turn tab)."}]}));logline("Added the Porter");return true;
+ }return null;}
+function packDeployHook(b){if(!b||!b.porter)return true;var p=packGet();
+ if(b.on){if(p.commander&&p.commander.id!==C.id&&!window.confirm(p.commander.name+" already has the Porter deployed. Only one Porter per combat. Deploy anyway?")){b.on=false;return false;}
+  packWrite(function(q){q.commander={id:C.id,name:C.name||C.id};});}
+ else if(p.commander&&p.commander.id===C.id)packWrite(function(q){q.commander=null;});return true;}
+var PACK_CSS='.packgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:6px;}.pslot{border:1px solid var(--line);border-radius:10px;padding:7px 9px;background:#140f1a;display:flex;flex-direction:column;gap:4px;}'+
+ '.pslot.empty{border-style:dashed;opacity:.7;}.pslot .pit{font-family:Cinzel,serif;font-size:13.5px;color:#fff;}.pslot .row{gap:4px;}';
+
 function syncEco(d){var a=S.eco.atk,r=S.eco.rx;if(d.stat&&d.stat.noBonus&&S.eco.bon)S.eco.bon.left=0;
  if(a){var na=Math.max(0,d.attacks);if(na>a.max)a.left+=na-a.max;a.max=na;if(a.left>a.max)a.left=a.max;}
  if(r){var nr=Math.max(0,d.drMax);if(nr>r.max)r.left+=nr-r.max;r.max=nr;if(r.left>r.max)r.left=r.max;}
@@ -1490,21 +1598,22 @@ function compute(){
  d.init=stApply(d.mod.dex+(C.initAddsPB?d.pb:0)+num(S.initMisc)+d.im.init,"init",d.stat);
  var tls=S.tl.stat&&d.mod[S.tl.stat]!=null?S.tl.stat:"wis";d.tlStat=tls;d.tlBase=(d.mod.con+d.mod[tls])*10;d.tlFormula=d.tlBase+num(S.tl.bonus);
  if(C.tlStat==null&&C.tx&&typeof C.tx.tlMax==="function"){d.tlFormula=C.tx.tlMax(d);d.tlLegacy=true;}
- d.tlMax=(C.tl!==false)?Math.max(1,d.tlFormula+d.im.tl+num(S.tl.adj)):0;
+ d.tlMax=(C.tl!==false)?Math.max(1,d.tlFormula+d.im.tl+num(S.tl.adj)):0;if(d.tlMax&&C.hooks&&C.hooks.tlMax)d.tlMax=Math.max(1,Math.round(num(C.hooks.tlMax(d,S),d.tlMax)));
  d.st=strain(d);d.def=defense(d);
  d.speed=num(S.speed)+d.im.speed+(d.st?d.st.speed:0);
  d.itemSlots=Math.max(0,num(S.itemSlotsBase,3)+d.im.itemSlots);
  d.infCap=C.infusionCap||3;
  d.acNow=d.def.ac+num((S.sit||{}).ac);d.adrNow=Math.max(0,d.def.adr+num((S.sit||{}).adr));
- var bt=(S.bats||[]).filter(function(b){return b.on;})[0];d.bat=null;d.batHit=0;if(bt&&num(bt.end)>0){d.bat=bt;d.acNow+=num(bt.dep.ac);if(d.save[bt.dep.save]!=null)d.save[bt.dep.save]+=num(bt.dep.sv);d.batHit=num(bt.dep.hit);}d.link=linkAgg();d.acNow+=d.link.ac;d.speedNow=d.speed+num((S.sit||{}).speed);var G=d.stat;d.speedNow=stApply(d.speedNow,"spd",G);if(G.sets.spd!=null)d.speedNow=Math.min(d.speedNow,G.sets.spd);if(G.spdHalf)d.speedNow=d.speedNow/2;d.speedNow=Math.max(0,Math.floor(d.speedNow/5)*5);if(G.spd0)d.speedNow=0;
+ var bt=(S.bats||[]).filter(function(b){return b.on;})[0];d.bat=null;d.batHit=0;if(bt&&num(bt.end)>0&&!bt.porter){d.bat=bt;d.acNow+=num(bt.dep.ac);if(d.save[bt.dep.save]!=null)d.save[bt.dep.save]+=num(bt.dep.sv);d.batHit=num(bt.dep.hit);}d.link=linkAgg();d.acNow+=d.link.ac;d.speedNow=d.speed+num((S.sit||{}).speed);var G=d.stat;d.speedNow=stApply(d.speedNow,"spd",G);if(G.sets.spd!=null)d.speedNow=Math.min(d.speedNow,G.sets.spd);if(G.spdHalf)d.speedNow=d.speedNow/2;d.speedNow=Math.max(0,Math.floor(d.speedNow/5)*5);if(G.spd0)d.speedNow=0;
  d.acMax=AC_MAX[d.def.tier]||AC_MAX[1];d.acRaw=d.acNow;d.acCapped=d.acNow>d.acMax;d.acNow=Math.min(d.acNow,d.acMax);d.acNow=Math.max(0,stApply(d.acNow,"ac",d.stat));if(d.stat.sets.ac!=null)d.acNow=Math.min(d.acNow,d.stat.sets.ac);
  d.aprops=armorPropsActive(d);d.rx=reactionMods(d);
  return d;
 }
 function strain(d){if(!(C.tl!==false))return null;var max=d.tlMax||1,cur=num(S.tl.cur),p=cur/max;
  var lvl=cur<=0?3:p<0.25?2:p<0.5?1:0,on=!!(C.tx&&S.tx.on);
- return {lvl:lvl,pct:p,on:on,sur:on?(lvl>=2?10:lvl===1?5:0):0,speed:on?(lvl>=2?-15:lvl===1?-10:0):0,
-  name:!on?(C.tx?"Dormant":["Full","Below half","Below quarter","Empty"][lvl]):["Stable","Strained","Fractured","Collapse"][lvl]};}
+ var T2=(C.tx&&C.tx.tier2)||{};
+ return {lvl:lvl,pct:p,on:on,sur:on?(lvl>=2?num(T2.sur,10):lvl===1?5:0):0,speed:on?(lvl>=2?num(T2.speed,-15):lvl===1?-10:0):0,
+  name:!on?(C.tx?"Dormant":["Full","Below half","Below quarter","Empty"][lvl]):["Stable","Strained",T2.name||"Fractured","Collapse"][lvl]};}
 function defense(d){
  var armor=slotItem("armor"),o={};var ct=clamp(Math.ceil(d.level/10),1,5);
  if(!armor||!armor.armor||!armor.armor.kind){
@@ -1534,16 +1643,17 @@ function tlCostFor(cost,isAb){var d=compute();return Math.max(0,num(cost)-(isAb?
 function upkeep(d){if(!C.tx)return {cost:0,gain:0,base:0};
  var m=S.tx.mode&&C.tx.modes?C.tx.modes.filter(function(x){return x.id===S.tx.mode;})[0]:null;
  var base=m?num(m.upkeep):num(C.tx.upkeep),cut=0,gain=0,add=0;
- togOn().forEach(function(t){cut+=num(t.cut);gain+=num(t.gain);add+=num(t.add);});
+ togOn().forEach(function(t){cut+=num(t.cut);gain+=num(t.gain);add+=num(t.add);});if(C.hooks&&C.hooks.txGain)gain+=num(C.hooks.txGain(d,S));
  return {base:base,cut:cut,gain:gain,add:add,cost:Math.max(0,base-cut)+add,mode:m};}
 function spendTL(cost,isAb,what){var c=tlCostFor(cost,isAb);
  if(num(S.tl.cur)<c){flash("Not enough TL ("+c+" needed)");return false;}
  S.tl.cur=num(S.tl.cur)-c;if(what)logline(what+", "+c+" TL");afterTL();return true;}
 function afterTL(){var d=compute();S.tl.cur=clamp(num(S.tl.cur),0,d.tlMax);if(!C.tx)return;
  if(!S.tx.on)return;var p=S.tl.cur/d.tlMax;
- if(!S.tx.fractured&&p<0.25){var amt=Math.floor(d.hpMax*0.2);S.hp.scar=num(S.hp.scar)+amt;S.hp.cur=Math.max(0,num(S.hp.cur)-amt);
+ if(!S.tx.fractured&&p<0.25&&!(C.tx.tier2&&C.tx.tier2.noScar)){var amt=Math.floor(d.hpMax*0.2);S.hp.scar=num(S.hp.scar)+amt;S.hp.cur=Math.max(0,num(S.hp.cur)-amt);
   S.tx.fractured=true;S.tx.fracAmt=amt;logline("Fractured: "+amt+" non-regenerable damage (20% of max HP)");}
- if(S.tl.cur<=0&&!S.tx.burning&&!S.tx.collapse){S.tx.collapse="pending";logline("TL hit 0. Collapse: choose Revert or Burn");}}
+ if(S.tl.cur<=0&&!S.tx.burning&&!S.tx.collapse){S.tx.collapse="pending";logline("TL hit 0. Collapse: choose Revert or Burn");}
+ if(C.hooks&&C.hooks.afterTL)C.hooks.afterTL(api,p);}
 function txStart(){if(S.tx.locked){flash("Collapsed earlier. No transforming until a long rest");return;}
  if(!spendTL(C.tx.activate||0,false,C.tx.name+" raised"))return;S.tx.on=true;afterTL();}
 function txEnd(why){S.tx.on=false;S.tx.mode="";S.tx.fractured=false;S.tx.burning=false;S.tx.collapse="";
@@ -1588,7 +1698,7 @@ function endTurn(){var parts=[],d=compute();
  var keep=[];S.effects.forEach(function(e){if(num(e.rounds)>0){e.rounds--;if(e.rounds<=0){parts.push(e.name+(e.target&&e.target!=="self"?" on "+e.target:"")+" ended");return;}}keep.push(e);});S.effects=keep;statusTick(parts);
  moraleEndRound(parts);
  syncEco(compute());for(var k in S.eco)S.eco[k].left=S.eco[k].max;S.infUsed=0;if(S.monk){S.monk.fl=0;S.monk.flMax=0;}if(S.eco.fl&&monkLevel()>0)S.eco.fl.left=0;
- linkRefresh("");
+ linkRefresh("");S.porterUse={};S.items.forEach(function(it){delete it.hand;});
  S.round++;logline(parts.length?parts.join(", "):"Next round");}
 function restoreRes(kind){var d=compute();(C.resources||[]).forEach(function(r){if(r.rest==="long"&&kind!=="long")return;if(!r.rest)return;S.res[r.id]=r.rest==="empty"?0:resMax(r,d);});}
 function shortRest(){restoreRes("short");(S.links||[]).forEach(function(l){if(l.incap){l.incap=false;l.pen=false;if(num(l.hpMax))l.hp=l.hpMax;}});S.linkShield=0;for(var k in S.eco)S.eco[k].left=S.eco[k].max;if(C.hooks&&C.hooks.shortRest)C.hooks.shortRest(api);logline("Short rest");}
@@ -1702,6 +1812,7 @@ function renderTurn(d){var h="";
   h+='<button class="btn sm" data-a="ecomax" data-id="'+e.id+'" data-n="-1">−</button><button class="btn sm" data-a="ecomax" data-id="'+e.id+'" data-n="1">+</button></div></div>';});
  h+='</div>'+renderReactRow(d)+'</section>';
  h+=renderLinks(d);
+ h+=renderPack(d);
  if(d.monkL>0)h+=renderMonk(d);
  h+=renderDmg(d);
  if((C.resources||[]).length){h+='<section id="resources"><h2>Resources</h2><div class="grid3">';
@@ -1755,7 +1866,7 @@ function renderTx(d){var T=C.tx,st=d.st,u=upkeep(d),h='<section id="transform"><
  h+='<p class="cost" style="margin-top:10px">Upkeep '+u.base+(u.cut?' − '+u.cut:'')+(u.add?' + '+u.add:'')+' = <b>'+u.cost+'</b>'+(u.gain?' · gain +'+u.gain:'')+' · net '+sgn(net)+' a round'+(S.tx.on&&net<0?' · about '+Math.floor(num(S.tl.cur)/-net)+' rounds left':'')+(abCut()?' · abilities −'+abCut():'')+(st.on&&st.sur?' · strain +'+st.sur:'')+'</p>';
  h+='<div class="ladder">';
  [["Strained","TL < 50% · < "+Math.ceil(d.tlMax/2),["Disadvantage on CON saves to maintain concentration","Transformation abilities cost +5 TL","−10 ft speed"],""],
-  ["Fractured","TL < 25% · < "+Math.ceil(d.tlMax/4),["Takes 20% of max HP as non-regenerable damage"+(S.tx.fracAmt&&S.tx.fractured?" ("+S.tx.fracAmt+" applied)":""),"Transformation abilities cost +10 TL total","Disadvantage on all CON checks","−15 ft movement"],"frac"],
+  (T.tier2&&T.tier2.lines)?[T.tier2.name,"TL < 25% · < "+Math.ceil(d.tlMax/4),T.tier2.lines,"frac"]:["Fractured","TL < 25% · < "+Math.ceil(d.tlMax/4),["Takes 20% of max HP as non-regenerable damage"+(S.tx.fracAmt&&S.tx.fractured?" ("+S.tx.fracAmt+" applied)":""),"Transformation abilities cost +10 TL total","Disadvantage on all CON checks","−15 ft movement"],"frac"],
   ["Collapse","TL = 0",["Revert: transformation ends, stunned 1 round, no retransforming until a long rest","Burn: stay transformed, pay upkeep out of max HP. Max HP 0 means death, no save"],"col"]].forEach(function(r,i){
   var on=st.on&&st.lvl>=i+1;h+='<div class="lad'+(on?' on '+r[3]:'')+'"><div class="nm">'+r[0]+'<small>'+r[1]+'</small></div><ul>'+r[2].map(function(x){return '<li>'+esc(x)+'</li>';}).join("")+'</ul></div>';});
  h+='</div>';
@@ -1815,7 +1926,7 @@ function renderChar(d){var h='<section id="identity"><h2>Identity</h2><div class
   '<p style="margin-top:8px"><b class="cz">Unit tags.</b> '+unitTags(d).map(function(t){return '<span class="chip warn">'+esc(t)+'</span>';}).join(" ")+' <input type="text" id="tagIn" placeholder="add tag" style="width:130px;display:inline-block"> <button class="btn sm" data-a="tagadd">add</button></p>'+
   (S.tags.length?'<p class="sub">'+S.tags.map(function(t,i){return esc(t)+' <button class="btn sm" data-a="tagdel" data-n="'+i+'">×</button>';}).join(" ")+'</p>':'')+'</div>'+(C.defenseNote?'<div class="flag">'+C.defenseNote+'</div>':'')+'</section>';
  h+='<section id="abilities"><h2>Ability scores &amp; saves <span class="sub2">tap a save to toggle proficiency</span></h2><div class="stats">';
- STATS.forEach(function(s){h+='<div class="stat"><div class="lb">'+s[1]+'</div><div class="mo">'+sgn(d.mod[s[0]])+'</div><input class="num" type="number" data-b="stats.'+s[0]+'" value="'+S.stats[s[0]]+'"><div class="sv'+(S.saves[s[0]]?' p':'')+'" data-a="savetog" data-id="'+s[0]+'" role="button" tabindex="0">save '+sgn(d.save[s[0]])+'</div></div>';});
+ STATS.forEach(function(s){h+='<div class="stat"><div class="lb">'+s[1]+'</div><div class="mo">'+sgn(d.mod[s[0]])+'</div><input class="num" type="number" data-b="stats.'+s[0]+'" value="'+S.stats[s[0]]+'">'+(num((d.statBonus||{})[s[0]])?'<div class="sub" style="margin:2px 0 0;font-size:11px;color:var(--gold)" title="Core soul bonus to the ability score">+'+num(d.statBonus[s[0]])+' core = '+(num(S.stats[s[0]])+num(d.statBonus[s[0]]))+'</div>':'')+'<div class="sv'+(S.saves[s[0]]?' p':'')+'" data-a="savetog" data-id="'+s[0]+'" role="button" tabindex="0">save '+sgn(d.save[s[0]])+'</div></div>';});
  h+='</div><h3 class="cz" style="font-size:16px;margin-top:14px">Skills</h3><p class="note">Circle: once for proficiency, twice for expertise. The small box is a misc bonus.</p><div class="skl">';
  SKILLS.forEach(function(k){var l=S.skills[k[0]]||0;h+='<div class="sk"><button class="pp '+(l===1?"p":l===2?"e":"")+'" data-a="skill" data-id="'+esc(k[0])+'">'+(l===2?"E":"")+'</button><span class="nm">'+k[0]+'</span><span class="ab">'+k[1]+'</span><input class="num" style="width:36px;font-size:11px" type="number" data-b="skillMisc.'+k[0]+'" value="'+num(S.skillMisc[k[0]])+'"><span class="vl">'+sgn(d.skill[k[0]])+'</span></div>';});
  h+='</div></section><section id="charnotes"><h2>Player notes</h2><textarea data-b="notes.char">'+esc(S.notes.char)+'</textarea></section>';
@@ -2268,7 +2379,7 @@ function renderBats(d){var host=$("body-bats");if(!host)return;var h="",dep=depl
    '<div class="res"><div class="rn">Gambit charges<small>refill on Replenish</small></div><div class="pips">';
   for(var c=0;c<num(b.chMax);c++)h+='<button class="pip'+(c<num(b.ch)?' live':'')+'" data-a="batch" data-n="'+i+'" data-v="'+c+'"></button>';
   h+='<button class="btn sm" data-a="batchmax" data-n="'+i+'" data-v="-1">−</button><button class="btn sm" data-a="batchmax" data-n="'+i+'" data-v="1">+</button><button class="btn sm" data-a="batrep" data-n="'+i+'">replenish</button></div></div></div>';
-  h+='<div class="row" style="margin-top:10px"><span class="lbl" style="margin:0">Deploy bonus</span><span class="sub" style="margin:0">hit</span><input class="num w44" type="number" data-b="bats.'+i+'.dep.hit" value="'+num(b.dep.hit)+'"><span class="sub" style="margin:0">AC</span><input class="num w44" type="number" data-b="bats.'+i+'.dep.ac" value="'+num(b.dep.ac)+'"><span class="sub" style="margin:0">save</span><select class="sel" data-b="bats.'+i+'.dep.save">'+STATS.map(function(s){return '<option value="'+s[0]+'"'+(b.dep.save===s[0]?' selected':'')+'>'+s[0].toUpperCase()+'</option>';}).join("")+'</select><input class="num w44" type="number" data-b="bats.'+i+'.dep.sv" value="'+num(b.dep.sv)+'"></div>';
+  if(b.porter)h+='<p class="sub" style="margin-top:10px"><b style="color:var(--gold)">Porter:</b> no Deploy Bonus. While deployed you are the Convoy Holder for the party\'s shared Pack (Turn tab → The Pack &amp; Trading).</p>';else h+='<div class="row" style="margin-top:10px"><span class="lbl" style="margin:0">Deploy bonus</span><span class="sub" style="margin:0">hit</span><input class="num w44" type="number" data-b="bats.'+i+'.dep.hit" value="'+num(b.dep.hit)+'"><span class="sub" style="margin:0">AC</span><input class="num w44" type="number" data-b="bats.'+i+'.dep.ac" value="'+num(b.dep.ac)+'"><span class="sub" style="margin:0">save</span><select class="sel" data-b="bats.'+i+'.dep.save">'+STATS.map(function(s){return '<option value="'+s[0]+'"'+(b.dep.save===s[0]?' selected':'')+'>'+s[0].toUpperCase()+'</option>';}).join("")+'</select><input class="num w44" type="number" data-b="bats.'+i+'.dep.sv" value="'+num(b.dep.sv)+'"></div>';
   h+='<h4 class="cz" style="margin-top:12px;font-size:14px;color:var(--gold)">Gambits</h4>';
   (b.gambits||[]).forEach(function(g,j){var L=gambitLine(b,g,d);
    h+='<div class="ab-row"><div class="row"><b class="cz" style="color:#fff">'+esc(g.name)+'</b><span class="tag k-'+L.kind+'">'+(g.type==="support"?"Support":g.type==="magical"?"Magical":"Physical")+'</span><span class="tag gold">'+num(g.cost)+' Endurance</span>'+(g.range?'<span class="tag">'+esc(g.range)+'</span>':'')+(g.area?'<span class="tag">'+esc(g.area)+'</span>':'')+(g.dmg?'<span class="tag blood">'+esc(g.dmg)+'</span>':'')+
@@ -2279,7 +2390,7 @@ function renderBats(d){var host=$("body-bats");if(!host)return;var h="",dep=depl
   h+='<button class="btn sm" data-a="gadd" data-n="'+i+'" style="margin-top:7px">+ gambit</button>'+
    '<div class="row" style="margin-top:12px;border-top:1px solid var(--line);padding-top:10px"><button class="btn sm" data-a="battrain" data-n="'+i+'">Gambit Training ('+t[2]+' gp)</button><button class="btn sm" data-a="batrepair" data-n="'+i+'"'+(num(b.end)>=num(b.endMax)?' disabled':'')+'>Repair 1 Endurance (gold)</button><span class="lbl" style="margin:0">repair gp / point</span><input class="num w44" type="number" data-b="batRepair" value="'+num(S.batRepair)+'"><span class="tbd">cost TBD</span><button class="btn sm dgr" data-a="batdel" data-n="'+i+'" style="margin-left:auto">remove battalion</button></div>'+
    '<textarea style="min-height:44px;margin-top:8px" data-b="bats.'+i+'.notes" placeholder="Notes: training results, who leads them, where they can deploy">'+esc(b.notes||"")+'</textarea></div></section>';});
- h+='<div class="row" style="margin-top:12px"><input type="text" id="batN" placeholder="battalion name" style="max-width:240px"><select class="sel" id="batT">'+BAT_TIERS.map(function(x){return '<option>'+x[0]+'</option>';}).join("")+'</select><button class="btn" data-a="batadd">Add battalion</button></div>';
+ h+='<div class="row" style="margin-top:12px"><input type="text" id="batN" placeholder="battalion name" style="max-width:240px"><select class="sel" id="batT">'+BAT_TIERS.map(function(x){return '<option>'+x[0]+'</option>';}).join("")+'</select><button class="btn" data-a="batadd">Add battalion</button>'+(porterBat()?'':'<button class="btn" data-a="porteradd" title="A support battalion that manages the party\'s shared Pack">Add the Porter</button>')+'</div>';
  h+='<section id="gambitrules"><h2>Gambit rules</h2><ul style="font-size:15.5px">'+
   '<li><b>Types.</b> Physical (bludgeoning, slashing, piercing), Magical (usually spell-based), Support (healing, AC, saves).</li>'+
   '<li><b>Action economy.</b> Offensive gambits cost an Action. Support gambits cost a Bonus Action.</li>'+
@@ -2293,6 +2404,7 @@ function renderBats(d){var host=$("body-bats");if(!host)return;var h="",dep=depl
   '<li><b>Gambit Training.</b> 200 gp per tier (Bronze 200, Silver 400, Gold 600). Grows the stat block and gambit uses.</li></ul></section>';
  host.innerHTML=h;}
 function fireGambit(i,j){var b=S.bats[i],g=b.gambits[j],d=compute();if(!b||!g)return false;
+ if(b.porter&&/^Resupply$/i.test(g.name||"")){flash("Resupply: use the resupply button on a Pack slot (Turn tab)");S.ui.pane="turn";showPane("turn");return false;}
  if(num(b.end)<=0){flash(b.name+" is Routed");return false;}if(num(b.ch)<1){flash("No gambit charges left");return false;}
  if(num(b.end)<num(g.cost)&&!window.confirm(g.name+" costs "+g.cost+" Endurance and "+b.name+" has "+b.end+". Fire anyway and rout them?"))return false;
  var eco=g.type==="support"?"bon":"act";if(S.eco[eco]&&S.eco[eco].left<1&&!window.confirm("No "+(eco==="act"?"Action":"Bonus Action")+" left this turn. Fire anyway?"))return false;
@@ -2305,7 +2417,7 @@ function batAct(a,el,d){var n=num(el.getAttribute("data-n")),v=num(el.getAttribu
  switch(a){
  case "batadd":var nm=val("batN").trim();if(!nm)return false;S.bats.push(mkBat({id:uid("bt"),name:nm,tier:val("batT")}));return true;
  case "batdel":if(!window.confirm("Remove "+b.name+"?"))return false;S.bats.splice(n,1);return true;
- case "batdeploy":var was=b.on;S.bats.forEach(function(x){x.on=false;});b.on=!was;logline((b.on?"Deployed ":"Recalled ")+b.name);return true;
+ case "batdeploy":var was=b.on,prevP=porterBat()&&porterBat().on;S.bats.forEach(function(x){x.on=false;});b.on=!was;if(b.porter){if(!packDeployHook(b))return true;}else if(prevP)packDeployHook(porterBat());logline((b.on?"Deployed ":"Recalled ")+b.name);return true;
  case "batend":b.end=clamp(num(b.end)+v,0,num(b.endMax));return true;
  case "batch":b.ch=v<num(b.ch)?v:v+1;return true;
  case "batchmax":b.chMax=clamp(num(b.chMax)+v,0,12);b.ch=Math.min(num(b.ch)+(v>0?1:0),b.chMax);return true;
@@ -2330,6 +2442,7 @@ function renderAll(){var d0=compute();(C.resources||[]).forEach(function(r){if(r
  if(d.hpStatCut>0&&num(S.hp.cur)>d.hpCeil)S.hp.cur=d.hpCeil;
  var fk=focusKey();
  [["bar",renderBar],["turn",renderTurn],["char",renderChar],["kit",renderKit],["kitpanes",renderKitPanes],["school",renderSchool],["comps",renderComps],["spells",renderSpells],["bats",renderBats],["equip",renderEquip],["storage",renderStorage],["rels",renderRels],["rules",renderRules]].forEach(function(p){try{p[1](d);}catch(e){if(window.console)console.error("render "+p[0],e);}});
+ try{packAutoSeal();}catch(e){}
  try{renderStatusModal(d);}catch(e){if(window.console)console.error("render status",e);}
  if(C.hooks&&C.hooks.render)try{C.hooks.render(api,d);}catch(e){if(window.console)console.error(e);}
  var ct=$("ct-kit");if(ct)ct.textContent=allKit().filter(function(k){return !k.sec.pane;}).length;ct=$("ct-storage");if(ct)ct.textContent=S.items.filter(function(x){return x.loc==="storage";}).length;
@@ -2514,7 +2627,7 @@ function act(a,el){var id=el.getAttribute("data-id"),n=num(el.getAttribute("data
  case "import":var fi=document.createElement("input");fi.type="file";fi.accept="application/json";fi.addEventListener("change",function(){var file=fi.files[0];if(!file)return;var rd=new FileReader();
   rd.onload=function(){try{var dd=JSON.parse(rd.result);if(dd.schema!==3&&C.migrate){S=defaults();C.migrate(dd,S,api);}else{S=defaults();deep(S,dd);}sanitize();commit();}catch(err){window.alert("That file did not parse.");}};rd.readAsText(file);});fi.click();return;
  case "wipe":if(!window.confirm("Reset every tracker, item and relationship on this sheet to its defaults?"))return;S=defaults();break;
- default:var lr=linkAct(a,el,d);if(lr===true)break;if(lr===false)return;var sr=statusAct(a,el,d);if(sr===true)break;if(sr===false)return;var br=batAct(a,el,d);if(br===true)break;if(br===false)return;var xr=extAct(a,el,d);if(xr===true)break;if(xr===false)return;if(C.hooks&&C.hooks.act&&C.hooks.act(a,el,api)!==false)break;return;}
+ default:var pr=packAct(a,el,d);if(pr===true)break;if(pr===false)return;var lr=linkAct(a,el,d);if(lr===true)break;if(lr===false)return;var sr=statusAct(a,el,d);if(sr===true)break;if(sr===false)return;var br=batAct(a,el,d);if(br===true)break;if(br===false)return;var xr=extAct(a,el,d);if(xr===true)break;if(xr===false)return;if(C.hooks&&C.hooks.act&&C.hooks.act(a,el,api)!==false)break;return;}
  commit();}
 
 /* ===================== PALETTE ===================== */
@@ -2549,6 +2662,10 @@ function initSync(){var CFG=window.FIREBASE_CONFIG||{},pill=$("syncPill");
   docRef=db.collection("campaigns").doc(window.CAMPAIGN_ID||"astrology-club").collection("characters").doc(C.id);}catch(e){setPill("○ sync error","#e08");return;}
  function push(){docRef.set(JSON.parse(JSON.stringify(S))).then(function(){setPill("● synced","#7c7");}).catch(function(){setPill("○ offline","#c96");});}
  remoteSave=function(){if(applying)return;clearTimeout(pushT);pushT=setTimeout(push,400);};
+ packRef=db.collection("campaigns").doc(window.CAMPAIGN_ID||"astrology-club").collection("shared").doc("pack");packOnline=true;packMe=C.id;
+ packRef.onSnapshot(function(snap){if(snap.metadata.hasPendingWrites)return;PK=snap.exists?snap.data():packBlank();
+  if(!packDM()&&C.id&&(!PK.roster||!PK.roster[C.id]||PK.roster[C.id].name!==(C.name||C.id)))packWrite(function(q){q.roster[C.id]={name:C.name||C.id,at:Date.now()};});
+  try{packIngest();}catch(e){}renderAll();},function(){packOnline=false;});
  var dmRef=docRef.collection("dm").doc("status"),dmApplying=false;
  dmPush=function(){if(dmApplying)return;dmRef.set({list:JSON.parse(JSON.stringify(DMS)),at:Date.now()}).catch(function(){});};
  dmRef.onSnapshot(function(snap){if(snap.metadata.hasPendingWrites)return;var L=snap.exists&&snap.data()&&Array.isArray(snap.data().list)?snap.data().list:[];
@@ -2563,7 +2680,7 @@ function initSync(){var CFG=window.FIREBASE_CONFIG||{},pill=$("syncPill");
   setPill("● synced","#7c7");},function(){setPill("○ offline","#c96");});}
 
 /* ===================== BOOT ===================== */
-function statusMount(){var st=document.createElement("style");st.textContent=STATUS_CSS;document.head.appendChild(st);
+function statusMount(){var st=document.createElement("style");st.textContent=STATUS_CSS+PACK_CSS;document.head.appendChild(st);
  var bk=document.createElement("div");bk.className="stm-back";bk.id="stBack";bk.addEventListener("click",function(){S.ui.stPick=false;S.ui.stOpen="";save();renderAll();});document.body.appendChild(bk);
  var m=document.createElement("div");m.className="stm";m.id="stModal";m.setAttribute("role","dialog");m.setAttribute("aria-label","Status effects");document.body.appendChild(m);}
 var stTimer=null;function renderStatusSoon(){clearTimeout(stTimer);stTimer=setTimeout(function(){var fk=document.activeElement,id=fk&&fk.getAttribute&&fk.getAttribute("data-st"),f=fk&&fk.getAttribute&&fk.getAttribute("data-f"),pos=null;try{pos=fk.selectionStart;}catch(e){}
@@ -2574,6 +2691,5 @@ function boot(){statusMount();stAutoUnlock();panes();renderRail();buildPanes();w
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot);else boot();
 window.__sheet={get S(){return S;},compute:compute,endTurn:endTurn,act:act,renderAll:renderAll,takeDamage:takeDamage,moraleChange:moraleChange,equip:equip,declareInf:declareInf};
 })();
-
 </script>
 </body></html>
