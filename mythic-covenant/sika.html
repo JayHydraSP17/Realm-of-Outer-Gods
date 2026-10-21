@@ -1406,7 +1406,8 @@ function linkAct(a,el,d){var id=el.getAttribute("data-id"),n=num(el.getAttribute
   return true;
  case "linkpip":if(!l||!l.relId||l.pip)return false;var rel=relById(l.relId);if(!rel)return false;
   if(rel.tier>=5||rel.tier+1>num(rel.cap)){flash("That relationship is capped or story-locked");return false;}
-  rel.pips=clamp(num(rel.pips)+1,0,REL_TH[rel.tier]);l.pip=true;logline("+1 pip with "+rel.name+" (Linked Support)");return true;
+  if(rel.link){var lp=relPairs()[rel.link];if(lp&&lp.lsAt&&Date.now()-lp.lsAt<3*3600e3&&lp.lsBy!==C.id){l.pip=true;flash("Already counted for this pair this combat");logline("Linked Support pip with "+rel.name+" was already counted by their sheet");return true;}}
+  rel.pips=clamp(num(rel.pips)+1,0,REL_TH[rel.tier]);l.pip=true;if(rel.link){var lk=rel.link;relWrite(function(dd){var x=dd.pairs[lk];if(x){x.lsAt=Date.now();x.lsBy=C.id;x.pips=rel.pips;x.at=Date.now();}});}logline("+1 pip with "+rel.name+" (Linked Support)");return true;
  }return null;}
 function linkInput(el){var l=(S.links||[]).filter(function(x){return x.id===el.getAttribute("data-link");})[0],f=el.getAttribute("data-f");if(!l)return;
  if(f==="tier")l.tier=clamp(num(el.value),0,5);else if(f==="hp"||f==="hpMax"){l[f]=el.value===""?null:Math.max(0,num(el.value));if(f==="hpMax"&&l.hp==null&&l.hpMax!=null)l.hp=l.hpMax;if(f==="hp"&&l.hp!=null&&l.hp<=0&&num(l.hpMax)>0){var p=[];linkIncap(l,p);logline(p.join(", "));}}
@@ -1520,6 +1521,54 @@ function packDeployHook(b){if(!b||!b.porter)return true;var p=packGet();
 var PACK_CSS='.packgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:6px;}.pslot{border:1px solid var(--line);border-radius:10px;padding:7px 9px;background:#140f1a;display:flex;flex-direction:column;gap:4px;}'+
  '.pslot.empty{border-style:dashed;opacity:.7;}.pslot .pit{font-family:Cinzel,serif;font-size:13.5px;color:#fff;}.pslot .row{gap:4px;}';
 
+/* ===================== LINKED RELATIONSHIPS (shared between sheets) =====================
+   A relationship between two characters who both have sheets is one record in campaigns/{id}/shared/rels.
+   Tier and pips are mutual; the max-tier cap (story lock) is DM-only. Unlinked entries stay local. */
+var RLD=null,relsRef=null;
+function relKey(a,b){return [a,b].sort().join("|");}
+function relPairs(){return (RLD&&RLD.pairs)||{};}
+function relOther(p){return p.a===C.id?{id:p.b,name:p.bn}:{id:p.a,name:p.an};}
+function relWrite(fn){var d=clone(RLD||{pairs:{}});d.pairs=d.pairs||{};fn(d);RLD=d;if(relsRef)relsRef.set(JSON.parse(JSON.stringify(d))).catch(function(){flash("Couldn't reach the shared relationships");});}
+function relNameMatch(a,b){a=String(a||"").toLowerCase().trim();b=String(b||"").toLowerCase().trim();if(!a||!b)return false;return a===b||a.split(/\s+/)[0]===b.split(/\s+/)[0];}
+function relRoster(){var r=(typeof PK!=="undefined"&&PK&&PK.roster)||{};return Object.keys(r).filter(function(k){return k!==C.id;}).map(function(k){return {id:k,name:r[k].name||k};});}
+function relPullIn(){if(!RLD)return false;var P=relPairs(),ch=false;
+ Object.keys(P).forEach(function(k){var p=P[k];if(p.a!==C.id&&p.b!==C.id)return;var o=relOther(p),r=S.rels.filter(function(x){return x.link===k;})[0];
+  if(!r){var m=S.rels.filter(function(x){return !x.link&&relNameMatch(x.name,o.name);})[0];
+   if(m){if(p.pending===C.id&&(m.tier!==p.tier||m.pips!==p.pips)){if(m.linkOffer!==k){m.linkOffer=k;ch=true;}return;}m.link=k;m.with=o.id;delete m.linkOffer;r=m;ch=true;}
+   else{r={id:uid("r"),name:o.name,tier:p.tier,pips:p.pips,cap:p.cap,party:false,note:"",link:k,with:o.id};S.rels.push(r);ch=true;logline("Linked relationship added: "+o.name);}}
+  if(p.pending===C.id&&!r.linkOffer)relWrite(function(d){delete d.pairs[k].pending;});
+  if(r.tier!==p.tier||r.pips!==p.pips||num(r.cap)!==num(p.cap)){r.tier=p.tier;r.pips=p.pips;r.cap=p.cap;ch=true;}});
+ S.rels.forEach(function(r){if(r.link&&!P[r.link]){delete r.link;delete r.with;ch=true;}if(r.linkOffer&&!P[r.linkOffer]){delete r.linkOffer;ch=true;}});
+ return ch;}
+function relPushOut(){if(!RLD||!relsRef)return;var P=relPairs(),w=[];
+ S.rels.forEach(function(r){if(!r.link||!P[r.link])return;var p=P[r.link];if(p.pending===C.id)return;
+  if(num(r.cap)!==num(p.cap)){if(DMU)w.push(r);else r.cap=p.cap;}
+  if(r.tier!==p.tier||r.pips!==p.pips)w.push(r);});
+ if(w.length)relWrite(function(d){w.forEach(function(r){var p=d.pairs[r.link];if(!p)return;p.tier=r.tier;p.pips=r.pips;if(DMU)p.cap=num(r.cap);p.at=Date.now();});});}
+function relSConflict(r){var P=relPairs(),ids=[C.id];if(r.link&&P[r.link])ids.push(relOther(P[r.link]).id);
+ var hit=null;Object.keys(P).forEach(function(k){var p=P[k];if(k===r.link||p.tier!==5)return;if(ids.indexOf(p.a)>=0||ids.indexOf(p.b)>=0)hit=p;});
+ if(hit)return hit.an+" & "+hit.bn;var o=S.rels.filter(function(x){return x.tier===5&&x!==r;})[0];return o?o.name:"";}
+function relRowExtra(r){var P=relPairs(),h="";if(!relsRef)return "";
+ if(r.link&&P[r.link]){var o=relOther(P[r.link]);h+='<span class="chip ok" title="Shared with '+esc(o.name)+'\'s sheet: tier and pips sync both ways">🔗 '+esc(o.name)+'</span>';
+  if(P[r.link].by!=="dm"||DMU)h+='<button class="btn sm" data-a="relunlink" data-id="'+r.id+'" title="Stop sharing; both sheets keep the current values">unlink</button>';}
+ else if(r.linkOffer&&P[r.linkOffer]){var q=P[r.linkOffer],oo=relOther(q);h+='<div class="card" style="margin:6px 0 0;flex-basis:100%;border-color:var(--gold)"><b>'+esc(oo.name)+' linked this relationship.</b> Shared: <b>'+TIERS[q.tier]+'</b> ('+q.pips+' pips) · yours: <b>'+TIERS[r.tier]+'</b> ('+r.pips+' pips). <button class="btn sm pri" data-a="relpick" data-id="'+r.id+'" data-k="theirs">keep shared</button><button class="btn sm" data-a="relpick" data-id="'+r.id+'" data-k="mine">keep mine</button></div>';}
+ else{var ro=relRoster(),m=ro.filter(function(x){return relNameMatch(r.name,x.name);})[0];
+  if(m)h+='<button class="btn sm" data-a="rellink" data-id="'+r.id+'" data-k="'+esc(m.id)+'" title="Share this relationship with '+esc(m.name)+'\'s sheet">🔗 link</button>';}
+ return h;}
+function relAct(a,el){var id=el.getAttribute("data-id"),r=id?relById(id):null,k=el.getAttribute("data-k");
+ switch(a){
+ case "rellink":if(!r||!relsRef)return false;var ro=relRoster().filter(function(x){return x.id===k;})[0];if(!ro)return false;var key=relKey(C.id,ro.id),P=relPairs();
+  if(P[key]){var p=P[key];if(p.tier!==r.tier||p.pips!==r.pips){r.linkOffer=key;return true;}r.link=key;r.with=ro.id;logline("Linked relationship with "+ro.name);return true;}
+  relWrite(function(d){var a1=C.id<ro.id;d.pairs[key]={a:a1?C.id:ro.id,b:a1?ro.id:C.id,an:a1?(C.name||C.id):ro.name,bn:a1?ro.name:(C.name||C.id),tier:r.tier,pips:r.pips,cap:num(r.cap),pending:ro.id,by:C.id,at:Date.now()};});
+  r.link=key;r.with=ro.id;logline("Linked relationship with "+ro.name+" (their sheet will confirm)");return true;
+ case "relpick":if(!r||!r.linkOffer)return false;var kk=r.linkOffer,q=relPairs()[kk];if(!q)return false;var o=relOther(q);
+  if(k==="mine")relWrite(function(d){var x=d.pairs[kk];x.tier=r.tier;x.pips=r.pips;delete x.pending;x.at=Date.now();});
+  else{r.tier=q.tier;r.pips=q.pips;r.cap=q.cap;relWrite(function(d){delete d.pairs[kk].pending;});}
+  r.link=kk;r.with=o.id;delete r.linkOffer;logline("Linked relationship with "+o.name+" ("+(k==="mine"?"kept yours":"kept shared")+")");return true;
+ case "relunlink":if(!r||!r.link)return false;var pk=relPairs()[r.link];if(pk&&pk.by==="dm"&&!DMU){flash("The DM linked this one");return false;}var kx=r.link;
+  relWrite(function(d){delete d.pairs[kx];});delete r.link;delete r.with;logline("Unlinked "+r.name);return true;
+ }return null;}
+
 function syncEco(d){var a=S.eco.atk,r=S.eco.rx;if(d.stat&&d.stat.noBonus&&S.eco.bon)S.eco.bon.left=0;
  if(a){var na=Math.max(0,d.attacks);if(na>a.max)a.left+=na-a.max;a.max=na;if(a.left>a.max)a.left=a.max;}
  if(r){var nr=Math.max(0,d.drMax);if(nr>r.max)r.left+=nr-r.max;r.max=nr;if(r.left>r.max)r.left=r.max;}
@@ -1556,7 +1605,7 @@ function sanitize(){
  if(C.tx&&C.tx.modes&&S.tx.mode&&!C.tx.modes.some(function(m){return m.id===S.tx.mode;}))S.tx.mode="";
 }
 var saveT=null,hintT=null,remoteSave=null;
-function save(){S.schema=3;store.set(KEY,JSON.stringify(S));
+function save(){try{relPushOut();}catch(e){}S.schema=3;store.set(KEY,JSON.stringify(S));
  var h=$("saveHint");if(h){h.textContent="Saved";h.classList.add("flash");clearTimeout(hintT);hintT=setTimeout(function(){h.textContent="Saved to this device";h.classList.remove("flash");},900);}
  if(remoteSave)remoteSave();}
 function uid(p){S.seq=(S.seq||500)+1;return (p||"x")+S.seq;}
@@ -2255,8 +2304,8 @@ function renderRels(){var h='<section id="relrules"><h2>Thresholds</h2><table><t
    '<div class="rn">'+esc(r.name)+'<small>'+esc(r.note||"")+'</small></div><span class="tierb r-'+TIERS[r.tier]+'">'+TIERS[r.tier]+'</span>'+
    '<div class="rp">'+(r.tier<5?bar+'<div class="pipmeta">'+(locked?'🔒 '+TIERS[next]+' is story-locked · pips frozen':r.pips+' / '+th+' to '+TIERS[next]+(ready?' · Support ready':''))+'</div>':'<div class="pipmeta">S bond</div>')+'</div>'+
    '<div class="ra row"><button class="btn sm" data-a="pip" data-id="'+r.id+'" data-n="-1">−</button><button class="btn sm" data-a="pip" data-id="'+r.id+'" data-n="1"'+(locked||r.tier>=5?' disabled':'')+'>+1</button><button class="btn sm" data-a="pip" data-id="'+r.id+'" data-n="2"'+(locked||r.tier>=5?' disabled':'')+'>+2</button><button class="btn sm pri" data-a="support" data-id="'+r.id+'"'+(ready&&!(next===5&&sHolder&&sHolder!==r)?'':' disabled')+' title="'+(next===5&&sHolder&&sHolder!==r?'Already holds an S bond with '+esc(sHolder.name):'Support Conversation')+'">support</button>'+
-   '<span class="lbl" style="margin:0 0 0 4px">cap</span><select class="sel" data-rel="'+r.id+'" data-f="cap">'+TIERS.map(function(t,i){return '<option value="'+i+'"'+(num(r.cap)===i?' selected':'')+'>'+t+'</option>';}).join("")+'</select>'+
-   '<select class="sel" data-rel="'+r.id+'" data-f="tier" title="set tier directly">'+TIERS.map(function(t,i){return '<option value="'+i+'"'+(r.tier===i?' selected':'')+'>'+t+'</option>';}).join("")+'</select><button class="btn sm" data-a="relnote" data-id="'+r.id+'" title="edit note">✎</button><button class="btn sm dgr" data-a="reldel" data-id="'+r.id+'">×</button></div></div>';});
+   '<span class="lbl" style="margin:0 0 0 4px">cap</span><select class="sel" data-rel="'+r.id+'" data-f="cap"'+(r.link&&!DMU?' disabled title="Story cap for a linked relationship: set by the DM"':'')+'>'+TIERS.map(function(t,i){return '<option value="'+i+'"'+(num(r.cap)===i?' selected':'')+'>'+t+'</option>';}).join("")+'</select>'+
+   '<select class="sel" data-rel="'+r.id+'" data-f="tier" title="set tier directly">'+TIERS.map(function(t,i){return '<option value="'+i+'"'+(r.tier===i?' selected':'')+'>'+t+'</option>';}).join("")+'</select><button class="btn sm" data-a="relnote" data-id="'+r.id+'" title="edit note">✎</button><button class="btn sm dgr" data-a="reldel" data-id="'+r.id+'">×</button>'+relRowExtra(r)+'</div></div>';});
  if(!shown)h+='<div class="empty">Nobody matches that filter.</div>';
  h+='<div class="form" style="margin-top:12px"><div class="fld"><span class="lbl">Name</span><input type="text" id="relN"></div><div class="fld"><span class="lbl">Tier</span><select class="sel" id="relT">'+TIERS.map(function(t,i){return '<option value="'+i+'">'+t+'</option>';}).join("")+'</select></div><div class="fld"><span class="lbl">Max tier (story cap)</span><select class="sel" id="relCap">'+TIERS.map(function(t,i){return '<option value="'+i+'"'+(i===4?' selected':'')+'>'+t+'</option>';}).join("")+'</select></div><button class="btn" data-a="reladd" style="height:32px">Add</button></div>';
  h+='<h3 class="cz" style="font-size:16px;margin-top:16px">Earning pips</h3><table><tr><th>Source</th><th class="n">Pips</th></tr><tr><td>Cafeteria Feast</td><td class="n">+1, more if the dish matches <span class="tbd">+2 or +3?</span></td></tr><tr><td>Creative Arts, act or watch</td><td class="n">+1 to 4</td></tr><tr><td>Tag Team Training</td><td class="n">+2 with partner</td></tr><tr><td>Active or Linked Support in a combat</td><td class="n">+1</td></tr><tr><td>Gifts</td><td class="n">+1 to 4 (+2 to 6 if liked)</td></tr></table></section>';
@@ -2480,7 +2529,7 @@ document.addEventListener("change",function(e){var el=e.target;
  if(el.getAttribute("data-a2")==="udDie"){S.udDie=num(el.value,8);commit();return;}
  if(el.getAttribute("data-a2")==="eaedit"){var ix=num(el.getAttribute("data-n"));S.classes[ix].ea=String(el.value||"").split(/[ ,]+/).map(Number).filter(function(x){return x>0;});commit();return;}
  if(el.hasAttribute("data-rel")){var r=relById(el.getAttribute("data-rel"));if(r){var f=el.getAttribute("data-f"),v=num(el.value);
-   if(f==="tier"&&v===5){var o=S.rels.filter(function(x){return x.tier===5&&x!==r;})[0];if(o){flash("Only one S bond at a time ("+o.name+")");renderAll();return;}}r[f]=v;if(f==="tier")r.pips=0;}commit();return;}
+   if(f==="tier"&&v===5){var o=relSConflict(r);if(o){flash("Only one S bond at a time ("+o+")");renderAll();return;}}if(f==="cap"&&r.link&&!DMU){renderAll();return;}r[f]=v;if(f==="tier")r.pips=0;}commit();return;}
  if(el.hasAttribute("data-b")&&el.getAttribute("data-b")==="tl.cur"){afterTL();}
  if(el.getAttribute("data-b")==="mor.cur"){S.mor.cur=clamp(Math.round(num(S.mor.cur)),0,200);logline("Morale set to "+S.mor.cur);}
  if(el.getAttribute("data-b")==="dmg.n"){S.dmg.n=Math.max(1,Math.round(num(S.dmg.n,1)));}
@@ -2598,10 +2647,10 @@ function act(a,el){var id=el.getAttribute("data-id"),n=num(el.getAttribute("data
  case "relf":S.ui.relFilter=id;break;
  case "relparty":r=relById(id);r.party=!r.party;break;
  case "pip":r=relById(id);var th=REL_TH[r.tier];if(n>0&&(r.tier+1>num(r.cap)||r.tier>=5))return;r.pips=clamp(r.pips+n,0,th);break;
- case "support":r=relById(id);if(r.tier+1===5&&S.rels.some(function(x){return x.tier===5&&x!==r;})){flash("Only one S bond at a time");return;}
+ case "support":r=relById(id);if(r.tier+1===5){var sc=relSConflict(r);if(sc){flash("Only one S bond at a time ("+sc+")");return;}}
   r.tier++;r.pips=0;logline("Support Conversation with "+r.name+": now "+TIERS[r.tier]);break;
  case "relnote":r=relById(id);v=window.prompt("Note for "+r.name,r.note||"");if(v!==null)r.note=v;break;
- case "reldel":r=relById(id);if(window.confirm("Remove "+r.name+"?"))S.rels=S.rels.filter(function(x){return x.id!==id;});break;
+ case "reldel":r=relById(id);if(r&&r.link){flash("Unlink it first");return;}if(window.confirm("Remove "+r.name+"?"))S.rels=S.rels.filter(function(x){return x.id!==id;});break;
  case "reladd":v=val("relN").trim();if(!v)return;if(S.rels.some(function(x){return x.name.toLowerCase()===v.toLowerCase();})){flash("Already listed");return;}
   S.rels.push({id:uid("r"),name:v,tier:num(val("relT")),pips:0,cap:Math.max(num(val("relCap")),num(val("relT"))),party:false,note:""});break;
  case "tladjclear":S.tl.adj=0;afterTL();break;
@@ -2627,7 +2676,7 @@ function act(a,el){var id=el.getAttribute("data-id"),n=num(el.getAttribute("data
  case "import":var fi=document.createElement("input");fi.type="file";fi.accept="application/json";fi.addEventListener("change",function(){var file=fi.files[0];if(!file)return;var rd=new FileReader();
   rd.onload=function(){try{var dd=JSON.parse(rd.result);if(dd.schema!==3&&C.migrate){S=defaults();C.migrate(dd,S,api);}else{S=defaults();deep(S,dd);}sanitize();commit();}catch(err){window.alert("That file did not parse.");}};rd.readAsText(file);});fi.click();return;
  case "wipe":if(!window.confirm("Reset every tracker, item and relationship on this sheet to its defaults?"))return;S=defaults();break;
- default:var pr=packAct(a,el,d);if(pr===true)break;if(pr===false)return;var lr=linkAct(a,el,d);if(lr===true)break;if(lr===false)return;var sr=statusAct(a,el,d);if(sr===true)break;if(sr===false)return;var br=batAct(a,el,d);if(br===true)break;if(br===false)return;var xr=extAct(a,el,d);if(xr===true)break;if(xr===false)return;if(C.hooks&&C.hooks.act&&C.hooks.act(a,el,api)!==false)break;return;}
+ default:var rr=relAct(a,el);if(rr===true)break;if(rr===false)return;var pr=packAct(a,el,d);if(pr===true)break;if(pr===false)return;var lr=linkAct(a,el,d);if(lr===true)break;if(lr===false)return;var sr=statusAct(a,el,d);if(sr===true)break;if(sr===false)return;var br=batAct(a,el,d);if(br===true)break;if(br===false)return;var xr=extAct(a,el,d);if(xr===true)break;if(xr===false)return;if(C.hooks&&C.hooks.act&&C.hooks.act(a,el,api)!==false)break;return;}
  commit();}
 
 /* ===================== PALETTE ===================== */
@@ -2666,6 +2715,9 @@ function initSync(){var CFG=window.FIREBASE_CONFIG||{},pill=$("syncPill");
  packRef.onSnapshot(function(snap){if(snap.metadata.hasPendingWrites)return;PK=snap.exists?snap.data():packBlank();
   if(!packDM()&&C.id&&(!PK.roster||!PK.roster[C.id]||PK.roster[C.id].name!==(C.name||C.id)))packWrite(function(q){q.roster[C.id]={name:C.name||C.id,at:Date.now()};});
   try{packIngest();}catch(e){}renderAll();},function(){packOnline=false;});
+ relsRef=db.collection("campaigns").doc(window.CAMPAIGN_ID||"astrology-club").collection("shared").doc("rels");
+ relsRef.onSnapshot(function(snap){if(snap.metadata.hasPendingWrites)return;RLD=snap.exists?snap.data():{pairs:{}};if(!RLD.pairs)RLD.pairs={};
+  try{if(relPullIn())save();}catch(e){}renderAll();},function(){});
  var dmRef=docRef.collection("dm").doc("status"),dmApplying=false;
  dmPush=function(){if(dmApplying)return;dmRef.set({list:JSON.parse(JSON.stringify(DMS)),at:Date.now()}).catch(function(){});};
  dmRef.onSnapshot(function(snap){if(snap.metadata.hasPendingWrites)return;var L=snap.exists&&snap.data()&&Array.isArray(snap.data().list)?snap.data().list:[];
