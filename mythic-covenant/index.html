@@ -36,14 +36,16 @@
     border:1px solid var(--line);border-radius:14px;padding:20px 20px;box-shadow:var(--shadow);
     position:relative;overflow:hidden;transition:.16s}
   a.sheet::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--crimson);opacity:.55;transition:.16s}
-  a.sheet:hover{transform:translateY(-3px);border-color:var(--crimson);box-shadow:var(--glow)}
+  a.sheet:hover{transform:translateY(-3px);border-color:var(--cc,var(--crimson));box-shadow:0 0 22px -8px var(--cc,var(--crimson))}
+  a.sheet[style*="--cc"]::before{background:var(--cc);opacity:.85}
+  a.sheet[style*="--cc"] .nm{color:var(--cc)}
   a.sheet:hover::before{opacity:1}
   a.sheet.rules::before{background:var(--gold)}
   a.sheet .nm{font-family:'Cinzel Decorative',serif;font-size:22px;color:var(--bone);line-height:1.1}
   a.sheet .ti{font-family:'Cinzel',serif;font-size:13px;color:var(--gold-soft);margin-top:7px;letter-spacing:.5px}
   a.sheet .ti.tbd{color:var(--amber);background:rgba(216,162,74,.1);border:1px solid #6a5a2a;border-radius:6px;padding:2px 8px;display:inline-block;font-family:'Fira Code',monospace;font-size:11px}
   a.sheet .go{position:absolute;right:16px;bottom:14px;color:var(--bone-faint);font-family:'Fira Code',monospace;font-size:12px;transition:.16s}
-  a.sheet:hover .go{color:var(--crimson)}
+  a.sheet:hover .go{color:var(--cc,var(--crimson))}
   .footer{text-align:center;margin-top:46px;padding-top:18px;border-top:1px solid var(--line);color:var(--bone-faint);font-size:13px;font-family:'Fira Code',monospace}
 
   .tabs{display:flex;justify-content:center;gap:8px;margin:26px 0 4px;flex-wrap:wrap}
@@ -179,6 +181,7 @@ function card(s){
   var a=document.createElement('a');
   a.className='sheet'+(s.rules?' rules':'');
   a.href=s.file;
+  var CC={"beatrix.html": "#6cc070", "dylan.html": "#e0565b", "hasani.html": "#9b6bff", "loryana.html": "#e2572b", "magnolia.html": "#2fbf9b", "melissa.html": "#e24a52", "sika.html": "#a77bff", "yohan.html": "#e3b85e", "nisa.html": "#f2c45a", "fiormunya.html": "#3fd0c9", "jason.html": "#8fa6c4", "denver.html": "#e8c15a", "ionus.html": "#f28bb5", "volkbane.html": "#e9c46a", "xavier.html": "#e8c46e", "choritaye.html": "#6fa8ff", "aaron.html": "#3aa0ff", "timothy.html": "#b9c1cc", "charlotte.html": "#f4a7c0"};if(CC[s.file]){a.style.setProperty('--cc',CC[s.file]);a.style.background='linear-gradient(160deg,'+CC[s.file]+'1f,var(--panel) 45%,var(--char2))';}
   var ti = s.tbd
     ? '<div class="ti tbd">set subtitle — TBD</div>'
     : '<div class="ti">'+ (s.subtitle||'') +'</div>';
