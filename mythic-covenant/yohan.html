@@ -1399,7 +1399,9 @@ function relPairs(){return (RLD&&RLD.pairs)||{};}
 function relOther(p){return p.a===C.id?{id:p.b,name:p.bn}:{id:p.a,name:p.an};}
 function relWrite(fn){var d=clone(RLD||{pairs:{}});d.pairs=d.pairs||{};fn(d);RLD=d;if(relsRef)relsRef.set(JSON.parse(JSON.stringify(d))).catch(function(){flash("Couldn't reach the shared relationships");});}
 function relNameMatch(a,b){a=String(a||"").toLowerCase().trim();b=String(b||"").toLowerCase().trim();if(!a||!b)return false;return a===b||a.split(/\s+/)[0]===b.split(/\s+/)[0];}
-function relRoster(){var r=(typeof PK!=="undefined"&&PK&&PK.roster)||{};return Object.keys(r).filter(function(k){return k!==C.id;}).map(function(k){return {id:k,name:r[k].name||k};});}
+var REL_PARTY={beatrix:"Beatrix Callie",dylan:"Dylan",hasani:"Hasani Eldesteen",loryana:"Loryana",magnolia:"Magnolia DuBois",melissa:"Melissa",sika:"Sika Carmichael",yohan:"Yohan"};
+function relRoster(){var r=(typeof PK!=="undefined"&&PK&&PK.roster)||{},all={};Object.keys(REL_PARTY).forEach(function(k){all[k]=REL_PARTY[k];});Object.keys(r).forEach(function(k){all[k]=r[k].name||all[k]||k;});
+ return Object.keys(all).filter(function(k){return k!==C.id;}).map(function(k){return {id:k,name:all[k]};});}
 function relPullIn(){if(!RLD)return false;var P=relPairs(),ch=false;
  Object.keys(P).forEach(function(k){var p=P[k];if(p.a!==C.id&&p.b!==C.id)return;var o=relOther(p),r=S.rels.filter(function(x){return x.link===k;})[0];
   if(!r){var m=S.rels.filter(function(x){return !x.link&&relNameMatch(x.name,o.name);})[0];
