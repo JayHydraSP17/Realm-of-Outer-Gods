@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mythic Covenant — Upgrade Trees</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--void:#08080a;--char2:#16151a;--panel:#1c1a21;--line:#332e38;--line2:#46404e;--bone:#ece6da;--bone-dim:#b3aca0;--bone-faint:#7c766e;--crimson:#e0565b;--gold:#d8b25a;--gold-soft:#ecd28f;--violet:#c2abff}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Cormorant Garamond',serif;background:radial-gradient(1100px 560px at 82% -8%,rgba(216,178,90,.07),transparent 60%),var(--void);color:var(--bone);font-size:18px;line-height:1.5;min-height:100vh;padding:40px 16px 90px}
+.wrap{max-width:1180px;margin:0 auto}
+header{text-align:center;margin-bottom:10px}
+.eyebrow{font-family:'Cinzel',serif;letter-spacing:6px;font-size:12px;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+h1{font-family:'Cinzel Decorative',serif;font-weight:900;font-size:clamp(30px,6vw,52px);line-height:1;background:linear-gradient(180deg,#fff,var(--bone) 30%,var(--gold-soft) 130%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.sub{font-family:'Cinzel',serif;font-style:italic;color:var(--bone-dim);margin-top:10px;font-size:16px}
+.pill{font-family:'Fira Code',monospace;font-size:12px;color:var(--bone-faint);margin-top:12px}
+.back{display:inline-block;margin-top:10px;font-family:'Fira Code',monospace;font-size:12px;color:var(--bone-dim)}
+.how{max-width:760px;margin:22px auto 0;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px;font-size:17px}
+.how b{color:var(--gold-soft)}
+.jump{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:22px 0 4px}
+.jump a{font-family:'Cinzel',serif;font-size:14px;color:var(--bone);text-decoration:none;border:1px solid var(--line2);border-radius:20px;padding:4px 12px}
+.jump a:hover{border-color:var(--gold)}
+h2.grouphead{font-family:'Cinzel',serif;font-size:15px;letter-spacing:2px;text-transform:uppercase;color:var(--gold-soft);margin:36px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.tree{background:linear-gradient(180deg,var(--panel),var(--char2));border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:18px}
+.tree h3{font-family:'Cinzel',serif;font-size:22px;color:#fff}
+.tree .note{color:var(--bone-dim);font-size:16px;margin:2px 0 10px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:start}
+.grid.eq{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+.col h4{font-family:'Cinzel',serif;font-size:17px;color:var(--gold-soft);border-bottom:1px solid var(--line);padding-bottom:4px}
+.col h4 small{display:block;font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--bone-dim);font-weight:400}
+.gate{font-family:'Fira Code',monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--bone-faint);margin:10px 0 4px}
+.node{border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-top:6px;background:rgba(255,255,255,.02)}
+.node.hid{border-style:dashed;opacity:.6}
+.node .h{display:flex;flex-wrap:wrap;gap:6px;align-items:baseline}
+.node b{color:#fff;font-size:17px}
+.node .k{font-family:'Fira Code',monospace;font-size:10px;text-transform:uppercase;color:var(--violet);border:1px solid var(--line2);border-radius:4px;padding:0 4px}
+.node .c{margin-left:auto;font-family:'Fira Code',monospace;font-size:11px;color:var(--bone-faint)}
+.node .t{font-size:16px;line-height:1.4;margin-top:4px}
+.node .m{font-family:'Fira Code',monospace;font-size:11px;color:var(--violet);margin-top:3px}
+.node .r{font-family:'Fira Code',monospace;font-size:11px;color:var(--bone-faint);margin-top:3px}
+.cap{border:1px dashed var(--gold);border-radius:10px;padding:8px 10px;margin-top:10px}
+.cap b{color:var(--gold-soft);font-family:'Cinzel',serif}
+.empty{color:var(--bone-faint);text-align:center;padding:30px}
+@media(max-width:820px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <header><div class="eyebrow">Mythic Covenant · Reference</div><h1>Upgrade Trees</h1><div class="sub">Character builds and equipment upgrades</div><div class="pill" id="pill">connecting…</div><a class="back" href="index.html">← party sheets</a></header>
+ <div class="how"><b>How character trees work.</b> Each battle a character fights in earns them upgrade points, spent on their own sheet's Upgrades tab. The <b>Overall</b> track improves their systems; the two <b>Builds</b> add combat abilities. Taking a node on a rung <b>locks the other build's node on that rung</b>. A rung opens at a level, after enough points in Overall, and after a pick on the rung before it (either build, so hybrids are allowed). Taking every rung of one build unlocks its <b>capstone</b>. A <b>Lesser Draught of Regression</b> refunds a character's whole tree. Equipment upgrades are bought with materials such as Tarnite. <b>???</b> marks upgrades not revealed yet.</div>
+ <div class="jump" id="jump"></div>
+ <div id="out"><div class="empty">Loading the trees…</div></div>
+</div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+(function(){"use strict";
+/* ===================== UPGRADE TREES · shared model and rules (sheets, DM builder, reference page) =====================
+   A character tree has an Overall track and two Builds. Builds have rungs; taking a node on rung N in one build locks the
+   other build's node on rung N. A rung opens at a level, after enough points in Overall, and after any pick on the rung before
+   it (either build, so hybrids work). Taking every rung of one build activates that build's capstone.
+   An equipment tree has branches of nodes paid for in a material (Tarnite by default). */
+var TR_KINDS=[["passive","Passive"],["action","Action"],["bonus","Bonus action"],["reaction","Reaction"],["attack","Attack"],["free","Free"]];
+var TR_MODS=[["ac","AC"],["speed","Speed"],["hp","Max HP"],["tl","Max TL"],["init","Initiative"]];
+function trNum(v,d){var n=parseFloat(v);return isNaN(n)?(d||0):n;}
+function trDefRungs(){return [{lvl:0,ov:0,cost:1},{lvl:0,ov:2,cost:2},{lvl:15,ov:5,cost:3},{lvl:20,ov:9,cost:4}];}
+function trNorm(t){t=t||{};t.kind=t.kind==="equip"?"equip":"char";t.name=t.name||"Untitled tree";t.owner=t.owner||"";
+ if(!Array.isArray(t.nodes))t.nodes=[];
+ if(t.kind==="char"){if(!Array.isArray(t.cols)||t.cols.length<3)t.cols=[{id:"ov",name:"Overall",role:"overall",desc:""},{id:"a",name:"Build A",role:"build",desc:""},{id:"b",name:"Build B",role:"build",desc:""}];
+  if(!Array.isArray(t.rungs)||!t.rungs.length)t.rungs=trDefRungs();t.caps=t.caps||{};t.cur="pts";}
+ else{if(!Array.isArray(t.cols))t.cols=[];t.cols.forEach(function(c){c.role="branch";});t.cur=t.cur||"Tarnite";}
+ t.nodes.forEach(function(n){if(!n.id)n.id="n"+Math.random().toString(36).slice(2,8);n.k=n.k||"passive";n.ranks=Math.max(1,trNum(n.ranks,1));if(!Array.isArray(n.req))n.req=[];n.mods=n.mods||{};});
+ return t;}
+function trCol(t,id){return t.cols.filter(function(c){return c.id===id;})[0]||null;}
+function trBuilds(t){return t.cols.filter(function(c){return c.role==="build";});}
+function trNode(t,id){return t.nodes.filter(function(n){return n.id===id;})[0]||null;}
+function trColNodes(t,cid){return t.nodes.filter(function(n){return n.col===cid;});}
+function trRungNode(t,cid,r){return t.nodes.filter(function(n){return n.col===cid&&trNum(n.rung)===r;})[0]||null;}
+function trIsBuild(t,n){var c=trCol(t,n.col);return t.kind==="char"&&c&&c.role==="build";}
+function trCost(t,n){if(trIsBuild(t,n)){var r=t.rungs[trNum(n.rung)-1];return r?trNum(r.cost):0;}return trNum(n.cost,1);}
+function trCur(t,n){return t.kind==="char"?"pts":(n&&n.cur)||t.cur||"Tarnite";}
+function trRank(own,id){return trNum((own||{})[id]);}
+function trOvSpent(t,own){var s=0;t.nodes.forEach(function(n){var c=trCol(t,n.col);if(c&&c.role==="overall")s+=trRank(own,n.id)*trCost(t,n);});return s;}
+function trSpent(t,own){var s=0;t.nodes.forEach(function(n){s+=trRank(own,n.id)*trCost(t,n);});return s;}
+function trPartner(t,n){if(!trIsBuild(t,n))return null;var o=trBuilds(t).filter(function(c){return c.id!==n.col;})[0];return o?trRungNode(t,o.id,trNum(n.rung)):null;}
+function trRungTaken(t,own,r){return trBuilds(t).some(function(c){var x=trRungNode(t,c.id,r);return x&&trRank(own,x.id)>0;});}
+/* ctx: {lvl, have} → {ok, why, state: owned|open|locked|gated|hidden|poor} */
+function trCheck(t,own,n,ctx){ctx=ctx||{};var rk=trRank(own,n.id),cost=trCost(t,n);
+ if(n.hidden)return {ok:false,state:"hidden",why:"Not revealed yet"};
+ if(rk>=n.ranks)return {ok:false,state:"owned",why:n.ranks>1?"All "+n.ranks+" ranks taken":"Taken"};
+ if(trIsBuild(t,n)){var p=trPartner(t,n),r=trNum(n.rung),R=t.rungs[r-1]||{};
+  if(p&&trRank(own,p.id)>0)return {ok:false,state:"locked",why:"Locked: "+(p.n||"the other build")+" took rung "+r};
+  if(trNum(ctx.lvl)<trNum(R.lvl))return {ok:false,state:"gated",why:"Needs level "+R.lvl};
+  var ov=trOvSpent(t,own);if(ov<trNum(R.ov))return {ok:false,state:"gated",why:"Needs "+R.ov+" points in "+((t.cols[0]||{}).name||"Overall")+" ("+ov+" so far)"};
+  if(r>1&&!trRungTaken(t,own,r-1))return {ok:false,state:"gated",why:"Needs a rung "+(r-1)+" pick first (either build)"};}
+ else{var miss=n.req.map(function(id){return trNode(t,id);}).filter(function(x){return x&&trRank(own,x.id)<1;});
+  if(miss.length)return {ok:false,state:"gated",why:"Needs "+miss.map(function(x){return x.hidden?"???":x.n;}).join(", ")};
+  if(n.lvl&&trNum(ctx.lvl)<trNum(n.lvl))return {ok:false,state:"gated",why:"Needs level "+n.lvl};}
+ if(trNum(ctx.have)<cost)return {ok:false,state:"poor",why:"Needs "+cost+" "+(t.kind==="char"?"point"+(cost===1?"":"s"):trCur(t,n))};
+ return {ok:true,state:"open",why:"Costs "+cost+" "+(t.kind==="char"?"point"+(cost===1?"":"s"):trCur(t,n))};}
+function trCapOn(t,own,cid){if(t.kind!=="char"||!t.rungs.length)return false;for(var r=1;r<=t.rungs.length;r++){var x=trRungNode(t,cid,r);if(!x||trRank(own,x.id)<1)return false;}return true;}
+function trMods(t,own){var m={};t.nodes.forEach(function(n){var rk=trRank(own,n.id);if(!rk)return;TR_MODS.forEach(function(k){var v=trNum((n.mods||{})[k[0]]);if(v)m[k[0]]=(m[k[0]]||0)+v*rk;});});
+ trBuilds(t).forEach(function(c){var cp=t.caps[c.id];if(cp&&trCapOn(t,own,c.id))TR_MODS.forEach(function(k){var v=trNum((cp.mods||{})[k[0]]);if(v)m[k[0]]=(m[k[0]]||0)+v;});});return m;}
+function trWhere(t,n){var c=trCol(t,n.col)||{};return trIsBuild(t,n)?(c.name||"Build")+" · rung "+n.rung:(c.name||"")+(t.kind==="equip"?" · "+trCost(t,n)+" "+trCur(t,n):"");}
+/* What players may see: hidden nodes keep only their place and cost. */
+function trPublic(t){var o=JSON.parse(JSON.stringify(trNorm(t)));
+ o.nodes=o.nodes.map(function(n){return n.hidden?{id:n.id,col:n.col,rung:n.rung,cost:n.cost,ranks:n.ranks,req:n.req,hidden:true,cur:n.cur}:n;});
+ Object.keys(o.caps||{}).forEach(function(k){if(o.caps[k]&&o.caps[k].hidden)o.caps[k]={hidden:true};});delete o.notes;return o;}
+
+var KN={};TR_KINDS.forEach(function(k){KN[k[0]]=k[1];});
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+function sg(v){return (v>0?"+":"")+v;}
+function nodeHtml(t,n){var cost=trCost(t,n);
+ if(n.hidden)return '<div class="node hid"><div class="h"><b>???</b><span class="c">'+cost+' '+(t.kind==="char"?"pt":esc(trCur(t,n)))+'</span></div></div>';
+ var ms=TR_MODS.filter(function(k){return trNum((n.mods||{})[k[0]]);}).map(function(k){return k[1]+" "+sg(trNum(n.mods[k[0]]))+(n.ranks>1?"/rank":"");});
+ var req=(n.req||[]).map(function(id){var x=trNode(t,id);return x?(x.hidden?"???":x.n):null;}).filter(Boolean);
+ return '<div class="node"><div class="h"><b>'+esc(n.n||"Unnamed")+'</b><span class="k">'+esc(KN[n.k]||n.k)+'</span><span class="c">'+cost+' '+(t.kind==="char"?"pt":esc(trCur(t,n)))+(n.ranks>1?' · '+n.ranks+' ranks':'')+'</span></div>'+(n.text?'<div class="t">'+n.text+'</div>':'')+(n.dmg?'<div class="m">'+esc(n.dmg)+'</div>':'')+(ms.length?'<div class="m">'+esc(ms.join(" · "))+'</div>':'')+(req.length||n.lvl?'<div class="r">'+(req.length?'Needs '+esc(req.join(", ")):'')+(n.lvl?(req.length?' · ':'')+'Level '+n.lvl:'')+'</div>':'')+'</div>';}
+function charHtml(t){var ov=t.cols[0],h='<div class="grid">';
+ h+='<div class="col"><h4>'+esc(ov.name)+(ov.desc?'<small>'+esc(ov.desc)+'</small>':'')+'</h4>'+trColNodes(t,ov.id).map(function(n){return nodeHtml(t,n);}).join("")+'</div>';
+ trBuilds(t).forEach(function(c){h+='<div class="col"><h4>'+esc(c.name)+(c.desc?'<small>'+esc(c.desc)+'</small>':'')+'</h4>';
+  t.rungs.forEach(function(R,i){var n=trRungNode(t,c.id,i+1);h+='<div class="gate">Rung '+(i+1)+(trNum(R.lvl)?' · level '+R.lvl:'')+(trNum(R.ov)?' · '+R.ov+' in '+esc(ov.name):'')+' · '+trNum(R.cost)+' pt</div>'+(n?nodeHtml(t,n):'<div class="node hid"><b>—</b></div>');});
+  var cp=t.caps[c.id];if(cp&&(cp.n||cp.hidden))h+='<div class="cap"><div class="gate" style="margin-top:0">Capstone · every rung of '+esc(c.name)+'</div><b>'+(cp.hidden?'???':esc(cp.n))+'</b>'+(!cp.hidden&&cp.text?'<div class="t" style="font-size:16px">'+cp.text+'</div>':'')+'</div>';
+  h+='</div>';});return h+'</div>';}
+function equipHtml(t){return '<div class="grid eq">'+t.cols.map(function(c){return '<div class="col"><h4>'+esc(c.name)+(c.desc?'<small>'+esc(c.desc)+'</small>':'')+'</h4>'+trColNodes(t,c.id).map(function(n){return nodeHtml(t,n);}).join("")+'</div>';}).join("")+'</div>';}
+function render(D){var out=document.getElementById("out"),jump=document.getElementById("jump");
+ if(!D||!D.trees||!Object.keys(D.trees).length){out.innerHTML='<div class="empty">No upgrade trees have been published yet.</div>';jump.innerHTML="";return;}
+ var ids=(D.order||[]).filter(function(k){return D.trees[k];});Object.keys(D.trees).forEach(function(k){if(ids.indexOf(k)<0)ids.push(k);});
+ var T=ids.map(function(k){var t=D.trees[k];t.id=k;return trNorm(t);}),h="",j="";
+ [["char","Characters"],["equip","Equipment"]].forEach(function(g){var L=T.filter(function(t){return t.kind===g[0];});if(!L.length)return;h+='<h2 class="grouphead">'+g[1]+'</h2>';
+  L.forEach(function(t){j+='<a href="#t-'+esc(t.id)+'">'+esc(t.name.replace(/ · Upgrade tree$/,""))+'</a>';h+='<section class="tree" id="t-'+esc(t.id)+'"><h3>'+esc(t.name)+'</h3>'+(t.desc?'<div class="note">'+esc(t.desc)+'</div>':'<div class="note"></div>')+(t.kind==="char"?charHtml(t):equipHtml(t))+'</section>';});});
+ out.innerHTML=h;jump.innerHTML=j;if(location.hash){var e=document.getElementById(location.hash.slice(1));if(e)e.scrollIntoView();}}
+var pill=document.getElementById("pill"),CFG=window.FIREBASE_CONFIG;
+if(!(CFG&&CFG.apiKey&&window.firebase)){pill.textContent="○ offline";render(null);return;}
+try{if(!firebase.apps.length)firebase.initializeApp(CFG);
+ firebase.firestore().collection("campaigns").doc(window.CAMPAIGN_ID||"astrology-club").collection("shared").doc("trees").onSnapshot(function(s){pill.textContent="● live";render(s.exists?s.data():null);},function(){pill.textContent="○ offline";render(null);});
+}catch(e){pill.textContent="○ sync error";render(null);}
+})();
+</script>
+</body>
+</html>
