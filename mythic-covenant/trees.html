@@ -44,6 +44,7 @@ h2.grouphead{font-family:'Cinzel',serif;font-size:15px;letter-spacing:2px;text-t
 .cap{border:1px dashed var(--gold);border-radius:10px;padding:8px 10px;margin-top:10px}
 .cap b{color:var(--gold-soft);font-family:'Cinzel',serif}
 .empty{color:var(--bone-faint);text-align:center;padding:30px}
+:root{--dim:#b3aca0;--tv-ac:#ecd28f}.tvl{font-family:'Cormorant Garamond',serif;font-size:14px}.tvd-t{font-size:17px}.tvdet{background:rgba(0,0,0,.3)}
 @media(max-width:820px){.grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -110,29 +111,83 @@ function trWhere(t,n){var c=trCol(t,n.col)||{};return trIsBuild(t,n)?(c.name||"B
 function trPublic(t){var o=JSON.parse(JSON.stringify(trNorm(t)));
  o.nodes=o.nodes.map(function(n){return n.hidden?{id:n.id,col:n.col,rung:n.rung,cost:n.cost,ranks:n.ranks,req:n.req,hidden:true,cur:n.cur}:n;});
  Object.keys(o.caps||{}).forEach(function(k){if(o.caps[k]&&o.caps[k].hidden)o.caps[k]={hidden:true};});delete o.notes;return o;}
+/* ---------- circle-node view (sheet, DM builder, reference page) ----------
+   o: {mode:"sheet"|"dm"|"page", own, ctxFor(n)→{lvl,have}, sel, attr:"data-…", add:true (dm: + buttons)} */
+function trEsc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+function trIcon(n,mode){if(n.hidden&&mode!=="dm")return "?";if(n.icon)return String(n.icon).slice(0,3);var w=String(n.n||"").replace(/[^A-Za-z0-9 ]/g," ").trim().split(/\s+/).filter(Boolean);
+ if(!w.length)return mode==="dm"?"·":"?";return (w.length>1?w[0][0]+w[1][0]:w[0].slice(0,2)).toUpperCase();}
+function trState(t,n,o){if(o.mode==="dm")return n.hidden?"hidden":(n.n?"owned":"gated");if(o.mode==="page")return n.hidden?"hidden":"open";return trCheck(t,o.own||{},n,o.ctxFor?o.ctxFor(n):{}).state;}
+function trDot(t,n,o,cap){var id=cap?"cap:"+cap:n.id,st,rk=cap?0:trRank(o.own,n.id),nm;
+ if(cap){var on=o.mode==="sheet"&&trCapOn(t,o.own||{},cap);st=o.mode==="dm"?(n.hidden?"hidden":(n.n?"owned":"gated")):n.hidden&&o.mode!=="dm"?"hidden":on?"owned":(o.mode==="page"?"open":"gated");}else st=trState(t,n,o);
+ nm=(n.hidden&&o.mode!=="dm")?"???":(n.n||(o.mode==="dm"?"(unnamed)":"?"));
+ var cost=cap?"":trCost(t,n);
+ return '<div class="tvw"><button class="tvn tvs-'+st+(cap?' tvcap':'')+(rk?' tvhas':'')+(o.sel===id?' sel':'')+(o.mode==="dm"&&n.hidden?' tvdh':'')+'" '+o.attr+'="'+trEsc(id)+'" title="'+trEsc(nm)+'"><span class="tvi">'+trEsc(trIcon(n,o.mode))+'</span>'+
+  (!cap&&n.ranks>1?'<span class="tvk">'+(o.mode==="sheet"?rk+'/':'×')+n.ranks+'</span>':'')+(cost!==""?'<span class="tvc">'+cost+'</span>':'')+'</button><div class="tvl">'+trEsc(nm)+'</div></div>';}
+function trAddDot(o,key,lab){return o.add?'<div class="tvw"><button class="tvn tvadd" data-tadd="'+trEsc(key)+'" title="'+trEsc(lab)+'"><span class="tvi">+</span></button><div class="tvl">'+trEsc(lab)+'</div></div>':'<div class="tvw"><div class="tvn tvs-hidden tvempty"><span class="tvi">–</span></div><div class="tvl">empty</div></div>';}
+function trViz(t,o){o.own=o.own||{};var h;
+ if(t.kind==="char"){var ov=t.cols[0],B=trBuilds(t);
+  h='<div class="tv"><div class="tv-ov"><div class="tv-h"><b>'+trEsc(ov.name)+'</b>'+(ov.desc?'<small>'+trEsc(ov.desc)+'</small>':'')+'</div><div class="tv-ovg">'+trColNodes(t,ov.id).map(function(n){return trDot(t,n,o);}).join("")+(o.add?trAddDot(o,ov.id,"add"):'')+'</div></div>';
+  h+='<div class="tv-b"><div class="tv-row tv-bh">'+B.map(function(c,i){return (i?'<div class="tv-gate"></div>':'')+'<div class="tv-h tv-cell"><b>'+trEsc(c.name)+'</b>'+(c.desc?'<small>'+trEsc(c.desc)+'</small>':'')+'</div>';}).join("")+'</div>';
+  t.rungs.forEach(function(R,i){var r=i+1,cells=B.map(function(c){var n=trRungNode(t,c.id,r),lit=n&&o.mode==="sheet"&&trRank(o.own,n.id)>0;return '<div class="tv-cell'+(lit?' lit':'')+'">'+(n?trDot(t,n,o):trAddDot(o,c.id+"|"+r,"rung "+r))+'</div>';});
+   h+='<div class="tv-row">'+cells[0]+'<div class="tv-gate"><b>Rung '+r+'</b><span>'+[trNum(R.lvl)?"Lv "+R.lvl:"",trNum(R.ov)?R.ov+" "+trEsc(ov.name):"",trNum(R.cost)+" pt"].filter(Boolean).join(" · ")+'</span><i>or</i></div>'+(cells[1]||'')+'</div>';});
+  var caps=B.map(function(c){var cp=t.caps[c.id]||{};var show=o.mode==="dm"||cp.n||cp.hidden;var lit=o.mode==="sheet"&&trCapOn(t,o.own,c.id);return '<div class="tv-cell'+(lit?' lit':'')+'">'+(show?trDot(t,cp,o,c.id):'')+'</div>';});
+  h+='<div class="tv-row tv-caprow">'+caps[0]+'<div class="tv-gate"><b>Capstone</b><span>every rung of one build</span></div>'+(caps[1]||'')+'</div></div></div>';}
+ else{h='<div class="tv tv-eqv">'+t.cols.map(function(c){var ns=trColNodes(t,c.id);return '<div class="tv-lane"><div class="tv-h"><b>'+trEsc(c.name)+'</b>'+(c.desc?'<small>'+trEsc(c.desc)+'</small>':'')+'</div>'+ns.map(function(n){var lit=o.mode==="sheet"&&trRank(o.own,n.id)>0;return '<div class="tv-cell'+(lit?' lit':'')+'">'+trDot(t,n,o)+'</div>';}).join("")+(o.add?'<div class="tv-cell">'+trAddDot(o,c.id,"add")+'</div>':'')+'</div>';}).join("")+'</div>';}
+ return h;}
+var TR_VIZ_CSS='.tv{display:grid;grid-template-columns:minmax(150px,.8fr) minmax(0,2fr);gap:18px;align-items:start}'+
+ '.tv-h b{display:block;font-family:Cinzel,serif;font-size:16px;color:#fff;line-height:1.2}.tv-h small{display:block;font-size:12.5px;color:var(--dim,#a9a0b2);line-height:1.3;margin-top:2px}'+
+ '.tv-ov{border-right:1px solid var(--line,#2e2638);padding-right:14px}.tv-ovg{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:12px 6px;margin-top:12px}'+
+ '.tv-b{display:flex;flex-direction:column;gap:14px}.tv-row{display:grid;grid-template-columns:minmax(0,1fr) 112px minmax(0,1fr);align-items:start}.tv-bh{align-items:start;border-bottom:1px solid var(--line,#2e2638);padding-bottom:8px}.tv-bh .tv-h{text-align:center;flex-direction:column;align-items:center}.tvcap+.tvl{margin-top:9px}.tv-caprow{margin-top:6px}.tv-caprow .tv-cell::before{top:-21px!important;height:21px!important}'+
+ '.tv-cell{position:relative;display:flex;justify-content:center}.tv-row+.tv-row:not(.tv-bh) .tv-cell::before{content:"";position:absolute;top:-15px;left:50%;height:15px;border-left:2px solid var(--line,#2e2638)}.tv-bh+.tv-row .tv-cell::before{display:none}.tv-cell.lit::before{border-color:var(--tv-ac,#c2abff)!important}'+
+ '.tv-gate{text-align:center;padding-top:8px;font-family:"IBM Plex Mono","Fira Code",monospace;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim,#a9a0b2);line-height:1.4}.tv-gate b{display:block;color:#fff;font-size:10px}.tv-gate i{display:block;font-style:normal;color:var(--tv-ac,#c2abff);margin-top:2px;opacity:.8}'+
+ '.tvw{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:0}.tvl{font-size:11.5px;line-height:1.2;text-align:center;color:var(--bone,#ece6d8);max-width:96px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}'+
+ '.tvn{position:relative;width:48px;height:48px;border-radius:50%;border:2px solid #4a4058;background:#15121b;color:#d8d0e2;display:grid;place-items:center;cursor:pointer;padding:0;font:700 15px Cinzel,serif;transition:transform .12s,box-shadow .12s}.tvn:hover{transform:scale(1.07)}'+
+ '.tvi{line-height:1;letter-spacing:.02em}.tvc{position:absolute;right:-7px;bottom:-5px;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:#0d0a12;border:1px solid #4a4058;font:600 10px "IBM Plex Mono","Fira Code",monospace;color:#cfc6dc;display:grid;place-items:center}'+
+ '.tvk{position:absolute;left:-8px;top:-6px;padding:0 4px;height:16px;border-radius:8px;background:#0d0a12;border:1px solid #4a4058;font:600 9.5px "IBM Plex Mono","Fira Code",monospace;color:var(--tv-ac,#c2abff);display:grid;place-items:center}'+
+ '.tvs-owned{background:radial-gradient(circle at 35% 30%,#efe6ff,#b59cf5 45%,#6c4fb3);border-color:#efe6ff;color:#170f24;box-shadow:0 0 14px rgba(194,171,255,.55)}'+
+ '.tvs-open{border-color:var(--tv-ac,#c2abff);color:#fff;box-shadow:0 0 0 4px rgba(194,171,255,.16);animation:tvp 2.2s ease-in-out infinite}@keyframes tvp{50%{box-shadow:0 0 0 7px rgba(194,171,255,.07)}}'+
+ '.tvs-poor{border-color:#7d6aa8;color:#e6def0}.tvs-gated{opacity:.5}.tvs-locked{opacity:.32}.tvs-locked::after{content:"";position:absolute;left:8px;right:8px;top:50%;border-top:2px solid #e06b6b;transform:rotate(-40deg)}'+
+ '.tvs-hidden{border-style:dashed;opacity:.55}.tvhas.tvs-poor,.tvhas.tvs-open,.tvhas.tvs-gated{background:radial-gradient(circle at 35% 30%,#3a2d55,#211a30);opacity:1}'+
+ '.tvn.sel{outline:2px solid #fff;outline-offset:4px}.tvcap{width:56px;height:56px;border-radius:14px;transform:rotate(45deg);border-color:var(--gold,#d9b154)}.tvcap .tvi{transform:rotate(-45deg)}.tvcap:hover{transform:rotate(45deg) scale(1.06)}'+
+ '.tvcap.tvs-owned{background:radial-gradient(circle at 35% 30%,#fff3cf,#e2bd62 50%,#8a6a22);border-color:#fff1c4;box-shadow:0 0 16px rgba(217,177,84,.6)}.tvdh{border-style:dashed}.tvadd{border-style:dashed;color:var(--dim,#a9a0b2);background:none}.tvempty{cursor:default}'+
+ '.tv-eqv{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:14px}.tv-lane{display:flex;flex-direction:column;gap:14px;align-items:stretch}.tv-lane .tv-h{text-align:center;border-bottom:1px solid var(--line,#2e2638);padding-bottom:6px;min-height:52px}.tv-lane .tv-cell+.tv-cell::before{content:"";position:absolute;top:-15px;left:50%;height:15px;border-left:2px solid var(--line,#2e2638)}'+
+ '@media(max-width:700px){.tv{grid-template-columns:minmax(0,1fr)}.tv-ov{border-right:none;border-bottom:1px solid var(--line,#2e2638);padding:0 0 12px}.tv-row{grid-template-columns:minmax(0,1fr) 76px minmax(0,1fr)}.tv-ovg{grid-template-columns:repeat(auto-fill,minmax(68px,1fr))}}';
+/* detail panel for a selected node ("cap:<build>" for a capstone); o as for trViz. Returns html (no buy button). */
+function trDetail(t,id,o){var KN={};TR_KINDS.forEach(function(k){KN[k[0]]=k[1];});
+ if(!id)return '<div class="tvd-empty">Tap a node to see what it does.</div><div class="tvd-leg"><span><i class="tvn tvs-owned"></i>taken</span><span><i class="tvn tvs-open"></i>available</span><span><i class="tvn tvs-gated"></i>not yet</span><span><i class="tvn tvs-locked"></i>locked</span><span><i class="tvn tvs-hidden"></i>not revealed</span></div>';
+ var cap=id.indexOf("cap:")===0?id.slice(4):"",n=cap?(t.caps[cap]||{}):trNode(t,id);if(!n)return '<div class="tvd-empty">That node no longer exists.</div>';
+ var hid=n.hidden&&o.mode!=="dm",col=trCol(t,cap||n.col)||{},h='<div class="tvd-top"><span class="tvd-ic tvn '+(cap?'tvcap ':'')+'tvs-'+(cap?(o.mode==="sheet"&&trCapOn(t,o.own||{},cap)?"owned":"open"):trState(t,n,o))+'"><span class="tvi">'+trEsc(trIcon(n,o.mode))+'</span></span><div><div class="tvd-n">'+(hid?"???":trEsc(n.n||"(unnamed)"))+'</div>';
+ h+='<div class="tvd-m">'+(cap?"Capstone · every rung of "+trEsc(col.name):trEsc(trWhere(t,n)))+(hid?'':' · '+trEsc(KN[n.k]||n.k||""))+'</div></div></div>';
+ if(!cap){var cost=trCost(t,n);h+='<div class="tvd-cost">'+cost+' '+(t.kind==="char"?"point"+(cost===1?"":"s"):trEsc(trCur(t,n)))+(n.ranks>1?' per rank · '+n.ranks+' ranks'+(o.mode==="sheet"?' ('+trRank(o.own,n.id)+' taken)':''):'')+'</div>';}
+ if(hid)h+='<div class="tvd-t tvd-dim">Not revealed yet.</div>';
+ else{if(n.text)h+='<div class="tvd-t">'+n.text+'</div>';if(n.dmg)h+='<div class="tvd-x">Damage '+trEsc(n.dmg)+'</div>';
+  var ms=TR_MODS.filter(function(k){return trNum((n.mods||{})[k[0]]);}).map(function(k){return k[1]+" "+((trNum(n.mods[k[0]])>0?"+":"")+trNum(n.mods[k[0]]))+(n.ranks>1?" per rank":"");});if(ms.length)h+='<div class="tvd-x">'+trEsc(ms.join(" · "))+'</div>';}
+ if(!cap){var req=(n.req||[]).map(function(r){var x=trNode(t,r);return x?((x.hidden&&o.mode!=="dm")?"???":x.n||"(unnamed)"):null;}).filter(Boolean);if(req.length)h+='<div class="tvd-r">Needs '+trEsc(req.join(", "))+'</div>';
+  var p=trPartner(t,n);if(p)h+='<div class="tvd-r">Locks <b>'+trEsc((p.hidden&&o.mode!=="dm")?"???":(p.n||"(unnamed)"))+'</b> on rung '+n.rung+' when taken (and is locked by it).</div>';
+  if(o.mode==="sheet"){var c=trCheck(t,o.own||{},n,o.ctxFor?o.ctxFor(n):{});h+='<div class="tvd-s tvd-'+c.state+'">'+trEsc(c.state==="open"?"Available · "+c.why:c.why)+'</div>';}}
+ else if(o.mode==="sheet")h+='<div class="tvd-s tvd-'+(trCapOn(t,o.own||{},cap)?'owned">Active':'gated">Take every rung of '+trEsc(col.name)+' to unlock')+'</div>';
+ return h;}
+TR_VIZ_CSS+='.tvd-empty{color:var(--dim,#a9a0b2);font-size:14px}.tvd-leg{display:flex;flex-wrap:wrap;gap:8px 12px;margin-top:10px;font-size:12px;color:var(--dim,#a9a0b2)}.tvd-leg span{display:flex;align-items:center;gap:5px}.tvd-leg .tvn{width:16px;height:16px;border-width:2px;animation:none;cursor:default}.tvd-leg .tvs-locked::after{left:2px;right:2px}'+
+ '.tvd-top{display:flex;gap:12px;align-items:center}.tvd-ic{flex:none;cursor:default}.tvd-ic:hover{transform:none}.tvd-ic.tvcap:hover{transform:rotate(45deg)}.tvd-n{font-family:Cinzel,serif;font-size:19px;color:#fff;line-height:1.15}.tvd-m{font-family:"IBM Plex Mono","Fira Code",monospace;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--dim,#a9a0b2);margin-top:3px}'+
+ '.tvd-cost{font-family:"IBM Plex Mono","Fira Code",monospace;font-size:12px;color:var(--tv-ac,#c2abff);margin:10px 0 0}.tvd-t{font-size:15px;line-height:1.45;margin-top:8px;color:var(--bone,#ece6d8)}.tvd-dim{color:var(--dim,#a9a0b2)}.tvd-x{font-family:"IBM Plex Mono","Fira Code",monospace;font-size:11.5px;color:var(--tv-ac,#c2abff);margin-top:6px}'+
+ '.tvd-r{font-size:13px;color:var(--dim,#a9a0b2);margin-top:6px}.tvd-r b{color:var(--bone,#ece6d8)}.tvd-s{margin-top:10px;font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--line,#2e2638);color:var(--dim,#a9a0b2)}.tvd-s.tvd-open{color:#fff;border-color:var(--tv-ac,#c2abff)}.tvd-s.tvd-owned{color:var(--tv-ac,#c2abff);border-color:var(--tv-ac,#c2abff)}.tvd-s.tvd-locked{color:#e88}'+
+ '.tvwrap{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start}.tvdet{position:sticky;top:12px;border:1px solid var(--line,#2e2638);border-radius:12px;padding:14px;background:rgba(0,0,0,.25)}@media(max-width:900px){.tvwrap{grid-template-columns:minmax(0,1fr)}.tvdet{position:static}}';
 
 var KN={};TR_KINDS.forEach(function(k){KN[k[0]]=k[1];});
 function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
 function sg(v){return (v>0?"+":"")+v;}
-function nodeHtml(t,n){var cost=trCost(t,n);
- if(n.hidden)return '<div class="node hid"><div class="h"><b>???</b><span class="c">'+cost+' '+(t.kind==="char"?"pt":esc(trCur(t,n)))+'</span></div></div>';
- var ms=TR_MODS.filter(function(k){return trNum((n.mods||{})[k[0]]);}).map(function(k){return k[1]+" "+sg(trNum(n.mods[k[0]]))+(n.ranks>1?"/rank":"");});
- var req=(n.req||[]).map(function(id){var x=trNode(t,id);return x?(x.hidden?"???":x.n):null;}).filter(Boolean);
- return '<div class="node"><div class="h"><b>'+esc(n.n||"Unnamed")+'</b><span class="k">'+esc(KN[n.k]||n.k)+'</span><span class="c">'+cost+' '+(t.kind==="char"?"pt":esc(trCur(t,n)))+(n.ranks>1?' · '+n.ranks+' ranks':'')+'</span></div>'+(n.text?'<div class="t">'+n.text+'</div>':'')+(n.dmg?'<div class="m">'+esc(n.dmg)+'</div>':'')+(ms.length?'<div class="m">'+esc(ms.join(" · "))+'</div>':'')+(req.length||n.lvl?'<div class="r">'+(req.length?'Needs '+esc(req.join(", ")):'')+(n.lvl?(req.length?' · ':'')+'Level '+n.lvl:'')+'</div>':'')+'</div>';}
-function charHtml(t){var ov=t.cols[0],h='<div class="grid">';
- h+='<div class="col"><h4>'+esc(ov.name)+(ov.desc?'<small>'+esc(ov.desc)+'</small>':'')+'</h4>'+trColNodes(t,ov.id).map(function(n){return nodeHtml(t,n);}).join("")+'</div>';
- trBuilds(t).forEach(function(c){h+='<div class="col"><h4>'+esc(c.name)+(c.desc?'<small>'+esc(c.desc)+'</small>':'')+'</h4>';
-  t.rungs.forEach(function(R,i){var n=trRungNode(t,c.id,i+1);h+='<div class="gate">Rung '+(i+1)+(trNum(R.lvl)?' · level '+R.lvl:'')+(trNum(R.ov)?' · '+R.ov+' in '+esc(ov.name):'')+' · '+trNum(R.cost)+' pt</div>'+(n?nodeHtml(t,n):'<div class="node hid"><b>—</b></div>');});
-  var cp=t.caps[c.id];if(cp&&(cp.n||cp.hidden))h+='<div class="cap"><div class="gate" style="margin-top:0">Capstone · every rung of '+esc(c.name)+'</div><b>'+(cp.hidden?'???':esc(cp.n))+'</b>'+(!cp.hidden&&cp.text?'<div class="t" style="font-size:16px">'+cp.text+'</div>':'')+'</div>';
-  h+='</div>';});return h+'</div>';}
-function equipHtml(t){return '<div class="grid eq">'+t.cols.map(function(c){return '<div class="col"><h4>'+esc(c.name)+(c.desc?'<small>'+esc(c.desc)+'</small>':'')+'</h4>'+trColNodes(t,c.id).map(function(n){return nodeHtml(t,n);}).join("")+'</div>';}).join("")+'</div>';}
+var TREES={},SEL={};
+function treeHtml(t){var o={mode:"page",attr:"data-pn",sel:SEL[t.id]||""};
+ return '<div class="tvwrap"><div class="vz">'+trViz(t,o)+'</div><aside class="tvdet" id="det-'+esc(t.id)+'">'+trDetail(t,o.sel,o)+'</aside></div>';}
 function render(D){var out=document.getElementById("out"),jump=document.getElementById("jump");
  if(!D||!D.trees||!Object.keys(D.trees).length){out.innerHTML='<div class="empty">No upgrade trees have been published yet.</div>';jump.innerHTML="";return;}
  var ids=(D.order||[]).filter(function(k){return D.trees[k];});Object.keys(D.trees).forEach(function(k){if(ids.indexOf(k)<0)ids.push(k);});
- var T=ids.map(function(k){var t=D.trees[k];t.id=k;return trNorm(t);}),h="",j="";
+ var T=ids.map(function(k){var t=D.trees[k];t.id=k;return trNorm(t);}),h="",j="";TREES={};T.forEach(function(t){TREES[t.id]=t;});
  [["char","Characters"],["equip","Equipment"]].forEach(function(g){var L=T.filter(function(t){return t.kind===g[0];});if(!L.length)return;h+='<h2 class="grouphead">'+g[1]+'</h2>';
-  L.forEach(function(t){j+='<a href="#t-'+esc(t.id)+'">'+esc(t.name.replace(/ · Upgrade tree$/,""))+'</a>';h+='<section class="tree" id="t-'+esc(t.id)+'"><h3>'+esc(t.name)+'</h3>'+(t.desc?'<div class="note">'+esc(t.desc)+'</div>':'<div class="note"></div>')+(t.kind==="char"?charHtml(t):equipHtml(t))+'</section>';});});
+  L.forEach(function(t){j+='<a href="#t-'+esc(t.id)+'">'+esc(t.name.replace(/ · Upgrade tree$/,""))+'</a>';h+='<section class="tree" id="t-'+esc(t.id)+'"><h3>'+esc(t.name)+'</h3>'+(t.desc?'<div class="note">'+esc(t.desc)+'</div>':'<div class="note"></div>')+'<div class="tb">'+treeHtml(t)+'</div>'+'</section>';});});
  out.innerHTML=h;jump.innerHTML=j;if(location.hash){var e=document.getElementById(location.hash.slice(1));if(e)e.scrollIntoView();}}
+document.getElementById("out").addEventListener("click",function(e){var b=e.target.closest("[data-pn]");if(!b)return;var sec=b.closest(".tree"),id=sec&&sec.id.slice(2),t=TREES[id];if(!t)return;var k=b.getAttribute("data-pn");SEL[id]=SEL[id]===k?"":k;sec.querySelector(".tb").innerHTML=treeHtml(t);});
+var st=document.createElement("style");st.textContent=TR_VIZ_CSS;document.head.appendChild(st);
 var pill=document.getElementById("pill"),CFG=window.FIREBASE_CONFIG;
 if(!(CFG&&CFG.apiKey&&window.firebase)){pill.textContent="○ offline";render(null);return;}
 try{if(!firebase.apps.length)firebase.initializeApp(CFG);
