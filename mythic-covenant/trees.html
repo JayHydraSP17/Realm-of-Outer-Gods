@@ -83,14 +83,17 @@ function trColNodes(t,cid){return t.nodes.filter(function(n){return n.col===cid;
 function trRungNode(t,cid,r){return t.nodes.filter(function(n){return n.col===cid&&trNum(n.rung)===r;})[0]||null;}
 function trIsBuild(t,n){var c=trCol(t,n.col);return t.kind==="char"&&c&&c.role==="build";}
 function trCost(t,n){if(trIsBuild(t,n)){var r=t.rungs[trNum(n.rung)-1];return r?trNum(r.cost):0;}return trNum(n.cost,1);}
+/* cost of rank k (1-based): rank 1 is the node's cost; extra ranks use n.rc when set, else 1 point on a build rung, else the node's cost */
+function trRankCost(t,n,k){if(k<=1)return trCost(t,n);if(n.rc!==undefined&&n.rc!==null&&n.rc!=="")return trNum(n.rc);return trIsBuild(t,n)?1:trCost(t,n);}
+function trSpentOn(t,n,rk){var s=0;for(var k=1;k<=rk;k++)s+=trRankCost(t,n,k);return s;}
 function trCur(t,n){return t.kind==="char"?"pts":(n&&n.cur)||t.cur||"Tarnite";}
 function trRank(own,id){return trNum((own||{})[id]);}
-function trOvSpent(t,own){var s=0;t.nodes.forEach(function(n){var c=trCol(t,n.col);if(c&&c.role==="overall")s+=trRank(own,n.id)*trCost(t,n);});return s;}
-function trSpent(t,own){var s=0;t.nodes.forEach(function(n){s+=trRank(own,n.id)*trCost(t,n);});return s;}
+function trOvSpent(t,own){var s=0;t.nodes.forEach(function(n){var c=trCol(t,n.col);if(c&&c.role==="overall")s+=trSpentOn(t,n,trRank(own,n.id));});return s;}
+function trSpent(t,own){var s=0;t.nodes.forEach(function(n){s+=trSpentOn(t,n,trRank(own,n.id));});return s;}
 function trPartner(t,n){if(!trIsBuild(t,n))return null;var o=trBuilds(t).filter(function(c){return c.id!==n.col;})[0];return o?trRungNode(t,o.id,trNum(n.rung)):null;}
 function trRungTaken(t,own,r){return trBuilds(t).some(function(c){var x=trRungNode(t,c.id,r);return x&&trRank(own,x.id)>0;});}
 /* ctx: {lvl, have} → {ok, why, state: owned|open|locked|gated|hidden|poor} */
-function trCheck(t,own,n,ctx){ctx=ctx||{};var rk=trRank(own,n.id),cost=trCost(t,n);
+function trCheck(t,own,n,ctx){ctx=ctx||{};var rk=trRank(own,n.id),cost=trRankCost(t,n,rk+1);
  if(n.hidden)return {ok:false,state:"hidden",why:"Not revealed yet"};
  if(rk>=n.ranks)return {ok:false,state:"owned",why:n.ranks>1?"All "+n.ranks+" ranks taken":"Taken"};
  if(trIsBuild(t,n)){var p=trPartner(t,n),r=trNum(n.rung),R=t.rungs[r-1]||{};
@@ -109,7 +112,7 @@ function trMods(t,own){var m={};t.nodes.forEach(function(n){var rk=trRank(own,n.
 function trWhere(t,n){var c=trCol(t,n.col)||{};return trIsBuild(t,n)?(c.name||"Build")+" · rung "+n.rung:(c.name||"")+(t.kind==="equip"?" · "+trCost(t,n)+" "+trCur(t,n):"");}
 /* What players may see: hidden nodes keep only their place and cost. */
 function trPublic(t){var o=JSON.parse(JSON.stringify(trNorm(t)));
- o.nodes=o.nodes.map(function(n){return n.hidden?{id:n.id,col:n.col,rung:n.rung,cost:n.cost,ranks:n.ranks,req:n.req,hidden:true,cur:n.cur}:n;});
+ o.nodes=o.nodes.map(function(n){return n.hidden?{id:n.id,col:n.col,rung:n.rung,cost:n.cost,ranks:n.ranks,rc:n.rc,req:n.req,hidden:true,cur:n.cur}:n;});
  Object.keys(o.caps||{}).forEach(function(k){if(o.caps[k]&&o.caps[k].hidden)o.caps[k]={hidden:true};});delete o.notes;return o;}
 /* ---------- circle-node view (sheet, DM builder, reference page) ----------
    o: {mode:"sheet"|"dm"|"page", own, ctxFor(n)→{lvl,have}, sel, attr:"data-…", add:true (dm: + buttons)} */
@@ -120,7 +123,7 @@ function trState(t,n,o){if(o.mode==="dm")return n.hidden?"hidden":(n.n?"owned":"
 function trDot(t,n,o,cap){var id=cap?"cap:"+cap:n.id,st,rk=cap?0:trRank(o.own,n.id),nm;
  if(cap){var on=o.mode==="sheet"&&trCapOn(t,o.own||{},cap);st=o.mode==="dm"?(n.hidden?"hidden":(n.n?"owned":"gated")):n.hidden&&o.mode!=="dm"?"hidden":on?"owned":(o.mode==="page"?"open":"gated");}else st=trState(t,n,o);
  nm=(n.hidden&&o.mode!=="dm")?"???":(n.n||(o.mode==="dm"?"(unnamed)":"?"));
- var cost=cap?"":trCost(t,n);
+ var cost=cap?"":(o.mode==="sheet"?(trRank(o.own,n.id)>=n.ranks?"✓":trRankCost(t,n,trRank(o.own,n.id)+1)):trCost(t,n));
  return '<div class="tvw"><button class="tvn tvs-'+st+(cap?' tvcap':'')+(rk?' tvhas':'')+(o.sel===id?' sel':'')+(o.mode==="dm"&&n.hidden?' tvdh':'')+'" '+o.attr+'="'+trEsc(id)+'" title="'+trEsc(nm)+'"><span class="tvi">'+trEsc(trIcon(n,o.mode))+'</span>'+
   (!cap&&n.ranks>1?'<span class="tvk">'+(o.mode==="sheet"?rk+'/':'×')+n.ranks+'</span>':'')+(cost!==""?'<span class="tvc">'+cost+'</span>':'')+'</button><div class="tvl">'+trEsc(nm)+'</div></div>';}
 function trAddDot(o,key,lab){return o.add?'<div class="tvw"><button class="tvn tvadd" data-tadd="'+trEsc(key)+'" title="'+trEsc(lab)+'"><span class="tvi">+</span></button><div class="tvl">'+trEsc(lab)+'</div></div>':'<div class="tvw"><div class="tvn tvs-hidden tvempty"><span class="tvi">–</span></div><div class="tvl">empty</div></div>';}
@@ -158,7 +161,8 @@ function trDetail(t,id,o){var KN={};TR_KINDS.forEach(function(k){KN[k[0]]=k[1];}
  var cap=id.indexOf("cap:")===0?id.slice(4):"",n=cap?(t.caps[cap]||{}):trNode(t,id);if(!n)return '<div class="tvd-empty">That node no longer exists.</div>';
  var hid=n.hidden&&o.mode!=="dm",col=trCol(t,cap||n.col)||{},h='<div class="tvd-top"><span class="tvd-ic tvn '+(cap?'tvcap ':'')+'tvs-'+(cap?(o.mode==="sheet"&&trCapOn(t,o.own||{},cap)?"owned":"open"):trState(t,n,o))+'"><span class="tvi">'+trEsc(trIcon(n,o.mode))+'</span></span><div><div class="tvd-n">'+(hid?"???":trEsc(n.n||"(unnamed)"))+'</div>';
  h+='<div class="tvd-m">'+(cap?"Capstone · every rung of "+trEsc(col.name):trEsc(trWhere(t,n)))+(hid?'':' · '+trEsc(KN[n.k]||n.k||""))+'</div></div></div>';
- if(!cap){var cost=trCost(t,n);h+='<div class="tvd-cost">'+cost+' '+(t.kind==="char"?"point"+(cost===1?"":"s"):trEsc(trCur(t,n)))+(n.ranks>1?' per rank · '+n.ranks+' ranks'+(o.mode==="sheet"?' ('+trRank(o.own,n.id)+' taken)':''):'')+'</div>';}
+ if(!cap){var cost=trCost(t,n),xc=trRankCost(t,n,2),un=function(v){return t.kind==="char"?"point"+(v===1?"":"s"):trEsc(trCur(t,n));};
+  h+='<div class="tvd-cost">'+(n.ranks>1?'Rank '+(o.mode==="sheet"?Math.min(n.ranks,trRank(o.own,n.id))+'/':'×')+n.ranks+' · ':'')+cost+' '+un(cost)+(n.ranks>1?(xc===cost?' per rank':' for rank 1, '+xc+' '+un(xc)+' per extra rank'):'')+'</div>';}
  if(hid)h+='<div class="tvd-t tvd-dim">Not revealed yet.</div>';
  else{if(n.text)h+='<div class="tvd-t">'+n.text+'</div>';if(n.dmg)h+='<div class="tvd-x">Damage '+trEsc(n.dmg)+'</div>';
   var ms=TR_MODS.filter(function(k){return trNum((n.mods||{})[k[0]]);}).map(function(k){return k[1]+" "+((trNum(n.mods[k[0]])>0?"+":"")+trNum(n.mods[k[0]]))+(n.ranks>1?" per rank":"");});if(ms.length)h+='<div class="tvd-x">'+trEsc(ms.join(" · "))+'</div>';}
