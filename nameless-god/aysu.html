@@ -358,10 +358,10 @@ window.CHAR={
  /* weapons: limb drives Ripping Rapids weapon-switch and Trait Infusions */
  weapons:[
   {n:"Tempest Trident",e:"4d12+DEX",t:"piercing",limb:"trident",hit:"+29",note:"reach 10 ft · thrown 20/60 · finesse"},
-  {n:"Fists",e:"5d6+DEX",t:"bludgeoning",limb:"fist",hit:"+29",note:"default"},
-  {n:"Elbow",e:"4d12+DEX",t:"piercing",limb:"elbow",hit:"+29",note:"ignores temp HP"},
-  {n:"Kicks",e:"3d20+DEX",t:"bludgeoning",limb:"kick",hit:"+29",note:"5 ft reach · +10 ft knockback · Vulnerable on miss",vuln:true},
-  {n:"Knees",e:"8d6+DEX",t:"piercing",limb:"knee",hit:"+29",note:"10 ft · 5 ft knockback"},
+  {n:"Fists",e:"10d6+DEX",t:"bludgeoning",limb:"fist",hit:"+29",note:"default"},
+  {n:"Elbow",e:"9d12+DEX",t:"piercing",limb:"elbow",hit:"+29",note:"ignores temp HP"},
+  {n:"Kicks",e:"8d20+DEX",t:"bludgeoning",limb:"kick",hit:"+29",note:"5 ft reach · +10 ft knockback · Vulnerable on miss",vuln:true},
+  {n:"Knees",e:"13d6+DEX",t:"piercing",limb:"knee",hit:"+29",note:"10 ft · 5 ft knockback"},
   {n:"Moon Sickle",e:"1d4+DEX",t:"slashing",limb:"sickle",hit:"+29",note:""},
   {n:"Kunai",e:"2d6",t:"piercing",limb:"kunai",hit:"+29",note:"60 ft · part of the attack action · keeps the combo alive at range"}],
  wendigoAttacks:[
@@ -670,7 +670,7 @@ s=S("monk-rev","Revised Monk · J.T.'s changes","monk","house rules on top of th
 A(s,"Ki Surge","passive","",`<p>Ki pool doubled compared to a baseline monk, +5 Ki at levels 10, 20, 30, 40, 50.</p>`);
 A(s,"Athletic Flow","free","Free action",`<p>After any successful attack in a chain, attempt a grapple or shove as a free action, using Acrobatics instead of Athletics.</p>`);
 A(s,"Parry","reaction","Exclusive Dynamic Reaction · 1 token",`<p>When a melee attack hits him, spend a token to attack the creature. If his roll beats theirs, the attack is cancelled. If not, it lands with +20% damage; the token is spent either way.</p>`);
-A(s,"Martial Arts Die Increase","passive","levels 5, 10, 17",`<p>Fists, legs, elbows and knees each gain a damage die at 5, 10 and 17 (reflected in his weapon strings).</p>`);
+A(s,"Martial Arts Die Increase","passive","levels 5, 10, 17",`<p>Fists, legs, elbows and knees each gain a damage die at 5, 10 and 17. Sifu Limb Dice add 5 more dice to each limb (DM ruling): Fists 10d6, Elbow 9d12, Knees 13d6, Kicks 8d20. All reflected in his weapon strings.</p>`);
 A(s,"Stillness of Mind","passive","Level 6",`<p>Proficiency in all saving throws and resistance to psychic damage.</p>`);
 A(s,"Ki Siphon (weapon)","action","Level 14",`<p>Touch a magical weapon to siphon its enchantment into his limbs: its effects (flaming, vampiric, etc.) apply to unarmed strikes, charges carry over, until the end of combat or the next siphon.</p>`);
 A(s,"Enlightenment","passive","Level 20",`<p>Flurry of Blows, Patient Defense and Step of the Wind cost 0 Ki. One Ki ability per turn even at 0 Ki. Advantage on Dexterity and Wisdom saves. +4 Dexterity and +4 Wisdom (can exceed 20).</p>`);
@@ -799,7 +799,7 @@ s=S("dusk-21","Gate of the Long Dusk · 21st","dusk","evolves Touch of Death and
 A(s,"Last Breath 嚥氣","free","no action · once per creature",`<p>When a creature within 30 feet drops to 0 hit points from any source, inhale its last breath:</p><ul><li>temporary hit points equal to your Wisdom modifier + 10% of the creature's hit point maximum;</li><li>3 Coils;</li><li>5 Ki, if your Water strike killed it.</li></ul><p><b>Exhaled to the Student.</b> Give the temporary hit points to a disciple within 60 feet instead. A borrowed breath fades at the end of your next turn. You can never inhale the same creature twice. <i>(Replaces Touch of Death.)</i></p>`);
 A(s,"Deduct Days 奪算","passive","Water hit",`<p>When you hit with a Water strike, the target's hit point maximum is reduced by your Wisdom modifier. Your Water disciple deducts days too, using your modifier.</p>`);
 A(s,"Deduct Years 奪紀","passive","Long Death release",`<p>When you release Fa Jin, you can make it a Long Death release. The Fa Jin damage becomes necrotic, and the target's hit point maximum is reduced by the same amount. A Long Death release can't hurl the target.</p>`);
-A(s,"Touch of the Long Death","free","up to 20 Ki · any unarmed hit",`<p>Now works through any unarmed hit instead of taking an action. Spend up to 20 Ki on it (2d10 necrotic per Ki), and its damage also counts as Deducted Years. Set the Ki in the calculator when the strike is unarmed.</p>`);
+A(s,"Touch of the Long Death","free","up to 20 Ki · any unarmed hit",`<p>Now works through any unarmed hit instead of taking an action. Spend up to 20 Ki on it (2d10 necrotic per Ki), and its damage also counts as Deducted Years. <i>DM ruling: no CON save; it rides the unarmed hit.</i> Set the Ki in the calculator when the strike is unarmed.</p>`);
 A(s,"The Register","passive","until the creature's long rest",`<p>Deductions last until the creature finishes a long rest. A creature whose hit point maximum reaches 0 dies, and nothing short of a god can return it. Every entry is written in two columns: each time you Deduct Years, your own hit point maximum drops by 10% of the amount deducted until you finish a long rest.</p>`);
 
 s=S("dusk-24","Gate of the Long Dusk · 24th","dusk","evolves Hour of Reaping",{src:"prestige",color:"#a98bd6"});
@@ -816,9 +816,9 @@ A(s,"30 · A Thousand Years Without Waking 千載永不寤","free","locked",`<p>
 /* =============== KÖS · SPIRIT MODULE =============== */
 s=S("kos","KÖS · Spirit Module","kos","the hammer module for the Tempest Trident",{src:"equip",color:"#5aa9e6",
  blurb:"The DM noted more is coming for this module. Turning Year is referenced under Strain but not defined yet."});
-A(s,"Mounting the Module","bonus","Bonus action",`<p>Seat or remove the hammer module on your trident. While mounted, the trident becomes a two-handed maul with 15-foot reach that deals an additional 6d12 bludgeoning on a hit, and each swing resolves against every creature in a 90-foot arc within that reach. Each swing expends two attacks from your Attack action, hit or miss.</p>`);
+A(s,"Mounting the Module","bonus","Bonus action",`<p>Seat or remove the hammer module on your trident. While mounted, the trident becomes a two-handed maul with 15-foot reach that deals an additional 6d12 bludgeoning on a hit, and each swing resolves against every creature in a 90-foot arc within that reach. Each swing expends two attacks from your Attack action, hit or miss. <i>DM rulings: every creature hit adds to Ripping Rapids, and swapping between trident, unarmed strikes and the hammer counts as a weapon switch.</i></p>`);
 A(s,"Swapping","free","Free · after one swing",`<p>Seat or remove the module at any time after one swing, any number of times per turn, including between two attacks of the same Attack action and while airborne.</p>`);
-A(s,"Displacement","passive","8% + 1% per 2 Swell · max 13%",`<p>Each creature struck by the Kös takes damage equal to 8% of its hit point maximum in addition to the weapon's dice, +1% for every 2 Swell, to a maximum of 13%. Bludgeoning, not reduced by resistance or immunity, and applied separately to each creature in the arc.</p>`);
+A(s,"Displacement","passive","8% + 1% per 2 Swell · max 13%",`<p>Each creature struck by the Kös takes damage equal to 8% of its hit point maximum in addition to the weapon's dice, +1% for every 2 Swell, to a maximum of 13%. Bludgeoning, not reduced by resistance or immunity, and applied separately to each creature in the arc. <i>DM ruling: damage multipliers scale it.</i></p>`);
 A(s,"Swell","passive","max 10 · empties on a rest",`<p>Gain 1 Swell for every 15 feet you move, 1 whenever you take damage and aren't reduced to 0, 1 whenever a Shockwave you created damages a creature, and 2 whenever two of your Shockwaves interfere.</p>`);
 A(s,"Shockwave","passive","on every Kös hit",`<p>A wall of compressed water and air 20 feet wide that travels in a direction you choose, moving 30 feet at the start of each of your turns, for 3 rounds. The first time on a turn it moves through a creature's space, the creature makes a Strength save (Ki save DC): 6d12 bludgeoning + 4% of its maximum and pushed 10 feet on a failure, half and no push on a success. Any number can be active.</p>`);
 A(s,"Interference","passive","",`<p>When two of your Shockwaves occupy the same space they combine into one that deals the total of both, doubled, continuing along the bisector. A creature in that space takes it with no save and is stunned until the end of its next turn. Three combining deal the total of all three, tripled, then doubled.</p>`);
@@ -833,7 +833,7 @@ A(s,"The Narrows","action","6 Swell · Action",`<p>Melee attack with the trident
 A(s,"The Closing","action","Action · ends The Narrows",`<p>CON save: 30d12 + 25% of its maximum, half on a success. If that leaves it below a quarter of its maximum, it drops to 0. Create eight Shockwaves radiating outward, which interfere normally. Each ally who can hear it can immediately take one action.</p>`);
 A(s,"The Anchor","bonus","2 Swell · Bonus",`<p>Throw the head up to 90 feet to set in a surface, object or creature, then pull yourself to it or it to you. Creatures in its path make a STR save or are dragged along and knocked prone.</p>`,{pay:{swell:2}});
 A(s,"Breakwater","reaction","1 Swell · Reaction",`<p>When you or an ally within 10 feet would be targeted, plant the head: you and each ally in a 10-foot line behind you have total cover against it unless it comes from a Praxis or a Transcendence. The blocked attack becomes a Shockwave travelling back along its path.</p>`,{pay:{swell:1},hook:"breakwater"});
-A(s,"Mehter","bonus","3 Swell · Bonus · concentration",`<p>Keep time with the haft for up to 1 minute. Allies who hear it gain +2 to attack rolls and saves and can't be frightened. The tempo advances one step at the start of each of your turns, adding +2 per step. On the fourth step, each ally can take one additional action on its next turn, and you take 8d20 untyped damage.</p>`,{pay:{swell:3},hook:"mehter"});
+A(s,"Mehter","bonus","3 Swell · Bonus · concentration",`<p>Keep time with the haft for up to 1 minute. Allies who hear it gain +2 to attack rolls and saves and can't be frightened. The tempo advances one step at the start of each of your turns, adding +2 per step. On the fourth step, each ally can take one additional action on its next turn, and you take 8d20 untyped damage. <i>DM ruling: Mehter stops after the fourth step.</i></p>`,{pay:{swell:3},hook:"mehter"});
 
 /* ---------- which Kit source each section belongs to ---------- */
 C.kitSrcByPane={tech:"feat",stances:"stance",traits:"origin",monk:"class",druid:"class",rogue:"class",sifu:"prestige",dusk:"prestige",kos:"equip"};
@@ -1188,6 +1188,7 @@ function strike(d,o){var src=o.src,ov=o.ov,t=o.t,on=o.on;
  var riders=[],tldK=unarmed?sfTldKi():0,tldAmt=tldK*20;if(tldK)riders.push({n:"Touch of the Long Death "+tldK+" Ki",e:(2*tldK)+"d10"});if(on.sneak)riders.push({n:"Sneak Attack",e:"4d6"});if(on.ebb)riders.push({n:"Ebb",e:"2d8"});
  (S.dmg.custRiders||[]).forEach(function(r){if(S.dmg.riders[r.n])riders.push(r);});
  riders.forEach(function(r){var rp=parseExpr(r.e,d),rv=rp.flat;rp.dice.forEach(function(x){rv+=x.n*x.m;});v+=rv;how.push("+"+rv+" "+r.n);});
+ var disp=0;if(src.kos&&t&&num(t.hpMax)>0){var dp=kosDispPct();disp=Math.floor(tMaxEff(t)*dp/100);v+=disp;how.push("+"+disp+" Displacement "+dp+"%");tags.push("Displacement "+dp+"%");}
  var line=how.join(" ")+" → "+v;
  function mul(k,f,lab){if(!on[k])return;v=Math.floor(v*f);line+=" · "+lab+" → "+v;tags.push(lab);}
  if(on.eop){v=Math.floor(v*(1+0.25*d.eop));line+=" · Edge +"+25*d.eop+"% → "+v;tags.push("Edge +"+25*d.eop+"%");}
@@ -1195,7 +1196,6 @@ function strike(d,o){var src=o.src,ov=o.ov,t=o.t,on=o.on;
  mul("kill",1.75,"kill ×1.75");mul("revolt",2.5,"Revolt ×2.5");mul("savage",2,"Savage ×2");mul("vulnT",2,"vulnerable ×2");
  var sg=d.stat||statusAgg();if(sg.dmgOut!==1){v=Math.floor(v*sg.dmgOut);line+=" · status ×"+(+sg.dmgOut.toFixed(2))+" → "+v;tags.push("status ×"+(+sg.dmgOut.toFixed(2)));}
  if(on.half){v=Math.floor(v/2);line+=" · half → "+v;tags.push("half");}
- var disp=0;if(src.kos&&t&&num(t.hpMax)>0){var dp=kosDispPct();disp=Math.floor(tMaxEff(t)*dp/100);v+=disp;line+=" · +"+disp+" Displacement "+dp+"% (ignores resistance) → "+v;tags.push("Displacement "+dp+"%");}
  if(fa)tags.push("Fa Jin ×"+fa+(S.sf.ldRel?" · Long Death":""));
  var hasMax=!!(t&&num(t.hpMax)>0),pct=vitalPct(crit,t),vital=hasMax?Math.floor(tMaxEff(t)*pct/100):0;
  if(on.krush&&hasMax){v+=vital;line+=" · +"+vital+" Krushing (Vital "+pct+"%) → "+v;tags.push("Krushing");}
@@ -1829,16 +1829,16 @@ function sfAfterStrike(d,o,r,n,t,extra){var parts=[];S.sf.act.hit=true;
 function kosSwing(d,o){var D=S.dmg,src=o.src,n=Math.max(1,Math.round(num(D.n,1)));
  if(src.why&&!window.confirm(src.n+": "+src.why+". Swing anyway?"))return false;
  var ids=Object.keys(S.kos.arc||{}).filter(function(k){var t=tById(k);return S.kos.arc[k]&&t&&!t.down;});if(!ids.length&&D.tgt)ids=[D.tgt];
- var total=0,hit=0,parts=[];
+ var total=0,hit=0,parts=[],creatures=0;
  for(var s=0;s<n;s++){
   if(!ids.length){var r0=strike(d,o);if(!r0.ok){flash(r0.msg);return false;}D.lines.push({id:uid("d"),label:"KÖS swing",target:"",n:1,each:r0.each,total:r0.each,how:r0.how,tags:r0.tags.join(", "),round:S.round,extra:"no target: add Displacement by aiming"});total+=r0.each;hit++;continue;}
   ids.forEach(function(id){var t=tById(id);if(!t||t.down)return;var oo=optsFor(d,id),r=strike(d,oo);if(!r.ok)return;
    if(D.apply){t.hp=num(t.hp)-r.each;if(t.hp<=0)killTarget(t);}
    var cv=Math.floor(r.dice/2)+Math.floor(r.disp/2);S.kos.cav.push({id:uid("c"),tid:id,amt:cv,label:"Cavitation · KÖS swing"});
-   D.lines.push({id:uid("d"),label:"KÖS swing",target:t.name,n:1,each:r.each,total:r.each,how:r.how,tags:r.tags.join(", "),round:S.round,extra:"cavitation "+cv+" queued for End turn"});total+=r.each;hit++;});}
+   creatures++;D.lines.push({id:uid("d"),label:"KÖS swing",target:t.name,n:1,each:r.each,total:r.each,how:r.how,tags:r.tags.join(", "),round:S.round,extra:"cavitation "+cv+" queued for End turn"});total+=r.each;hit++;});}
  if(!hit){flash("No target in the arc");return false;}
  for(var w=0;w<n;w++)kosWaveAdd("Swing");
- if(D.build){var cb=comboHits({limb:"kos",tid:ids[0]||"",hits:n});parts.push("combo +"+cb.gain+(cb.sw?" (switch)":""));}
+ if(D.build){var cb=comboHits({limb:"kos",tid:ids[0]||"",hits:Math.max(1,creatures)});parts.push("combo +"+cb.gain+" ("+Math.max(1,creatures)+" creature hit"+(creatures===1?"":"s")+(cb.sw?", switch":"")+")");}
  if(S.eco.atk)S.eco.atk.left=Math.max(0,S.eco.atk.left-2*n);
  S.sf.act.hit=true;
  D.tog.crit=false;D.tog.nat20=false;D.tog.krush=false;D.tog.half=false;D.tog.savage=false;D.tog.aqua=false;D.off={};D.n=1;
@@ -1851,7 +1851,7 @@ function hitTarget(t,v){if(!t||t.down)return;t.hp=num(t.hp)-v;if(t.hp<=0)killTar
 /* ---------- turn hooks ---------- */
 function kosStartTurn(d,parts){var K=S.kos;
  if(K.waves.length){var sp=(K.rain||K.water)?60:30;K.waves.forEach(function(w){w.ft=num(w.ft)+sp;});parts.push(K.waves.length+" Shockwave"+(K.waves.length>1?"s":"")+" move "+sp+" ft");}
- if(K.mehter.on){K.mehter.step=num(K.mehter.step)+1;parts.push("Mehter step "+K.mehter.step+": allies +"+2*K.mehter.step);if(K.mehter.step===4)S.pend.mehter=true;}
+ if(K.mehter.on&&num(K.mehter.step)<4){K.mehter.step=num(K.mehter.step)+1;parts.push("Mehter step "+K.mehter.step+": allies +"+2*K.mehter.step);if(K.mehter.step===4)S.pend.mehter=true;}
  if(K.rain>=3){var f=Math.floor(d.hpMax*0.05);takeDamage(f);parts.push("Flooding: you take "+f);}
  if(K.narrows.tid){var nt=tById(K.narrows.tid);if(nt)parts.push(nt.name+" is In The Narrows: tick it at the start of its turn");}}
 function sfEndTurn(d,parts){var F=S.sf;
@@ -1984,7 +1984,7 @@ function sfAct(a,el,d){var id=el.getAttribute("data-id"),n=num(el.getAttribute("
   if(S.eco.act)S.eco.act.left=Math.max(0,S.eco.act.left-1);logline("The Closing on "+t.name+": "+v+(low?" → 0 HP":"")+" · 8 Shockwaves · each ally who hears it takes an action");return true;
  case "knend":N=S.kos.narrows;t=tById(N.tid);if(t)setTStat(t,"vuln",false);S.kos.narrows={tid:"",r:0};S.effects=S.effects.filter(function(e){return e.name!=="Concentrating: The Narrows";});logline("The Narrows ends");return true;
  case "kmehterend":S.kos.mehter={on:false,step:0};S.pend.mehter=false;S.effects=S.effects.filter(function(e){return e.name!=="Concentrating: Mehter";});logline("Mehter ends");return true;
- case "kmehter4":v=num(S.kos.mehterIn);if(v>0)takeDamage(v);S.pend.mehter=false;S.kos.mehterIn=0;logline("Mehter fourth step: allies each take one extra action next turn"+(v?" · you take "+v:""));return true;
+ case "kmehter4":v=num(S.kos.mehterIn);if(v>0)takeDamage(v);S.pend.mehter=false;S.kos.mehterIn=0;S.kos.mehter={on:false,step:0};S.effects=S.effects.filter(function(e){return e.name!=="Concentrating: Mehter";});logline("Mehter fourth step: allies each take one extra action next turn"+(v?" · you take "+v:"")+" · Mehter ends");return true;
  /* kit */
  case "kxkind":S.ui.kitKind=id;return true;
  case "kxsrc":S.ui.kitSrc=id;return true;
@@ -2015,7 +2015,7 @@ function sfPendingHtml(d){var P=S.pend,h="";
  if(P.breath){var t=tById(P.breath);if(t&&!t.inhaled){var tmp=d.mod.wis+Math.floor(tMaxEff(t)*0.1||num(t.hpMax)*0.1);
   h+='<div class="pending" style="width:100%;margin-top:6px;border-color:#a98bd6"><h3>Last Breath · '+esc(t.name)+' dropped</h3><p class="note" style="margin:2px 0">Temp '+tmp+' (WIS + 10% of its max) · +3 Coils'+(t.waterKill?' · +5 Ki (Water kill)':'')+' · fades at the end of your next turn.</p><div class="row" style="margin-top:7px">'+
    btn("Inhale","dbreath",{id:t.id},"pri")+btn("Exhale to a disciple","dbreath",{id:t.id,k:"disc"})+chip("Water strike killed it","dwaterkill",{id:t.id},!!t.waterKill)+btn("Not within 30 ft","dbreathno",{},"dgr")+'</div></div>';}}
- if(P.mehter)h+='<div class="pending" style="width:100%;margin-top:6px"><h3>Mehter · fourth step</h3><p class="note" style="margin:2px 0">Each ally can take one additional action on its next turn. You take 8d20 untyped: roll it and enter it.</p><div class="row" style="margin-top:7px"><input class="num w80" type="number" data-b="kos.mehterIn" value="'+num(S.kos.mehterIn)+'">'+btn("Take it","kmehter4",{},"pri")+btn("End Mehter","kmehterend",{},"dgr")+'</div></div>';
+ if(P.mehter)h+='<div class="pending" style="width:100%;margin-top:6px"><h3>Mehter · fourth step</h3><p class="note" style="margin:2px 0">Each ally can take one additional action on its next turn. You take 8d20 untyped: roll it and enter it. Mehter ends after this step.</p><div class="row" style="margin-top:7px"><input class="num w80" type="number" data-b="kos.mehterIn" value="'+num(S.kos.mehterIn)+'">'+btn("Take it","kmehter4",{},"pri")+btn("End Mehter","kmehterend",{},"dgr")+'</div></div>';
  return h;}
 
 /* ===================== CALCULATOR ADD-ONS ===================== */
@@ -2030,7 +2030,7 @@ function sfCalcHtml(d,o){var src=o.src;if(!src)return "";var limb=(o.ov&&o.ov.ov
  if(src.kos){var ids=liveTargets();h+='<div class="modgrp"><span class="lbl">KÖS · 90-ft arc · Displacement '+kosDispPct()+'% each · 2 attacks per swing</span><div class="row" style="margin-top:4px">';
   if(!ids.length)h+='<span class="sub" style="margin:0">add targets to catch them in the arc</span>';
   ids.forEach(function(x){h+=chip(esc(x.name)+(num(x.hpMax)?' <span style="opacity:.7">+'+Math.floor(tMaxEff(x)*kosDispPct()/100)+'</span>':''),"karc",{id:x.id},!!S.kos.arc[x.id]);});
-  h+='<span class="sub" style="margin:0">none picked = the aimed target · each gets its own line, Shockwave and cavitation</span></div></div>';}
+  h+='<span class="sub" style="margin:0">none picked = the aimed target · each gets its own line and cavitation · every creature hit adds to the combo</span></div></div>';}
  return h;}
 function sfTargetBits(t){var b=[];if(num(t.ded))b.push('<span style="color:#a98bd6">Ledger −'+t.ded+' max</span>');if(num(t.listen)>0)b.push('<span style="color:#9fd8ff">Listening</span>');
  if(num(t.po))b.push('<span style="color:#a98bd6">Po '+t.po+'/7 (−'+2*t.po+')</span>');if(num(t.seams))b.push('crit '+(20-t.seams)+'–20');if(S.kos.narrows.tid===t.id)b.push('<span style="color:#5aa9e6">In The Narrows</span>');
@@ -2133,7 +2133,7 @@ function renderKos(d){var K=S.kos,sw=resVal("swell"),wt=tById(K.wt),lt=liveTarge
   btn("Start of its turn: "+dd+"d12 + "+pc+"% = "+(dd*12+Math.floor(tMaxEff(nt)*pc/100)),"ktick",{},"pri")+btn("Closing · fails · "+(360+Math.floor(tMaxEff(nt)*0.25)),"kclose",{k:"fail"})+btn("Closing · saves","kclose",{k:"save"})+btn("release","knend",{},"sm dgr")+'</div><p class="sub">The Closing drops it to 0 if it ends below a quarter of its max ('+Math.floor(tMaxEff(nt)*0.25)+'), makes eight Shockwaves, and each ally who hears it takes an action. You can\'t use other techniques while it holds.</p>';}
  h+='</div></section>';
  h+='<section id="ks-tools"><h2>Anchor · Breakwater · Mehter</h2><div class="card"><div class="row">'+btn("The Anchor · 2 Swell","pay",{id:"kos:The Anchor"},"sm")+btn("Breakwater · 1 Swell","pay",{id:"kos:Breakwater"},"sm","Reaction · makes a Shockwave back along the attack's path")+(K.mehter.on?'':btn("Mehter · 3 Swell","pay",{id:"kos:Mehter"},"sm pri"))+'</div>';
- if(K.mehter.on)h+='<div class="row" style="margin-top:8px"><span class="lbl" style="margin:0">Mehter tempo</span>'+[1,2,3,4].map(function(i){return '<span class="chip'+(K.mehter.step>=i?' on':'')+'">'+i+'</span>';}).join("")+'<span class="sub" style="margin:0">allies <b style="color:#fff">+'+2*num(K.mehter.step)+'</b> to attacks and saves, can\'t be frightened · advances at Start turn · step 4: extra action for allies, 8d20 to you</span>'+btn("end","kmehterend",{},"sm dgr")+'</div>';
+ if(K.mehter.on)h+='<div class="row" style="margin-top:8px"><span class="lbl" style="margin:0">Mehter tempo</span>'+[1,2,3,4].map(function(i){return '<span class="chip'+(K.mehter.step>=i?' on':'')+'">'+i+'</span>';}).join("")+'<span class="sub" style="margin:0">allies <b style="color:#fff">+'+2*num(K.mehter.step)+'</b> to attacks and saves, can\'t be frightened · advances at Start turn · step 4: extra action for allies, 8d20 to you, then it ends</span>'+btn("end","kmehterend",{},"sm dgr")+'</div>';
  h+='</div></section>';
  h+='<section id="ks-strain"><h2>Strain <span class="sub2">−'+d.strain+' to attacks and saves (applied)</span></h2><div class="card"><table><tr><th>Source</th><th class="n">Levels</th><th>Clears</th><th></th></tr>'+
   [["K","Kös","short rest"],["R","The Rain","long rest"],["Y","Turning Year","long rest"]].map(function(x){return '<tr><td class="cz">'+x[1]+(x[0]==="Y"?' <span class="amber">TBD</span>':'')+'</td><td class="n">'+num(K["strain"+x[0]])+'</td><td class="sub">'+x[2]+'</td><td>'+btn("+","kstrain",{k:x[0],n:1},"sm")+btn("−","kstrain",{k:x[0],n:-1},"sm")+'</td></tr>';}).join("")+'</table></div></section>';
