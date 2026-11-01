@@ -307,7 +307,7 @@ var SCH={
   ["Judgement","Advantage on attacks against <i>Evil</i> creatures. <i>Evil</i> creatures have disadvantage on all attacks, saves, and checks targeting this creature."]]},
  draconic:{n:"Draconic",cls:"sch-dra",align:"Neutral",res:"Ki",quote:"Dragons don't choose sides. They become the outcome",tiers:[
   ["Prosperity","Gains +PB to attack and damage rolls."],
-  ["Golden","Links to all <i>Good</i> creatures within 30 ft. When any linked creature is hit, half the damage dealt becomes <b>Draconic Growth</b>. Melissa can spend stored Growth on a later turn to advance this seal 1 tier as a free action."],
+  ["Golden","Links to all <i>Good</i> creatures within 30 ft. When any linked creature is hit, half the damage dealt is stored as <b>Draconic Growth</b> on this seal. Once per turn, as a free action, Melissa can spend it: every WIS × PB of Growth spent adds 1 tick (with the drain). Unspent Growth stays until the seal is broken or removed."],
   ["Evolution","At the end of each round, gains resistance to the last damage type taken. If already resistant, that damage is reduced a further 10%. Resistances reset at the start of Melissa's turn."],
   ["Obsidian","Links to all <i>Evil</i> creatures within 30 ft. When a linked creature attacks the Draconic target, half the total damage is reflected to the attacker as force."],
   ["Primordial","Once per round, when reduced to 0 HP, drops to 1 instead. Immune to frightened and charmed for the seal's duration."],
@@ -364,22 +364,15 @@ function monkOf(S){var c=(S.classes||[]).filter(function(x){return /monk/i.test(
 function kiMax(S){var m=monkOf(S);return 2*m+5*Math.floor(m/10);} /* Ki Surge: double baseline, +5 at 10/20/30/40/50 */
 function maCount(m){return 1+[5,10,17].filter(function(t){return m>=t;}).length;} /* revised: +1 die at 5, 10, 17 */
 var UNARMED=[["Palm",6,"bludgeoning","Default.","5 ft"],["Elbow",8,"piercing","Ignores temporary HP.","5 ft"],["Knee",8,"piercing","Knocks the target back 5 ft.","5 ft"],["Kick",10,"bludgeoning","+5 ft reach, knocks the target back 10 ft. On a miss, Melissa is <b>Vulnerable</b>.","10 ft"]];
-function drain(d){return Math.max(0,d.mod.wis*d.pb);}
-function tierOf(t){return Math.min(6,1+Math.floor(n(t)/3));}
-function flowMax(d){return Math.max(1,d.pb);}
+function trR(nm){return window.trRankOf?window.trRankOf(nm):0;} /* Drain per tick: WIS × PB of TL or HP, PB of Ki. Deep Drain (Quickened Seal R3): Ki 2 × PB, TL/HP (WIS × PB) + PB. */ function deep(){return trR("Quickened Seal")>=3;} function drain(d,school){var w=Math.max(0,d.mod.wis*d.pb);if(school==="draconic")return deep()?2*d.pb:d.pb;return deep()?w+d.pb:w;} function drainHP(d){var w=Math.max(0,d.mod.wis*d.pb);return deep()?w+d.pb:w;} /* Quickened Seal R1: a tier every 2 ticks instead of 3 */ function tpt(){return trR("Quickened Seal")>=1?2:3;} function tierOf(t){return Math.min(6,1+Math.floor(n(t)/tpt()));}function flowMax(d){return Math.max(1,d.pb);}
 function needKi(api,c){if(api.res("ki")<c){api.flash("Not enough Ki ("+c+" needed)");return false;}api.addRes("ki",-c);return true;}
 function once(key,label,api){var k=K();if(k.rnd[key]){api.flash(label+" already used this round");return false;}k.rnd[key]=true;return true;}
 
-function tickSeal(api,s,why){var d=api.compute(),dr=drain(d),sc=SCH[s.school],before=tierOf(s.ticks);
- var amt=dr,what=sc.res;
- if(s.school==="draconic"&&s.noKi){amt=dr*2;what="HP (no Ki, double rate)";}
- s.ticks=n(s.ticks)+1;var after=tierOf(s.ticks);
+function tickSeal(api,s,why){var d=api.compute(),dr=drain(d,s.school),sc=SCH[s.school],before=tierOf(s.ticks); var amt=dr,what=sc.res; if(s.school==="draconic"&&s.noKi){amt=drainHP(d);what="HP (no Ki, HP rate)";}s.ticks=n(s.ticks)+1;var after=tierOf(s.ticks);
  var msg=(why||"Drain")+": −"+amt+" "+what;
  var left=String(s.left==null?"":s.left).trim();
  if(left!==""&&!isNaN(+left)){var L=+left;
-  if(L<=0)msg=(why||"Drain")+": "+sc.res+" empty → "+dr+" necrotic";
-  else{L=Math.max(0,L-amt);s.left=String(L);if(L===0)msg+=" → empty (now "+dr+" necrotic a tick)";}}
- if(after>before)msg+=" · advanced to Tier "+after+": "+sc.tiers[after-1][0];
+  if(L<=0)msg=(why||"Drain")+": "+sc.res+" empty → "+drainHP(d)+" necrotic"; else{L=Math.max(0,L-amt);s.left=String(L);if(L===0)msg+=" → empty (now "+drainHP(d)+" necrotic a tick)";}}if(after>before)msg+=" · advanced to Tier "+after+": "+sc.tiers[after-1][0];
  s.log=msg;api.log((s.name||"Sealed target")+" · "+msg);}
 
 /* ---------- styles for the custom trackers ---------- */
@@ -427,28 +420,28 @@ function flowStrip(d,full){var k=K(),S=St(),f=n(S.res.flow),mx=flowMax(d),i,h=''
   return '<button class="chip '+sc.cls+'" style="border-color:var(--sc);color:#fff" data-a="pane" data-id="seals">'+esc(s.name||"Target")+' · '+sc.n+' T'+tierOf(s.ticks)+'</button>';}).join("")+'</div>';}
  return h+'</div></section>';}
 
-function sealCard(s,i,d){var sc=SCH[s.school]||SCH.demonic,t=tierOf(s.ticks),prog=n(s.ticks)%3,j,h='';
+function sealCard(s,i,d){var sc=SCH[s.school]||SCH.demonic,t=tierOf(s.ticks),prog=n(s.ticks)%tpt(),j,h='';
  h+='<div class="card seal '+sc.cls+'"><div class="sl-head"><input type="text" data-b="kit.seals.'+i+'.name" value="'+esc(s.name)+'" aria-label="Sealed creature">';
  ["angelic","draconic","demonic"].forEach(function(id){h+='<button class="chip'+(s.school===id?' on':'')+'" style="'+(s.school===id?'border-color:'+({angelic:"#d9b154",draconic:"#5fd2c0",demonic:"#e0505b"})[id]+';background:#ffffff0d':'')+'" data-a="sl-school" data-n="'+i+'" data-id="'+id+'">'+SCH[id].n+'</button>';});
  h+='<button class="btn sm dgr" data-a="sl-del" data-n="'+i+'" title="Remove seal">×</button></div>';
- h+='<div class="row" style="margin-top:6px"><span class="tag">sets '+sc.align+'</span><span class="tag">drains '+sc.res+'</span><span class="tag gold">'+drain(d)+(s.school==="draconic"&&s.noKi?' ×2':'')+' a tick</span>'+
+ h+='<div class="row" style="margin-top:6px"><span class="tag">sets '+sc.align+'</span><span class="tag">drains '+sc.res+'</span><span class="tag gold">'+(s.school==="draconic"&&s.noKi?drainHP(d)+' HP':drain(d,s.school))+' a tick</span>'+
   '<span class="lbl" style="margin:0 0 0 6px">'+sc.res+' left</span><input type="text" inputmode="numeric" class="num w80" data-b="kit.seals.'+i+'.left" value="'+esc(s.left==null?"":s.left)+'" placeholder="untracked" title="Optional: the target\'s remaining '+sc.res+'. Each tick subtracts the drain.">'+
-  (s.school==="draconic"?'<label class="sub" style="margin:0"><input type="checkbox" data-b="kit.seals.'+i+'.noKi"'+(s.noKi?' checked':'')+'> no Ki: drain HP at double rate</label>':'')+'</div>';
+  (s.school==="draconic"?'<label class="sub" style="margin:0"><input type="checkbox" data-b="kit.seals.'+i+'.noKi"'+(s.noKi?' checked':'')+'> no Ki: drain HP instead (WIS × PB)</label>':'')+'</div>';
  h+='<div class="sl-lad">';
  for(j=1;j<=6;j++){var pips='';if(j<t)pips='<span class="p3"><i class="f"></i><i class="f"></i><i class="f"></i></span>';else if(j===t&&t<6)pips='<span class="p3"><i class="'+(prog>0?'f':'')+'"></i><i class="'+(prog>1?'f':'')+'"></i><i></i></span>';
   h+='<div class="sl-r'+(j<=t?' on':'')+(j===t?' cur':'')+'">'+j+pips+'</div>';}
- h+='</div><div class="sub" style="margin:0 0 4px">Tier <b style="color:#fff">'+t+' · '+sc.tiers[t-1][0]+'</b> · '+n(s.ticks)+' ticks'+(t<6?' · '+prog+'/3 to Tier '+(t+1):' · maxed')+'</div>';
+ h+='</div><div class="sub" style="margin:0 0 4px">Tier <b style="color:#fff">'+t+' · '+sc.tiers[t-1][0]+'</b> · '+n(s.ticks)+' ticks'+(t<6?' · '+prog+'/'+tpt()+' to Tier '+(t+1):' · maxed')+'</div>';
  h+='<ul class="sl-eff">';for(j=0;j<t;j++)h+='<li class="'+(j===t-1?'cur':'')+'"><b class="t">T'+(j+1)+'</b><b>'+sc.tiers[j][0]+'.</b> '+sc.tiers[j][1]+'</li>';h+='</ul>';
  h+='<div class="row"><button class="btn pri" data-a="sl-tick" data-n="'+i+'" title="Start of the sealed creature\'s turn">+ Drain tick</button>'+
   '<button class="btn" data-a="sl-tick" data-n="'+i+'" data-v="storm" title="Eye of the Storm: it missed her or failed a save she forced">Eye of the Storm tick</button>'+
   '<button class="btn sm" data-a="sl-untick" data-n="'+i+'">− tick</button><button class="btn sm" data-a="sl-reset" data-n="'+i+'">reset</button>';
- if(s.school==="draconic"&&t>=2)h+='<span class="lbl" style="margin:0 0 0 8px">Draconic Growth</span><input type="text" inputmode="numeric" class="num w44" data-b="kit.seals.'+i+'.growth" value="'+esc(s.growth||"")+'" placeholder="0"><button class="btn sm" data-a="sl-grow" data-n="'+i+'" title="Free action on a later turn: advance this seal 1 tier">spend → +1 tier</button>';
+ if(s.school==="draconic"&&t>=2)h+='<span class="lbl" style="margin:0 0 0 8px">Draconic Growth</span><input type="text" inputmode="numeric" class="num w44" data-b="kit.seals.'+i+'.growth" value="'+esc(s.growth||"")+'" placeholder="0"><button class="btn sm" data-a="sl-grow" data-n="'+i+'" title="Free action, once per turn: every WIS × PB of Growth adds 1 tick (with the drain)">spend → ticks</button>';
  h+='</div>'+(s.log?'<div class="sl-log">'+esc(s.log)+'</div>':'')+'</div>';
  return h;}
 
 function sealsPane(d){var k=K(),h='';
  h+=flowStrip(d,true);
- h+='<section id="sealtracker"><h2>Seals on the field <span class="sub2">'+k.seals.length+' / '+d.pb+' (PB) · drain '+d.mod.wis+' WIS × '+d.pb+' PB = '+drain(d)+'</span></h2>'+
+ h+='<section id="sealtracker"><h2>Seals on the field <span class="sub2">'+k.seals.length+' / '+(d.pb+(trR("Swift Inscription")>=3?1:0))+' · drain '+drain(d,"angelic")+' TL or HP · '+drain(d,"draconic")+' Ki a tick'+(deep()?' (Deep Drain)':'')+'</span></h2>'+
   '<div class="row"><button class="btn pri lg" data-a="sl-add" title="Reaction on a hit (or bonus action on herself)">+ Place seal</button><button class="btn lg" data-a="sl-self">Seal herself</button>'+
   '<button class="btn lg" data-a="sl-all" title="Start of round: one drain tick on every seal">Tick every seal</button>'+
   '<label class="sub" style="margin:0 0 0 auto"><input type="checkbox" data-b="kit.autoTick"'+(k.autoTick?' checked':'')+'> End turn also ticks every seal</label></div>';
@@ -458,10 +451,10 @@ function sealsPane(d){var k=K(),h='';
  h+='</section>';
  h+='<section id="sealrules"><h2>Seal rules <span class="sub2">as ruled in v1.0</span></h2><div class="card"><ul style="margin-left:18px">'+
   '<li><b>Placement.</b> On a hit, use her reaction to seal the creature; seal herself as a bonus action. One seal per creature, PB seals on the field.</li>'+
-  '<li><b>Drain tick.</b> At the start of the sealed creature\'s turn, drain WIS × PB of the school\'s resource. Every 3rd tick advances one tier (Tier 6 at 15 ticks). Effects are cumulative.</li>'+
+  '<li><b>Drain tick.</b> At the start of the sealed creature\'s turn, drain WIS × PB of TL or HP, or PB of Ki. Every 3rd tick advances one tier (Tier 6 at 15 ticks; every 2nd with Quickened Seal). Effects are cumulative. A Draconic target with no Ki loses HP at the HP rate instead.</li>'+
   '<li><b>Empty resource.</b> With nothing left to drain, each tick deals WIS × PB necrotic instead.</li>'+
   '<li><b>Accelerants.</b> Eye of the Storm (+1 tick on a miss or failed save she forced), Undertow (+1 tick to every seal within 20 ft), Draconic Growth (+1 tier).</li></ul>'+
-  '<p class="note">The source doc states progression two ways and the empty-resource fallback as WIS mod; this sheet keeps the v1.0 rulings (one rule: every 3rd tick; fallback WIS × PB). '+TBD+'</p></div></section>';
+  '<p class="note">The source doc states progression two ways and the empty-resource fallback as WIS mod; the current rulings are one rule (every 3rd tick) and a WIS × PB necrotic fallback.</p></div></section>';
  h+='<section id="sealschools"><h2>Seal schools <span class="sub2">reference</span></h2>';
  ["angelic","draconic","demonic"].forEach(function(id){var sc=SCH[id];
   h+='<div class="card seal '+sc.cls+'"><h3>'+sc.n+' Seals <span class="tag">sets '+sc.align+'</span><span class="tag">consumes '+sc.res+(id==="draconic"?' (no Ki: HP ×2)':'')+'</span></h3><p class="sub" style="font-style:italic">"'+sc.quote+'"</p><table>'+
@@ -578,9 +571,9 @@ function act(a,el,api){var k=K(),S=St(),d=api.compute(),i=n(el.getAttribute("dat
   if(S.eco.bon&&S.eco.bon.left>0)S.eco.bon.left--;api.log("Undertow (2 Ki): +1 tick to every seal · move up to "+n(S.res.flow)*5+" ft. Undo with − tick on any seal beyond 20 ft");return true;
  case "sl-add":case "sl-self":case "sl-wake":
   if(a==="sl-wake"&&k.rnd.wake){api.flash("Waking Tiger already used this turn");return false;}
-  if(k.seals.length>=d.pb){api.flash("Seal cap reached ("+d.pb+")");return false;}
+  var cap=d.pb+(trR("Swift Inscription")>=3?1:0);if(k.seals.length>=cap){api.flash("Seal cap reached ("+cap+")");return false;}
   var nm=a==="sl-self"?"Melissa":window.prompt(a==="sl-wake"?"Waking Tiger: who did she dodge?":"Seal which creature?","");if(nm===null)return false;
-  k.seals.push({id:api.uid("sl"),name:nm||"Target",school:a==="sl-self"?"angelic":"demonic",ticks:0,left:"",growth:"",log:"Sealed"});
+  k.seals.push({id:api.uid("sl"),name:nm||"Target",school:a==="sl-self"?"angelic":"demonic",ticks:Math.max(0,trR("Ancient Script"))*tpt(),left:"",growth:"",log:trR("Ancient Script")?"Sealed at Tier "+(1+trR("Ancient Script"))+" (Ancient Script)":"Sealed"});
   if(a==="sl-wake")k.rnd.wake=true;else if(a==="sl-self"){if(S.eco.bon&&S.eco.bon.left>0)S.eco.bon.left--;}else if(S.eco.rx&&S.eco.rx.left>0)S.eco.rx.left--;
   api.log((a==="sl-wake"?"Waking Tiger: sealed ":a==="sl-self"?"Sealed herself (bonus action)":"Sealed ")+(a==="sl-self"?"":nm||"Target"));return true;
  case "sl-school":if(!s)return false;s.school=id;s.log="School set to "+SCH[id].n;return true;
@@ -588,7 +581,7 @@ function act(a,el,api){var k=K(),S=St(),d=api.compute(),i=n(el.getAttribute("dat
  case "sl-tick":if(!s)return false;tickSeal(api,s,el.getAttribute("data-v")==="storm"?"Eye of the Storm":"Drain");return true;
  case "sl-untick":if(!s)return false;s.ticks=Math.max(0,n(s.ticks)-1);s.log="−1 tick → Tier "+tierOf(s.ticks);return true;
  case "sl-reset":if(!s)return false;s.ticks=0;s.log="Reset to Tier 1";return true;
- case "sl-grow":if(!s)return false;if(tierOf(s.ticks)>=6){api.flash("Already Tier 6");return false;}s.ticks=(tierOf(s.ticks))*3;s.growth="";s.log="Draconic Growth spent → Tier "+tierOf(s.ticks);api.log(s.name+": "+s.log);return true;
+ case "sl-grow":if(!s)return false;if(tierOf(s.ticks)>=6){api.flash("Already Tier 6");return false;}var gw=n(s.growth),per=Math.max(1,drainHP(d)),gt=Math.floor(gw/per);if(gt<1){api.flash("Needs "+per+" Growth (WIS × PB) for 1 tick");return false;}s.growth=String(gw-gt*per);for(var gi=0;gi<gt;gi++)tickSeal(api,s,"Draconic Growth");s.log="Draconic Growth: "+(gt*per)+" spent → +"+gt+" tick"+(gt>1?"s":"")+" · Tier "+tierOf(s.ticks)+(n(s.growth)?" · "+s.growth+" left":"");api.log(s.name+": "+s.log);return true;
  case "sl-all":if(!k.seals.length)return false;k.seals.forEach(function(x){tickSeal(api,x,"Drain");});return true;
  case "bm-filter":k.manF=id;return true;
  case "bm-tog":var at=k.man.indexOf(id);
@@ -3338,6 +3331,8 @@ function trPtsLeft(){return num(trS().pts)-trPtsSpent();}
 function trLvl(d){d=d||compute();return num(d.level);}
 function trHave(t,n){return t.kind==="char"?trPtsLeft():num(trS().mat[trCur(t,n)]);}
 function trLog(m){var T=trS();T.log.push(new Date().toLocaleDateString()+" · "+m);T.log=T.log.slice(-60);logline(m);}
+/* rank of an owned upgrade-tree node by name (0 if not owned); kit code uses it for upgrades that change a mechanic */
+window.trRankOf=function(nm){var r=0,q=String(nm||"").toLowerCase();try{trMine().forEach(function(t){var o=trOwn(t);t.nodes.forEach(function(n){if(String(n.n||"").toLowerCase()===q)r=Math.max(r,trRank(o,n.id));});});}catch(e){}return r;};
 function trAllMods(){var m={};trMine().forEach(function(t){var x=trMods(t,trOwn(t));for(var k in x)m[k]=(m[k]||0)+x[k];});return m;}
 /* Kit: owned nodes and active capstones, one section per tree */
 function trKitSections(){var out=[];trMine().forEach(function(t){var own=trOwn(t),items=[];

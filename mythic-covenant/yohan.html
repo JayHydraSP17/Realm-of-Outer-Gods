@@ -319,7 +319,7 @@ function critRange(S){var b=barbLv(S);return b>=17?17:b>=13?18:b>=9?19:20;}
 /* ---------- Sword Saint ---------- */
 function focusMax(S){var s=ssLv(S);return s<1?0:5+s;}
 function focusCap(S){var s=ssLv(S);return s>=14?Infinity:Math.ceil(s/2)+2;}
-function mdDie(d){return d.level>=17?10:8;}
+function trR(nm){return window.trRankOf?window.trRankOf(nm):0;} /* Momentum Dice are d8; only Sandstorm Surge R2 (upgrade tree) makes them d10 */ function mdDie(d){return trR("Sandstorm Surge")>=2?10:8;}
 
 /* ---------- exploit catalogue: [id, name, degree, source, prereq{st:[[stat,min]...] any-of, sk:[skills] any-of}, kind, multi(up to PB), text] ---------- */
 var EX=[
@@ -623,7 +623,7 @@ var C={
    {n:"Falter Fleeting",k:"bonus",cost:"1 ki",pay:{res:{ki:1}},text:"Move an extra 10 ft × PB this turn (if your speed isn't 0), with any movement type. Doesn't raise your speed."},
    {n:"Overwhelming Advance",k:"free",cost:"1 ki",pay:{res:{ki:1}},text:"When you miss with a weapon attack, roll a new d20 and use it instead."}]},
   {id:"dragonfly",pane:"saint",title:"Way of the Dragonfly",sub:"3rd-level path techniques",items:[
-   {n:"Blasting Spear",k:"attack",cost:"2 ki",pay:{res:{ki:2}},dmg:"1d12+STR",text:"On a melee attack with a weapon that deals <b>piercing</b> damage, forgo the roll: every creature in a 30-ft × 5-ft line makes a DEX save, taking the weapon's damage on a failure. <span class=\"tbd\">Horizon's Reach is slashing</span>"},
+   {n:"Blasting Spear",k:"attack",cost:"2 ki",pay:{res:{ki:2}},dmg:"1d12+STR",text:"On a melee attack with a weapon that deals <b>piercing</b> damage, forgo the roll: every creature in a 30-ft × 5-ft line makes a DEX save, taking the weapon's damage on a failure. Strike with <b>Pierce</b>: Horizon's Reach's spear point counts as a piercing weapon."},
    {n:"Majestic",k:"bonus",cost:"2 ki",majestic:true,pay:{res:{ki:2}},text:"All attacks against you have disadvantage until the start of your next turn."},
    {n:"Thunder Joust",k:"free",cost:"1 ki",pay:{res:{ki:1}},text:"After moving 10+ ft straight toward a creature, gain advantage on your next weapon attack against it this turn. On a hit, a target no more than one size larger makes a STR save or falls prone."}]},
   {id:"origin",title:"Race, background & feats",sub:"Human · Noble",items:[
@@ -637,13 +637,15 @@ var C={
   {id:"rage",pane:"savage",title:"Barbarian actions",sub:"",items:[
    {n:"Rage",k:"bonus",cost:"1 rage",rage:true,pay:{res:{rage:1}},text:"Enter a Rage (tracker above shows what's active). Danger Sense lets you rage while rolling initiative."},
    {n:"Reckless Attack",k:"free",text:"Advantage on Strength attacks until your next turn; attacks against you have advantage too."}]}],
- items:[{id:"horizon",name:"Horizon's Reach",cat:"weapon",weaponType:"Polearm",twoSlot:true,atk:"STR + PB",dmg:"1d12+STR slashing",loc:"w1",tags:"Saint Weapon",
-  desc:"Halberd. Yohan's Sword Saint weapon.",
+ items:[{id:"horizon",name:"Horizon's Reach",cat:"weapon",weaponType:"Polearm",twoSlot:true,atk:"STR + PB",dmg:"1d12+STR slashing or piercing",loc:"w1",tags:"Saint Weapon",
+  desc:"Halberd. Yohan's Sword Saint weapon. 1d12, Versatile, +5 ft reach. Before each attack he chooses Hack or Pierce.",
   abilities:[{name:"Long Haft",kind:"passive",text:"+5 ft extra reach on top of normal weapon reach."},
+   {name:"Hack or Pierce",kind:"passive",text:"Before each attack, choose. <b>Hack</b> (slashing, the axe head): knockback 10 ft + mod, causes Bleed. <b>Pierce</b> (piercing, the spear point): no knockback, causes Bleed, and counts as a piercing weapon for Blasting Spear and Rising Dragonfly. Dunebreaker Strike uses whichever type that attack dealt."},
+   {name:"Versatile (Strength)",kind:"passive",text:"One hand or two, it always deals its two-handed damage (1d12). One-handed, he keeps a hand free for grapples and shoves."},
    {name:"Saint Weapon",kind:"passive",text:"Yohan's Sword Saint weapon. Saint Weapon Bond (Sword Saint 14): +1 attack and damage, magical, no per-turn focus limit."}]}],
  effectPresets:[{name:"Rallied",rounds:1,note:"Rally and Conquer · allies +1d4 to hit"},{name:"Honor Duel",rounds:10,note:"disadv. vs others · WIS save ends"},{name:"Taunted",rounds:1,note:"Taunting Strike"},{name:"Disoriented",rounds:10,note:"Disorienting Blow · WIS save ends"},{name:"Blinded",rounds:1,note:"Sunpiercer · CON save"},{name:"Bleeding",rounds:1,note:"Dunebreaker (slashing)"},{name:"Prone",rounds:1,note:"Thunder Joust / Dunewall"}],
  tabs:{school:true,battalions:true,companions:false,spells:false},
- footNote:"Sands of Momentum · Alternate Barbarian v2.3.1 · Sword Saint",
+ footNote:"The Diamond in the Rough · Alternate Barbarian v2.3.1 · Sword Saint",
  hooks:{
   init:function(api){seed();
    if(!document.getElementById("yohanCss")){var st=document.createElement("style");st.id="yohanCss";st.textContent=CSS;document.head.appendChild(st);}
@@ -3393,6 +3395,8 @@ function trPtsLeft(){return num(trS().pts)-trPtsSpent();}
 function trLvl(d){d=d||compute();return num(d.level);}
 function trHave(t,n){return t.kind==="char"?trPtsLeft():num(trS().mat[trCur(t,n)]);}
 function trLog(m){var T=trS();T.log.push(new Date().toLocaleDateString()+" · "+m);T.log=T.log.slice(-60);logline(m);}
+/* rank of an owned upgrade-tree node by name (0 if not owned); kit code uses it for upgrades that change a mechanic */
+window.trRankOf=function(nm){var r=0,q=String(nm||"").toLowerCase();try{trMine().forEach(function(t){var o=trOwn(t);t.nodes.forEach(function(n){if(String(n.n||"").toLowerCase()===q)r=Math.max(r,trRank(o,n.id));});});}catch(e){}return r;};
 function trAllMods(){var m={};trMine().forEach(function(t){var x=trMods(t,trOwn(t));for(var k in x)m[k]=(m[k]||0)+x[k];});return m;}
 /* Kit: owned nodes and active capstones, one section per tree */
 function trKitSections(){var out=[];trMine().forEach(function(t){var own=trOwn(t),items=[];

@@ -298,55 +298,64 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:-1;ba
    Optional: tx (a transformation that uses TL), resources, economy, kit, items, prof, rels, panes, hooks. */
 window.CHAR={
  id:"beatrix",name:"Beatrix Callie",epithet:"The Harvesting Princess",accent:"#4fd18a",
- level:24,
+ level:12,
  classes:[{name:"Inventor (Plantsmith)",level:12,die:8},{name:"Ranger (Green Reaper)",level:12,die:10}],
  identity:{Name:"Beatrix Callie",Race:"Human",Age:"16",Alignment:"Neutral Good",Background:"Noble (True Noble)",Deity:"—"},
  stats:{str:13,dex:20,con:24,int:32,wis:13,cha:22},
  saves:{str:true,dex:true,con:true,int:true},
  spellStat:"int",speed:30,hitDice:24,itemSlots:4,initAddsPB:true,
  tlStat:"wis",tlBonus:0,   /* Max TL = (CON +7 + WIS +1) × 10 = 80 */
- /* ===== Transformation: The Harvesting Princess (Thread Link) ===== */
- tx:{name:"The Harvesting Princess",activate:80,upkeep:10,channel:0,
+ /* ===== Transformation: The Flourishing Princess (Thread Link) ===== */
+ tx:{name:"The Flourishing Princess",activate:80,upkeep:10,channel:0,
    toggles:[
-     {id:"interlock",name:"Interlocking Roots",note:"Vines linked: +1 AC per vine, reagents move freely, shared damage. 10 TL to engage.",cut:0},
-     {id:"forest",name:"Blooming Forest",note:"On raising, all Blooming Vines evolve to Verdant; Beatrix gains +8 temp HP per vine evolved.",cut:0}
+     {id:"interlock",name:"Interlocking Roots",note:"Linked vines: +1 AC per vine, their Interlocked Bonus, arrows travel through the roots, upgrading a linked vine costs 1 less Sap. Damage to one deals half to the others. 10 TL to engage.",cut:0},
+     {id:"forest",name:"Blooming Forest",note:"On entering, every vine on the field becomes Verdant for free; +1d8 temp HP per vine evolved. Rapid Growth plants one more seed. Elder upgrades cost 2 Sap.",cut:0}
    ]},
- kitPanes:[{id:"transform",n:"Transformation",tx:true,c:"#c2abff",eb:"The Harvesting Princess",bl:"Thread Link console, the transformation ladder, and every ability that keys off being transformed."}],
+ kitPanes:[{id:"transform",n:"Transformation",tx:true,c:"#c2abff",eb:"The Flourishing Princess",bl:"Thread Link console, the transformation ladder, and every ability that keys off being transformed."}],
  /* ===== Economy & resources ===== */
  economy:[{id:"atk",name:"Attacks",max:2},{id:"rx",name:"Reactions",max:1}],   /* Action + Bonus action are built into the engine */
  resources:[
+   {id:"sap",name:"Sap",maxFn:function(d){return 10+d.mod.int;},rest:"none",steps:[1,2],color:"#8fd16c",note:"Combat resource · starts at 0 · max 10 + INT · lost when combat ends"},
    {id:"vines",name:"Active Blooming Vines",max:11,rest:"none",steps:[1],note:"Up to INT mod vines; must be ≥10 ft apart. Track living vines here."},
    {id:"rapid",name:"Rapid Growth uses",max:11,rest:"long",steps:[1],note:"= INT mod per long rest, or spend a spell slot instead."},
+   {id:"thorny",name:"Thorny Approach",maxFn:function(d){return d.pb;},rest:"long",steps:[1],note:"Uses = PB"},
    {id:"envenom",name:"Envenomed Attack uses",max:1,rest:"long",steps:[1],note:"= WIS mod per long rest (short rest at Ranger 11)."},
    {id:"mark",name:"Favored Enemy (Hunter's Mark)",max:4,rest:"long",steps:[1],note:"Free hunter's mark castings per long rest."},
    {id:"baby",name:"My Baby (uses this rest)",max:9,rest:"long",steps:[1],note:"Each use costs 10 more TL than the last; resets on a long rest."}
  ],
- barRes:["vines"],
- riders:[{n:"Hunter's Mark",e:"1d6"},{n:"Envenomed Attack",e:"1d4 poison"},{n:"Bloom flowers (hit)",e:"+2 to hit"},{n:"Wither (bow)",e:"+1d8"}],
+ barRes:["sap","vines"],
+ riders:[{n:"Hunter's Mark",e:"1d6"},{n:"Envenomed Attack",e:"1d4 poison"},{n:"Flower Garden (per flower)",e:"+2 to hit"},{n:"Autumn wither (per flower)",e:"1d8"}],
  /* ===== KIT: weapon, class features (level-gated via unlock), vine & reagent abilities ===== */
  kit:[
-  {id:"weapon",title:"Sylvan's Oblige",sub:"her shapeshifting weapon",items:[
-   {n:"Sylvan's Oblige",k:"attack",cost:"one weapon, two forms",dmg:"Bow 2d8+INT \u00d73 \u00b7 Blades 1d10+INT \u00d72",text:"A single weapon that converts between two forms. Switch forms with the <b>Form</b> buttons at the top of this tab or on Equipment.<br><b>Sylvan Bow</b> (Weapon I, 1 slot): always fires <b>three arrows</b> at targets in range. 2d8 piercing, range 80/320.<br><b>Sylvan Blades</b> (Weapon I + II, 2 slots): dual blades, 5 ft, multiattack, 1d10 slashing. When <b>both</b> strikes hit one creature, gain temp HP = 20% of its max HP (once per creature per round). Needs Weapon II free, so whatever is held there goes to storage when she converts."},
-   {n:"Natural Cycle",k:"bonus",text:"<b>This is how Sylvan's Oblige converts.</b> Switch weapon form for a seasonal effect. <b>Spring</b> (→ Bow): next strike 25% chance to deal double damage. <b>Autumn</b> (→ Blades): next strike 25% chance to heal her proportional to the damage."},
-   {n:"Coated Arrows",k:"free",text:"Coat up to 3 arrows with a potion/poison that has the <b>Contact</b> property. On hit, the target suffers the coating's effect."},
-   {n:"Leafy Torrent",k:"reaction",cost:"1/turn",text:"When targeted by a melee attack: <b>Spin</b> (switch to Blades, whirlwind everyone within 5 ft), <b>Jump</b> (5 ft up, reposition within 10 ft), <b>Shoot</b> (switch to Bow, trishot one or more creatures)."},
-   {n:"Thorny Approach",k:"reaction",cost:"PB/long rest",text:"When a creature enters within 20 ft, fire a thorny arrow: normal weapon damage and its speed becomes 0 until end of the current turn."},
-   {n:"Bloom & Wither",k:"reaction",text:"<b>Bloom</b> (Blades hit): bloom a flower on the skin, max 3/creature, each gives +2 to hit against it. <b>Wither</b> (Bow hit): wither a flower to add +1d8 to that arrow's damage."}
+  {id:"weapon",title:"Sylvan's Oblige",sub:"her shapeshifting weapon, flowers and seasons",items:[
+   {n:"Sylvan's Oblige",k:"attack",cost:"one weapon, two forms",dmg:"Bow 2d8+INT \u00d73 \u00b7 Blades 1d10+INT \u00d72",text:"A single weapon with two forms; she picks the form at the start of combat. Switch with the <b>Form</b> buttons at the top of this tab or on Equipment.<br><b>Sylvan Bow</b> (1 weapon slot): shoots a volley of <b>three arrows</b> split between any targets in range. 2d8 piercing, range 80/320.<br><b>Sylvan Blades</b> (2 weapon slots): dual blades, multiattack, 1d10 slashing. When <b>both</b> strikes hit one creature, she gains temp HP = 20% of its max HP (once per creature per round). She needs a free hand to switch to the Blades."},
+   {n:"Flower Garden",k:"passive",text:"Certain abilities grow flowers on a creature's skin. Each flower gives Beatrix <b>+2 to hit</b> against it. A creature can carry up to <b>3</b> flowers."},
+   {n:"Natural Cycle",k:"bonus",text:"Switch Sylvan's Oblige to its other form for a seasonal effect. <b>Spring</b> (→ Bow): until the end of her turn, her arrows bloom 1 flower on every creature they hit. <b>Autumn</b> (→ Blades): her next strike withers every flower on the target for <b>+1d8 per flower</b>; each flower withered gives <b>1 Sap</b>. <i>Summer and Winter come from her upgrade tree (Four Seasons).</i>"},
+   {n:"Coated Strikes",k:"free",text:"Use one prepared potion or poison with the <b>Contact</b> property to coat every arrow she fires this turn. The coating applies once per creature per turn; each extra coated arrow that hits the same creature that turn adds <b>+1 to the coating's save DC</b> against it (a coating with no save, like Alchemical Acid, deals +1 damage die per extra arrow instead). Stacks with Envenomed Attack and Toxic Tradecraft; against poison-immune targets Variegated Vexations turns the poison damage into acid or necrotic."},
+   {n:"Leafy Torrent",k:"reaction",cost:"1/turn",text:"With the Blades equipped, when she is targeted by a melee attack: <b>Spin</b> (a single melee attack against everyone within 5 ft), <b>Jump</b> (5 ft up, reposition within 10 ft), <b>Shoot</b> (switch to the Bow and make one volley against one or more creatures)."},
+   {n:"Thorny Approach",k:"reaction",cost:"uses = PB",pay:{res:{thorny:1}},text:"When a creature enters within 20 ft, fire a thorny arrow: normal weapon damage and its speed becomes 0 until the end of its current turn."},
+   {n:"Bloom and Wither",k:"reaction",text:"<b>Bloom:</b> when a creature carrying a flower misses her, bloom another flower on it. <b>Wither:</b> when a creature carrying flowers drops to 0 HP, its flowers scatter to one creature of her choice within 10 ft."}
   ]},
-  {id:"vines",title:"Blooming Vine",sub:"core Plantsmith mechanic — see the Blooming Vine companion for its statblock",items:[
-   {n:"Rapid Growth",k:"bonus",cost:"1 use or a spell slot",dmg:"1d8+INT",text:"Toss a seed to empty space within 15 ft, growing a <b>Blooming Vine</b> (its statblock is in Companions). Lasts 10 min or until 0 HP. Uses = INT mod/long rest, or spend a 1st+ slot (+5 HP × slot level). It acts only when you direct it with your action."},
-   {n:"Harvesting Vines",k:"passive",text:"Once per round each vine rolls the d100 Gather Reagents table and stores the reagents. While within reach, Beatrix collects them as a free action. (Full d100 table &amp; reagent tracker on the dedicated sheet.)"},
-   {n:"Overharvest",k:"bonus",cost:"1/turn",text:"An unused vine harvests again (roll again, take rewards). That vine is inactive until the start of Beatrix's next turn."},
-   {n:"Overgrown Roots",k:"reaction",text:"A creature entering a vine's reach makes a Dex save or is Restrained."},
-   {n:"Verdant Bloomvine",k:"free",cost:"1/turn",text:"If a vine has been out ≥3 rounds with ≥2 stored reagents, evolve it: <b>HP +20 × stored reagents</b>, harvest +1, damage die +1, AC +3, reach +10 ft. Evolving sacrifices all stored reagents."},
-   {n:"My Baby",k:"reaction",cost:"10+ TL",pay:{tl:10},text:"When a vine is about to die, sacrifice TL to keep it alive at half HP. First use 10 TL, +10 each subsequent use; resets after a long rest."}
+  {id:"vines",title:"Blooming Vines",sub:"core Plantsmith mechanic · live tracker on the Blooming Vines tab",items:[
+   {n:"Blooming Vine",k:"passive",text:"Lasts 10 minutes or until 0 HP. Takes <b>one action on its own</b> each turn (no command needed) and has one reaction: dodge (ducks into the ground), an opportunity attack, or Overgrown Roots. Up to INT mod vines, at least 10 ft apart. Spending a 1st-level or higher slot instead of a use adds 5 × slot level HP. <b>Lash</b> (any vine): reach 10 ft, 1d8 + INT slashing. When planted, a vine is given a <b>job</b>; its job decides what its action does."},
+   {n:"Rapid Growth",k:"bonus",cost:"1 use or a spell slot",dmg:"1d8+INT",text:"Toss a seed to empty space within 15 ft and grow a Blooming Vine with a job. Uses = INT mod per long rest, or spend a 1st+ slot (+5 HP × slot level)."},
+   {n:"Live Poison Essence",k:"passive",text:"The Essence awakened her garden: every vine grows with a purpose. It grants the <b>Harvester</b> and <b>Shooter</b> jobs and unlocks the pollen of the level 14 Blooming Vine, plus one additional upgrade that can only be used for the vines. Thorn Launch now belongs to the Shooter job only."},
+   {n:"Sap",k:"passive",text:"Combat resource: starts each combat at <b>0</b> (max 10 + INT) and unspent Sap is lost when combat ends. Earned from Harvester vines, Overharvest and Autumn (+1 per flower withered). As a free action she spends it on Verdant and Elder upgrades and Paragon Degree. Discounts stack, but an upgrade always costs at least 1 Sap."},
+   {n:"Vine Tiers",k:"free",text:"<b>Sprout:</b> planted with a job, base statblock. <b>Verdant</b> (free action, once per turn): on the field 2 rounds, spend <b>2 Sap</b>: HP +20, damage die +1, AC +3, reach +10 ft. <b>Elder</b> (free action): Verdant and on the field 4 rounds, spend <b>4 Sap</b>: AC +2, damage die +1, HP +30. A vine gains its job's Verdant* or Elder* ability only once that tier is unlocked in her upgrade tree; without it, the vine still gets the stats."},
+   {n:"Harvester (job)",k:"passive",text:"<b>Sprout:</b> makes 1 Sap a round and harvests reagents after combat. <b>Verdant*:</b> +1 Sap a round, and its Gather Reagents roll gets +10. <b>Elder*:</b> +1 Sap a round, and vines within 30 ft of it cost 1 less Sap to upgrade. <b>Interlocked:</b> +1 Sap a round."},
+   {n:"Shooter (job)",k:"attack",dmg:"1d8+INT piercing",text:"<b>Sprout:</b> Thorn Launch, 1d8 + INT piercing, 60/180. <b>Verdant*:</b> two thorns per action; a hit lowers the creature's ADR by the damage for the next strike (the thorns don't benefit from each other's reduction). <b>Elder*: Bramble Storm:</b> two thorns at every enemy within 30 ft; the ADR reduction lasts until the start of the creature's next turn. <b>Interlocked:</b> +1 thorn per action."},
+   {n:"Spike (job)",k:"passive",text:"<i>Unlocked by the upgrade tree (Vines rung 3).</i> <b>Sprout: Root Bed:</b> roots spread 15 ft around it: difficult terrain for enemies, 1d6 piercing per 5 ft they move through it; her allies ignore it; no concentration. <b>Verdant*: Thorn Field:</b> 25 ft, 2d6 per 5 ft. <b>Elder*: Impaling Ground:</b> a creature that ends its turn in the roots makes a DEX save or takes 3d8 piercing, falls prone and has speed 0 until the end of its next turn. <b>Interlocked:</b> linked Spike fields join into one, +5 ft radius per linked Spike."},
+   {n:"Alchemy (job)",k:"action",text:"<i>Unlocked by the upgrade tree (Vines rung 4).</i> <b>Sprout: Bulb:</b> load one of her prepared potions or poisons (bonus action); as its action it sprays it in a 15 ft cone, and Contact and Inhaled effects apply to everyone in it. <b>Verdant*: Twin Bulb:</b> holds two, and the spray picks targets: allies get potions, enemies get poisons. <b>Elder*: Distillery:</b> once per combat, spend 3 Sap: it creates a Common potion or poison of her choice, loaded and ready."},
+   {n:"Overharvest",k:"bonus",cost:"1/turn",text:"If a Harvester vine hasn't taken an action or reaction this round, siphon <b>+2 Sap</b> from it. That vine is inactive until the start of her next turn."},
+   {n:"Harvest the Field",k:"passive",text:"When combat ends, each surviving Harvester vine rolls the d100 Gather Reagents table and Beatrix collects the reagents."},
+   {n:"Overgrown Roots",k:"reaction",text:"When a creature enters a Blooming Vine's reach, the vine can use its reaction: the creature makes a DEX save or is Restrained."}
   ]},
   /* ---- INVENTOR (Plantsmith) class features, level-gated ---- */
   {id:"inv",title:"Inventor — Plantsmith",sub:"check a feature once she has the level",items:[
    {n:"Magic Item Analysis",k:"passive",req:"Inv 1",unlock:true,text:"Know <i>detect magic</i> and <i>identify</i>; cast them as rituals with no material components."},
    {n:"Plantsmith's Proficiency",k:"passive",req:"Inv 1",unlock:true,text:"Proficiency with herbalism kits and the Nature skill."},
    {n:"Natural Weapons",k:"passive",req:"Inv 1",unlock:true,text:"Grow plant weapons (see Sylvan's Oblige / Natural Weapons). Attacks use INT for attack &amp; damage."},
-   {n:"Alchemy Genius",k:"passive",req:"Inv 1",unlock:true,text:"Add INT mod to damage &amp; healing of all crafted alchemical creations. Rare-and-below craft as a bonus action; above Rare as an action."},
+   {n:"Alchemy Genius",k:"passive",req:"Inv 1",unlock:true,text:"Add INT mod to damage &amp; healing of all crafted alchemical creations. <b>Prepared Brewing:</b> during a short or long rest, or the Preparation Phase before combat, she crafts creations with no checks up to her item slots (anything above Rare needs extra time and can't be made in the Preparation Phase). In combat she can still craft a Common or Uncommon creation as an action."},
    {n:"Spellcasting",k:"passive",req:"Inv 2",unlock:true,text:"INT-based spellcasting. Spell save DC and attack shown in Vitals. Know 3 first-level spells to start, scaling with level."},
    {n:"Arcane Retrofit",k:"passive",req:"Inv 2",unlock:true,text:"During a long rest, transfer a +1/+2/+3 bonus from a magic weapon or armor into an inventor weapon (Natural Weapons / Blooming Vine). Convert magic armor to a lighter type."},
    {n:"Tool Expertise",k:"passive",req:"Inv 2",unlock:true,text:"Double proficiency bonus for ability checks using a tool proficiency from this class."},
@@ -387,20 +396,20 @@ window.CHAR={
    {n:"Foe Slayer",k:"passive",req:"Rgr 20",unlock:true,text:"Once/turn, add WIS mod to an attack or damage roll against your marked target."}
   ]},
   /* ---- Transformation-only abilities (live in the Transformation tab) ---- */
-  {id:"princess",title:"The Harvesting Princess",sub:"while transformed",pane:"transform",items:[
-   {n:"Blooming Forest",k:"passive",text:"On raising, all Blooming Vines on the field evolve into Verdant Bloomvines (HP +20/reagent, reagents kept). Beatrix gains +8 temp HP per vine evolved. She may plant two Blooming Vines at once."},
-   {n:"One with Nature",k:"passive",text:"Becomes vulnerable to fire; immune to Blinded. Can use the Vines as her sight."},
-   {n:"Sylvan Judgement",k:"passive",text:"Switch weapon states as a free action (1/turn). Natural Cycle becomes passive. Bloom &amp; Wither becomes passive."},
-   {n:"Interlocking Roots",k:"bonus",cost:"10 TL",pay:{tl:10},text:"Link vine roots: +1 AC per vine, arrows travel through roots (extended range), reagents move freely between vines, and when one takes damage all linked vines take half."}
+  {id:"princess",title:"The Flourishing Princess",sub:"while transformed · 80 TL, 10 TL a turn",pane:"transform",items:[
+   {n:"Blooming Forest",k:"passive",text:"On entering the transformation, every Blooming Vine on the field becomes <b>Verdant</b> for free, and she gains <b>+1d8 temp HP</b> per vine evolved this way. Rapid Growth plants one more seed. While transformed, Elder upgrades cost <b>2 Sap</b> instead of 4."},
+   {n:"One with Nature",k:"passive",text:"Vulnerable to fire damage; immune to Blinded. She can use the vines as her sight."},
+   {n:"Interlocking Roots",k:"bonus",cost:"10 TL",pay:{tl:10},text:"Attach vines' roots to one another. Attached vines gain <b>+1 AC per vine</b>, the <b>Interlocked Bonus</b> on each job, and upgrading a linked vine costs <b>1 less Sap</b>; her arrows can travel through the roots. Several vines can be attached at once, but when one takes damage, the others each take half of it."},
+   {n:"My Baby",k:"reaction",cost:"10+ TL",pay:{tl:10},text:"When a vine is about to die, sacrifice TL to keep it alive at half HP. The first use costs 10 TL and each use after costs 10 more. Resets after a long rest."}
   ]}
  ],
  /* ===== Blooming Vine as a companion statblock ===== */
  companions:[
   {name:"Blooming Vine",kind:"Medium plant · AC 10+INT · HP 5+INT+Inventor level · Speed 0",hp:28,hpMax:28,ac:21,speed:"0 ft",init:"— (uses your INT)",
    stats:{str:15,dex:1,con:16,int:1,wis:5,cha:1},
-   attacks:[{name:"Lash (reach 10 ft)",hit:"+spell atk",dmg:"1d8+INT slashing"},{name:"Thorn Launch (60/180)",hit:"+spell atk",dmg:"1d6+INT piercing"}],
-   abilities:"Tangle: each foot of movement away from within 5 ft costs an extra foot. Thorns: melee attackers within 5 ft take 1d4 piercing. Blindsight 20 + 5×Inventor level ft. Vulnerable to fire; immune to Blinded. Takes one action only when Beatrix directs it.",
-   notes:"Evolves to Verdant Bloomvine at ≥3 rounds &amp; ≥2 stored reagents (or via Blooming Forest): +20 HP/reagent, +1 harvest, +1 damage die, +3 AC, +10 ft reach."}
+   attacks:[{name:"Lash (reach 10 ft)",hit:"+spell atk",dmg:"1d8+INT slashing"},{name:"Thorn Launch · Shooter job (60/180)",hit:"+spell atk",dmg:"1d8+INT piercing"}],
+   abilities:"Tangle: each foot of movement away from within 5 ft costs an extra foot. Thorns: melee attackers within 5 ft take 1d4 piercing. Blindsight 20 + 5×Inventor level ft. Vulnerable to fire; immune to Blinded. Takes one action on its own each turn; its job decides what that action does.",
+   notes:"Tiers: Verdant (2 rounds on the field, 2 Sap): HP +20, damage die +1, AC +3, reach +10 ft. Elder (Verdant, 4 rounds, 4 Sap): AC +2, damage die +1, HP +30. Job abilities and live HP are on the Blooming Vines tab."}
  ],
  /* ===== Spells ===== */
  spellSlots:{1:{max:4,left:4},2:{max:3,left:3},3:{max:3,left:3},4:{max:1,left:1}},
@@ -442,11 +451,11 @@ window.CHAR={
   classes:{
    "Alchemy":{grade:"A",skills:[["Gather Reagents","Roll the d100 table by biome to harvest Reactive / Curative / Poisonous reagents and essences."],["Alchemy Genius","Add INT mod to crafted alchemical creations; craft Rare-and-below as a bonus action."]]},
    "Herbology":{grade:"A",skills:[["Blooming Vines","Grow, evolve, and command living vines."],["Verdant Magic","Swap inventor spells for plant spells; learn druidcraft."]]},
-   "Transformations":{grade:"B",skills:[["The Harvesting Princess","Thread Link transformation — see the Transformation tab."]]}
+   "Transformations":{grade:"B",skills:[["The Flourishing Princess","Thread Link transformation — see the Transformation tab."]]}
   },
-  learn:[["Verdant Bloomvine evolution",100,"Evolve a Blooming Vine into a Verdant Bloomvine."],["Cross Pollination",100,"Choking / Soothing pollen (Inventor 14)."]]
+  learn:[["Vine tiers",100,"Raise a Blooming Vine to Verdant and Elder with Sap."],["Cross Pollination",100,"Choking / Soothing pollen (Inventor 14)."]]
  },
- levelNote:"Multiclass: Inventor (Plantsmith) 12 / Ranger (Green Reaper) 12. Class features are listed in the Kit tab under each class — check a feature once she has the level, and it pins to her loadout.",
+ levelNote:"<b>Gestalt.</b> Inventor (Plantsmith) 12 and Ranger (Green Reaper) 12 run side by side at character level 12. Class features are listed in the Kit tab under each class — check a feature once she has the level, and it pins to her loadout.",
  spellcasting:"int"
 };
 
@@ -566,6 +575,14 @@ function rollHarvest(biome){var roll=Math.ceil(Math.random()*100);var row=ROLLTA
 function itemsLabel(items){if(!items.length)return 'Nothing found';return items.map(function(it){return it.qty+'× '+RARNAME[it.rar]+' '+CATNAME[it.cat]+(isEss(it.cat)?' essence':' reagent');}).join(', ');}
 
 /* ---- state access (persisted engine bag) ---- */
+function trR(nm){return window.trRankOf?window.trRankOf(nm):0;}
+var JOBS={harvester:{n:'Harvester',node:'Harvester Vine',base:true},shooter:{n:'Shooter',node:'Shooter Vine',base:true},spike:{n:'Spike',node:'Spike Vine'},alchemy:{n:'Alchemy',node:'Alchemy Vine'}};
+var JOBTXT={
+ harvester:['Makes 1 Sap a round; rolls Gather Reagents after combat.','+1 Sap a round; Gather Reagents roll +10.','+1 Sap a round; vines within 30 ft cost 1 less Sap to upgrade.','+1 Sap a round.'],
+ shooter:['Thorn Launch: 1d8 + INT piercing, 60/180.','Two thorns per action; a hit lowers ADR by the damage for the next strike.','Bramble Storm: two thorns at every enemy within 30 ft; ADR drop lasts to its next turn.','+1 thorn per action.'],
+ spike:['Root Bed: 15 ft roots, difficult for enemies, 1d6 piercing per 5 ft moved.','Thorn Field: 25 ft, 2d6 per 5 ft.','Impaling Ground: ends its turn in the roots, DEX save or 3d8 piercing, prone, speed 0.','Linked fields join, +5 ft radius per linked Spike.'],
+ alchemy:['Bulb: load a prepared potion or poison (bonus action); sprays a 15 ft cone.','Twin Bulb: holds two; allies get potions, enemies get poisons.','Distillery: once per combat, 3 Sap → a Common potion or poison, loaded.','—']};
+var TIERN={sprout:'Sprout',verdant:'Verdant',elder:'Elder'};
 function K(api){var S=api.S();if(!S.kit||typeof S.kit!=='object')S.kit={};var k=S.kit;
  if(!Array.isArray(k.vines))k.vines=[];
  if(typeof k.inv!=='object'||!k.inv)k.inv={};
@@ -576,40 +593,57 @@ function K(api){var S=api.S();if(!S.kit||typeof S.kit!=='object')S.kit={};var k=
  if(k.alchCat==null)k.alchCat='all';
  if(k.alchRar==null)k.alchRar='all';
  if(k.lastRoll==null)k.lastRoll=null;
+ /* v2 vines (Sap rework): old vines kept their stored reagents; move them into the bag once */
+ k.vines.forEach(function(v){if(!v.tier){v.tier=v.state==='verdant'?'verdant':'sprout';delete v.state;}
+  if(v.reagents){for(var rk in v.reagents)k.inv[rk]=(k.inv[rk]||0)+v.reagents[rk];delete v.reagents;}
+  if(v.job==null)v.job='';});
  return k;}
 function intMod(api){return api.compute().mod.int;}
 function invLevel(api){var cl=(api.S().classes||[]).filter(function(c){return /Inventor/i.test(c.name);})[0];return cl?api.num(cl.level):12;}
-function vineReagentCount(v){var n=0;for(var kk in v.reagents)n+=v.reagents[kk];return n;}
-function vineBonus(v,k){return (v.state==='verdant'?1:0)+(v.interlock?1:0);}
-function newVine(api){var im=intMod(api),base=5+im+invLevel(api);return {id:api.uid('v'),name:'Vine '+(K(api).vines.length+1),state:'blooming',hp:base,hpmax:base,rounds:0,active:true,interlock:false,reagents:{},lastlog:''};}
+function sap(api){return api.num((api.S().res||{}).sap);}
+function sapMax(api){return 10+intMod(api);}
+function setSap(api,v){var S=api.S();S.res=S.res||{};S.res.sap=Math.max(0,Math.min(sapMax(api),v));}
+function jobOpen(j){return JOBS[j]&&(JOBS[j].base||trR(JOBS[j].node)>=1);}
+/* tier ability of a job is unlocked by its tree rung: rank 1 = Verdant*, rank 2 = Elder* (Spike/Alchemy: rank 2 / rank 3) */
+function tierOpen(j,t){var r=trR((JOBS[j]||{}).node||''),base=JOBS[j]&&JOBS[j].base;if(t==='verdant')return base?r>=1:r>=2;if(t==='elder')return base?r>=2:r>=3;return true;}
+function txOn(api){var S=api.S();return !!(S.tx&&S.tx.on);}
+function interOn(api,v){return v.interlock&&txOn(api);}
+function interCount(api,k){return k.vines.filter(function(x){return interOn(api,x);}).length;}
+function vineAC(api,v,k){return 10+intMod(api)+(v.tier!=='sprout'?3:0)+(v.tier==='elder'?2:0)+(interOn(api,v)?interCount(api,k):0);}
+function vineSap(api,v){if(!v.active||v.job!=='harvester')return 0;var n=1;if(v.tier!=='sprout'&&tierOpen('harvester','verdant'))n++;if(v.tier==='elder'&&tierOpen('harvester','elder'))n++;if(interOn(api,v))n++;return n;}
+function upCost(api,v,to){var c=to==='verdant'?2:(txOn(api)?2:4);if(interOn(api,v))c--;if(v.nearElder)c--;return Math.max(1,c);}
+function newVine(api,job){var im=intMod(api),base=5+im+invLevel(api)+10*trR('Hardy Seeds');return {id:api.uid('v'),name:'Vine '+(K(api).vines.length+1),job:job||'harvester',tier:'sprout',hp:base,hpmax:base,rounds:0,active:true,interlock:false,nearElder:false,lastlog:''};}
 
 /* ---- VINES pane ---- */
-function renderVines(api){var host=document.getElementById('body-vines');if(!host)return;var k=K(api),im=intMod(api);
- var biomes=['forest','desert','grasslands','marsh','mountains'];
- var h='<section id="vinetools"><h2>Blooming Vines <span class="sub2">live field tracker</span></h2>';
- h+='<div class="row" style="gap:6px;flex-wrap:wrap;align-items:center"><span class="lbl" style="margin:0">Biome</span>';
- biomes.forEach(function(b){h+='<button class="chip'+(k.biome===b?' on':'')+'" data-a="bxbiome" data-id="'+b+'">'+BIOMENAME[b]+'</button>';});
- h+='<span style="flex:1"></span><button class="btn pri" data-a="bxround">↻ Advance round</button><button class="btn" data-a="bxplant">+ Plant vine</button><button class="btn sm" data-a="bxresetrounds">reset rounds</button>';
- h+='<span class="chip">Round '+k.round+'</span><span class="chip'+(k.vines.filter(function(v){return v.active;}).length>im?' bad':' on')+'">'+k.vines.filter(function(v){return v.active;}).length+' / '+im+' active</span></div>';
- h+='<p class="note">Advancing the round auto-rolls one harvest per active vine, ticks their field-rounds, and reactivates any vine left inactive by Overharvest. Up to INT mod ('+im+') vines, 10 ft apart.</p></section>';
- if(!k.vines.length){h+='<div class="empty">No vines planted. Use <b>+ Plant vine</b> to begin.</div>';host.innerHTML=h;return;}
- var interCount=k.vines.filter(function(x){return x.interlock;}).length;
- k.vines.forEach(function(v,idx){var rc=vineReagentCount(v),bonus=vineBonus(v,k),acLink=v.interlock?interCount:0;
-  var ac=10+im+(v.state==='verdant'?3:0)+acLink;
-  var evReady=(v.state==='blooming'&&v.rounds>=3&&rc>=2);
-  var pct=clampn(v.hp/Math.max(v.hpmax,1)*100,0,100);
-  var chips='';RKEYS.forEach(function(rk){if(v.reagents[rk]){var p=rk.split('_');chips+='<button class="bxchip '+chipCls(p[0])+'" data-a="bxrgrm" data-id="'+v.id+'" data-rk="'+rk+'" title="click to remove one">'+CATNAME[p[0]]+(isEss(p[0])?' Ess':'')+' ×'+v.reagents[rk]+' '+p[1]+'</button>';}});
-  if(!chips)chips='<span class="sub" style="margin:0">no stored reagents</span>';
-  h+='<section id="vine-'+v.id+'"><div class="card'+(v.active?'':' bxdim')+(v.state==='verdant'?' bxverdant':'')+'">'+
-   '<h3><input type="text" class="bxname" data-b="kit.vines.'+idx+'.name" value="'+esc(v.name)+'" style="font-family:Cinzel;font-size:16px;color:#fff;background:transparent;border:none;border-bottom:1px solid var(--line2);min-width:120px">'+
-   ' <button class="chip '+(v.state==='verdant'?'ok':'')+'" data-a="bxstate" data-id="'+v.id+'">'+(v.state==='verdant'?'Verdant':'Blooming')+'</button>'+
-   '<span class="tag gold">AC '+ac+(acLink?' (+'+acLink+')':'')+'</span>'+(bonus?'<span class="tag veil">+'+bonus+' harvest</span>':'')+(evReady?'<span class="tag" style="color:var(--gold)">● evolve ready</span>':'')+
-   '<span style="margin-left:auto" class="row"><button class="star'+(v.interlock?' on':'')+'" data-a="bxinter" data-id="'+v.id+'" title="Interlocking Roots">⚭</button><button class="btn sm'+(v.active?' pri':'')+'" data-a="bxactive" data-id="'+v.id+'">'+(v.active?'active':'inactive')+'</button><button class="btn sm dgr" data-a="bxvdel" data-id="'+v.id+'">×</button></span></h3>'+
+function renderVines(api){var host=document.getElementById('body-vines');if(!host)return;var k=K(api),im=intMod(api),sp=sap(api),sm=sapMax(api);
+ var act=k.vines.filter(function(v){return v.active;}).length,inc=k.vines.reduce(function(a,v){return a+vineSap(api,v);},0);
+ var h='<section id="vinetools"><h2>Blooming Vines <span class="sub2">Sap · jobs · tiers</span></h2><div class="card">';
+ h+='<div class="row" style="gap:8px;flex-wrap:wrap;align-items:center"><span class="lbl" style="margin:0">Sap</span><button class="btn sm" data-a="bxsap" data-n="-1">−</button><span class="cz" style="font-size:28px;color:#8fd16c;min-width:44px;text-align:center">'+sp+'</span><span class="sl">/ '+sm+'</span><button class="btn sm" data-a="bxsap" data-n="1">+</button>'+
+  '<span class="chip on">+'+inc+' Sap next round</span><span class="chip">Round '+k.round+'</span><span class="chip'+(act>im?' bad':' on')+'">'+act+' / '+im+' active</span>'+(txOn(api)?'<span class="chip ok">Flourishing: Elder costs 2</span>':'')+'</div>';
+ h+='<div class="row" style="gap:6px;flex-wrap:wrap;margin-top:8px"><button class="btn pri" data-a="bxround" title="Each active Harvester makes its Sap, every vine gains a field round, and vines left inactive by Overharvest wake up">↻ Advance round</button>';
+ Object.keys(JOBS).forEach(function(j){h+='<button class="btn" data-a="bxplant" data-id="'+j+'"'+(jobOpen(j)?'':' disabled title="Unlock '+JOBS[j].node+' in the upgrade tree"')+'>+ '+JOBS[j].n+'</button>';});
+ h+='<span style="flex:1"></span><button class="btn" data-a="bxendcombat" title="Harvest the Field: each surviving Harvester rolls Gather Reagents into the bag; Sap is lost">⚑ End combat</button></div>';
+ h+='<p class="note" style="margin:8px 0 0">Sap starts each combat at 0 and is lost when it ends. Verdant: 2 rounds on the field + 2 Sap (once per turn). Elder: Verdant, 4 rounds + 4 Sap'+(txOn(api)?' (2 while transformed)':'')+'. Linked vines and vines near an Elder Harvester cost 1 less (min 1). Job abilities marked 🔒 open in the upgrade tree.</p></div></section>';
+ if(!k.vines.length){h+='<div class="empty">No vines planted. Plant one with a job above.</div>';host.innerHTML=h;return;}
+ var ic=interCount(api,k);
+ k.vines.forEach(function(v,idx){var ac=vineAC(api,v,k),pct=clampn(v.hp/Math.max(v.hpmax,1)*100,0,100),jt=JOBTXT[v.job]||[];
+  var canV=v.tier==='sprout'&&v.rounds>=2&&k.verdTurn!==k.round,canE=v.tier==='verdant'&&v.rounds>=4;
+  var cv=upCost(api,v,'verdant'),ce=upCost(api,v,'elder');
+  h+='<section id="vine-'+v.id+'"><div class="card'+(v.active?'':' bxdim')+(v.tier!=='sprout'?' bxverdant':'')+'">'+
+   '<h3><input type="text" class="bxname" data-b="kit.vines.'+idx+'.name" value="'+esc(v.name)+'" style="font-family:Cinzel;font-size:16px;color:#fff;background:transparent;border:none;border-bottom:1px solid var(--line2);min-width:110px">'+
+   '<span class="chip on">'+esc((JOBS[v.job]||{n:'No job'}).n)+'</span><span class="chip'+(v.tier==='sprout'?'':' ok')+'">'+TIERN[v.tier]+'</span><span class="tag gold">AC '+ac+'</span><span class="tag">reach '+(v.tier==='sprout'?10:20)+' ft</span>'+(vineSap(api,v)?'<span class="tag veil">+'+vineSap(api,v)+' Sap/rd</span>':'')+
+   '<span style="margin-left:auto" class="row"><button class="star'+(v.interlock?' on':'')+'" data-a="bxinter" data-id="'+v.id+'" title="Interlocking Roots (only counts while transformed)">⚭</button><button class="btn sm'+(v.active?' pri':'')+'" data-a="bxactive" data-id="'+v.id+'">'+(v.active?'active':'inactive')+'</button><button class="btn sm dgr" data-a="bxvdel" data-id="'+v.id+'">×</button></span></h3>'+
    '<div class="row"><span class="lbl" style="margin:0">HP</span><button class="btn sm" data-a="bxhp" data-id="'+v.id+'" data-n="-5">−</button><input class="num w44" type="number" data-a="bxhpset" data-id="'+v.id+'" value="'+v.hp+'"><span class="sl">/</span><input class="num w44" type="number" data-a="bxhpmax" data-id="'+v.id+'" value="'+v.hpmax+'"><button class="btn sm" data-a="bxhp" data-id="'+v.id+'" data-n="5">+</button>'+
-   '<span class="lbl" style="margin:0 0 0 12px">Field rounds</span><button class="btn sm" data-a="bxrd" data-id="'+v.id+'" data-n="-1">−</button><span class="cur">'+v.rounds+'</span><button class="btn sm" data-a="bxrd" data-id="'+v.id+'" data-n="1">+</button></div>'+
-   '<div class="meter"><i style="width:'+pct+'%;background:linear-gradient(90deg,#8a1f28,#d8434f)"></i></div>'+
-   '<div class="row" style="margin-top:6px;flex-wrap:wrap"><span class="lbl" style="margin:0">Reagents ('+rc+')</span>'+chips+'</div>'+
-   '<div class="row" style="margin-top:8px;flex-wrap:wrap;gap:5px"><button class="btn sm" data-a="bxharvest" data-id="'+v.id+'">⚄ Harvest</button><button class="btn sm" data-a="bxover" data-id="'+v.id+'">Overharvest</button><button class="btn sm'+(evReady?' pri':'')+'" data-a="bxevolve" data-id="'+v.id+'"'+(evReady?'':' disabled')+'>⟢ Evolve</button><button class="btn sm" data-a="bxcollect" data-id="'+v.id+'">Collect → Bag</button><button class="btn sm" data-a="bxbaby" data-id="'+v.id+'">♥ My Baby</button></div>'+
+   '<span class="lbl" style="margin:0 0 0 12px">Field rounds</span><button class="btn sm" data-a="bxrd" data-id="'+v.id+'" data-n="-1">−</button><span class="cur">'+v.rounds+'</span><button class="btn sm" data-a="bxrd" data-id="'+v.id+'" data-n="1">+</button>'+
+   '<label class="sub" style="margin:0 0 0 12px"><input type="checkbox" data-b="kit.vines.'+idx+'.nearElder"'+(v.nearElder?' checked':'')+'> within 30 ft of an Elder Harvester</label></div>'+
+   '<div class="meter"><i style="width:'+pct+'%;background:linear-gradient(90deg,#2f7a3a,#8fd16c)"></i></div>'+
+   '<ul class="sub" style="margin:6px 0 0 18px;padding:0">'+['sprout','verdant','elder'].map(function(t,ti){var on=ti===0||(v.tier==='elder'||(v.tier==='verdant'&&ti===1)),open=tierOpen(v.job,t);
+     return '<li style="opacity:'+(on?1:.55)+'"><b>'+TIERN[t]+(ti?'*':'')+':</b> '+(open?'':'🔒 ')+esc(jt[ti]||'')+'</li>';}).join('')+(interOn(api,v)&&jt[3]?'<li><b>Interlocked:</b> '+esc(jt[3])+'</li>':'')+'</ul>'+
+   '<div class="row" style="margin-top:8px;flex-wrap:wrap;gap:5px">'+
+    '<button class="btn sm'+(canV?' pri':'')+'" data-a="bxup" data-id="'+v.id+'" data-n="1"'+(canV?'':' disabled')+' title="Free action, once per turn: 2 rounds on the field">→ Verdant · '+cv+' Sap</button>'+
+    '<button class="btn sm'+(canE?' pri':'')+'" data-a="bxup" data-id="'+v.id+'" data-n="2"'+(canE?'':' disabled')+' title="Free action: Verdant and 4 rounds on the field">→ Elder · '+ce+' Sap</button>'+
+    (v.job==='harvester'?'<button class="btn sm" data-a="bxover" data-id="'+v.id+'" title="Bonus action, once per turn: +2 Sap from a Harvester that hasn\'t acted this round">Overharvest +2</button>':'')+
+    '<button class="btn sm" data-a="bxbaby" data-id="'+v.id+'">♥ My Baby</button></div>'+
    (v.lastlog?'<div class="sub mono" style="margin-top:6px;color:var(--gold)">'+esc(v.lastlog)+'</div>':'')+
    '</div></section>';});
  host.innerHTML=h;}
@@ -618,7 +652,7 @@ function renderVines(api){var host=document.getElementById('body-vines');if(!hos
 function renderHarvest(api){var host=document.getElementById('body-harvest');if(!host)return;var k=K(api);
  var h='<section id="harvroll"><h2>Harvest roll <span class="sub2">d100 · DC 10 WIS</span></h2><div class="card"><div class="row" style="align-items:center;gap:10px">'+
   '<span class="cz" style="font-size:34px;color:var(--brand);min-width:56px;text-align:center">'+(k.lastRoll?k.lastRoll.roll:'—')+'</span>'+
-  '<button class="btn pri" data-a="bxroll">⚄ Roll harvest</button><span class="sub" style="margin:0;flex:1">Biome: <b>'+BIOMENAME[k.biome]+'</b> '+(k.lastRoll?'· '+esc(itemsLabel(k.lastRoll.items)):'(set biome on the Blooming Vines tab)')+'</span>'+
+  '<span class="row" style="gap:4px;flex-wrap:wrap">'+['forest','desert','grasslands','marsh','mountains'].map(function(b){return '<button class="chip'+(k.biome===b?' on':'')+'" data-a="bxbiome" data-id="'+b+'">'+BIOMENAME[b]+'</button>';}).join('')+'</span>'+'<button class="btn pri" data-a="bxroll">⚄ Roll harvest</button><span class="sub" style="margin:0;flex:1">Biome: <b>'+BIOMENAME[k.biome]+'</b> '+(k.lastRoll?'· '+esc(itemsLabel(k.lastRoll.items)):'(pick the biome with the chips)')+'</span>'+
   (k.lastRoll&&k.lastRoll.items.length?'<button class="btn sm" data-a="bxaddbag">+ Add to bag</button>':'')+'</div></section>';
  h+='<section id="d100"><h2>Gather Reagents — d100 table</h2><div style="overflow-x:auto"><table><tr><th>d100</th><th>Forest</th><th>Desert</th><th>Grasslands</th><th>Marsh</th><th>Mountains</th></tr>';
  var rows=[['01–10','—','—','—','—','—'],['11–20','common curative','—','—','common poisonous','—'],['21–40','common curative','common reactive','common curative','common poisonous','common reactive'],['41–50','common poisonous','common curative','common reactive','common curative','common curative'],['51–60','common reactive','common poisonous','common poisonous','common reactive','common poisonous'],['61–70','1d4 common poisonous','1d2 common reactive','1d2 common poisonous','1d4 common poisonous','1d2 common curative'],['71–80','1d4 common curative','1d2 common reactive','1d2 common curative','1d4 common reactive','1d2 common reactive'],['81–90','uncommon curative','uncommon reactive','uncommon curative','uncommon poisonous','uncommon reactive'],['91–95','uncommon poisonous','uncommon poisonous','uncommon reactive','uncommon reactive','common curative'],['96–00','common primal essence','common arcane essence','common divine essence','common primal essence','common primal essence']];
@@ -626,7 +660,7 @@ function renderHarvest(api){var host=document.getElementById('body-harvest');if(
  h+='</table></div></section>';
  /* Alchemy Bag inventory */
  h+='<section id="bag"><h2>Alchemy Bag <span class="sub2">reagents, essences &amp; containers</span></h2>';
- h+='<div class="row" style="margin-bottom:8px"><button class="btn sm" data-a="bxbagrefill">Daily refill</button><button class="btn sm dgr" data-a="bxbagclear">clear all</button></div>';
+ h+='<div class="row" style="margin-bottom:8px"><button class="btn sm" data-a="bxbagrefill" title="Long rest: 5 vials, 5 flasks, 3 common Reactive, 3 common Curative, 1 common Poisonous, plus Stocked Satchel">Long-rest refill</button><button class="btn sm dgr" data-a="bxbagclear">clear all</button></div>';
  var groups=[['Curative','cur',['C','U','R','VR','L']],['Reactive','rea',['C','U','R','VR','L']],['Poisonous','poi',['C','U','R','VR','L']],['Essences','ess',[['arc_C','Arcane C'],['arc_U','Arcane U'],['div_C','Divine C'],['div_U','Divine U'],['pri_C','Primal C'],['pri_U','Primal U'],['psi_C','Psionic C'],['psi_U','Psionic U']]],['Containers','con',[['vial','Glass vial'],['flask','Glass flask'],['crystal','Crystal vial']]]];
  h+='<div class="grid3">';
  groups.forEach(function(g){h+='<div class="card"><h3 style="font-size:14px">'+g[0]+'</h3>';
@@ -671,21 +705,19 @@ function drawAlchList(api){var host=document.getElementById('bxAlchList');if(!ho
 
 /* ---- action handlers ---- */
 function vineById(k,id){return k.vines.filter(function(v){return v.id===id;})[0];}
-function doHarvest(api,v,silent){var k=K(api),r=rollHarvest(k.biome),bonus=vineBonus(v,k);
- r.items.forEach(function(it){var key=it.cat+'_'+it.rar;v.reagents[key]=(v.reagents[key]||0)+it.qty+(it.qty>0?bonus:0);});
- v.lastlog='d100='+r.roll+' → '+(r.items.length?itemsLabel(r.items.map(function(it){return {cat:it.cat,rar:it.rar,qty:it.qty+bonus};})):'Nothing found');
- return v.lastlog;}
+function rollField(biome,bonus){var roll=Math.min(100,Math.ceil(Math.random()*100)+(bonus||0));var row=ROLLTABLE[biome].find(function(r){return roll>=r[0]&&roll<=r[1];});var items=[];(row?row[2]:[]).forEach(function(it){items.push({cat:it[0],rar:it[1],qty:rollDie(it[2])});});return {roll:roll,items:items};}
 function syncVineCount(api){var k=K(api),S=api.S();if(S.res&&typeof S.res.vines!=='undefined'){S.res.vines=k.vines.filter(function(v){return v.active;}).length;}}
 
 
 /* ---- SYLVAN'S OBLIGE: one weapon, two forms ---- */
 var FORMS={
  bow:{name:"Sylvan's Oblige — Bow",weaponType:"Bow",twoSlot:false,dmg:"2d8+INT piercing ×3 arrows",
-  desc:"Bow form (Weapon I, 1 slot). Always fires three arrows at targets in range. Range 80/320.",season:"Spring",
-  fx:"Spring: next strike has a 25% chance to deal double damage."},
+  desc:"Bow form (Weapon I, 1 slot). A volley of three arrows split between any targets in range. Range 80/320.",season:"Spring",
+  fx:"Spring: until the end of her turn, arrows bloom 1 flower on every creature they hit."},
  blades:{name:"Sylvan's Oblige — Blades",weaponType:"Sword",twoSlot:true,dmg:"1d10+INT slashing ×2 strikes",
-  desc:"Blade form (Weapon I + II, 2 slots). Dual blades, 5 ft, multiattack. Both strikes hit one creature: temp HP = 20% of its max HP (once per creature per round).",season:"Autumn",
-  fx:"Autumn: next strike has a 25% chance to heal her in proportion to the damage."}};
+  desc:"Blade form (Weapon I + II, 2 slots). Dual blades, multiattack. Both strikes hit one creature: temp HP = 20% of its max HP (once per creature per round). Needs a free hand to switch in.",season:"Autumn",
+  fx:"Autumn: her next strike withers every flower on the target, +1d8 per flower, and each flower withered gives 1 Sap."}};
+function seasonLabel(form){var r=trR("Four Seasons");if(form==="bow")return r>=3?"Spring + Summer":"Spring"+(r>=1?" · Summer":"");return r>=3?"Autumn + Winter":"Autumn"+(r>=2?" · Winter":"");}
 function sylvan(api){var S=api.S();return (S.items||[]).filter(function(x){return x.sylvan;})[0];}
 function atkStr(api){var d=api.compute();var b=d.pb+d.mod.int;return (b>=0?"+":"")+b;}
 function applyForm(api,it,form){var f=FORMS[form];it.form=form;it.name=f.name;it.weaponType=f.weaponType;it.twoSlot=f.twoSlot;it.dmg=f.dmg;it.desc=f.desc;it.atk=atkStr(api);}
@@ -696,10 +728,10 @@ function ensureWeapon(api){var S=api.S();if(!S.items)S.items=[];var it=sylvan(ap
 function weaponCard(api,where0){var it=ensureWeapon(api),S=api.S(),f=FORMS[it.form],tx=S.tx&&S.tx.on,bon=S.eco&&S.eco.bon?S.eco.bon.left:1;
  var w2=(S.items||[]).filter(function(x){return x.loc==="w2"&&!x.sylvan;})[0];
  var where=it.loc==="w1"?(it.twoSlot?"equipped · Weapon I + II":"equipped · Weapon I"):"in storage (not equipped)";
- var cost=tx?"free once a turn (Sylvan Judgement)":"bonus action (Natural Cycle)"+(bon<1?" — none left this turn":"");
+ var k0=K(api),freeOk=trR("Sylvan Indulgence")>=1&&k0.sylLast===S.round&&k0.sylFree!==S.round,cost=freeOk?"free (Sylvan Indulgence: a second switch this turn)":"bonus action (Natural Cycle)"+(bon<1?" — none left this turn":"");
  var h='<section id="sylvanform-'+where0+'" class="sylvanform"><h2>Sylvan\'s Oblige <span class="sub2">one weapon, two forms</span></h2><div class="card"><div class="row" style="gap:8px;flex-wrap:wrap;align-items:center">';
  ["bow","blades"].forEach(function(fm){var on=it.form===fm;h+='<button class="btn'+(on?' pri':'')+'" data-a="bxform" data-id="'+fm+'"'+(on?' disabled':'')+'>'+(fm==="bow"?"Bow · 1 slot":"Blades · 2 slots")+'</button>';});
- h+='<span class="chip on">'+f.season+'</span><span class="tag">'+esc(where)+'</span>'+(it.loc!=="w1"?'<button class="btn sm" data-a="bxsylequip">equip</button>':'')+'</div>';
+ h+='<span class="chip on">'+esc(seasonLabel(it.form))+'</span><span class="tag">'+esc(where)+'</span>'+(it.loc!=="w1"?'<button class="btn sm" data-a="bxsylequip">equip</button>':'')+'</div>';
  h+='<p style="margin-top:8px"><b class="cz">'+esc(f.name)+'</b> · hit '+esc(it.atk)+' · '+esc(f.dmg)+'</p><p class="sub" style="margin:2px 0 0">'+esc(f.desc)+'</p>';
  h+='<p class="sub" style="margin:6px 0 0">Switching costs: <b>'+esc(cost)+'</b>. '+esc(f.fx)+'</p>';
  if(it.form==="bow"&&w2)h+='<p class="sub" style="margin:4px 0 0">Converting to Blades will move <b>'+esc(w2.name)+'</b> from Weapon II to storage.</p>';
@@ -713,33 +745,38 @@ C.hooks.init=function(api){K(api);ensureWeapon(api);if(prevInit)prevInit(api);};
 C.hooks.act=function(a,el,api){var k=K(api),id=el.getAttribute('data-id'),n=api.num(el.getAttribute('data-n')),v;
  switch(a){
   case 'bxform':var it=ensureWeapon(api),S=api.S();if(it.form===id)return true;
-   var txOn=S.tx&&S.tx.on,used=(k.sylTurn===S.round);
-   if(txOn&&!used){k.sylTurn=S.round;}
+   var freeSw=trR("Sylvan Indulgence")>=1&&k.sylLast===S.round&&k.sylFree!==S.round;
+   if(freeSw){k.sylFree=S.round;}
    else{var b=S.eco&&S.eco.bon;if(b&&b.left<1&&!window.confirm("No bonus action left this turn. Convert anyway?"))return false;if(b)b.left=Math.max(0,b.left-1);}
+   k.sylLast=S.round;
    if(id==="blades"){var o=(S.items||[]).filter(function(x){return x.loc==="w2"&&x!==it;})[0];if(o){o.loc="storage";api.flash(o.name+" moved to storage — the Blades need both weapon slots");}}
    if(it.loc!=="w1"){(S.items||[]).forEach(function(x){if(x.loc==="w1"&&x!==it)x.loc="storage";});it.loc="w1";}
-   applyForm(api,it,id);api.log("Sylvan's Oblige → "+(id==="bow"?"Bow (Spring)":"Blades (Autumn)")+(txOn&&!used?" · free (Sylvan Judgement)":" · bonus action"));return true;
+   applyForm(api,it,id);api.log("Sylvan's Oblige → "+(id==="bow"?"Bow":"Blades")+" ("+seasonLabel(id)+")"+(freeSw?" · free (Sylvan Indulgence)":" · bonus action"));return true;
   case 'bxsylequip':var it2=ensureWeapon(api),S2=api.S();(S2.items||[]).forEach(function(x){if(x!==it2&&(x.loc==="w1"||(it2.twoSlot&&x.loc==="w2")))x.loc="storage";});it2.loc="w1";api.log("Equipped Sylvan's Oblige");return true;
   case 'bxbiome':k.biome=id;return true;
-  case 'bxplant':if(k.vines.length>=20){api.flash('That is a lot of vines.');}k.vines.push(newVine(api));syncVineCount(api);return true;
-  case 'bxround':k.round++;k.vines.forEach(function(v){if(v.active){doHarvest(api,v,true);v.rounds++;}else{v.active=true;v.lastlog='Reactivated at start of turn.';}});syncVineCount(api);return true;
-  case 'bxresetrounds':if(!window.confirm('Reset the round counter and every vine’s field-rounds to 0?'))return false;k.round=0;k.vines.forEach(function(v){v.rounds=0;});return true;
-  case 'bxstate':v=vineById(k,id);if(v)v.state=v.state==='verdant'?'blooming':'verdant';return true;
+  case 'bxsap':setSap(api,sap(api)+n);return true;
+  case 'bxplant':if(!jobOpen(id||'harvester')){api.flash('Unlock '+JOBS[id].node+' in the upgrade tree first');return false;}k.vines.push(newVine(api,id));syncVineCount(api);api.log('Planted a '+JOBS[id||'harvester'].n+' vine');return true;
+  case 'bxround':k.round++;var gain=0;k.vines.forEach(function(v){if(v.active){gain+=vineSap(api,v);v.rounds++;}else{v.active=true;v.lastlog='Active again at the start of her turn.';}});setSap(api,sap(api)+gain);syncVineCount(api);api.log('Round '+k.round+': Harvesters make +'+gain+' Sap ('+sap(api)+'/'+sapMax(api)+')');return true;
+  case 'bxendcombat':var bio=k.biome,got=[],extra=trR('Harvester Vine')>=3;k.vines.forEach(function(v){if(v.job!=='harvester'||v.hp<=0)return;var rolls=1+(extra&&v.tier!=='sprout'?1:0),bonus=(v.tier!=='sprout'&&tierOpen('harvester','verdant'))?10:0;for(var ri=0;ri<rolls;ri++){var r=rollField(bio,bonus);r.items.forEach(function(it){var key=it.cat+'_'+it.rar;k.inv[key]=(k.inv[key]||0)+it.qty;});got.push(esc(v.name)+' d100='+r.roll+': '+itemsLabel(r.items));}});setSap(api,0);k.round=0;k.verdTurn=-1;k.vines.forEach(function(v){v.rounds=0;});api.log('End of combat · Sap lost · Harvest the Field: '+(got.length?got.join(' | '):'no Harvesters'));return true;
   case 'bxinter':v=vineById(k,id);if(v)v.interlock=!v.interlock;return true;
   case 'bxactive':v=vineById(k,id);if(v)v.active=!v.active;syncVineCount(api);return true;
   case 'bxvdel':v=vineById(k,id);if(v){k.vines=k.vines.filter(function(x){return x.id!==id;});syncVineCount(api);}return true;
-  case 'bxhp':v=vineById(k,id);if(v){var dlt=n;v.hp+=dlt;if(dlt<0&&v.interlock){var half=Math.floor((-dlt)/2);if(half>0){var sh=0;k.vines.forEach(function(x){if(x.interlock&&x.id!==id){x.hp-=half;sh++;}});if(sh)v.lastlog='Took '+(-dlt)+' — interlock shared '+half+' to '+sh+' linked vine(s).';}}}return true;
+  case 'bxhp':v=vineById(k,id);if(v){var dlt=n;v.hp+=dlt;if(dlt<0&&interOn(api,v)){var half=Math.floor((-dlt)/2);if(half>0){var sh=0;k.vines.forEach(function(x){if(interOn(api,x)&&x.id!==id){x.hp-=half;sh++;}});if(sh)v.lastlog='Took '+(-dlt)+' · the roots pass '+half+' to '+sh+' linked vine(s).';}}}return true;
   case 'bxrd':v=vineById(k,id);if(v)v.rounds=Math.max(0,v.rounds+n);return true;
-  case 'bxrgrm':v=vineById(k,id);if(v){var rk=el.getAttribute('data-rk');v.reagents[rk]=Math.max(0,(v.reagents[rk]||0)-1);if(!v.reagents[rk])delete v.reagents[rk];}return true;
-  case 'bxharvest':v=vineById(k,id);if(v)doHarvest(api,v);return true;
-  case 'bxover':v=vineById(k,id);if(v){doHarvest(api,v,true);v.active=false;v.lastlog='Overharvest — '+v.lastlog+' (inactive until next turn)';syncVineCount(api);}return true;
-  case 'bxevolve':v=vineById(k,id);if(v&&v.state==='blooming'&&v.rounds>=3&&vineReagentCount(v)>=2){var cnt=vineReagentCount(v);v.hpmax+=20*cnt;v.hp+=20*cnt;v.state='verdant';v.reagents={};v.lastlog='Evolved → Verdant! +'+(20*cnt)+' HP, +1 harvest/dmg die, +3 AC, +10 ft reach (reagents sacrificed).';}return true;
-  case 'bxcollect':v=vineById(k,id);if(v){for(var rk2 in v.reagents)k.inv[rk2]=(k.inv[rk2]||0)+v.reagents[rk2];v.reagents={};v.lastlog='Reagents collected into the Alchemy Bag.';}return true;
+  case 'bxup':v=vineById(k,id);if(!v)return false;var to=n===1?'verdant':'elder';
+   if(to==='verdant'){if(v.tier!=='sprout'||v.rounds<2){api.flash('Verdant needs a Sprout that has been on the field 2 rounds');return false;}if(k.verdTurn===k.round){api.flash('Verdant upgrade already used this turn');return false;}}
+   else if(v.tier!=='verdant'||v.rounds<4){api.flash('Elder needs a Verdant vine that has been on the field 4 rounds');return false;}
+   var c=upCost(api,v,to);if(sap(api)<c){api.flash('Needs '+c+' Sap');return false;}setSap(api,sap(api)-c);
+   if(to==='verdant'){v.hpmax+=20;v.hp+=20;k.verdTurn=k.round;}else{v.hpmax+=30;v.hp+=30;}v.tier=to;
+   v.lastlog=TIERN[to]+'! −'+c+' Sap · '+(to==='verdant'?'HP +20, damage die +1, AC +3, reach +10 ft':'HP +30, damage die +1, AC +2')+(tierOpen(v.job,to)?' · '+TIERN[to]+'* ability active':' · '+TIERN[to]+'* ability still locked in the tree');api.log(v.name+': '+v.lastlog);return true;
+  case 'bxover':v=vineById(k,id);if(v){if(v.job!=='harvester'||!v.active){api.flash('Overharvest needs an active Harvester that hasn\'t acted this round');return false;}if(k.overTurn===k.round){api.flash('Overharvest already used this turn');return false;}var bb=api.S().eco&&api.S().eco.bon;if(bb&&bb.left<1&&!window.confirm('No bonus action left this turn. Overharvest anyway?'))return false;if(bb)bb.left=Math.max(0,bb.left-1);k.overTurn=k.round;setSap(api,sap(api)+2);v.active=false;v.lastlog='Overharvest: +2 Sap (inactive until her next turn)';syncVineCount(api);}return true;
   case 'bxbaby':v=vineById(k,id);if(v){var cost=10+k.babyUses*10;if(!api.spendTL(cost,true,'My Baby'))return true;v.hp=Math.ceil(v.hpmax/2);k.babyUses++;v.lastlog='My Baby! Kept alive at half HP ('+v.hp+'). Spent '+cost+' TL.';}return true;
   case 'bxroll':k.lastRoll=rollHarvest(k.biome);return true;
   case 'bxaddbag':if(k.lastRoll)k.lastRoll.items.forEach(function(it){var key=it.cat+'_'+it.rar;k.inv[key]=(k.inv[key]||0)+it.qty;});return true;
   case 'bxbag':k.inv[id]=Math.max(0,(k.inv[id]||0)+n);return true;
-  case 'bxbagrefill':k.inv.vial=(k.inv.vial||0)+5;k.inv.flask=(k.inv.flask||0)+5;k.inv.rea_C=(k.inv.rea_C||0)+2;k.inv.cur_C=(k.inv.cur_C||0)+1;return true;
+  case 'bxbagrefill':var add={vial:5,flask:5,rea_C:3,cur_C:3,poi_C:1},ss=trR('Stocked Satchel');
+   if(ss>=1){add.poi_C+=1;add.poi_U=1;add.cur_U=2;}if(ss>=2){add.rea_U=2;add.poi_U=(add.poi_U||0)+1;}if(ss>=3){add.rea_R=2;add.poi_R=1;add.cur_R=2;}
+   for(var ak in add)k.inv[ak]=(k.inv[ak]||0)+add[ak];api.log('Alchemy Bag refilled (long rest)'+(ss?' · Stocked Satchel rank '+ss:''));return true;
   case 'bxbagclear':if(!window.confirm('Clear the entire Alchemy Bag?'))return false;k.inv={};return true;
   case 'bxalchcat':k.alchCat=id;return true;
   case 'bxalchrar':k.alchRar=id;return true;
@@ -756,8 +793,8 @@ document.addEventListener('input',function(e){var el=e.target;var a=el.getAttrib
 
 /* ---- custom panes ---- */
 C.panes=(C.panes||[]).concat([
- {id:'vines',n:'Blooming Vines',c:'#4fd18a',eb:'Core Plantsmith mechanic',bl:'Plant vines, track state &amp; HP, store harvested reagents, evolve to Verdant, and link roots.'},
- {id:'harvest',n:'Harvest',c:'#5fd2c0',eb:'Gather Reagents',bl:'Roll the d100 table for the current biome and keep the Alchemy Bag stocked.'},
+ {id:'vines',n:'Blooming Vines',c:'#4fd18a',eb:'Core Plantsmith mechanic',bl:'Sap, vine jobs and tiers: plant, grow Sap each round, upgrade to Verdant and Elder, and Harvest the Field when combat ends.'},
+ {id:'harvest',n:'Harvest',c:'#5fd2c0',eb:'Gather Reagents',bl:'Pick the biome, roll the d100 table, and keep the Alchemy Bag stocked.'},
  {id:'alchemy',n:'Alchemy',c:'#d9b154',eb:'Crafting list',bl:'Every potion, concoction, oil, explosive, dust and poison from the Kibbles list. Search and filter.'}
 ]);
 
@@ -3437,6 +3474,8 @@ function trPtsLeft(){return num(trS().pts)-trPtsSpent();}
 function trLvl(d){d=d||compute();return num(d.level);}
 function trHave(t,n){return t.kind==="char"?trPtsLeft():num(trS().mat[trCur(t,n)]);}
 function trLog(m){var T=trS();T.log.push(new Date().toLocaleDateString()+" · "+m);T.log=T.log.slice(-60);logline(m);}
+/* rank of an owned upgrade-tree node by name (0 if not owned); kit code uses it for upgrades that change a mechanic */
+window.trRankOf=function(nm){var r=0,q=String(nm||"").toLowerCase();try{trMine().forEach(function(t){var o=trOwn(t);t.nodes.forEach(function(n){if(String(n.n||"").toLowerCase()===q)r=Math.max(r,trRank(o,n.id));});});}catch(e){}return r;};
 function trAllMods(){var m={};trMine().forEach(function(t){var x=trMods(t,trOwn(t));for(var k in x)m[k]=(m[k]||0)+x[k];});return m;}
 /* Kit: owned nodes and active capstones, one section per tree */
 function trKitSections(){var out=[];trMine().forEach(function(t){var own=trOwn(t),items=[];

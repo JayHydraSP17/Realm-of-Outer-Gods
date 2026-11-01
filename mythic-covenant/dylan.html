@@ -3438,6 +3438,8 @@ function trPtsLeft(){return num(trS().pts)-trPtsSpent();}
 function trLvl(d){d=d||compute();return num(d.level);}
 function trHave(t,n){return t.kind==="char"?trPtsLeft():num(trS().mat[trCur(t,n)]);}
 function trLog(m){var T=trS();T.log.push(new Date().toLocaleDateString()+" · "+m);T.log=T.log.slice(-60);logline(m);}
+/* rank of an owned upgrade-tree node by name (0 if not owned); kit code uses it for upgrades that change a mechanic */
+window.trRankOf=function(nm){var r=0,q=String(nm||"").toLowerCase();try{trMine().forEach(function(t){var o=trOwn(t);t.nodes.forEach(function(n){if(String(n.n||"").toLowerCase()===q)r=Math.max(r,trRank(o,n.id));});});}catch(e){}return r;};
 function trAllMods(){var m={};trMine().forEach(function(t){var x=trMods(t,trOwn(t));for(var k in x)m[k]=(m[k]||0)+x[k];});return m;}
 /* Kit: owned nodes and active capstones, one section per tree */
 function trKitSections(){var out=[];trMine().forEach(function(t){var own=trOwn(t),items=[];

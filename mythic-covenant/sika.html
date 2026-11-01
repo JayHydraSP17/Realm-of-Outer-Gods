@@ -429,7 +429,7 @@ window.CHAR={
    {n:"Hymns",k:"free",cost:"listed MP",text:"Each Melody grants three hymns. Once per turn she plays one as a <b>free action</b> for its listed MP. Extra hymns the same turn, or a hymn as a <b>reaction</b>, cost <b>+3 MP</b>. Hymns only play from the Melody she is <b>actually performing</b>."},
    {n:"Masterful Performer",k:"free",cost:"5 MP / verse",text:"<b>Free action, 5 MP:</b> while performing a Melody she pairs a Mystic Song with it. The pairing lasts <b>2 rounds (one verse)</b>, not the full Melody. Reactivating when the verse ends costs <b>5 MP</b> and <b>uses her free hymn</b> that turn. The song's effects happen alongside the Melody. Because she's multitasking, <b>Armoring Air</b> and <b>Fortifying Fandango</b> only use <b>half her CHA</b> while she's performing."},
    {n:"Psychic Linguist",k:"passive",text:"Sika understands <b>any</b> creature while it is speaking, as if a text bubble pops up next to its head."},
-   {n:"Alcoholic",k:"bonus",cost:"+5 MP",text:"She drinks a little: <b>+5 MP</b>, her <b>CHA modifier doubles</b> for one round, and she gains an <b>extra free hymn</b> for one round. Drinking <b>more than three times</b> sends her into the <b>Wasted</b> state. The drink tally only clears on a short or long rest."},
+   {n:"Alcoholic",k:"bonus",cost:"+5 MP",text:"She drinks a little: <b>+5 MP</b>, her <b>CHA modifier doubles</b> for one round, and she gains an <b>extra free hymn</b> for one round. Drinking <b>more than three times</b> since her last rest sends her into the <b>Wasted</b> state (Bottoms Up raises this). The drink tally only clears on a short or long rest."},
    {n:"Wasted",k:"passive",text:"Too much alcohol: she becomes <b>Dizzy</b>, and <b>hymns cost no MP</b>. Each round she rolls a <b>CON save</b> to hold the Melody (<b>DC 18</b>, +2 per hymn used). On a failure the Melody ends and she can't start another until Dizzy ends. Dizzy lasts <b>3 rounds</b>; ridden out, it fades cleanly. If she drinks again to <b>extend</b> it, she becomes <b>Nauseous</b> when it finally ends."},
    {n:"Resonant Mindpower",k:"reaction",cost:"3 MP or give ≤10",pay:{res:{mp:3}},text:"When another creature spends MP, she can give it <b>up to 10</b> of hers, <b>or</b> spend <b>3 MP</b> to add her PB to a morale, fear or sanity check. (The pay button covers the 3 MP version.)"}]},
   {id:"traits",title:"Race, background & feats",sub:"Human · Noble (Fallen) / Entertainer",items:[
@@ -617,12 +617,8 @@ function sing(id){var k=K(),d=A.compute();if(res("songs")<1)return fail("No Myst
 /* ---------- alcohol / dizzy ---------- */
 function enterDiz(){var r=K().dr;r.diz=true;r.rd=1;r.hy=0;r.ext=false;r.bend=0;r.nau=false;r.last="";}
 function endDiz(clean){var r=K().dr,nz=!clean&&r.ext;r.diz=false;r.rd=0;r.hy=0;r.ext=false;r.bend=0;if(nz){r.nau=true;r.nlast="";}return nz;}
-function drink(){var k=K(),r=k.dr;if(r.nau)return fail("Nauseous: she can't eat or drink consumables");
- if(!eco("bon","bonus action"))return false;
- r.n++;setMP(mp()+5);k.mel.cha2=true;k.mel.extra=true;
- var msg="Drink #"+r.n+": +5 MP, CHA doubled, extra free hymn";
- if(r.diz){r.ext=true;r.bend++;r.rd=1;msg+=" · Dizzy extended (bender ×"+r.bend+"). Nauseous when it ends";}
- else if(r.n>3){enterDiz();msg+=" · DIZZY: hymns are free, CON save each round";}
+function trR(nm){return window.trRankOf?window.trRankOf(nm):0;} /* Bottoms Up (upgrade tree): R1 Wasted after 4+ drinks and a drink can ride on a hymn, R2 after 5+ and +8 MP a drink, R3 start combat at 2 */ function buRank(){return trR("Bottoms Up");} function wastedAt(){var b=buRank();return b>=2?5:b>=1?4:3;} function drink(viaHymn){var k=K(),r=k.dr;if(r.nau)return fail("Nauseous: she can't eat or drink consumables"); if(viaHymn){if(buRank()<1)return fail("Needs Bottoms Up (upgrade tree)");if(r.hymnDrink)return fail("Already drank with a hymn this turn");r.hymnDrink=true;} else if(!eco("bon","bonus action"))return false; var gain=buRank()>=2?8:5; r.n++;setMP(mp()+gain);k.mel.cha2=true;k.mel.extra=true; var msg="Drink #"+r.n+(viaHymn?" (with a hymn)":"")+": +"+gain+" MP, CHA doubled, extra free hymn";if(r.diz){r.ext=true;r.bend++;r.rd=1;msg+=" · Dizzy extended (bender ×"+r.bend+"). Nauseous when it ends";}
+ else if(r.n>wastedAt()){enterDiz();msg+=" · DIZZY: hymns are free, CON save each round";}
  return ok(msg);}
 function dsave(){var k=K(),r=k.dr,d=A.compute();if(!r.diz)return fail("Not Dizzy");
  var bonus=d.save.con+n(r.misc),a=d20(),b=d20(),pick=r.dis?Math.min(a,b):a,tot=pick+bonus,dc=dizDC(),pass=tot>=dc;
@@ -709,7 +705,7 @@ function renderWasted(d){var host=$("body-wasted");if(!host)return;var k=K(),r=k
  var state=r.diz?"DIZZY":r.nau?"NAUSEOUS":r.n>=3?"ONE MORE TIPS HER":"SOBER";
  h+='<section id="alcohol"><h2>Alcohol <span class="sub2">tally clears only on a short or long rest</span></h2><div class="card"><div class="row"><span class="cz sk-state'+(r.diz||r.nau?' bad':'')+'">'+state+'</span>'+chipS(r.n+" drink"+(r.n===1?"":"s")+" this rest",r.n>=3?"warn":"")+'</div><div class="sk-drinks">';
  for(var i=1;i<=Math.max(4,r.n);i++)h+='<span class="sk-dp'+(i<=r.n?(i>3?' over':' full'):'')+(i===4?' edge':'')+'">'+(i>3?'!':i)+'</span>';
- h+='</div><p class="sub">Drinks 1–3 are safe. The 4th makes her Dizzy. Drinking while Dizzy extends it (a bender), and the comedown becomes Nauseous.</p><div class="row" style="margin-top:8px"><button class="btn pri lg" data-a="sk_drink"'+(r.nau?' disabled':'')+'>🍷 Alcoholic · bonus action · +5 MP</button><button class="btn sm" data-a="sk_undrink">− drink</button>'+'</div></div></section>';
+ h+='</div><p class="sub">Drinks 1–3 are safe. The 4th makes her Dizzy. Drinking while Dizzy extends it (a bender), and the comedown becomes Nauseous.</p><div class="row" style="margin-top:8px"><button class="btn pri lg" data-a="sk_drink"'+(r.nau?' disabled':'')+'>🍷 Alcoholic · bonus action · +5 MP</button><button class="btn sm" data-a="sk_undrink">− drink</button>'+(buRank()>=1?'<button class="btn" data-a="sk_hdrink"'+(r.nau||r.hymnDrink?' disabled':'')+' title="Bottoms Up: once per turn, drink as part of playing a hymn">🍷 Drink with a hymn · no bonus action</button>':'')+(buRank()>=3?'<button class="btn sm" data-a="sk_bu3" title="Bottoms Up R3: at the start of each combat, a tally below 2 becomes 2">Combat start: tally to 2</button>':'')+'</div><p class="sub" style="margin:6px 0 0">Wasted on drink <b>#'+(wastedAt()+1)+'</b>'+(buRank()?' (Bottoms Up rank '+buRank()+')':'')+'. The tally clears on a short or long rest.</p></div></section>';
  h+='<section id="dizzy"><h2>Wasted · Dizzy <span class="sub2">rounds tick on end turn</span></h2><div class="vitals">'+
   vit("Dizzy round",r.diz?r.rd+'<span class="sl">/3</span>':"—",r.diz?(r.ext?"extended: Nauseous next":"ride it out: ends clean"):"4th drink starts it",r.diz)+
   vit("Bender",r.bend,"each extension +"+n(r.stepE,2)+" DC")+vit("Hymns while Dizzy",r.hy,"each +"+n(r.stepH,2)+" DC")+
@@ -801,8 +797,7 @@ C.hooks={
     s.items.push({id:"pearl",name:"Storage Pearl",cat:"accessory",qty:1,rarity:"",weaponType:"",twoSlot:false,atk:"",dmg:"",dur:0,armor:{kind:"",tier:1,base:0,ps:"dex"},props:[],abilities:[],mods:{itemSlots:2},tags:"",desc:"<b>+2 item slots</b> while equipped (3 base → 5).",loc:free});}}syncOwn();syncStatus();refreshDyn(api.compute());},
  render:function(api,d){A=api;if(syncOwn())setTimeout(function(){if(window.__sheet)window.__sheet.renderAll();},0);refreshDyn(d);
   [renderStrip,renderMel,renderWasted,renderBard,renderTroub].forEach(function(f){try{f(d);}catch(e){if(window.console)console.error("sika render",e);}});},
- endTurn:function(api,parts){A=api;var k=K(),r=k.dr,m=k.mel;
-  m.free=false;m.extra=false;m.switched=false;k.bl.used=false;k.ti.bonusConc=false;if(m.cha2){m.cha2=false;parts.push("CHA back to normal");}
+ endTurn:function(api,parts){A=api;var k=K(),r=k.dr,m=k.mel; r.hymnDrink=false; m.free=false;m.extra=false;m.switched=false;k.bl.used=false;k.ti.bonusConc=false;if(m.cha2){m.cha2=false;parts.push("CHA back to normal");}
   if(m.on){m.rounds++;if(m.rounds>=10){parts.push(X.MEL[m.on].n+" ended (1 minute)");m.on="";m.rounds=0;if(k.song.mode==="verse")clearSong(k);}}
   if(k.song.id){k.song.left--;if(k.song.left<=0){parts.push(songName(k.song.id)+(k.song.mode==="verse"?" verse ended (re-sing: 5 MP + free hymn)":" ended"));clearSong(k);}}
   if(r.diz){r.rd++;if(r.rd>3){parts.push(endDiz(false)?"Dizzy ended after a bender: NAUSEOUS":"Dizzy faded after 3 rounds, no hangover");}else parts.push("Dizzy "+r.rd+"/3 · CON save DC "+dizDC());}
@@ -823,9 +818,9 @@ function skAct(a,el,api){var id=el.getAttribute("data-id"),nn=n(el.getAttribute(
   case "sk_sing":return sing(id);
   case "sk_songstop":if(!k.song.id)return false;var sn=songName(k.song.id);clearSong(k);return ok("Stopped "+sn);
   case "sk_enforce":k.opt.enforce=!k.opt.enforce;return true;
-  case "sk_drink":return drink();
+  case "sk_drink":return drink(false); case "sk_hdrink":return drink(true); case "sk_bu3":if(r.n<2){r.n=2;return ok("Bottoms Up: drink tally starts this combat at 2");}return fail("Tally is already 2 or more");
   case "sk_undrink":r.n=Math.max(0,r.n-1);return true;
-  case "sk_diz":if(r.n<4)r.n=4;enterDiz();return ok("Dizzy (manual)");
+  case "sk_diz":if(r.n<=wastedAt())r.n=wastedAt()+1;enterDiz();return ok("Dizzy (manual)");
   case "sk_dsave":return dsave();
   case "sk_dis":r.dis=!r.dis;return true;
   case "sk_drd":if(!r.diz)return false;r.rd=Math.max(1,Math.min(3,r.rd+nn));return true;
@@ -3524,6 +3519,8 @@ function trPtsLeft(){return num(trS().pts)-trPtsSpent();}
 function trLvl(d){d=d||compute();return num(d.level);}
 function trHave(t,n){return t.kind==="char"?trPtsLeft():num(trS().mat[trCur(t,n)]);}
 function trLog(m){var T=trS();T.log.push(new Date().toLocaleDateString()+" · "+m);T.log=T.log.slice(-60);logline(m);}
+/* rank of an owned upgrade-tree node by name (0 if not owned); kit code uses it for upgrades that change a mechanic */
+window.trRankOf=function(nm){var r=0,q=String(nm||"").toLowerCase();try{trMine().forEach(function(t){var o=trOwn(t);t.nodes.forEach(function(n){if(String(n.n||"").toLowerCase()===q)r=Math.max(r,trRank(o,n.id));});});}catch(e){}return r;};
 function trAllMods(){var m={};trMine().forEach(function(t){var x=trMods(t,trOwn(t));for(var k in x)m[k]=(m[k]||0)+x[k];});return m;}
 /* Kit: owned nodes and active capstones, one section per tree */
 function trKitSections(){var out=[];trMine().forEach(function(t){var own=trOwn(t),items=[];

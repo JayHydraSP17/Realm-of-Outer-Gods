@@ -1,0 +1,1460 @@
+{
+ "trees": {
+  "dylan-tree": {
+   "kind": "char",
+   "name": "Dylan — The Flagbearer of Betrayal",
+   "owner": "dylan",
+   "desc": "",
+   "cols": [
+    {
+     "id": "ov",
+     "name": "Overall",
+     "role": "overall",
+     "desc": "Tanking (AC, HP, damage taken, damage dealt)"
+    },
+    {
+     "id": "a",
+     "name": "Flag",
+     "role": "build",
+     "desc": ""
+    },
+    {
+     "id": "b",
+     "name": "Betrayal",
+     "role": "build",
+     "desc": ""
+    }
+   ],
+   "rungs": [
+    {
+     "lvl": 0,
+     "ov": 0,
+     "cost": 1
+    },
+    {
+     "lvl": 0,
+     "ov": 2,
+     "cost": 2
+    },
+    {
+     "lvl": 15,
+     "ov": 5,
+     "cost": 3
+    },
+    {
+     "lvl": 20,
+     "ov": 9,
+     "cost": 4
+    }
+   ],
+   "caps": {
+    "a": {
+     "n": "Banner of Many Treasons",
+     "k": "passive",
+     "text": "Can plant two auras at once, carrying both traits. Unlocks <b>Pyrrhic Parade</b> (50 TL): ◄ allies' crits spill over, dealing the same damage to a second creature within the aura; Enemies ► enemies' crits against allies become normal hits; trait: Dylan can't score crits."
+    },
+    "b": {
+     "n": "Absolution",
+     "k": "action",
+     "text": "Once per long rest: all HP that Dylan and his allies paid to his Betrayal abilities this combat is dealt as true damage, split among enemies in his flag's radius."
+    }
+   },
+   "nodes": [
+    {
+     "id": "dylan-ov-hardened-hide",
+     "col": "ov",
+     "n": "Hardened Hide",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>+1 AC</b> per rank.",
+     "req": [],
+     "mods": {
+      "ac": 1
+     },
+     "cost": 1
+    },
+    {
+     "id": "dylan-ov-thick-skin",
+     "col": "ov",
+     "n": "Thick Skin",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>+15 max HP</b> per rank.",
+     "req": [],
+     "mods": {
+      "hp": 15
+     },
+     "cost": 1
+    },
+    {
+     "id": "dylan-ov-bescyl-s-weight",
+     "col": "ov",
+     "n": "Bescyl's Weight",
+     "k": "passive",
+     "ranks": 3,
+     "text": "Destructive Aftershock <b>+2</b> per rank.",
+     "req": [],
+     "mods": {},
+     "cost": 1
+    },
+    {
+     "id": "dylan-ov-grit",
+     "col": "ov",
+     "n": "Grit",
+     "k": "passive",
+     "ranks": 3,
+     "text": "Unyielding grants <b>+10 temp HP</b> per rank.",
+     "req": [],
+     "mods": {},
+     "cost": 1
+    },
+    {
+     "id": "dylan-ov-blood-price",
+     "col": "ov",
+     "n": "Blood Price",
+     "k": "passive",
+     "ranks": 3,
+     "text": "Fervid Vengeance bonus <b>+1</b> per rank at every threshold.",
+     "req": [],
+     "mods": {},
+     "cost": 1
+    },
+    {
+     "id": "dylan-ov-pain-ledger",
+     "col": "ov",
+     "n": "Pain Ledger",
+     "k": "passive",
+     "ranks": 2,
+     "text": "R1: once per round, when a single hit deals 20% of max HP damage, regain <b>1 battle die</b>. R2: the threshold drops to 10%.",
+     "req": [],
+     "mods": {},
+     "cost": 1
+    },
+    {
+     "id": "dylan-ov-steadfast",
+     "col": "ov",
+     "n": "Steadfast",
+     "k": "passive",
+     "ranks": 1,
+     "text": "Advantage on saves against being knocked prone or forcibly moved.",
+     "req": [],
+     "mods": {},
+     "cost": 1
+    },
+    {
+     "id": "dylan-ov-last-one-standing",
+     "col": "ov",
+     "n": "Last One Standing",
+     "k": "passive",
+     "ranks": 1,
+     "text": "Bloodthirsty Resolve recharges on a short rest.",
+     "req": [],
+     "mods": {},
+     "cost": 1,
+     "lvl": 15
+    },
+    {
+     "id": "dylan-a-deserter-s-mire",
+     "col": "a",
+     "n": "Deserter's Mire",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>R1:</b> unlocks the aura (15 TL). ◄ Allies may Disengage as a free action and ignore the first opportunity attack against them each round. Enemies ► the first time an enemy tries to leave the aura each turn, it is tethered (STR save ends) and Dylan regains 1 battle die. Trait: Dylan's speed is halved. <b>R2:</b> DC increases by PB. <b>R3:</b> Allies ignore the first two opportunity attacks.",
+     "req": [],
+     "mods": {},
+     "rung": 1
+    },
+    {
+     "id": "dylan-a-oathbreaker-s-toll",
+     "col": "a",
+     "n": "Oathbreaker's Toll",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>R1:</b> unlocks the aura (30 TL). ◄ When an enemy in the aura dies, every ally regains 1 reaction. Enemies ► when an ally in the aura dies, every enemy loses 1 reaction until the end of its next turn. Trait: Dylan cannot take reactions. <b>R2:</b> When an enemy in the aura dies, allies also gain +PB on their next attack. <b>R3:</b> Enemies who lose a reaction also have disadvantage on Dodge, Block and Parry until the end of their next turn.",
+     "req": [],
+     "mods": {},
+     "rung": 2
+    },
+    {
+     "id": "dylan-a-coward-s-crown",
+     "col": "a",
+     "n": "Coward's Crown",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>R1:</b> unlocks the aura (30 TL). ◄ Allies are immune to Frightened and have advantage on saves against forced movement. Enemies ► enemies save against Frightened (Dylan's DC) at the start of each of their turns; Frightened enemies have their speed halved. Trait: Dylan has disadvantage on attacks against any creature that isn't Frightened. <b>R2: Bravery's Throne:</b> creatures that aren't Frightened lose Dylan's PB on attack rolls not made against him. <b>R3:</b> Frightened enemies in the aura take Dylan's PB in psychic damage at the start of their turns, and the aura costs 10 TL less.",
+     "req": [],
+     "mods": {},
+     "rung": 3
+    },
+    {
+     "id": "dylan-a-martyr-s-standard",
+     "col": "a",
+     "n": "Martyr's Standard",
+     "k": "passive",
+     "ranks": 2,
+     "text": "<b>R1:</b> unlocks the aura (45 TL). ◄ Damage that would drop an ally to 0 HP leaves them at 1 instead; the excess goes to Dylan. Enemies ► enemies cannot be healed or gain temp HP. Trait: Dylan gains no benefit from resistances or temp HP. <b>R2:</b> aura radius <b>20 → 30 ft</b>.",
+     "req": [],
+     "mods": {},
+     "rung": 4
+    },
+    {
+     "id": "dylan-b-turncoat-s-toll",
+     "col": "b",
+     "n": "Turncoat's Toll",
+     "k": "bonus",
+     "ranks": 3,
+     "text": "Dylan takes <b>10% of max HP</b> as true damage and regains <b>1 battle die</b> and <b>10 TL</b>. <b>Per extra rank: +5 TL.</b>",
+     "req": [],
+     "mods": {},
+     "rung": 1
+    },
+    {
+     "id": "dylan-b-blood-pact",
+     "col": "b",
+     "n": "Blood Pact",
+     "k": "bonus",
+     "ranks": 3,
+     "text": "A willing ally within 10 ft loses 10% of its max HP. Dylan gains that much temp HP. <b>R2:</b> works on two allies at once. <b>R3:</b> the sacrificed health rises to 20%.",
+     "req": [],
+     "mods": {},
+     "rung": 2
+    },
+    {
+     "id": "dylan-b-i-can-do-worse",
+     "col": "b",
+     "n": "I Can Do Worse",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<i>I Can Do Better</i> deals <b>+1d6 psychic per rank</b> on top of its +2d6. <b>R3:</b> it skips its cooldown if Dylan hurt himself or an ally with a Betrayal ability this round.",
+     "req": [],
+     "mods": {},
+     "rung": 3
+    },
+    {
+     "id": "dylan-b-traitor-s-crown",
+     "col": "b",
+     "n": "Traitor's Crown",
+     "k": "passive",
+     "ranks": 2,
+     "text": "Each time Dylan or an ally loses 10% HP from a Betrayal ability, Dylan gains +1 Treachery. His next attack gains +10% damage per Treachery (max 5). That attack spends all his Treachery. <b>R2:</b> max Treachery <b>7</b>.",
+     "req": [],
+     "mods": {},
+     "rung": 4
+    }
+   ]
+  },
+  "sika-tree": {
+   "kind": "char",
+   "name": "Sika — Mindful Melodies",
+   "owner": "sika",
+   "desc": "",
+   "cols": [
+    {
+     "id": "ov",
+     "name": "Overall",
+     "role": "overall",
+     "desc": "Range, effectiveness and duration of melodies"
+    },
+    {
+     "id": "a",
+     "name": "Waste Cycle",
+     "role": "build",
+     "desc": ""
+    },
+    {
+     "id": "b",
+     "name": "Telepathy",
+     "role": "build",
+     "desc": ""
+    }
+   ],
+   "rungs": [
+    {
+     "lvl": 0,
+     "ov": 0,
+     "cost": 1
+    },
+    {
+     "lvl": 0,
+     "ov": 2,
+     "cost": 2
+    },
+    {
+     "lvl": 15,
+     "ov": 5,
+     "cost": 3
+    },
+    {
+     "lvl": 20,
+     "ov": 9,
+     "cost": 4
+    }
+   ],
+   "caps": {
+    "a": {
+     "n": "Spitting Rhymes",
+     "k": "passive",
+     "text": "Once per long rest while Wasted: for 3 rounds every hymn plays at <b>double effect</b> and a failed Wasted save can't end her Melody."
+    },
+    "b": {
+     "n": "Psychic Symphony",
+     "k": "passive",
+     "text": "While Mind Link holds 3+ creatures, each hymn also deals <b>Melody Factor</b> psychic damage to one enemy in range (once per turn)."
+    }
+   },
+   "nodes": [
+    {
+     "id": "sika-ov-carrying-tune",
+     "col": "ov",
+     "n": "Carrying Tune",
+     "k": "passive",
+     "ranks": 3,
+     "text": "Melody range <b>+5 ft</b> per rank (30 → 45 ft).",
+     "req": [],
+     "mods": {},
+     "cost": 1
+    },
+    {
+     "id": "sika-ov-deep-breath",
+     "col": "ov",
+     "n": "Deep Breath",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>+5 max MP</b> per rank.",
+     "req": [],
+     "mods": {},
+     "cost": 1
+    },
+    {
+     "id": "sika-ov-crescendo",
+     "col": "ov",
+     "n": "Crescendo",
+     "k": "passive",
+     "ranks": 3,
+     "text": "Melody Factor <b>+4</b> per rank.",
+     "req": [],
+     "mods": {},
+     "cost": 1
+    },
+    {
+     "id": "sika-ov-practiced-hymns",
+     "col": "ov",
+     "n": "Practiced Hymns",
+     "k": "passive",
+     "ranks": 3,
+     "text": "Per rank, choose one hymn: it costs <b>1 MP less</b> (min 1).",
+     "req": [],
+     "mods": {},
+     "cost": 1
+    },
+    {
+     "id": "sika-ov-sweeter-melody",
+     "col": "ov",
+     "n": "Sweeter Melody",
+     "k": "passive",
+     "ranks": 3,
+     "text": "Sweet Melody heals <b>+5% of max HP</b> per rank.",
+     "req": [],
+     "mods": {},
+     "cost": 1
+    },
+    {
+     "id": "sika-ov-long-verse",
+     "col": "ov",
+     "n": "Long Verse",
+     "k": "passive",
+     "ranks": 2,
+     "text": "A Masterful Performer pairing lasts <b>+1 round</b> per rank.",
+     "req": [],
+     "mods": {},
+     "cost": 1
+    },
+    {
+     "id": "sika-ov-second-voice",
+     "col": "ov",
+     "n": "Second Voice",
+     "k": "passive",
+     "ranks": 2,
+     "text": "An extra hymn in the same turn costs <b>+3 → +2 → +1 MP</b>.",
+     "req": [],
+     "mods": {},
+     "cost": 1
+    },
+    {
+     "id": "sika-ov-duet",
+     "col": "ov",
+     "n": "Duet",
+     "k": "passive",
+     "ranks": 1,
+     "text": "Switching Melodies costs no action, and the new Melody starts free once per combat.",
+     "req": [],
+     "mods": {},
+     "cost": 1,
+     "lvl": 15
+    },
+    {
+     "id": "sika-a-bottoms-up",
+     "col": "a",
+     "n": "Bottoms Up",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>R1:</b> once per turn, when she plays a hymn, she can drink as part of it without using her bonus action. She enters Wasted after drinking <b>more than four times</b> instead of three. <b>R2:</b> she enters Wasted after drinking <b>more than five times</b> (Wasted on the 6th drink), and each drink gives <b>+8 MP</b> instead of +5. <b>R3:</b> at the start of each combat, if her tally is below 2, it becomes <b>2</b>. <i>Two drinks in one round: the MP stacks, but the CHA doubling and the extra free hymn don't.</i>",
+     "req": [],
+     "mods": {},
+     "rung": 1
+    },
+    {
+     "id": "sika-a-liquid-courage",
+     "col": "a",
+     "n": "Liquid Courage",
+     "k": "passive",
+     "ranks": 3,
+     "text": "While she's Dizzy, allies gain +2 to attack rolls. <b>R2:</b> While she's Dizzy, allies' crit range expands by 1. <b>R3:</b> allies gain +10 Morale at the start of their turn.",
+     "req": [],
+     "mods": {},
+     "rung": 2
+    },
+    {
+     "id": "sika-a-bar-fight-ballad",
+     "col": "a",
+     "n": "Bar Fight Ballad",
+     "k": "action",
+     "ranks": 3,
+     "text": "While Dizzy, each creature within 15 ft makes a CON save or becomes Dizzy (Tier I). Her drink tally resets to 0. <b>R2:</b> radius increases to 20 ft. <b>R3:</b> Dizzy creatures make a CON save or become Nauseous; the next attack against a Nauseous creature deals Melody Factor damage.",
+     "req": [],
+     "mods": {},
+     "rung": 3
+    },
+    {
+     "id": "sika-a-hair-of-the-dog",
+     "col": "a",
+     "n": "Hair of the Dog",
+     "k": "reaction",
+     "ranks": 2,
+     "text": "When she would become Nauseous, drink instead: no Nauseous, <b>+10 MP</b>, and she stays Dizzy. <b>R2: +15 MP</b>.",
+     "req": [],
+     "mods": {},
+     "rung": 4
+    },
+    {
+     "id": "sika-b-mind-link",
+     "col": "b",
+     "n": "Mind Link",
+     "k": "bonus",
+     "ranks": 3,
+     "text": "<b>3 MP.</b> Link allies telepathically for 1 minute: they can communicate in their heads and share sight (ends if Sika is incapacitated). <b>2 allies, +1 per rank</b>.",
+     "req": [],
+     "mods": {},
+     "rung": 1
+    },
+    {
+     "id": "sika-b-second-guess",
+     "col": "b",
+     "n": "Second Guess",
+     "k": "reaction",
+     "ranks": 3,
+     "text": "<b>5 MP.</b> When a creature within 60 ft attacks: WIS save or it has disadvantage and the damage is reduced by 10%. The reduction increases by 5% per rank.",
+     "req": [],
+     "mods": {},
+     "rung": 2
+    },
+    {
+     "id": "sika-b-thought-theft",
+     "col": "b",
+     "n": "Thought Theft",
+     "k": "action",
+     "ranks": 3,
+     "text": "<b>10 MP.</b> Choose a creature within 20 ft: WIS save or it loses 5 MP, TL or Ki; Sika gains that much MP. <b>R2:</b> it loses 10. <b>R3:</b> it loses 15, and the loss comes off its max.",
+     "req": [],
+     "mods": {},
+     "rung": 3
+    },
+    {
+     "id": "sika-b-shared-resolve",
+     "col": "b",
+     "n": "Shared Resolve",
+     "k": "passive",
+     "ranks": 2,
+     "text": "<b>R1:</b> once per round, when a linked creature would drop a Morale tier, Sika can spend <b>5 MP</b> to hold it: its Morale stops at the bottom of its current tier instead. <b>R2:</b> linked creatures can lose at most <b>20</b> Morale per round from other creatures' effects (the Swing Cap is normally 30).",
+     "req": [],
+     "mods": {},
+     "rung": 4
+    }
+   ]
+  },
+  "magnolia-tree": {
+   "kind": "char",
+   "name": "Magnolia — The Radiant Tempest",
+   "owner": "magnolia",
+   "desc": "",
+   "cols": [
+    {
+     "id": "ov",
+     "name": "Overall",
+     "role": "overall",
+     "desc": "Spell range and the fans"
+    },
+    {
+     "id": "a",
+     "name": "Aeromancer",
+     "role": "build",
+     "desc": ""
+    },
+    {
+     "id": "b",
+     "name": "Perfect Casting",
+     "role": "build",
+     "desc": ""
+    }
+   ],
+   "rungs": [
+    {
+     "lvl": 0,
+     "ov": 0,
+     "cost": 1
+    },
+    {
+     "lvl": 0,
+     "ov": 2,
+     "cost": 2
+    },
+    {
+     "lvl": 15,
+     "ov": 5,
+     "cost": 3
+    },
+    {
+     "lvl": 20,
+     "ov": 9,
+     "cost": 4
+    }
+   ],
+   "caps": {
+    "a": {
+     "n": "Imperial Cyclone",
+     "k": "action",
+     "text": "Once per long rest: every enemy within 30 ft makes a STR save or is <b>Launched</b>. She then makes one fan strike against each airborne creature (each counts as a juggle hit), and they land <b>Prone</b>."
+    },
+    "b": {
+     "n": "Perfect Harmony",
+     "k": "passive",
+     "text": "Once per long rest, she can combine <b>two school-changing modifications</b> on one spell, breaking the usual special rule."
+    }
+   },
+   "nodes": [
+    {
+     "id": "magnolia-ov-long-throw",
+     "col": "ov",
+     "n": "Long Throw",
+     "k": "passive",
+     "ranks": 3,
+     "text": "Twin Gales thrown range <b>+10 ft</b> per rank.",
+     "req": [],
+     "mods": {},
+     "cost": 1
+    },
+    {
+     "id": "magnolia-ov-honed-edges",
+     "col": "ov",
+     "n": "Honed Edges",
+     "k": "passive",
+     "ranks": 3,
+     "text": "Twin Gales damage <b>+2</b> per rank.",
+     "req": [],
+     "mods": {},
+     "cost": 1
+    },
+    {
+     "id": "magnolia-ov-allure",
+     "col": "ov",
+     "n": "Allure",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>+1</b> per rank to her Persuasion roll for Flirtatious.",
+     "req": [],
+     "mods": {},
+     "cost": 1
+    },
+    {
+     "id": "magnolia-ov-focused-mind",
+     "col": "ov",
+     "n": "Focused Mind",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>+2</b> to concentration saves per rank.",
+     "req": [],
+     "mods": {},
+     "cost": 1
+    },
+    {
+     "id": "magnolia-ov-quick-draw",
+     "col": "ov",
+     "n": "Quick Draw",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>+2 initiative</b> per rank.",
+     "req": [],
+     "mods": {
+      "init": 2
+     },
+     "cost": 1
+    },
+    {
+     "id": "magnolia-ov-gale-step",
+     "col": "ov",
+     "n": "Gale Step",
+     "k": "passive",
+     "ranks": 2,
+     "text": "R1: Ride the Winds doesn't provoke. R2: Ride the Winds <b>+15 ft</b>.",
+     "req": [],
+     "mods": {},
+     "cost": 1
+    },
+    {
+     "id": "magnolia-ov-wind-shear",
+     "col": "ov",
+     "n": "Wind Shear",
+     "k": "passive",
+     "ranks": 1,
+     "text": "A creature with a fan swirling around it takes 1 fan weapon die slashing per fan at the start of its turn.",
+     "req": [],
+     "mods": {},
+     "cost": 1
+    },
+    {
+     "id": "magnolia-ov-tempest-conduit",
+     "col": "ov",
+     "n": "Tempest Conduit",
+     "k": "passive",
+     "ranks": 1,
+     "text": "Spells she casts through the Twin Gales can originate from a swirling fan as if she stood there. Range and area are measured from the fan.",
+     "req": [],
+     "mods": {},
+     "cost": 1,
+     "lvl": 15
+    },
+    {
+     "id": "magnolia-a-fan-lift",
+     "col": "a",
+     "n": "Fan Lift",
+     "k": "reaction",
+     "ranks": 3,
+     "text": "<b>R1:</b> when a creature within 15 ft hits her with a melee attack, she flicks a fan beneath it: STR save (her spell DC) or it is <b>Launched</b>. The fan returns to her hand. <b>R2:</b> the fan rises with it: she makes a free fan strike against it midair (it counts as a juggle hit). <b>R3:</b> range <b>30 ft</b>, and it also triggers on ranged attacks.",
+     "req": [],
+     "mods": {},
+     "rung": 1
+    },
+    {
+     "id": "magnolia-a-square-wave",
+     "col": "a",
+     "n": "Square Wave",
+     "k": "attack",
+     "ranks": 3,
+     "text": "<b>R1:</b> replaces one attack: she rides the wind up to <b>20 ft</b> in a straight line (no opportunity attacks) and strikes the first creature with both fans. It counts as a <b>Launcher</b>, so the hit launches if it beats the threshold. <b>R2:</b> <b>30 ft</b>, and it deals <b>+1 weapon die</b> against airborne targets. <b>R3:</b> after the hit, she can carry on to a second creature within 10 ft and strike it too.",
+     "req": [],
+     "mods": {},
+     "rung": 2
+    },
+    {
+     "id": "magnolia-a-royal-storm",
+     "col": "a",
+     "n": "Royal Storm",
+     "k": "action",
+     "ranks": 3,
+     "text": "<b>R1:</b> with both fans in hand, she sends them spiralling around her: each creature within <b>15 ft</b> makes a DEX save or takes <b>4d8 slashing</b> and is pushed 10 ft backwards. The fans return. <b>R2:</b> airborne creatures caught in it <b>stay airborne</b> and it deals +1 weapon die (it counts as a juggle hit on each). <b>R3:</b> radius increases to <b>25 ft</b> and crit range against airborne creatures expands by 1.",
+     "req": [],
+     "mods": {},
+     "rung": 3
+    },
+    {
+     "id": "magnolia-a-sky-dancer",
+     "col": "a",
+     "n": "Sky Dancer",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>R1:</b> creatures she launched can be juggled for up to <b>5</b> hits instead of 3. <b>R2:</b> her Critical Air Takedown also applies <b>Deafening Winds</b>. <b>R3:</b> once per turn she can <b>Ride the Winds up to a launched creature</b> for free and attack it from above.",
+     "req": [],
+     "mods": {},
+     "rung": 4
+    },
+    {
+     "id": "magnolia-b-amplified-weave",
+     "col": "b",
+     "n": "Amplified Weave",
+     "k": "passive",
+     "ranks": 3,
+     "text": "Each rank unlocks a modification. <b>R1 Amplify (20 TL):</b> the spell's damage or healing dice go up one size (d6 → d8 → d10 → d12). <b>R2 Saturate (25 TL):</b> area <b>+10 ft</b> radius, or double a line's length. <b>R3 Ascendant (40 TL):</b> the spell is cast as if from a slot <b>one level higher</b>.",
+     "req": [],
+     "mods": {},
+     "rung": 1
+    },
+    {
+     "id": "magnolia-b-elemental-fusion",
+     "col": "b",
+     "n": "Elemental Fusion",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>R1 Fusion (25 TL):</b> half the spell's damage becomes a second type of her choice. Each half checks the target's resistances separately. <b>R2 Resonance (20 TL):</b> if the target is vulnerable to <b>either</b> type, all of the spell's damage counts as that type. <b>R3 Catalyst (30 TL):</b> fused damage can trigger <b>combination statuses</b> (e.g. Fire + Necrotic = Hellfire).",
+     "req": [],
+     "mods": {},
+     "rung": 2
+    },
+    {
+     "id": "magnolia-b-tempered-arcana",
+     "col": "b",
+     "n": "Tempered Arcana",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>R1 Temper (25 TL):</b> the spell's damage becomes <b>physical</b> (bludgeoning, piercing or slashing): magic resistance, anti-magic and counterspells don't affect it, but Block and ADR do. <b>R2 Spell-Edge (20 TL):</b> a Tempered spell delivered through <b>Spellstrike</b> counts as a weapon hit for on-hit effects, and counts as a <b>Launcher</b>. <b>R3 Veiled Casting (20 TL):</b> no verbal or somatic components; it can't be Read or interrupted until it lands.",
+     "req": [],
+     "mods": {},
+     "rung": 3
+    },
+    {
+     "id": "magnolia-b-weave-mastery",
+     "col": "b",
+     "n": "Weave Mastery",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>R1 Reshape (15 TL):</b> change the spell's area shape (sphere, cone, line or cube), keeping its size. <b>R2 Sustain (35 TL):</b> a concentration spell doesn't need concentration for 2 rounds (one at a time). <b>R3:</b> modifications that don't change school cost <b>5 TL less</b> (min 10).",
+     "req": [],
+     "mods": {},
+     "rung": 4
+    }
+   ]
+  },
+  "beatrix-tree": {
+   "kind": "char",
+   "name": "Beatrix — The Harvesting Princess",
+   "owner": "beatrix",
+   "desc": "",
+   "cols": [
+    {
+     "id": "ov",
+     "name": "Overall",
+     "role": "overall",
+     "desc": "Her systems (alchemy, seeds, battalion, precision)"
+    },
+    {
+     "id": "a",
+     "name": "Vines",
+     "role": "build",
+     "desc": ""
+    },
+    {
+     "id": "b",
+     "name": "Sylvan's Oblige",
+     "role": "build",
+     "desc": ""
+    }
+   ],
+   "rungs": [
+    {
+     "lvl": 0,
+     "ov": 0,
+     "cost": 1
+    },
+    {
+     "lvl": 0,
+     "ov": 2,
+     "cost": 2
+    },
+    {
+     "lvl": 15,
+     "ov": 5,
+     "cost": 3
+    },
+    {
+     "lvl": 20,
+     "ov": 9,
+     "cost": 4
+    }
+   ],
+   "caps": {
+    "a": {
+     "n": "Grove Paragon",
+     "k": "action",
+     "text": "As an action, once per long rest, she merges <b>three Elder vines with different jobs</b> within 30 ft of each other into one Paragon vine. It has their combined HP and Verdant and Elder stats, reach 20 ft, and <b>every merged job's Elder ability</b>. It takes <b>one action per job</b> each turn. Each job adds a <b>fusion trait</b>: <b>Harvester:</b> the Sap it makes can go straight into Degree. <b>Shooter:</b> its thorns carry its other jobs (an Alchemy creation coats them; Spike seeds a 5 ft root patch where they hit). <b>Spike:</b> its root field is centred on it permanently, and its jobs have advantage against creatures in the roots. <b>Alchemy:</b> once a round, spraying costs no action. <b>Degree:</b> each Sap she spends on it gives +1 (max 10). <b>Degree 5:</b> +1 action each turn. <b>Degree 10:</b> <b>Grove's Wrath</b> (once): every job fires at full effect at once. Lasts until it drops to 0 HP or she finishes a long rest."
+    },
+    "b": {
+     "n": "Eternal Cycle",
+     "k": "passive",
+     "text": "Once per long rest, for <b>3 rounds</b>, <b>all four seasons</b> trigger on <b>every</b> strike."
+    }
+   },
+   "nodes": [
+    {
+     "id": "beatrix-ov-stocked-satchel",
+     "col": "ov",
+     "n": "Stocked Satchel",
+     "k": "passive",
+     "ranks": 3,
+     "text": "Adds to her Alchemy Bag's Starting Stock. <b>R1:</b> +1 common Poisonous, +1 uncommon Poisonous, +2 uncommon Curative. <b>R2:</b> +2 uncommon Reactive, +1 uncommon Poisonous. <b>R3:</b> +2 rare Reactive, +1 rare Poisonous, +2 rare Curative.",
+     "req": [],
+     "mods": {},
+     "cost": 1
+    },
+    {
+     "id": "beatrix-ov-potent-brews",
+     "col": "ov",
+     "n": "Potent Brews",
+     "k": "passive",
+     "ranks": 3,
+     "text": "Alchemical creations deal or heal <b>+2</b> per rank.",
+     "req": [],
+     "mods": {},
+     "cost": 1
+    },
+    {
+     "id": "beatrix-ov-hardy-seeds",
+     "col": "ov",
+     "n": "Hardy Seeds",
+     "k": "passive",
+     "ranks": 3,
+     "text": "Blooming Vine max HP <b>+10</b> per rank.",
+     "req": [],
+     "mods": {},
+     "cost": 1
+    },
+    {
+     "id": "beatrix-ov-precision-shot",
+     "col": "ov",
+     "n": "Precision Shot",
+     "k": "passive",
+     "ranks": 3,
+     "text": "Precision chance <b>+2%</b> per rank (double crit damage).",
+     "req": [],
+     "mods": {},
+     "cost": 1
+    },
+    {
+     "id": "beatrix-ov-seed-pouch",
+     "col": "ov",
+     "n": "Seed Pouch",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>R1:</b> Rapid Growth range <b>+5 ft</b>. <b>R2:</b> Rapid Growth plants <b>+1 seed</b> (stacks with Blooming Forest). <b>R3:</b> once per combat, Rapid Growth is a <b>free action</b>.",
+     "req": [],
+     "mods": {},
+     "cost": 1
+    },
+    {
+     "id": "beatrix-ov-deep-roots",
+     "col": "ov",
+     "n": "Deep Roots",
+     "k": "passive",
+     "ranks": 2,
+     "text": "<b>R1:</b> <b>+1</b> Rapid Growth use. <b>R2:</b> Rapid Growth uses reset after a short rest.",
+     "req": [],
+     "mods": {},
+     "cost": 1
+    },
+    {
+     "id": "beatrix-ov-quick-hands",
+     "col": "ov",
+     "n": "Quick Hands",
+     "k": "passive",
+     "ranks": 1,
+     "text": "In combat, she can craft a creation of <b>Rare or lower</b> as a <b>bonus action</b> (normally Common or Uncommon, as an action).",
+     "req": [],
+     "mods": {},
+     "cost": 1
+    },
+    {
+     "id": "beatrix-ov-master-alchemist",
+     "col": "ov",
+     "n": "Master Alchemist",
+     "k": "passive",
+     "ranks": 1,
+     "text": "Once per long rest, halve (rounded down) each ingredient cost to brew a potion or poison.",
+     "req": [],
+     "mods": {},
+     "cost": 1,
+     "lvl": 15
+    },
+    {
+     "id": "beatrix-a-harvester-vine",
+     "col": "a",
+     "n": "Harvester Vine",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>R1:</b> unlocks Harvester <b>Verdant*</b>. <b>R2:</b> unlocks Harvester <b>Elder*</b>. <b>R3 Bumper Crop:</b> Harvest the Field rolls <b>once more</b> for each Harvester that ended the combat Verdant or Elder.",
+     "req": [],
+     "mods": {},
+     "rung": 1
+    },
+    {
+     "id": "beatrix-a-shooter-vine",
+     "col": "a",
+     "n": "Shooter Vine",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>R1:</b> unlocks Shooter <b>Verdant*</b>. <b>R2:</b> unlocks Shooter <b>Elder*</b>. <b>R3 Splitting Thorns:</b> each thorn that hits splits to a second creature within 10 ft for half damage, and Thorn Launch range becomes <b>90/270</b>.",
+     "req": [],
+     "mods": {},
+     "rung": 2
+    },
+    {
+     "id": "beatrix-a-spike-vine",
+     "col": "a",
+     "n": "Spike Vine",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>R1:</b> unlocks the Spike job (<b>Sprout: Root Bed</b>). <b>R2:</b> unlocks Spike <b>Verdant*: Thorn Field</b>. <b>R3:</b> unlocks Spike <b>Elder*: Impaling Ground</b>.",
+     "req": [],
+     "mods": {},
+     "rung": 3
+    },
+    {
+     "id": "beatrix-a-alchemy-vine",
+     "col": "a",
+     "n": "Alchemy Vine",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>R1:</b> unlocks the Alchemy job (<b>Sprout: Bulb</b>). <b>R2:</b> unlocks Alchemy <b>Verdant*: Twin Bulb</b>. <b>R3:</b> unlocks Alchemy <b>Elder*: Distillery</b>.",
+     "req": [],
+     "mods": {},
+     "rung": 4
+    },
+    {
+     "id": "beatrix-b-four-seasons",
+     "col": "b",
+     "n": "Four Seasons",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>R1: unlocks Summer.</b> When switching to the Bow, until the end of her turn each arrow's crit range expands by 1 per flower on its target (max 3: crits on 17–20). <b>R2: unlocks Winter.</b> When switching to the Blades, her next strike freezes the target: its speed drops to 0 and it has disadvantage on its next attack. <b>R3 Full Bloom:</b> when she switches, she gets <b>both</b> seasons of that form: Bow = Spring + Summer (bloom, then crit off the new flowers), Blades = Autumn + Winter (wither and freeze on the same strike).",
+     "req": [],
+     "mods": {},
+     "rung": 1
+    },
+    {
+     "id": "beatrix-b-scavenging-arrow",
+     "col": "b",
+     "n": "Scavenging Arrow",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>R1:</b> the Bow fires <b>five</b> arrows instead of three. <b>R2:</b> when a coated arrow kills a creature, the coating isn't used up: it also covers her <b>next</b> turn (once per turn). <b>R3:</b> crits trigger it too (up to 3 times per turn, each adding one more turn of coating).",
+     "req": [],
+     "mods": {},
+     "rung": 2
+    },
+    {
+     "id": "beatrix-b-harvesting-blade",
+     "col": "b",
+     "n": "Harvesting Blade",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>R1:</b> the Blades' double-hit temp HP rises to <b>30%</b> of the target's max HP. <b>R2:</b> when she kills a creature with the Blades, she gains <b>1 common reagent</b> (once per turn). <b>R3:</b> crits trigger it too (up to 3 times per turn).",
+     "req": [],
+     "mods": {},
+     "rung": 3
+    },
+    {
+     "id": "beatrix-b-sylvan-indulgence",
+     "col": "b",
+     "n": "Sylvan Indulgence",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>R1:</b> once per turn, she may switch forms again for free, applying the season. <b>R2:</b> creatures can carry up to <b>5</b> flowers, and Autumn's wither damage becomes <b>1d10</b> per flower <i>(Summer still counts at most 3)</i>. <b>R3:</b> her first strike after a switch also applies the season(s) of the form she just left.",
+     "req": [],
+     "mods": {},
+     "rung": 4
+    }
+   ]
+  },
+  "yohan-tree": {
+   "kind": "char",
+   "name": "Yohan — The Diamond in the Rough",
+   "owner": "yohan",
+   "desc": "",
+   "cols": [
+    {
+     "id": "ov",
+     "name": "Overall",
+     "role": "overall",
+     "desc": "Speed, damage and focus"
+    },
+    {
+     "id": "a",
+     "name": "Momentum",
+     "role": "build",
+     "desc": ""
+    },
+    {
+     "id": "b",
+     "name": "Focus",
+     "role": "build",
+     "desc": ""
+    }
+   ],
+   "rungs": [
+    {
+     "lvl": 0,
+     "ov": 0,
+     "cost": 1
+    },
+    {
+     "lvl": 0,
+     "ov": 2,
+     "cost": 2
+    },
+    {
+     "lvl": 15,
+     "ov": 5,
+     "cost": 3
+    },
+    {
+     "lvl": 20,
+     "ov": 9,
+     "cost": 4
+    }
+   ],
+   "caps": {
+    "a": {
+     "n": "Endless Desert",
+     "k": "passive",
+     "text": "Once per long rest, for <b>3 rounds</b>: Momentum Dice never expire, Buried Momentum costs nothing, his Dune stacks never reset, and there's no limit on how many MD he generates a round. When it starts, he gains Momentum Dice up to his cap."
+    },
+    "b": {
+     "n": "Vast Horizon",
+     "k": "passive",
+     "text": "Once per long rest, for <b>3 rounds</b> he holds <b>all four stances</b> at once, and each halberd attack counts as <b>both Hack and Pierce</b>."
+    }
+   },
+   "nodes": [
+    {
+     "id": "yohan-ov-desert-stride",
+     "col": "ov",
+     "n": "Desert Stride",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>+5 ft</b> speed per rank.",
+     "req": [],
+     "mods": {
+      "speed": 5
+     },
+     "cost": 1
+    },
+    {
+     "id": "yohan-ov-deep-focus",
+     "col": "ov",
+     "n": "Deep Focus",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>+2</b> focus points per rank.",
+     "req": [],
+     "mods": {},
+     "cost": 1
+    },
+    {
+     "id": "yohan-ov-sand-honed-edge",
+     "col": "ov",
+     "n": "Sand-Honed Edge",
+     "k": "passive",
+     "ranks": 3,
+     "text": "Halberd damage <b>+2</b> per rank.",
+     "req": [],
+     "mods": {},
+     "cost": 1
+    },
+    {
+     "id": "yohan-ov-heavy-grains",
+     "col": "ov",
+     "n": "Heavy Grains",
+     "k": "passive",
+     "ranks": 3,
+     "text": "Each Momentum Die spent deals <b>+1</b> damage per rank.",
+     "req": [],
+     "mods": {},
+     "cost": 1
+    },
+    {
+     "id": "yohan-ov-sunlit-reflexes",
+     "col": "ov",
+     "n": "Sunlit Reflexes",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>+2 initiative</b> per rank.",
+     "req": [],
+     "mods": {
+      "init": 2
+     },
+     "cost": 1
+    },
+    {
+     "id": "yohan-ov-quick-breath",
+     "col": "ov",
+     "n": "Quick Breath",
+     "k": "passive",
+     "ranks": 2,
+     "text": "A short rest returns <b>+3 focus</b> per rank.",
+     "req": [],
+     "mods": {},
+     "cost": 1
+    },
+    {
+     "id": "yohan-ov-roar-of-the-horizon",
+     "col": "ov",
+     "n": "Roar of the Horizon",
+     "k": "passive",
+     "ranks": 1,
+     "text": "When he crits a creature, each creature within 10 ft of it also loses <b>10 Morale</b>.",
+     "req": [],
+     "mods": {},
+     "cost": 1
+    },
+    {
+     "id": "yohan-ov-second-surge",
+     "col": "ov",
+     "n": "Second Surge",
+     "k": "passive",
+     "ranks": 1,
+     "text": "The first Dragon Surge after each rest doesn't raise its cost.",
+     "req": [],
+     "mods": {},
+     "cost": 1,
+     "lvl": 15
+    },
+    {
+     "id": "yohan-a-sandstorm-surge",
+     "col": "a",
+     "n": "Sandstorm Surge",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>R1:</b> he can generate up to <b>4 MD</b> a round instead of 3. <b>R2:</b> Momentum Dice become <b>d10s</b>. <b>R3:</b> his Momentum Dice cap rises from PB to <b>PB + 2</b>, and Rising Dawn no longer halves his movement.",
+     "req": [],
+     "mods": {},
+     "rung": 1
+    },
+    {
+     "id": "yohan-a-dune-line",
+     "col": "a",
+     "n": "Dune Line",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>R1 Long Road:</b> one turn of up to 45 degrees per turn doesn't break his line. <b>R2 Carried Wind:</b> if he ends his turn having moved in a straight line, his Dune stacks carry into his next turn instead of resetting (still resets if he is hit, grappled, or knocked prone). <b>R3 Desert Wrath:</b> his Dune stack cap rises from 6 to <b>9</b>. At 9 stacks he can spend them all to take an <b>extra turn</b> right after this one ( once per long rest).",
+     "req": [],
+     "mods": {},
+     "rung": 2
+    },
+    {
+     "id": "yohan-a-haboob",
+     "col": "a",
+     "n": "Haboob",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>R1 Dune Shelter:</b> while in Buried Momentum, he loses 1 Momentum Die per <b>10 ft</b> moved instead of per 5 ft. <b>R2:</b> creatures that fail his Dunewall Charge save are also <b>Blinded</b> until the end of their next turn. <b>R3:</b> he can change direction once during the charge.",
+     "req": [],
+     "mods": {},
+     "rung": 3
+    },
+    {
+     "id": "yohan-a-dunebreaker",
+     "col": "a",
+     "n": "Dunebreaker",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>R1 Overspend:</b> when he uses Dunebreaker Strike, half of the Momentum Dice he spent (rounded down) stay with him. He can spend them on a second Dunebreaker against a different creature this turn, or on anything else that costs MD. <b>R2:</b> if Dunebreaker lands on the same attack as his Momentum Finisher, its Momentum Dice deal <b>double</b>. <b>R3 Monolith:</b> a Dunebreaker or Finisher hit forces a CON save, or the target is <b>Stunned</b> until the end of its next turn.",
+     "req": [],
+     "mods": {},
+     "rung": 4
+    },
+    {
+     "id": "yohan-b-horizon-arts",
+     "col": "b",
+     "n": "Horizon Arts",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>R1 Crescent Sweep</b> (Attack, 1 focus): Hack; one swing hits every creature in a <b>10 ft arc</b> in front of him. <b>R2 Hook & Pull</b> (Attack, 1 focus): on a Hack hit, he hooks the target with the axe head: pull it <b>10 ft</b> toward him, or knock it <b>Prone</b>. <b>R3 Skewer</b> (1 focus): on a Pierce hit, the target is <b>pinned</b> on the spear point. It can't move away from him until it succeeds on a STR save (its action), and his attacks against it get <b>+2</b> while it's pinned.",
+     "req": [],
+     "mods": {},
+     "rung": 1
+    },
+    {
+     "id": "yohan-b-stance-mastery",
+     "col": "b",
+     "n": "Stance Mastery",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>R1:</b> entering a stance becomes a <b>free action</b> (once per turn). <b>R2:</b> keeping the same stance on his next turn costs <b>1 Ki</b> instead of 3. <b>R3:</b> he can hold <b>two stances</b> at once (paying for both).",
+     "req": [],
+     "mods": {},
+     "rung": 2
+    },
+    {
+     "id": "yohan-b-desert-forms",
+     "col": "b",
+     "n": "Desert Forms",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>R1 Crimson Cleave</b> (Red Dunes): his Bleed deals <b>+PB</b> damage, and a creature already Bleeding takes its bleed damage again when he hits it with Hack. <b>R2 Sirocco Lance</b> (Sirocco): after moving 10+ ft, his attacks <b>ignore half cover</b>, and the target's Dodge has <b>disadvantage</b>. <b>R3 Scorpion Tail</b> (Scorpion): his opportunity attacks can <b>Pierce at 15 ft</b> reach, and a hit drops the target's speed to <b>0</b>.",
+     "req": [],
+     "mods": {},
+     "rung": 3
+    },
+    {
+     "id": "yohan-b-tomb-sentinel",
+     "col": "b",
+     "n": "Tomb Sentinel",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>R1:</b> while in Buried Tomb, Falcon Wing Deflection costs <b>1 focus</b>, and he can use it for an <b>ally within his reach</b>. <b>R2:</b> while in Buried Tomb, creatures that end their turn within his reach take <b>Hack damage</b> (no roll). <b>R3:</b> while in Buried Tomb, allies within his reach can't be pushed, pulled or knocked prone, and gain <b>+2 AC</b>.",
+     "req": [],
+     "mods": {},
+     "rung": 4
+    }
+   ]
+  },
+  "melissa-tree": {
+   "kind": "char",
+   "name": "Melissa — Seals of the Ancients",
+   "owner": "melissa",
+   "desc": "",
+   "cols": [
+    {
+     "id": "ov",
+     "name": "Overall",
+     "role": "overall",
+     "desc": "Speed and dodge"
+    },
+    {
+     "id": "a",
+     "name": "Seals",
+     "role": "build",
+     "desc": ""
+    },
+    {
+     "id": "b",
+     "name": "Flow State",
+     "role": "build",
+     "desc": ""
+    }
+   ],
+   "rungs": [
+    {
+     "lvl": 0,
+     "ov": 0,
+     "cost": 1
+    },
+    {
+     "lvl": 0,
+     "ov": 2,
+     "cost": 2
+    },
+    {
+     "lvl": 15,
+     "ov": 5,
+     "cost": 3
+    },
+    {
+     "lvl": 20,
+     "ov": 9,
+     "cost": 4
+    }
+   ],
+   "caps": {
+    "a": {
+     "n": "Universal Seal",
+     "k": "passive",
+     "text": "Once per long rest, place a seal of <b>every type</b> on one creature at once. They tick separately, don't count against her cap, and <b>advance together</b>: when one gains a tier, they all do."
+    },
+    "b": {
+     "n": "Perfect Flow",
+     "k": "passive",
+     "text": "Once per long rest, for <b>3 rounds</b> the first attack against her each round <b>automatically misses</b>, counting as a successful dodge."
+    }
+   },
+   "nodes": [
+    {
+     "id": "melissa-ov-water-footing",
+     "col": "ov",
+     "n": "Water Footing",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>+1</b> to Dodge checks per rank.",
+     "req": [],
+     "mods": {},
+     "cost": 1
+    },
+    {
+     "id": "melissa-ov-swift-current",
+     "col": "ov",
+     "n": "Swift Current",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>+5 ft</b> speed per rank.",
+     "req": [],
+     "mods": {
+      "speed": 5
+     },
+     "cost": 1
+    },
+    {
+     "id": "melissa-ov-deep-reserves",
+     "col": "ov",
+     "n": "Deep Reserves",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>+2</b> Ki per rank.",
+     "req": [],
+     "mods": {},
+     "cost": 1
+    },
+    {
+     "id": "melissa-ov-tidal-reflex",
+     "col": "ov",
+     "n": "Tidal Reflex",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>+2 initiative</b> per rank.",
+     "req": [],
+     "mods": {
+      "init": 2
+     },
+     "cost": 1
+    },
+    {
+     "id": "melissa-ov-settled-mind",
+     "col": "ov",
+     "n": "Settled Mind",
+     "k": "passive",
+     "ranks": 3,
+     "text": "Her Maneuver save DC <b>+1</b> per rank (a failed save she forces also ticks the creature's seal through Eye of the Storm).",
+     "req": [],
+     "mods": {},
+     "cost": 1
+    },
+    {
+     "id": "melissa-ov-ripple",
+     "col": "ov",
+     "n": "Ripple",
+     "k": "passive",
+     "ranks": 2,
+     "text": "Still Water can be used <b>+1 time per round</b> per rank.",
+     "req": [],
+     "mods": {},
+     "cost": 1
+    },
+    {
+     "id": "melissa-ov-light-step",
+     "col": "ov",
+     "n": "Light Step",
+     "k": "passive",
+     "ranks": 1,
+     "text": "Her movement doesn't provoke opportunity attacks from creatures she dodged this round.",
+     "req": [],
+     "mods": {},
+     "cost": 1
+    },
+    {
+     "id": "melissa-ov-wavebreaker",
+     "col": "ov",
+     "n": "Wavebreaker",
+     "k": "passive",
+     "ranks": 1,
+     "text": "Uncanny Metabolism also fills her Flow.",
+     "req": [],
+     "mods": {},
+     "cost": 1,
+     "lvl": 15
+    },
+    {
+     "id": "melissa-a-swift-inscription",
+     "col": "a",
+     "n": "Swift Inscription",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>R1:</b> once per round, placing a seal on a hit <b>doesn't cost her reaction</b>. <b>R2:</b> she can seal herself as a <b>free action</b> (normally a bonus action) and a <b>willing ally within 5 ft</b> as a bonus action. <b>R3:</b> she can keep <b>+1 seal</b> on the field (PB → PB + 1).",
+     "req": [],
+     "mods": {},
+     "rung": 1
+    },
+    {
+     "id": "melissa-a-quickened-seal",
+     "col": "a",
+     "n": "Quickened Seal",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>R1:</b> seals advance a tier every <b>2 ticks</b> instead of 3 (Tier 6 at 10 ticks). <b>R2 Resonance:</b> when a seal advances a tier, one seal within 10 ft gains +1 tick. <b>R3 Deep Drain:</b> her seals drain more per tick: <b>2 × PB</b> Ki, or <b>(WIS × PB) + PB</b> TL or HP.",
+     "req": [],
+     "mods": {},
+     "rung": 2
+    },
+    {
+     "id": "melissa-a-seal-break",
+     "col": "a",
+     "n": "Seal Break",
+     "k": "bonus",
+     "ranks": 3,
+     "text": "Bonus action: <b>break one of her seals</b> to unleash it, scaled by its tier. Each rank unlocks a school. <b>R1 Demonic:</b> the target takes <b>WIS × PB necrotic per tier</b> and has Collapse until the end of its next turn. <b>R2 Angelic:</b> the target and allies within 15 ft regain <b>WIS × PB HP per tier</b>. <b>R3 Draconic:</b> for 1 round the target gains the effect of the <b>next tier up</b>, and any Draconic Growth left on the seal converts to ticks on another of her seals.",
+     "req": [],
+     "mods": {},
+     "rung": 3
+    },
+    {
+     "id": "melissa-a-ancient-script",
+     "col": "a",
+     "n": "Ancient Script",
+     "k": "passive",
+     "ranks": 2,
+     "text": "New seals start at <b>Tier 2</b>. <b>R2:</b> Tier 3. <i>(A head start counts as that tier's ticks, so with Quickened Seal a Tier 3 start is 4 ticks.)</i>",
+     "req": [],
+     "mods": {},
+     "rung": 4
+    },
+    {
+     "id": "melissa-b-counterflow",
+     "col": "b",
+     "n": "Counterflow",
+     "k": "passive",
+     "ranks": 3,
+     "text": "On a successful dodge, spend <b>1 Flow</b> to make an unarmed strike against the attacker. <b>R2:</b> on a hit, she can spend <b>2 Flow</b> to make the target act <b>last</b> in the order next round. <b>R3:</b> the counter strike deals <b>+1 Martial Arts die</b> and pushes the target <b>10 ft</b>.",
+     "req": [],
+     "mods": {},
+     "rung": 1
+    },
+    {
+     "id": "melissa-b-high-tide",
+     "col": "b",
+     "n": "High Tide",
+     "k": "passive",
+     "ranks": 3,
+     "text": "Flow max <b>+1 per rank</b> (PB → PB + 2). <b>R2:</b> she also starts each combat with <b>2 Flow</b>. <b>R3:</b> when she reaches max Flow, she gains <b>1 Tempo</b> (once per round).",
+     "req": [],
+     "mods": {},
+     "rung": 2
+    },
+    {
+     "id": "melissa-b-control-the-tide",
+     "col": "b",
+     "n": "Control the Tide",
+     "k": "passive",
+     "ranks": 3,
+     "text": "<b>R1 Seize the Initiative</b> (2 Flow): at the start of a round, move her turn to the <b>top</b> of the order for this round. <b>R2 Half-Beat</b> (2 Flow): end her turn early and keep what she hasn't used; take the rest at the end of any creature's turn later this round. <b>R3 Call the Tempo</b> (2 Flow, bonus action): one ally who hasn't gone yet moves to <b>right after her</b> this round.",
+     "req": [],
+     "mods": {},
+     "rung": 3
+    },
+    {
+     "id": "melissa-b-tsunami",
+     "col": "b",
+     "n": "Tsunami",
+     "k": "passive",
+     "ranks": 2,
+     "text": "When she has at least <b>3 Flow</b>, Flurry of Blows makes <b>+1 strike per rank</b>.",
+     "req": [],
+     "mods": {},
+     "rung": 4
+    }
+   ]
+  }
+ },
+ "order": [
+  "dylan-tree",
+  "sika-tree",
+  "magnolia-tree",
+  "beatrix-tree",
+  "yohan-tree",
+  "melissa-tree"
+ ]
+}
