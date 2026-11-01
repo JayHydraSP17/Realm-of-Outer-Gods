@@ -3822,7 +3822,21 @@ TR_VIZ_CSS+='.tvd-empty{color:var(--dim,#a89bb7);font-size:14px}.tvd-leg{display
  '.tvwrap{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start}.tvdet{position:sticky;top:12px;border:1px solid var(--line,#2e213d);border-radius:12px;padding:14px;background:rgba(0,0,0,.25)}@media(max-width:900px){.tvwrap{grid-template-columns:minmax(0,1fr)}.tvdet{position:static}}';
 
 /* ===================== UPGRADES TAB · the character's upgrade tree and equipment trees ===================== */
-var TRP=null;/* published trees: {trees:{id:tree}, order:[]} from campaigns/{id}/shared/trees */
+var TRP=null;
+/* Taken upgrades are locked: only the DM can refund, respec or correct points/materials. DM mode is unlocked on the sheet by
+   proving the DM passphrase: it must decrypt the sealed tree draft the console saves (nothing secret lives in the sheet). */
+var TRDM=false;
+function trB64(s){var b=atob(s),u=new Uint8Array(b.length);for(var i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u;}
+function trDmUnlock(){if(TRDM){TRDM=false;flash("Upgrades locked again");renderAll();return;}
+ if(!window.firebase||!firebase.apps||!firebase.apps.length||!window.crypto||!crypto.subtle){flash("Offline: the DM passphrase can't be checked");return;}
+ firebase.firestore().collection("campaigns").doc(window.CAMPAIGN_ID||"astrology-club").collection("shared").doc("treesDraft").get().then(function(snap){
+  var doc=snap&&snap.exists?snap.data():null;if(!doc||!doc.ct||!doc.salt){flash("Save the tree draft once in the DM console first");return;}
+  var pass=null;try{pass=localStorage.getItem("covenant-dm-pass");}catch(e){}if(!pass)pass=window.prompt("DM passphrase");if(!pass)return;
+  return crypto.subtle.importKey("raw",new TextEncoder().encode(pass),"PBKDF2",false,["deriveKey"]).then(function(k){return crypto.subtle.deriveKey({name:"PBKDF2",salt:trB64(doc.salt),iterations:doc.iter||300000,hash:"SHA-256"},k,{name:"AES-GCM",length:256},false,["decrypt"]);})
+   .then(function(key){return crypto.subtle.decrypt({name:"AES-GCM",iv:trB64(doc.iv)},key,trB64(doc.ct));})
+   .then(function(){TRDM=true;flash("DM mode: upgrades can be changed");renderAll();},function(){flash("That isn't the DM passphrase");});
+ },function(){flash("Couldn't reach the cloud to check the DM passphrase");});}
+/* published trees: {trees:{id:tree}, order:[]} from campaigns/{id}/shared/trees */
 function trS(){if(!S.tree||typeof S.tree!=="object")S.tree={};var T=S.tree;if(T.pts==null)T.pts=0;if(!T.own||typeof T.own!=="object")T.own={};if(!T.mat||typeof T.mat!=="object")T.mat={};if(!Array.isArray(T.log))T.log=[];return T;}
 function trMine(){if(!TRP||!TRP.trees)return [];var ids=Array.isArray(TRP.order)?TRP.order.slice():[];Object.keys(TRP.trees).forEach(function(k){if(ids.indexOf(k)<0)ids.push(k);});
  return ids.map(function(k){var t=TRP.trees[k];if(!t)return null;t.id=t.id||k;return trNorm(t);}).filter(function(t){return t&&t.owner===C.id;});}
@@ -3851,6 +3865,7 @@ function trTreeHtml(t,d){var o=trVizOpts(t,d),own=o.own,sel=o.sel,n=sel&&sel.ind
  var det=trDetail(t,sel,o);
  if(n){var c=trCheck(t,own,n,o.ctxFor(n)),rk=trRank(own,n.id);if(c.ok)det+='<button class="btn pri" style="margin-top:10px;width:100%" data-a="trbuy" data-id="'+esc(t.id+"|"+n.id)+'">'+(rk?'Rank up to '+(rk+1)+'/'+n.ranks:'Take'+(n.ranks>1?' rank 1/'+n.ranks:''))+' · '+trRankCost(t,n,rk+1)+' '+(t.kind==="char"?"pt":esc(trCur(t,n)))+'</button>';}
  /* the viz uses attr 'data-a="trsel" data-id' so each node posts tree|node */
+ if(n&&TRDM&&trRank(own,n.id))det+='<button class="btn sm dgr" style="margin-top:8px;width:100%" data-a="trrefund" data-id="'+esc(t.id+"|"+n.id)+'">DM: refund one rank</button>';
  var viz=trViz(t,o).replace(/data-a="trsel" data-id="([^"]*)"/g,function(m,id){return 'data-a="trsel" data-id="'+esc(t.id)+'|'+id+'"';});
  return '<section class="trw" id="tr-'+esc(t.id)+'"><h2>'+esc(t.name)+' <span class="sub2">'+sub+'</span></h2>'+(t.desc?'<p class="sub">'+esc(t.desc)+'</p>':'')+
   '<div class="tvwrap"><div class="card tvcard">'+viz+'</div><aside class="tvdet">'+det+'</aside></div></section>';}
@@ -3859,10 +3874,11 @@ function renderTree(d){var b=$("body-tree"),btn=document.querySelector('.rail-bt
  if(btn)btn.style.display=mine.length?"":"none";if(!b)return;var T=trS();
  if(!mine.length){b.innerHTML='<div class="empty">No upgrade tree has been published for '+esc(C.name||"this character")+' yet.</div>';return;}
  var ch=trCharTrees(),left=trPtsLeft(),h='<section id="trhead"><div class="card"><div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:10px">';
- if(ch.length)h+='<div class="row"><span class="cz" style="font-size:30px">'+left+'</span><span class="sl">points to spend · '+num(T.pts)+' earned · level '+trLvl(d)+'</span><button class="btn sm" data-a="trpts" data-n="-1" title="Correction">−</button><button class="btn sm" data-a="trpts" data-n="1" title="Correction: the DM grants points from the console">+</button></div>';
- var ms=trMats();if(ms.length)h+='<div class="row">'+ms.map(function(c){return '<span class="lbl" style="margin:0">'+esc(c)+'</span><span class="cz" style="font-size:20px">'+num(T.mat[c])+'</span><button class="btn sm" data-a="trmat" data-id="'+esc(c)+'" data-n="-1">−</button><button class="btn sm" data-a="trmat" data-id="'+esc(c)+'" data-n="1">+</button>';}).join("")+'</div>';
- if(ch.length){var rq=S.ui.trRespec,dr=trDraught();h+='<div class="row">'+(rq?'<button class="btn sm dgr" data-a="trrespec" data-n="2">Confirm: refund every point'+(dr?' · uses '+esc(dr.name):' · no draught on hand (DM approved)')+'</button><button class="btn sm" data-a="trrespec" data-n="0">Cancel</button>':'<button class="btn sm" data-a="trrespec" data-n="1" title="A Lesser Draught of Regression refunds every point in the upgrade tree. Class and stats stay.">Respec (Lesser Draught of Regression)</button>')+'</div>';}
- h+='</div><p class="sub" style="margin:8px 0 0">Points come from the DM after each battle this character fights in. Taking a rung locks the other build\'s node on that rung. Deeper rungs need a level, points in '+esc(ch.length?ch[0].cols[0].name:"Overall")+', and a pick on the rung before (either build).</p></div></section>';
+ if(ch.length)h+='<div class="row"><span class="cz" style="font-size:30px">'+left+'</span><span class="sl">points to spend · '+num(T.pts)+' earned · level '+trLvl(d)+'</span>'+(TRDM?'<button class="btn sm" data-a="trpts" data-n="-1" title="DM correction">−</button><button class="btn sm" data-a="trpts" data-n="1" title="DM correction">+</button>':'')+'</div>';
+ var ms=trMats();if(ms.length)h+='<div class="row">'+ms.map(function(c){return '<span class="lbl" style="margin:0">'+esc(c)+'</span><span class="cz" style="font-size:20px">'+num(T.mat[c])+'</span>'+(TRDM?'<button class="btn sm" data-a="trmat" data-id="'+esc(c)+'" data-n="-1">−</button><button class="btn sm" data-a="trmat" data-id="'+esc(c)+'" data-n="1">+</button>':'');}).join("")+'</div>';
+ h+='<div class="row"><button class="btn sm'+(TRDM?' pri':'')+'" data-a="trdm" title="Taken upgrades are locked. The DM unlocks changes with the DM passphrase.">'+(TRDM?'DM mode on · lock again':'🔒 DM: change upgrades')+'</button></div>';
+ if(ch.length&&TRDM){var rq=S.ui.trRespec,dr=trDraught();h+='<div class="row">'+(rq?'<button class="btn sm dgr" data-a="trrespec" data-n="2">Confirm: refund every point'+(dr?' · uses '+esc(dr.name):' · no draught on hand (DM approved)')+'</button><button class="btn sm" data-a="trrespec" data-n="0">Cancel</button>':'<button class="btn sm" data-a="trrespec" data-n="1" title="A Lesser Draught of Regression refunds every point in the upgrade tree. Class and stats stay.">Respec (Lesser Draught of Regression)</button>')+'</div>';}
+ h+='</div><p class="sub" style="margin:8px 0 0">Points come from the DM after each battle this character fights in. <b>Taken upgrades are locked</b>: only the DM can refund or change them. Taking a rung locks the other build\'s node on that rung. Deeper rungs need a level, points in '+esc(ch.length?ch[0].cols[0].name:"Overall")+', and a pick on the rung before (either build).</p></div></section>';
  mine.forEach(function(t){h+=trTreeHtml(t,d);});
  if(T.log.length)h+='<section><h2>Upgrade log</h2><div class="card">'+T.log.slice(-12).reverse().map(function(x){return '<div class="sub" style="margin:2px 0">'+esc(x)+'</div>';}).join("")+'</div></section>';
  b.innerHTML=h;}
@@ -3870,15 +3886,21 @@ function trDraught(){return (S.items||[]).filter(function(it){return /regression
 function trAct(a,el,d){var id=el.getAttribute("data-id"),n=num(el.getAttribute("data-n"));
  switch(a){
  case "trbuy":var p=String(id).split("|"),t=trMine().filter(function(x){return x.id===p[0];})[0];if(!t)return false;var nd=trNode(t,p[1]);if(!nd)return false;var own=trOwn(t),c=trCheck(t,own,nd,{lvl:trLvl(d),have:trHave(t,nd)});
-  if(!c.ok){flash(c.why);return false;}var cost=trRankCost(t,nd,trRank(own,nd.id)+1);if(t.kind==="equip"){var T=trS(),cu=trCur(t,nd);T.mat[cu]=num(T.mat[cu])-cost;}
+  if(!c.ok){flash(c.why);return false;}var cost=trRankCost(t,nd,trRank(own,nd.id)+1);
+  if(!TRDM&&!window.confirm("Take "+(nd.n||"this upgrade")+(nd.ranks>1?" (rank "+(trRank(own,nd.id)+1)+"/"+nd.ranks+")":"")+" for "+cost+" "+(t.kind==="char"?"point"+(cost===1?"":"s"):trCur(t,nd))+"?\n\nOnce taken it's locked: only the DM can change it."))return false;if(t.kind==="equip"){var T=trS(),cu=trCur(t,nd);T.mat[cu]=num(T.mat[cu])-cost;}
   own[nd.id]=trRank(own,nd.id)+1;trLog(t.name+": took "+(nd.n||"upgrade")+(nd.ranks>1?" (rank "+own[nd.id]+")":"")+" · −"+cost+" "+(t.kind==="char"?"pts":trCur(t,nd)));
   var pt=trPartner(t,nd);if(pt)trLog((pt.hidden?"???":pt.n||"Partner")+" is now locked");
   trBuilds(t).forEach(function(cb){var cp=t.caps[cb.id];if(cp&&(cp.n||cp.hidden)&&trCapOn(t,own,cb.id)&&!own["cap:"+cb.id]){own["cap:"+cb.id]=1;trLog(cb.name+" complete: capstone "+(cp.hidden?"unlocked":cp.n+" is active"));}});
   flash("Took "+(nd.n||"upgrade"));return true;
  case "trsel":var q=String(id).split("|");S.ui.trSel=S.ui.trSel||{};S.ui.trSel[q[0]]=S.ui.trSel[q[0]]===q[1]?"":q[1];renderAll();return false;
- case "trpts":trS().pts=Math.max(0,num(trS().pts)+n);trLog("Points "+sgn(n)+" (correction)");return true;
- case "trmat":var T2=trS();T2.mat[id]=Math.max(0,num(T2.mat[id])+n);trLog(id+" "+sgn(n));return true;
- case "trrespec":if(n===1){S.ui.trRespec=true;return true;}if(n===0){S.ui.trRespec=false;return true;}
+ case "trdm":trDmUnlock();return false;
+ case "trrefund":if(!TRDM){flash("Only the DM can change a taken upgrade");return false;}var rp=String(id).split("|"),rt=trMine().filter(function(x){return x.id===rp[0];})[0];if(!rt)return false;var rn=trNode(rt,rp[1]),ro=trOwn(rt);if(!rn||!trRank(ro,rn.id))return false;
+  if(rt.kind==="equip"){var RT=trS(),rc=trCur(rt,rn);RT.mat[rc]=num(RT.mat[rc])+trRankCost(rt,rn,trRank(ro,rn.id));}
+  ro[rn.id]=trRank(ro,rn.id)-1;if(!ro[rn.id])delete ro[rn.id];trBuilds(rt).forEach(function(cb){if(ro["cap:"+cb.id]&&!trCapOn(rt,ro,cb.id))delete ro["cap:"+cb.id];});
+  trLog(rt.name+": DM refunded "+(rn.n||"upgrade")+(ro[rn.id]?" to rank "+ro[rn.id]:""));flash("Refunded "+(rn.n||"upgrade"));return true;
+ case "trpts":if(!TRDM){flash("Only the DM can correct points");return false;}trS().pts=Math.max(0,num(trS().pts)+n);trLog("Points "+sgn(n)+" (correction)");return true;
+ case "trmat":if(!TRDM){flash("Only the DM can correct materials");return false;}var T2=trS();T2.mat[id]=Math.max(0,num(T2.mat[id])+n);trLog(id+" "+sgn(n));return true;
+ case "trrespec":if(!TRDM){flash("Only the DM can respec");return false;}if(n===1){S.ui.trRespec=true;return true;}if(n===0){S.ui.trRespec=false;return true;}
   var dr=trDraught(),ref=trPtsSpent();trCharTrees().forEach(function(t){trS().own[t.id]={};});S.ui.trRespec=false;
   if(dr){dr.qty=num(dr.qty,1)-1;if(dr.qty<=0)S.items=S.items.filter(function(x){return x!==dr;});}
   trLog("Respec: "+ref+" points refunded"+(dr?" · drank "+dr.name:" · DM approved"));flash("Respec: "+ref+" points back");return true;}
