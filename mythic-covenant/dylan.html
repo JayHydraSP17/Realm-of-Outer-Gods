@@ -801,7 +801,17 @@ var JT_FEATURES=[[1,"Ki Surge","Ki pool doubled (minimum 4), +5 Ki at monk 10, 2
  var hasMonk=(C.classes||[]).some(function(c){return /monk/i.test(c.name||"");});
  C.resources.forEach(function(r,i){if(r.id==="ki"&&hasMonk&&C.kiFormula!==false){C.resources[i]=Object.assign({},r,{max:undefined,maxFn:function(){return jtKi(monkLevel());},note:r.note||"J.T. Revised Monk",rest:r.rest||"short",fillNew:true});}});
  if(hasMonk&&!C.resources.some(function(r){return r.id==="ki";}))C.resources.unshift({id:"ki",name:"Ki",maxFn:function(){return jtKi(monkLevel());},rest:"short",steps:[1,3],note:"J.T. Revised Monk",color:"#c2abff",fillNew:true});
- if(!C.resources.some(function(r){return /tempo/i.test(r.id+" "+r.name);}))C.resources.push({id:"tempo",name:"Tempo",maxFn:function(d){return d.pb;},rest:"short",steps:[1],note:"PB · Feints and Deflects · short rest",color:"#5fd2c0",fillNew:true});
+ if(!C.resources.some(function(r){return /tempo/i.test(r.id+" "+r.name);}))C.resources.push({id:"tempo",name:"Tempo",maxFn:function(d){return d.pb;},rest:"short",steps:[1],note:"PB · Feints, Deflects and Tempo Moves · short rest",color:"#5fd2c0",fillNew:true});
+ /* Tempo Moves (Mythic Covenant Reference · Tempo & Feinting): every character can spend Tempo on these */
+ var TID=(C.resources.filter(function(r){return /tempo/i.test(r.id+" "+r.name);})[0]||{id:"tempo"}).id;
+ function TM(n,k,c,t){var p={res:{}};p.res[TID]=c;return {n:n,k:k,cost:c+" Tempo",pay:p,text:t};}
+ C.kit=(C.kit||[]).slice();if(!C.kit.some(function(x){return x.id==="tempo-moves";}))C.kit.push({id:"tempo-moves",title:"Tempo Moves",sub:"any character · spend Tempo (PB per short rest)",items:[
+  TM("Catch Your Breath","free",2,"On your turn, gain <b>1 extra Dynamic Reaction</b> until the start of your next turn. It can take you above your normal maximum."),
+  TM("Measured Strike","free",1,"Time the opening: a called shot's AC modifier is <b>halved</b> (round down) for that attack. <i>Limb Targeting.</i>"),
+  TM("Quickstep","free",1,"<b>+10 ft</b> movement this turn."),
+  TM("Keep the Pressure","free",1,"On a hit, the target loses an <b>extra 5 Morale</b>."),
+  TM("Find Your Footing","free",1,"Stand up from <b>prone</b> without spending movement."),
+  TM("Shrug It Off","free",1,"Ignore one <b>Tier I physical</b> status's effect until the start of your next turn. It stays on you, its duration keeps running, and anything that checks for it still counts.")]});
 })();
 function $(id){return document.getElementById(id);}
 function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
