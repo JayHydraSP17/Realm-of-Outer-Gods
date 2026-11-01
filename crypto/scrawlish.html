@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Scrawlish</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Literata:ital,wght@0,400;0,600;1,400&family=Courier+Prime&display=swap">
+<style>
+/* Layout: a spiral notebook page on a dark desk. Tabs on top; each view is one ruled page. Single deliberate look (paper and ink). */
+:root{
+  --desk:#2b1f24; --paper:#fbf8ef; --rule:#d9e3ea; --margin:#e7a9a4; --ink:#3a2a1c; --ink-soft:#7b6a58;
+  --pencil:#8a8f98; --mark:#b4532a; --good:#3f7a52; --bad:#b03a2e;
+  --hand:"Kalam","Segoe Print","Comic Sans MS",cursive; --body:"Literata",Georgia,serif; --mono:"Courier Prime",ui-monospace,Menlo,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--desk);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55;margin:0}
+.wrap{max-width:1040px;margin:0 auto;padding-block:26px 60px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px}
+header{display:flex;flex-wrap:wrap;gap:14px;align-items:end;justify-content:space-between;color:var(--paper)}
+h1{font-family:var(--hand);font-weight:700;font-size:clamp(34px,7vw,52px);line-height:1;margin:0;letter-spacing:.01em}
+.sub{margin:4px 0 0;color:#cdbfb5;font-style:italic}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tabs button{font-family:var(--hand);font-size:18px;background:transparent;color:#e6d9cf;border:1px solid #6a5560;border-radius:8px 8px 0 0;padding:6px 14px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+.page{position:relative;background:var(--paper);border-radius:4px 10px 10px 4px;padding:28px clamp(16px,4vw,40px) 34px clamp(34px,6vw,64px);
+  background-image:linear-gradient(90deg,transparent calc(clamp(34px,6vw,64px) - 14px),var(--margin) calc(clamp(34px,6vw,64px) - 14px),var(--margin) calc(clamp(34px,6vw,64px) - 12px),transparent calc(clamp(34px,6vw,64px) - 12px)),
+  repeating-linear-gradient(180deg,transparent 0 31px,var(--rule) 31px 32px);
+  box-shadow:0 10px 30px rgba(0,0,0,.35);display:flex;flex-direction:column;gap:18px;min-width:0}
+.page::before{content:"";position:absolute;left:8px;top:18px;bottom:18px;width:10px;background:radial-gradient(circle,#2b1f24 3px,transparent 3.5px) 0 0/10px 26px repeat-y}
+h2{font-family:var(--hand);font-size:28px;font-weight:700;margin:0;line-height:1.1;text-wrap:balance}
+h3{font-family:var(--hand);font-size:20px;font-weight:700;margin:0;color:var(--ink-soft)}
+p{margin:0}
+.help{color:var(--ink-soft);max-width:68ch}
+.flavor{font-style:italic;color:var(--ink-soft)}
+label{display:flex;flex-direction:column;gap:4px;font-family:var(--hand);font-size:17px;color:var(--ink-soft)}
+input[type=text],input[type=number],textarea,select{font-family:var(--body);font-size:16px;color:var(--ink);background:#fffdf7;border:1px solid #cbbfa9;border-radius:6px;padding:8px 10px;width:100%}
+textarea{min-height:84px;resize:vertical}
+textarea.code{font-family:var(--mono);font-size:13px;min-height:62px;word-break:break-all}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--mark);outline-offset:2px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.btn{font-family:var(--hand);font-size:18px;background:transparent;color:var(--ink);border:1.5px solid var(--ink);border-radius:8px;padding:4px 14px;cursor:pointer}
+.btn.solid{background:var(--ink);color:var(--paper)}
+.btn.quiet{border-color:#cbbfa9;color:var(--ink-soft)}
+.btn:disabled{opacity:.4;cursor:default}
+.msg{font-family:var(--hand);font-size:17px;min-height:1.4em;color:var(--ink-soft)}
+.msg.good{color:var(--good)} .msg.bad{color:var(--bad)}
+.stat{font-family:var(--mono);font-size:13px;color:var(--ink-soft)}
+
+/* glyphs */
+svg.g{display:block;width:40px;height:60px;overflow:visible;color:var(--ink)}
+svg.g path,svg.g line{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+svg.g .dot{fill:currentColor;stroke:none}
+.board{display:flex;flex-wrap:wrap;gap:6px 26px;align-items:flex-start}
+.word{display:flex;gap:2px;flex-wrap:nowrap}
+.cell{display:flex;flex-direction:column;align-items:center;gap:2px}
+.cell input{width:40px;height:30px;text-align:center;font-family:var(--hand);font-size:17px;font-weight:700;text-transform:uppercase;padding:0;background:transparent;border:none;border-bottom:1.5px dashed #b9ab93;border-radius:0;color:var(--mark)}
+.cell.locked input{color:var(--good);border-bottom-color:transparent}
+.cell.wrong input{color:var(--bad);border-bottom:1.5px solid var(--bad)}
+.cell.hl svg{color:var(--mark)}
+.cell.oops svg{color:var(--pencil)}
+.cell .gap{height:30px}
+.solved{border:1.5px solid var(--good);border-radius:8px;padding:10px 14px;background:rgba(63,122,82,.07)}
+.solved h3{color:var(--good)}
+
+/* reference chart */
+.chart{border-collapse:collapse;min-width:420px}
+.chart th,.chart td{padding:2px 10px;text-align:center;vertical-align:middle;border-bottom:1px solid #cdbda3}
+.chart th{font-family:var(--hand);font-weight:400;font-size:15px;color:var(--ink-soft)}
+.chart td{font-family:var(--hand);font-size:20px;font-weight:700}
+.chart td.base{border-right:1.5px solid var(--ink)}
+.chart td .pair{display:flex;align-items:center;gap:6px;justify-content:center}
+.chart td .pair span{min-width:2.2ch;text-align:left}
+.chart td.none{color:#cdbda3;font-weight:400}
+.scroll{overflow-x:auto}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+.rule{display:flex;flex-direction:column;gap:6px}
+.ex{display:flex;gap:2px;align-items:flex-end;flex-wrap:wrap}
+.ex small{font-family:var(--hand);font-size:15px;color:var(--ink-soft);align-self:center;margin-left:8px}
+details summary{cursor:pointer;font-family:var(--hand);font-size:18px;color:var(--ink-soft)}
+.hand-out{padding:12px 0}
+@media (max-width:560px){svg.g{width:28px;height:42px}.cell input{width:28px;font-size:15px;height:26px}.cell .gap{height:26px}.board{gap:6px 16px}.word{flex-wrap:wrap}}
+@media (prefers-reduced-motion:no-preference){.cell.wrong input{animation:wob .3s}}
+@keyframes wob{25%{transform:translateX(-2px)}75%{transform:translateX(2px)}}
+.rowpicks{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:4px 12px}
+.rowpick{flex-direction:row;align-items:center;gap:6px;font-size:16px;color:var(--ink)}
+.rowpick input{width:16px;height:16px;accent-color:var(--ink)}
+.rowpick svg.g{width:26px;height:39px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>Scrawlish</h1><p class="sub">A page in a hand you can't read. Yet.</p></div>
+    <nav class="tabs"><a class="btn quiet" style="color:#e6d9cf;border-color:#6a5560;text-decoration:none" href="./">← Crypto</a></nav>
+  </header>
+  <section class="page" id="view-play">
+    <div id="p-empty"><h2>No page loaded</h2><p class="help" style="margin-top:6px">Your DM will send you a code that starts with <b>SW2.</b> Paste it below to open the page.</p></div>
+    <div id="p-game" hidden style="display:flex;flex-direction:column;gap:16px">
+      <div class="row" style="justify-content:space-between;align-items:start">
+        <div style="display:flex;flex-direction:column;gap:2px;min-width:0"><h2 id="p-title"></h2><p class="flavor" id="p-flavor"></p></div>
+        <div class="stat" id="p-stat"></div>
+      </div>
+      <p class="help">Write the sound under each glyph. Some glyphs stand for two letters. A glyph with a ' after it is a mistake, so skip it.</p>
+      <div class="solved" id="p-solved" hidden><h3>Read it</h3><p class="flavor" id="p-plain"></p></div>
+      <div class="board" id="board"></div>
+      <div class="row">
+        <button class="btn solid" id="b-check">Check</button>
+        <button class="btn" id="b-hint">Reveal a sound</button>
+        <button class="btn quiet" id="b-clear">Clear</button>
+      </div>
+      <div class="msg" id="p-msg" aria-live="polite"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <h3>Load a page from your DM</h3>
+      <textarea class="code" id="load-code" placeholder="Paste the code (starts with SW2.)" aria-label="Puzzle code"></textarea>
+      <div class="row"><button class="btn" id="b-load">Open page</button><span class="msg" id="load-msg"></span></div>
+    </div>
+
+  </section>
+  <section class="page" id="view-notes">
+    <h2>Field notes</h2>
+    <p class="help">What you've learned of the script so far. Your DM hands these out as you earn them.</p>
+    <div id="notes-body"></div>
+    <div id="notes-rules"></div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <textarea class="code" id="note-code" placeholder="Paste a note code (starts with SN1.)" aria-label="Note code"></textarea>
+      <div class="row"><button class="btn" id="b-note">Add to notes</button><button class="btn quiet" id="b-forget">Erase notes</button><span class="msg" id="note-msg"></span></div>
+    </div>
+  </section>
+  <p style="color:#a8968c;font-size:13px">Everything here is saved in this browser only.</p>
+</div>
+<script>
+(()=>{
+const $=id=>document.getElementById(id);
+const store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+
+/* ---------- glyph shapes (no sounds here) ---------- */
+// [id, tall?] in chart order; a glyph key is base*3 + bars
+const SHAPES=[["f",1],["tri",0],["h",1],["v",0],["d",0],["x",0],["mu",0],["lam",0],["gam",0],["sev",0],["dot",0],["zed",0]];
+// stroke paths in a 40x60 box (baseline y=46, short top y=24, tall top y=4)
+const PATHS={
+ f:["M27 7C23 2 18 7 18 15L16 45C15 53 10 56 7 51"],
+ tri:["M8 46L20 24L32 46Z"],
+ h:["M16 5L13 46","M13.6 33C18 25 27 25 26 34L25 46"],
+ v:["M7 29L11 27L18 46L31 24"],
+ d:["M28 30C26 23 17 22 14 27","M28 24C33 36 29 46 20 46C12 46 10 38 16 34C21 31 27 33 30 37"],
+ x:["M9 25L31 46","M31 25L9 46"],
+ mu:["M6 30C10 24 14 25 14 32L13 46","M14 32C17 24 22 25 22 32L22 40C22 46 28 45 33 37"],
+ lam:["M11 24C16 22 18 26 20 32L29 46","M20 34L11 46"],
+ gam:["M9 26C14 24 18 30 21 37C24 30 28 24 32 26","M21 37C15 44 17 51 21 51C25 51 26 44 21 37"],
+ sev:["M10 26L30 26L17 46"],
+ dot:[],
+ zed:["M10 26L30 26L17 46","M12 37L27 34"]};
+function mulberry(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function jitter(d,r,amt){return d.replace(/-?\d+(\.\d+)?/g,m=>(+m+(r()-.5)*amt).toFixed(1))}
+/* draw a glyph. k = glyph key (number) or a mark: "~" pause, "<" ">" speech */
+function glyph(k,seed,opt={}){
+  const r=mulberry(seed||1),amt=opt.clean?0:2.2;
+  if(typeof k==="number"){
+    const b=Math.floor(k/3),n=k%3,[id,tall]=SHAPES[b];
+    const tilt=opt.clean?0:(r()-.5)*6;
+    let inner=PATHS[id].map(p=>`<path d="${jitter(p,r,amt)}"/>`).join("");
+    if(id==="dot")inner+=`<circle class="dot" cx="${(20+(r()-.5)*amt).toFixed(1)}" cy="${(40+(r()-.5)*amt).toFixed(1)}" r="2.8"/>`;
+    for(let i=0;i<n;i++){
+      if(tall){const y=17+i*7;inner+=`<path d="${jitter(`M8 ${y+1}L31 ${y-1}`,r,amt*.6)}"/>`}
+      else{const y=17-i*6;inner+=`<path d="${jitter(`M11 ${y+.5}L29 ${y-.5}`,r,amt*.6)}"/>`}
+    }
+    if(opt.oops)inner+=`<path d="${jitter("M37 10L35 18",r,1)}"/>`;
+    return `<svg class="g" viewBox="0 0 40 60" aria-hidden="true"><g transform="rotate(${tilt.toFixed(1)} 20 40)">${inner}</g></svg>`;
+  }
+  const P={"~":"M8 44C12 39 16 49 20 44C24 39 28 49 32 44","<":"M27 22L15 30L27 38",">":"M13 22L25 30L13 38"};
+  return `<svg class="g" viewBox="0 0 40 60" aria-hidden="true"><path d="${jitter(P[k],r,opt.clean?0:1.6)}"/></svg>`;
+}
+/* token forms inside a puzzle: number = glyph, "o12" = struck glyph, "~" "<" ">" = marks */
+function drawToken(t,seed){
+  if(typeof t==="number")return glyph(t,seed);
+  if(t[0]==="o")return glyph(+t.slice(1),seed,{oops:1});
+  return glyph(t,seed);
+}
+
+/* ---------- codes (scrambled, not encrypted) ---------- */
+const CK="SCRAWLISH";
+function pack(prefix,o){const b=new TextEncoder().encode(JSON.stringify(o));let s="";b.forEach((x,i)=>s+=String.fromCharCode(x^CK.charCodeAt(i%CK.length)));return prefix+"."+btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}
+function unpack(prefix,c){c=c.trim();if(!c.startsWith(prefix+"."))throw 0;const s=atob(c.slice(prefix.length+1).replace(/-/g,"+").replace(/_/g,"/"));const b=new Uint8Array(s.length);for(let i=0;i<s.length;i++)b[i]=s.charCodeAt(i)^CK.charCodeAt(i%CK.length);return JSON.parse(new TextDecoder().decode(b))}
+function copyText(t,out){t.select();const ok=()=>{out.className="msg good";out.textContent="Copied."};
+  if(navigator.clipboard)navigator.clipboard.writeText(t.value).then(ok).catch(()=>{out.className="msg";out.textContent="Copy is blocked here. The code is selected, so copy it by hand."});}
+
+/* ---------- decipher board ---------- */
+let P,code,st,toks=[];
+const ans=k=>P.a[k];
+function loadPuzzle(c,o){code=c;P=o;st=store.get("sw_prog_"+c)||{g:{},rev:(o.r||[]).slice(),hints:0};store.set("sw_last",c);renderPlay()}
+const save=()=>store.set("sw_prog_"+code,st);
+function renderPlay(){
+  $("p-empty").hidden=true;$("p-game").hidden=false;
+  $("p-title").textContent=P.t||"Untitled page";$("p-flavor").textContent=P.f||"";
+  toks=[];let seed=(P.s||1)*1000;
+  $("board").innerHTML=P.w.map(w=>`<div class="word">${w.map(t=>{seed++;
+    if(typeof t!=="number")return`<div class="cell${t[0]==="o"?" oops":""}">${drawToken(t,seed)}<div class="gap"></div></div>`;
+    const i=toks.push(t)-1;return`<div class="cell" data-k="${t}" data-i="${i}">${glyph(t,seed)}<input maxlength="2" aria-label="Sound ${i+1}" autocomplete="off" autocapitalize="characters" spellcheck="false"></div>`}).join("")}</div>`).join("");
+  const inputs=[...$("board").querySelectorAll("input")];
+  inputs.forEach((inp,idx)=>{const k=+inp.parentElement.dataset.k;
+    inp.addEventListener("focus",()=>document.querySelectorAll("#board .cell[data-k]").forEach(c=>c.classList.toggle("hl",+c.dataset.k===k)));
+    inp.addEventListener("input",()=>{const v=inp.value.toUpperCase().replace(/[^A-Z]/g,"").slice(0,2);if(v)st.g[k]=v;else delete st.g[k];save();sync();
+      if(v.length===2||(v&&ans(k).length===1))for(let j=idx+1;j<inputs.length;j++)if(!inputs[j].readOnly&&!inputs[j].value){inputs[j].focus();break}});
+    inp.addEventListener("keydown",e=>{if(e.key==="Backspace"&&!inp.value)for(let j=idx-1;j>=0;j--)if(!inputs[j].readOnly){inputs[j].focus();e.preventDefault();break}});
+  });
+  sync();
+}
+const used=()=>[...new Set(toks)];
+function sync(){
+  document.querySelectorAll("#board .cell[data-k]").forEach(c=>{const k=+c.dataset.k,inp=c.querySelector("input"),lk=st.rev.includes(k),v=lk?ans(k):(st.g[k]||"");
+    c.classList.toggle("locked",lk);inp.readOnly=lk;if(inp.value!==v)inp.value=v});
+  const U=used(),solved=U.every(k=>st.rev.includes(k)||st.g[k]===ans(k));
+  $("p-solved").hidden=!solved;$("p-plain").textContent=solved?P.m:"";
+  const lim=P.h??3;$("b-hint").disabled=solved||(lim>=0&&st.hints>=lim);
+  $("p-stat").textContent=`${U.filter(k=>st.rev.includes(k)||st.g[k]===ans(k)).length}/${U.length} sounds · hints ${lim<0?"∞":Math.max(0,lim-st.hints)}`;
+}
+function wirePlay(){
+  $("b-check").onclick=()=>{let wrong=0,filled=0;const bad=new Set();
+    used().forEach(k=>{if(st.rev.includes(k)||!st.g[k])return;filled++;if(st.g[k]!==ans(k)){wrong++;bad.add(k)}});
+    document.querySelectorAll("#board .cell[data-k]").forEach(c=>c.classList.toggle("wrong",bad.has(+c.dataset.k)));
+    const m=$("p-msg");m.className="msg "+(wrong?"bad":"good");
+    m.textContent=!filled?"Write some sounds in first.":wrong?`${wrong} sound${wrong>1?"s are":" is"} off. Marked in red.`:"Everything you've written is right.";
+    setTimeout(()=>document.querySelectorAll("#board .cell.wrong").forEach(c=>c.classList.remove("wrong")),2500)};
+  $("b-hint").onclick=()=>{const pool=used().filter(k=>!st.rev.includes(k)&&st.g[k]!==ans(k));if(!pool.length)return;
+    const k=pool[Math.floor(Math.random()*pool.length)];st.rev.push(k);st.hints++;save();sync();$("p-msg").className="msg good";$("p-msg").textContent=`The ink settles: ${ans(k)}.`};
+  $("b-clear").onclick=()=>{st.g={};save();sync();$("p-msg").textContent=""};
+  $("b-load").onclick=()=>{const c=$("load-code").value.trim();
+    try{const o=unpack("SW2",c);if(!o.w||!o.a)throw 0;loadPuzzle(c,o);$("load-msg").className="msg good";$("load-msg").textContent="Loaded.";$("load-code").value=""}
+    catch(e){$("load-msg").className="msg bad";$("load-msg").textContent="That code doesn't work. Copy the whole thing, starting with SW2."}};
+}
+function bootPlay(){const last=store.get("sw_last");if(last){try{loadPuzzle(last,unpack("SW2",last));return true}catch(e){}}return false}
+
+/* ---------- field notes: chart rows your DM has shared ---------- */
+const RULES_HTML=`<div class="rules">
+  <div class="rule"><h3>Mistakes</h3><p class="help">Scribes don't cross things out. A ' after a glyph means “ignore that one.”</p></div>
+  <div class="rule"><h3>Tall marks</h3><p class="help">On the two tall marks, bars cross through the stem instead of sitting on top.</p></div>
+  <div class="rule"><h3>Pauses and speech</h3><p class="help">A wave is a pause. Angled marks open and close speech. There are no periods, exclamation marks, or question marks.</p></div></div>`;
+let NOTES=store.get("sw_notes")||{rows:{},rules:false};
+function renderNotes(){
+  const n=NOTES,bs=Object.keys(n.rows).map(Number).sort((a,b)=>a-b);
+  $("notes-body").innerHTML=bs.length?`<div class="scroll"><table class="chart"><tr><th>Mark</th><th>bare</th><th>one bar</th><th>two bars</th></tr>${bs.map(b=>`<tr><td class="base">${glyph(b*3,5,{clean:1})}</td>${n.rows[b].map((x,i)=>x?`<td><div class="pair">${glyph(b*3+i,5,{clean:1})}<span>${x}</span></div></td>`:`<td class="none">–</td>`).join("")}</tr>`).join("")}</table></div>`
+    :`<p class="help">Nothing written here yet. When your DM shares part of the script, paste the note code below.</p>`;
+  $("notes-rules").innerHTML=n.rules?RULES_HTML:"";
+}
+$("b-note").onclick=()=>{const c=$("note-code").value.trim();const m=$("note-msg");
+  try{const o=unpack("SN1",c);const n=NOTES;Object.assign(n.rows,o.rows);n.rules=n.rules||!!o.rules;store.set("sw_notes",n);renderNotes();
+    m.className="msg good";m.textContent=`Copied ${Object.keys(o.rows).length} mark${Object.keys(o.rows).length===1?"":"s"} into your notes.`;$("note-code").value=""}
+  catch(e){m.className="msg bad";m.textContent="That note code doesn't work. It should start with SN1."}};
+$("b-forget").onclick=()=>{const b=$("b-forget");if(b.dataset.armed){NOTES={rows:{},rules:false};store.set("sw_notes",NOTES);renderNotes();b.textContent="Erase notes";delete b.dataset.armed;return}
+  b.dataset.armed=1;b.textContent="Click again to erase";setTimeout(()=>{b.textContent="Erase notes";delete b.dataset.armed},3000)};
+wirePlay();bootPlay();renderNotes();
+
+})();
+</script>
+</body>
+</html>
