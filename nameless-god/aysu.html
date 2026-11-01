@@ -840,6 +840,26 @@ C.kitSrcByPane={tech:"feat",stances:"stance",traits:"origin",monk:"class",druid:
 })();
 </script>
 <script>
+/* ================== TIDEPALM · HOLLOW COLLAPSE · PERSISTENCE (DM additions) ================== */
+(function(){var C=window.CHAR,K=C.kit;
+var s={id:"tidepalm",title:"Tidepalm · Hollow Collapse · Persistence",pane:"combo",src:"feat",sub:"new techniques · trackers on the Combo tab",color:"#4fb0d6",items:[]};K.push(s);
+function A(n,k,cost,text,x){var a={n:n,k:k,cost:cost||"",text:text};for(var q in (x||{}))a[q]=x[q];s.items.push(a);return a;}
+A("Tidepalm","attack","Attack replacement · 3 Ki",`<p>Choose one version on release. Counts as a weapon switch.</p>`);
+A("Spitting Tide","attack","Tidepalm (fast) · 3 Ki",`<p>Ranged attack, 60 ft. <b>5d10 + DEX</b>, knockback +10 ft. Builds Ripping Rapids (+1 hit, +2 switch). If released at a target within 10 ft and it misses, Aysu is Vulnerable until his next turn. On a hit it causes <b>Soaked</b>. While in Wendigo form it causes <b>heavy bleed</b> (1d12 per turn).</p>`,
+ {dmg:"5d10+DEX",t:"water",limb:"tidepalm",sw:true,pay:{ki:3},status:"soak",vuln:true,tideSpit:true});
+A("Walking Tide","attack","Tidepalm (slow) · 3 Ki",`<p>Creates a 10-ft-wide, 5-ft-high wave in the space in front of Aysu. At the start of each turn the wave advances 10 ft in a straight line. Creatures the wave enters make a DEX save vs Monk DC.</p>
+<p><b>Failure:</b> 8d10 + DEX force, pushed 10 ft with the wave, speed halved until the end of its next turn. <b>Success:</b> half damage, no push. Each catch counts as one hit for Erosion.</p>
+<p>While Aysu is within 5 ft of the wave's back face he gains three-quarters cover, and enemies on the far side take −2 to Dynamic Reactions against him.</p>
+<p><b>Duration:</b> 1 minute, or until detonated or stopped by a wall. Only one Walking Tide can exist at a time.</p>`,{pay:{ki:3},hook:"walkTide"});
+A("Hollow Collapse","reaction","Reaction · 2 Ki · Tempest Trident in hand",`<p>Aysu throws the Tempest Trident into his own Walking Tide. All creatures within 20 ft of impact make a CON save.</p>
+<p><b>Failure:</b> 8d12 + DEX thunder, 1 point of Erosion and Soaked, Deafened until the end of its next turn. <b>Success:</b> half damage, no Erosion. Creatures within 10 ft of the Walking Tide have disadvantage.</p>`,{pay:{ki:2},hook:"hollow"});
+A("Persistence","free","Free · 2 Ki (4 Ki enhanced) · right after a hit",`<p>The strike remains in the space it struck through, keeping the weapon profile of the attack that made it. It attacks at the start of each of Aysu's turns, and when a creature enters or ends its turn in its space, at Aysu's full attack bonus for <b>weapon dice only</b> (no damage modifier), triggering that weapon's Trait Infusion on a hit.</p>
+<p>Its hits count toward Erosion and any consecutive-hit requirement, and build Ripping Rapids +1 (no switch bonus). <b>Duration:</b> until the end of Aysu's next turn. <b>Limit:</b> one per weapon (Fist, Elbow, Knee, Kick, Trident, Headbutt).</p>
+<p><b>Enhancement (4 Ki):</b> the strike stays within a 5-ft square in front of him at all times and adds his modifier to hit.</p>`);
+C.kitSrcByPane.combo="feat";
+})();
+</script>
+<script>
 (function(){"use strict";
 var C=window.CHAR||{};
 var KEY=(C.id||"sheet")+"_v4:sheet";
@@ -859,7 +879,7 @@ var STATS=[["str","Strength"],["dex","Dexterity"],["con","Constitution"],["int",
 var SKILLS=[["Acrobatics","dex"],["Animal Handling","wis"],["Arcana","int"],["Athletics","str"],["Deception","cha"],["History","int"],["Insight","wis"],["Intimidation","cha"],["Investigation","int"],["Medicine","wis"],["Nature","int"],["Perception","wis"],["Performance","cha"],["Persuasion","cha"],["Religion","int"],["Sleight of Hand","dex"],["Stealth","dex"],["Survival","wis"]];
 var CONDS=["Blinded","Charmed","Deafened","Frightened","Grappled","Incapacitated","Invisible","Paralyzed","Petrified","Poisoned","Prone","Restrained","Stunned","Unconscious"];
 var EXH=["None","Disadvantage on ability checks","Speed halved","Disadvantage on attacks and saves","HP maximum halved","Speed 0","Death"];
-var TSTAT=[["bleed","Bleeding"],["frozen","Frozen Solid"],["broken","Erosion Broken"],["weak","Weakened"],["weak2","Weakened ×2"],["vuln","Vulnerable"],["air","Airborne"],["prone","Prone"],["stun","Stunned"],["shock","Shocked"],["mark","Marked"],["insight","Insightful Fighting"],["para","Paralyzed"],["desec","Desecrated"],["acted","Has acted"]];
+var TSTAT=[["bleed","Bleeding"],["frozen","Frozen Solid"],["broken","Erosion Broken"],["weak","Weakened"],["weak2","Weakened ×2"],["vuln","Vulnerable"],["air","Airborne"],["prone","Prone"],["stun","Stunned"],["shock","Shocked"],["mark","Marked"],["insight","Insightful Fighting"],["soak","Soaked"],["deaf","Deafened"],["para","Paralyzed"],["desec","Desecrated"],["acted","Has acted"]];
 var STANCE={};(C.stances||[]).forEach(function(s){STANCE[s.id]=s;});
 var LIMBS_INF={fist:1,kick:1,knee:1,elbow:1};
 var WEN_ADD={dex:6,str:5,con:10};
@@ -879,7 +899,7 @@ function defaults(){
   spells:{slots:{},list:(C.spells||[]).map(function(x,i){var o=clone(x);o.id="sp"+i;return o;})},
   rt:{feat:"flurry",ext:0},ld:{ki:5},
   status:[],monkFl:{left:0,max:0},dmg:{src:"w:Fists",ov:"",grp:"weapons",tgt:"",n:1,xd:0,flat:0,tog:{},off:{},riders:{},custRiders:[],style:"regular",build:true,pay:true,apply:true,lines:[]},
-  sf:sfDefaults(),dusk:{self:0,breathFade:0,breathTemp:0},kos:kosDefaults(),kitCustom:[],turnOn:false,
+  sf:sfDefaults(),tide:{walk:null,behind:false,hc:false,pers:[]},dusk:{self:0,breathFade:0,breathTemp:0},kos:kosDefaults(),kitCustom:[],turnOn:false,
   ui:{pane:"turn",fold:false,kitKind:"all",kitSrc:"all",kxCompact:false,kitQ:"",phaseHeal:false,stQ:"",stCat:"all",stPick:false,stOpen:""}};
  SKILLS.forEach(function(k){s.skills[k[0]]=(C.skills&&C.skills[k[0]]!=null)?C.skills[k[0]]:0;});
  for(var L in (C.spellSlots||{}))s.spells.slots[L]={max:C.spellSlots[L],left:C.spellSlots[L]};
@@ -932,6 +952,7 @@ function compute(){
  if(inStance("tide")){d.ac+=1;acB.push("trident +1");}
  if(num(S.st.shattered)){d.ac+=num(S.st.shattered);acB.push("clones +"+S.st.shattered);}
  if(S.combo.beat){d.ac+=3;acB.push("Beatdown +3");}
+ if(S.tide&&S.tide.walk&&S.tide.behind){d.ac+=5;acB.push("Walking Tide ¾ cover +5");}
  if(hasFx("Anchor Stance")){d.ac+=2;acB.push("Anchor +2");}
  if(num(S.sit.ac)){d.ac+=num(S.sit.ac);acB.push("sit "+sgn(num(S.sit.ac)));}
  if(d.stat.ac){d.ac=Math.max(0,d.ac+d.stat.ac);acB.push("status "+sgn(d.stat.ac));}if(d.stat.acSet!=null&&d.ac>d.stat.acSet){d.ac=d.stat.acSet;acB.push("status cap "+d.stat.acSet);}
@@ -1118,7 +1139,7 @@ function dmgSources(d){var out=[];
  (C.wendigoAttacks||[]).forEach(function(w){out.push({key:"wa:"+w.n,g:"wendigo",n:w.n,e:w.e,t:w.t,limb:w.limb,note:w.note,vuln:w.vuln,why:inStance("wendigo")?"":"Desecration or Praxis only",weapon:true});});
  allKit().forEach(function(k){var a=k.a;if(!a.dmg)return;var why="";if(k.sec.stance&&!inStance(k.sec.stance))why=STANCE[k.sec.stance].name+" only";
   var rq=/combo (\d+)/.exec(a.req||"");if(rq&&S.combo.v<+rq[1])why=(why?why+" · ":"")+"needs Combo "+rq[1];
-  out.push({key:"k:"+k.key,g:"tech",n:a.n,e:a.dmg,t:a.t||"",limb:a.limb||("special:"+a.n),sm:!!a.sm,hm2:a.hm||0,kit:k,noCombo:!!a.noCombo,comboSet:a.comboSet,vuln:a.vuln,why:why,note:a.cost});});
+  out.push({key:"k:"+k.key,g:"tech",n:a.n,e:a.dmg,t:a.t||"",limb:a.limb||("special:"+a.n),sm:!!a.sm,sw:!!a.sw,hm2:a.hm||0,kit:k,noCombo:!!a.noCombo,comboSet:a.comboSet,vuln:a.vuln,why:why,note:a.cost});});
  out.push({key:"c:echo",g:"class",n:"Moonlight Echo detonation",e:String(num(S.st.echo)*Math.floor(d.mod.wis/2)||0),t:"cold + force",noCombo:true,why:num(S.st.echo)?"":"no echoes stacked",note:S.st.echo+" stack"+(S.st.echo===1?"":"s")+" × ½ WIS"});
  out.push({key:"c:shatter",g:"class",n:"Ice Clone shatter",e:"2d8",t:"cold",noCombo:true,why:num(S.st.clones)?"":"no clones up",note:"10 ft · +1 AC per shattered clone"});
  out.push({key:"c:ebbflow",g:"class",n:"Creed: Ebb (Praxis)",e:"2d12",t:"cold + force",noCombo:true,why:S.stance==="praxis"?"":"Praxis only",note:"2 Martial Arts dice to enemies within 30 ft"});
@@ -1133,7 +1154,7 @@ function vitalPct(crit,t){var v=S.combo.v,bw=!!(t&&(t.st.broken||t.st.weak||t.st
  return Math.max(bw?20:12,crit?(v>=80?22:18):0,v>=60?(bw?20:15):0);}
 /* every modifier: [key, label, group, mode, cond, note]  mode: auto | tog */
 function modList(d,src,ov,t){var limb=(ov&&ov.ov.limb)||(src&&src.limb)||"",v=S.combo.v,boil=hasFx("Boiling Point");
- var sw=!!(src&&!src.noCombo&&((ov&&ov.sm)||src.sm||S.combo.armSwitch||(limb&&S.combo.last&&limb!==S.combo.last)));
+ var sw=!!(src&&!src.noCombo&&((ov&&ov.sm)||src.sm||src.sw||S.combo.armSwitch||(limb&&S.combo.last&&limb!==S.combo.last)));
  var infAvail=!!(LIMBS_INF[limb]&&(v>=15||S.combo.beat||boil||(ov&&ov.kis))&&(S.combo.beat||boil||(ov&&ov.kis)||!S.combo.inf[limb]));
  var kr=krushReasons(t,d);
  return [
@@ -1223,7 +1244,7 @@ function dmgAdd(){var d=compute(),D=S.dmg,o=dmgOpts(d);if(o.src&&o.src.kos)retur
  doPay(cost);
  var label=(ov?ov.n+" · ":"")+src.n,total=r.each*n,extra=[];
  if(D.apply&&t&&!t.down){t.hp=num(t.hp)-total;if(r.chose==="vital")t.vit=num(t.vit)+n;if(t.hp<=0)killTarget(t);}
- if(D.build&&!src.noCombo){var hitsPer=(ov&&ov.hits)||1;var cb=comboHits({limb:(ov&&ov.ov.limb)||src.limb,tid:t?t.id:"",hits:n*hitsPer,special:!!((ov&&ov.sm)||src.sm)});
+ if(D.build&&!src.noCombo){var hitsPer=(ov&&ov.hits)||1;var cb=comboHits({limb:(ov&&ov.ov.limb)||src.limb,tid:t?t.id:"",hits:n*hitsPer,special:!!((ov&&ov.sm)||src.sm||src.sw)});
   extra.push("combo +"+cb.gain+(cb.sw?" (switch)":"")+(cb.ki?" · +"+cb.ki+" Ki":"")+(cb.ero?" · "+(t?t.name:"")+" −"+cb.ero+" AC":""));
   if(S.eco.atk&&!src.spell)S.eco.atk.left=Math.max(0,S.eco.atk.left-1);
   if(num(S.st.tideHits)>=2)S.pend.cycle=true;}
@@ -1445,7 +1466,7 @@ function renderDmg(d){var D=S.dmg,o=dmgOpts(d),src=o.src,t=o.t,srcs=dmgSources(d
  return h+'</div></section>';}
 function dmgPreview(d){var o=dmgOpts(d),r=strike(d,o);if(!r.ok)return '<span class="err">'+esc(r.msg)+'</span>';
  var n=Math.max(1,num(S.dmg.n,1)),hw=esc(r.how).replace(/(\d+)$/,"<b>$1</b>"),cost=strikeCost(d,o),cs=Object.keys(cost).length?' · <span style="color:var(--moon)">costs '+payLabel(cost)+'</span>':'';
- var limb=(o.ov&&o.ov.ov.limb)||(o.src&&o.src.limb)||"",sw=o.src&&!o.src.noCombo&&((o.ov&&o.ov.sm)||o.src.sm||S.combo.armSwitch||(limb&&S.combo.last&&limb!==S.combo.last));
+ var limb=(o.ov&&o.ov.ov.limb)||(o.src&&o.src.limb)||"",sw=o.src&&!o.src.noCombo&&((o.ov&&o.ov.sm)||o.src.sm||o.src.sw||S.combo.armSwitch||(limb&&S.combo.last&&limb!==S.combo.last));
  var cmb=o.src&&!o.src.noCombo&&S.dmg.build?' · <span style="color:var(--ac)">combo +'+(n*((o.ov&&o.ov.hits)||1)+(sw?2:0))+(sw?' (switch)':'')+'</span>':'';
  return hw+(n>1?' · ×'+n+' = <b>'+r.each*n+'</b>':'')+(r.chose==="vital"?' · <b>Vital</b>':'')+cs+cmb;}
 
@@ -1496,7 +1517,7 @@ function renderCombo(d){var v=S.combo.v,c=comboColor(v),tr=tierOf(v),nx=nextTier
  if(!S.targets.length)h+='<div class="empty">Add targets on the Turn tab.</div>';else{h+='<table><tr><th>Target</th><th class="n">AC</th><th class="n">Erosion</th><th>Krushing</th></tr>';
   S.targets.forEach(function(t){var kr=krushReasons(t,d);h+='<tr'+(S.combo.lastT===t.id?' class="hl"':'')+'><td>'+esc(t.name)+(S.combo.lastT===t.id?' <span class="chip on">streak '+S.combo.streak+'</span>':'')+'</td><td class="n">'+tAC(t)+' / '+num(t.ac)+'</td><td class="n">−'+num(t.ero)+'</td><td>'+(kr.length?esc(kr.join(", ")):'<span class="sub">—</span>')+'</td></tr>';});h+='</table>';}
  h+='</section><section id="buildlose"><h2>Building &amp; losing</h2><div class="grid2"><div class="card"><h3>Builds</h3><ul><li>+1 per successful hit with a monk weapon.</li><li>+2 when the hit uses a different monk weapon than the previous strike.</li><li>+2 from Surging Step (+2 more if adjacent).</li><li>+3 from Combo Acceleration.</li><li>Special moves always count as a switch.</li></ul></div><div class="card"><h3>Breaks</h3><ul><li>Three misses in a row.</li><li>Ending the turn without a hit.</li><li>Dropping to 0 HP.</li><li>Long rest.</li></ul><p class="note">Shifting stance never breaks it: the meter carries across every stance. Each real break asks first, so you can spend Frustration to keep it.</p></div></div></section>';
- $("body-combo").innerHTML=h;}
+ h+=tideHtml(compute());$("body-combo").innerHTML=h;}
 
 /* ===================== STANCES PANE ===================== */
 function renderStances(d){var h=jumpRow((C.stances||[]).map(function(s){return ["kit-st-"+s.id,s.name];}));
@@ -1809,7 +1830,7 @@ function listenTo(t,parts){if(sfLv()<24||!t||t.down)return;var dh=desecHeld();
  t.listen=2;}
 
 /* ---------- after every calculator strike ---------- */
-function sfAfterStrike(d,o,r,n,t,extra){var parts=[];S.sf.act.hit=true;
+function sfAfterStrike(d,o,r,n,t,extra){var parts=[];S.sf.act.hit=true;tideAfterStrike(o,t,parts);
  if(r.unarmed){coilAdd(n);parts.push("+"+n+" Coil");
   if(r.fa){S.res.coil=Math.max(0,resVal("coil")-r.fa);if(S.sf.faUsed&&S.sf.gcFa)S.sf.gcFa=false;else S.sf.faUsed=true;
    parts.push("Fa Jin "+r.fa+" Coils"+(S.sf.ldRel?" (Long Death)":" · hurl "+5*r.fa+" ft"));
@@ -1849,25 +1870,25 @@ function dmgLine(label,t,v,how,extra){S.dmg.lines.push({id:uid("d"),label:label,
 function hitTarget(t,v){if(!t||t.down)return;t.hp=num(t.hp)-v;if(t.hp<=0)killTarget(t);}
 
 /* ---------- turn hooks ---------- */
-function kosStartTurn(d,parts){var K=S.kos;
+function kosStartTurn(d,parts){var K=S.kos;tideStartTurn(d,parts);
  if(K.waves.length){var sp=(K.rain||K.water)?60:30;K.waves.forEach(function(w){w.ft=num(w.ft)+sp;});parts.push(K.waves.length+" Shockwave"+(K.waves.length>1?"s":"")+" move "+sp+" ft");}
  if(K.mehter.on&&num(K.mehter.step)<4){K.mehter.step=num(K.mehter.step)+1;parts.push("Mehter step "+K.mehter.step+": allies +"+2*K.mehter.step);if(K.mehter.step===4)S.pend.mehter=true;}
  if(K.rain>=3){var f=Math.floor(d.hpMax*0.05);takeDamage(f);parts.push("Flooding: you take "+f);}
  if(K.narrows.tid){var nt=tById(K.narrows.tid);if(nt)parts.push(nt.name+" is In The Narrows: tick it at the start of its turn");}}
-function sfEndTurn(d,parts){var F=S.sf;
+function sfEndTurn(d,parts){var F=S.sf;tideEndTurn(d,parts);
  if(F.still){coilAdd(3);F.noSlack=true;F.still=false;parts.push("Didn't move: +3 Coils, no Slack this round");}
  if(num(S.dusk.breathFade)>0){S.dusk.breathFade--;if(!S.dusk.breathFade){if(num(S.hp.temp)>0&&num(S.hp.temp)<=num(S.dusk.breathTemp)){S.hp.temp=0;parts.push("Last Breath fades");}S.dusk.breathTemp=0;}}
  S.targets.forEach(function(t){if(num(t.listen)>0){t.listen--;if(!t.listen&&!t.down)parts.push("stopped Listening to "+t.name);}});
  for(var k in F.used)if(k.indexOf("turn:")===0)delete F.used[k];
  F.faUsed=false;F.gcFa=false;F.gcDone=false;F.hourFree=false;
  if(S.kos.cav.length){var tot=0;S.kos.cav.forEach(function(c){var t=tById(c.tid);if(!t||t.down)return;hitTarget(t,c.amt);tot+=c.amt;dmgLine(c.label,t,c.amt,"half dice + half Displacement · not an attack, can't be reacted to","Cavitation");});S.kos.cav=[];if(tot)parts.push("Cavitation "+tot);}}
-function sfEndRound(d,parts){var F=S.sf,a=F.act;
+function sfEndRound(d,parts){var F=S.sf,a=F.act;tideEndRound(d,parts);
  if(resVal("coil")>0&&!(a.hit||a.took||a.parry)&&!F.noSlack){S.res.coil=0;parts.push("Slack: no hit, no hit taken, no Parry · Coils 0");}
  F.act={hit:false,took:false,parry:false};F.noSlack=false;
  for(var k in F.used)if(k.indexOf("round:")===0)delete F.used[k];
  S.targets.forEach(function(t){if(num(t.po)>0&&!t.st.desec&&!t.poHit&&!t.down){t.po--;parts.push(t.name+" Po settles ("+t.po+")");}t.poHit=false;});
  var K=S.kos;if(K.waves.length){K.waves.forEach(function(w){w.rounds--;});var gone=K.waves.filter(function(w){return w.rounds<=0;}).length;K.waves=K.waves.filter(function(w){return w.rounds>0;});if(gone)parts.push(gone+" Shockwave"+(gone>1?"s":"")+" spent");}}
-function sfEndEncounter(){S.sf.chain=[];S.sf.act={hit:false,took:false,parry:false};S.sf.used={};S.sf.fa=0;S.sf.tld=0;S.sf.ldRel=false;S.sf.hour=false;
+function sfEndEncounter(){tideEndEncounter();S.sf.chain=[];S.sf.act={hit:false,took:false,parry:false};S.sf.used={};S.sf.fa=0;S.sf.tld=0;S.sf.ldRel=false;S.sf.hour=false;
  S.targets.forEach(function(t){t.po=0;t.poHit=false;t.st.desec=false;t.st.para=false;t.listen=0;t.seams=0;t.limbs={};});
  var K=S.kos;K.waves=[];K.cav=[];K.rain=0;K.narrows={tid:"",r:0};K.mehter={on:false,step:0};K.arc={};S.dusk.breathFade=0;}
 function sfLongRest(){S.sf.burnHP=0;S.sf.hdUsed=0;S.dusk.self=0;S.kos.strainK=0;S.kos.strainR=0;S.kos.strainY=0;S.sf.chain=[];S.sf.used={};
@@ -2141,7 +2162,7 @@ function renderKos(d){var K=S.kos,sw=resVal("swell"),wt=tById(K.wt),lt=liveTarge
 
 /* ===================== KIT · ONE DOCUMENT (Covenant 1.9 layout) ===================== */
 var KX_SRC=[["feat","Wanderer techniques","Technique"],["stance","Stances","Stance"],["prestige","Sifu prestige","Prestige"],["class","Class features","Class"],["origin","Traits & origin","Origin"],["equip","Equipment","Equipment"],["custom","Added at the table","Custom"]];
-var KX_PANE={tech:null,stances:"stances",monk:"monk",druid:"druid",rogue:"rogue",sifu:"sifu",dusk:"dusk",kos:"kos",traits:null};
+var KX_PANE={combo:"combo",tech:null,stances:"stances",monk:"monk",druid:"druid",rogue:"rogue",sifu:"sifu",dusk:"dusk",kos:"kos",traits:null};
 function kxSrcOf(sec){if(sec.id==="custom")return "custom";if(sec.src)return sec.src;return (C.kitSrcByPane||{})[sec.pane]||"feat";}
 function kxSections(){return (C.kit||[]).concat([{id:"custom",title:"Custom abilities",sub:"added at the table",items:S.kitCustom||[]}]);}
 function kxHay(sec,a){return (a.n+" | "+(KNAME[a.k]||a.k)+" "+(a.cost||"")+" "+(a.dmg||"")+" | "+(sec.title||"")+" | "+plain(a.text)).toLowerCase();}
@@ -2189,6 +2210,60 @@ function sfRulesHtml(){return '<section id="r-turn"><h2>Start turn · End turn �
  '<li><b>Start turn</b>: Resonant and Combo 70+ Ki, Water\'s Welcome and Radiant Tide healing, Dynamic Reactions refresh, Shockwaves move, Mehter advances, Flooding damage.</li>'+
  '<li><b>End turn</b>: combo drop check, effects and statuses tick, Hunger, Praxis and lunar phase count down, "didn\'t move" Coils, Last Breath fades, Listening counts down, Cavitation resolves, once-per-turn uses (Fa Jin, Paralyzing Strike, Borrowed Force, Great Circulation) reset.</li>'+
  '<li><b>End round</b>: Slack check (no hit, no hit taken, no Parry → Coils 0), Po settle on creatures with no Generated strike, Shockwaves age, once-per-round uses reset, the action economy refills, round +1.</li></ul></div></section>';}
+
+/* ===================== TIDEPALM · HOLLOW COLLAPSE · PERSISTENCE ===================== */
+var PERS_W=[["fist","Fist"],["elbow","Elbow"],["knee","Knee"],["kick","Kick"],["trident","Trident"],["headbutt","Headbutt"]];
+function tideState(){if(!S.tide||typeof S.tide!=="object")S.tide={walk:null,behind:false,hc:false,pers:[]};if(!Array.isArray(S.tide.pers))S.tide.pers=[];return S.tide;}
+function eroHit(t){if(!t)return 0;if(S.combo.lastT===t.id)S.combo.streak++;else S.combo.streak=1;S.combo.lastT=t.id;
+ var e=S.combo.beat?3:(S.combo.streak>=2&&S.combo.streak%2===0?eroAmount():0);if(e)t.ero=num(t.ero)+e;return e;}
+function persDice(limb){if(limb==="headbutt")return null;var w=(C.weapons||[]).filter(function(x){return x.limb===limb;})[0];if(!w)return null;
+ var p=parseExpr(w.e,compute()),m=0,die=0;p.dice.forEach(function(x){m+=x.n*x.m;if(!die)die=x.m;});return {max:m,die:die,e:p.dice.map(function(x){return x.n+"d"+x.m;}).join("+")};}
+SF_HOOK.walkTide=function(a,bits){var T=tideState();T.walk={rounds:10,ft:0};T.behind=false;bits.push("Walking Tide up: 10 ft wide, advances 10 ft each turn, 1 minute");if(S.eco.atk)S.eco.atk.left=Math.max(0,S.eco.atk.left-1);};
+SF_HOOK.hollow=function(a,bits){var T=tideState();T.hc=true;if(S.eco.rx)S.eco.rx.left=Math.max(0,S.eco.rx.left-1);bits.push("trident thrown into the Walking Tide: mark each save on the Combo tab");};
+function tideAfterStrike(o,t,parts){var a=o.src&&o.src.kit&&o.src.kit.a;if(!a||!a.tideSpit||!t)return;
+ parts.push(t.name+" Soaked");if(inStance("wendigo")){t.st.bleed=true;parts.push("heavy bleed 1d12 per turn (Wendigo)");}}
+function tideStartTurn(d,parts){var T=tideState();if(T.walk){T.walk.ft=num(T.walk.ft)+10;parts.push("Walking Tide advances 10 ft");}
+ var live=T.pers.filter(function(p){return p.left>0;});if(live.length)parts.push(live.length+" persisting strike"+(live.length>1?"s":"")+" attack now");}
+function tideEndTurn(d,parts){var T=tideState(),gone=[];T.pers.forEach(function(p){p.left--;if(p.left<=0)gone.push(p.n);});T.pers=T.pers.filter(function(p){return p.left>0;});if(gone.length)parts.push("Persistence ends: "+gone.join(", "));}
+function tideEndRound(d,parts){var T=tideState();if(T.walk){T.walk.rounds--;if(T.walk.rounds<=0){T.walk=null;T.behind=false;parts.push("Walking Tide runs out");}}}
+function tideEndEncounter(){var T=tideState();T.walk=null;T.behind=false;T.hc=false;T.pers=[];}
+
+function tideAct(a,el,d){var id=el.getAttribute("data-id"),k=el.getAttribute("data-k"),t=id?tById(id):null,T=tideState(),v,sv;
+ switch(a){
+ case "twres":if(!t||!T.walk)return false;sv=k==="save";v=80+d.mod.dex;if(sv)v=Math.floor(v/2);hitTarget(t,v);var e=eroHit(t);
+  dmgLine("Walking Tide",t,v,"8d10 80 + DEX "+d.mod.dex+(sv?" · saved, half":" · pushed 10 ft, speed halved"),(e?"Erosion −"+e+" AC":"catch counts for Erosion"));logline("Walking Tide catches "+t.name+": "+v+(e?" · Erosion −"+e:""));return true;
+ case "twbehind":T.behind=!T.behind;return true;
+ case "twend":T.walk=null;T.behind=false;T.hc=false;logline("Walking Tide "+(k==="det"?"detonated":"stopped"));return true;
+ case "thcres":if(!t)return false;sv=k==="save";v=96+d.mod.dex;if(sv)v=Math.floor(v/2);hitTarget(t,v);
+  if(!sv){t.ero=num(t.ero)+1;setTStat(t,"soak",true);setTStat(t,"deaf",true);}
+  dmgLine("Hollow Collapse",t,v,"8d12 96 + DEX "+d.mod.dex+" thunder"+(sv?" · saved, half":""),sv?"":"Erosion −1 · Soaked · Deafened");logline("Hollow Collapse on "+t.name+": "+v);return true;
+ case "thcdone":T.hc=false;return true;
+ case "tpers":var lb=k,enh=el.getAttribute("data-n")==="4",cost=enh?4:2;if(T.pers.some(function(p){return p.limb===lb;})){flash("Already one persisting "+lb);return false;}
+  if(resVal("ki")<cost){flash("Persistence costs "+cost+" Ki");return false;}S.res.ki=resVal("ki")-cost;
+  T.pers.push({id:uid("p"),limb:lb,n:(PERS_W.filter(function(x){return x[0]===lb;})[0]||[lb,lb])[1],enh:enh,left:S.turnOn?2:1});logline("Persistence: "+lb+(enh?" (enhanced, follows him)":"")+" · "+cost+" Ki");return true;
+ case "tpdel":T.pers=T.pers.filter(function(p){return p.id!==id;});return true;
+ case "tphit":var P=T.pers.filter(function(p){return p.id===el.getAttribute("data-p");})[0];t=tById(S.dmg.tgt);if(!P)return false;if(!t){flash("Aim the calculator at the creature it hits");return false;}
+  var pd=persDice(P.limb);if(!pd){flash("Headbutt has no damage profile on the sheet yet");return false;}
+  var inf=!!(LIMBS_INF[P.limb]);v=pd.max+(inf?pd.die:0);hitTarget(t,v);
+  var keep=S.combo.last,cb=comboHits({limb:keep||P.limb,tid:t.id,hits:1});S.combo.last=keep;S.sf.act.hit=true;
+  var infTxt=inf?((C.infusions||[]).filter(function(x){return x[0]===P.limb;})[0]||[])[2]||"":"";
+  dmgLine("Persisting "+P.n,t,v,pd.e+" "+pd.max+(inf?" + infusion die "+pd.die:"")+" (dice only)","combo +"+cb.gain+(cb.ero?" · Erosion −"+cb.ero:"")+(infTxt?" · "+infTxt.split(".")[0]:""));
+  logline("Persisting "+P.n+" hits "+t.name+" for "+v);return true;
+ }
+ return undefined;}
+
+function tideHtml(d){var T=tideState(),lt=liveTargets(),h='<section id="tidepalm"><h2>Tidepalm · Persistence <span class="sub2">3 Ki attack replacement · counts as a weapon switch</span>'+sfLink("tidepalm")+'</h2><div class="card">';
+ h+='<div class="row">'+btn("Spitting Tide → calculator","tocalc",{id:"k:tidepalm:Spitting Tide"},"pri","5d10 + DEX, 60 ft, Soaked on hit")+(T.walk?'':btn("Walking Tide · 3 Ki","pay",{id:"tidepalm:Walking Tide"},""))+'</div>';
+ if(T.walk){h+='<div class="row" style="margin-top:10px"><span class="lbl" style="margin:0">Walking Tide</span><span class="sub" style="margin:0">'+T.walk.rounds+' rounds left · moved '+num(T.walk.ft)+' ft · DEX save DC '+d.dc+'</span>'+
+  chip(T.behind?"behind the back face: ¾ cover (+5 AC)":"not behind it","twbehind",{},T.behind,"","Within 5 ft of its back face: three-quarters cover, enemies beyond it take −2 to Dynamic Reactions against you")+btn("detonate","twend",{k:"det"},"sm")+btn("stopped by a wall","twend",{},"sm dgr")+'</div>';
+  if(lt.length)h+='<div class="row" style="margin-top:6px"><span class="sub" style="margin:0">it enters</span>'+lt.map(function(t){return '<span class="sub" style="margin:0">'+esc(t.name)+'</span>'+btn("fails · "+(80+d.mod.dex),"twres",{id:t.id,k:"fail"},"sm pri")+btn("saves","twres",{id:t.id,k:"save"},"sm");}).join("")+'</div>';
+  h+='<div class="row" style="margin-top:6px">'+(T.hc?'':btn("Hollow Collapse · 2 Ki","pay",{id:"tidepalm:Hollow Collapse"},"","Reaction · Tempest Trident in hand"))+'</div>';
+  if(T.hc){h+='<div class="row" style="margin-top:6px"><span class="lbl" style="margin:0">Hollow Collapse · CON DC '+d.dc+' · within 10 ft of the tide: disadvantage</span>'+lt.map(function(t){return '<span class="sub" style="margin:0">'+esc(t.name)+'</span>'+btn("fails · "+(96+d.mod.dex),"thcres",{id:t.id,k:"fail"},"sm pri")+btn("saves","thcres",{id:t.id,k:"save"},"sm");}).join("")+btn("done","thcdone",{},"sm")+'</div>';}}
+ h+='<div class="row" style="margin-top:12px"><span class="lbl" style="margin:0">Persistence · after a hit</span>'+PERS_W.map(function(w){var on=T.pers.some(function(p){return p.limb===w[0];});return btn(w[1]+" · 2",'tpers',{k:w[0],n:2},"sm","",on)+btn("+4","tpers",{k:w[0],n:4},"sm","Enhanced: stays in front of you, adds your modifier to hit",on);}).join("")+'</div>';
+ if(T.pers.length){h+='<table style="margin-top:8px"><tr><th>Persisting</th><th>Lasts</th><th>Damage (dice only)</th><th></th></tr>';
+  T.pers.forEach(function(p){var pd=persDice(p.limb),inf=!!LIMBS_INF[p.limb];h+='<tr><td class="cz">'+esc(p.n)+(p.enh?' <span class="chip">enhanced</span>':'')+'</td><td class="sub">'+(p.left>1?'to the end of your next turn':'to the end of this turn')+'</td><td class="n">'+(pd?pd.e+(inf?' +1 infusion die':'')+' = '+(pd.max+(inf?pd.die:0)):'<span class="amber">no Headbutt profile (TBD)</span>')+'</td><td>'+btn("hits aimed target","tphit",{p:p.id},"sm pri","",!pd)+btn("×","tpdel",{id:p.id},"sm dgr")+'</td></tr>';});h+='</table>';}
+ h+='<p class="sub">Persisting hits build +1 Ripping Rapids with no switch bonus, count for Erosion, and use attack bonus '+sgn(d.atk)+' (enhanced adds your modifier to hit).</p></div></section>';
+ return h;}
 
 /* ===================== RENDER ALL ===================== */
 function renderAll(){var d=compute();ensureRes(d);if(num(S.hp.cur)<0)S.hp.cur=d.hpMax;conSync(d);d=compute();ensureRes(d);if(num(S.hp.cur)>d.hpMax)S.hp.cur=d.hpMax;
@@ -2376,7 +2451,7 @@ function act(a,el){var id=el.getAttribute("data-id"),n=num(el.getAttribute("data
  case "import":var fi=document.createElement("input");fi.type="file";fi.accept="application/json";fi.addEventListener("change",function(){var file=fi.files[0];if(!file)return;var rd=new FileReader();
   rd.onload=function(){try{var dd=JSON.parse(rd.result);S=defaults();deep(S,dd);sanitize();commit();toast("Imported");}catch(err){window.alert("That file did not parse.");}};rd.readAsText(file);});fi.click();return;
  case "wipe":if(!window.confirm("Reset every tracker on this sheet to its defaults?"))return;S=defaults();break;
- default:var fr=sfAct(a,el,d);if(fr===true)break;if(fr===false)return;var sr=statusAct(a,el,d);if(sr===true)break;if(sr===false)return commit();return;}
+ default:var fr=sfAct(a,el,d);if(fr===undefined)fr=tideAct(a,el,d);if(fr===true)break;if(fr===false)return;var sr=statusAct(a,el,d);if(sr===true)break;if(sr===false)return commit();return;}
  commit();}
 
 /* ===================== SEARCH PALETTE ===================== */

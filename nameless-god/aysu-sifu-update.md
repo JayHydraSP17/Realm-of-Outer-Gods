@@ -66,7 +66,31 @@ The sheet still runs on Nameless God rulings: no TL, no Morale, no Tempo or Fein
 - **Displacement:** damage multipliers (Edge of Pain, kill bonus, Vulnerable and so on) scale it.
 - **Mehter:** stops after the 4th step. After you take the 8d20, Mehter ends.
 
+## Tidepalm, Hollow Collapse, Persistence (DM additions)
+
+These are in the Kit under Wanderer techniques. Their trackers are on the **Combo tab**.
+
+- **Spitting Tide** is a calculator attack.
+  - Damage: 5d10 + DEX.
+  - Cost: 3 Ki, paid automatically.
+  - Always counts as a weapon switch (+1 hit, +2 switch).
+  - Marks the target **Soaked**, and adds heavy bleed in Wendigo form.
+- **Walking Tide** (3 Ki)
+  - Only one can exist at a time. It lasts 10 rounds and advances 10 ft at Start turn.
+  - Each creature it enters gets fail/save buttons: 8d10 + DEX, half on a save.
+  - Each catch counts for Erosion.
+  - A "behind the back face" toggle adds +5 AC for three-quarters cover.
+  - It can be detonated or stopped by a wall.
+- **Hollow Collapse** (2 Ki, uses a reaction)
+  - Fail/save buttons for each creature: 8d12 + DEX.
+  - A failed save also gives 1 Erosion, Soaked and Deafened.
+- **Persistence** (2 Ki, or 4 Ki enhanced)
+  - One per weapon. It lasts until the end of your next turn.
+  - Start turn reminds you that persisting strikes attack.
+  - A hit deals weapon dice only, plus the Trait Infusion die. It adds +1 combo with no switch bonus and counts for Erosion.
+
 ## Still open
 
 1. **Turning Year** is named under Strain but isn't defined in the module. Its counter stays a placeholder marked TBD.
-2. **More to come.** The DM said "There is still more" for the module.
+2. **Headbutt** is listed as a Persistence weapon, but the sheet has no Headbutt damage profile.
+3. **More to come.** The DM said "There is still more" for the module.
