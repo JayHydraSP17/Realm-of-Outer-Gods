@@ -990,9 +990,13 @@ function comboMiss(){S.combo.miss++;S.st.tideHits=0;if(S.sf&&S.sf.chain.length){
 
 /* ===================== TARGETS ===================== */
 function tById(id){for(var i=0;i<S.targets.length;i++)if(S.targets[i].id===id)return S.targets[i];return null;}
-function tAC(t){return Math.max(0,num(t.ac)-num(t.ero)-(S.kos&&S.kos.narrows&&S.kos.narrows.tid===t.id?5:0));}
+/* Players don't know a target's max HP or AC. Targets keep counts instead: damage dealt, % of max HP dealt, AC reduction, max HP deducted. The DM keeps the real numbers. */
+function tACred(t){return num(t.ero)+(S.kos&&S.kos.narrows&&S.kos.narrows.tid===t.id?5:0);}
+function tAC(t){return "−"+tACred(t);}
+function tPct(p){return Math.round(num(p)*100)/100;}
+function tTally(t){return num(t.dealt)+" dealt"+(num(t.dpct)?" + "+tPct(t.dpct)+"% max HP":"");}
 function krushReasons(t,d){var r=[];if(!t)return r;if(num(t.ero)>=6)r.push("Erosion −"+t.ero);if(t.st.frozen)r.push("Frozen Solid");if(t.st.broken)r.push("Erosion Broken");if(t.st.weak2)r.push("Weakened twice");if(!t.st.acted)r.push("first strike");if(d.low25)r.push("you below 25%");return r;}
-function killTarget(t){t.down=true;t.hp=0;S.flags.killReady=true;
+function killTarget(t){t.down=true;S.flags.killReady=true;
  if(S.kos&&S.kos.narrows&&S.kos.narrows.tid===t.id){S.kos.narrows={tid:"",r:0};}
  if(!t.inhaled)S.pend.breath=t.id;
  logline(t.name+" drops. Next attack ×1.75, movement ×1.5"+(t.inhaled?"":" · Last Breath ready")+(inStance("wendigo")?" · Glutton: consume for a trait":"")+(resVal("feed")>0?" · Wendigo Strain feed available":""));}
@@ -1194,7 +1198,7 @@ function strike(d,o){var src=o.src,ov=o.ov,t=o.t,on=o.on;
  var riders=[],tldK=unarmed?sfTldKi():0,tldAmt=tldK*20;if(tldK)riders.push({n:"Touch of the Long Death "+tldK+" Ki",e:(2*tldK)+"d10"});if(on.sneak)riders.push({n:"Sneak Attack",e:"4d6"});if(on.ebb)riders.push({n:"Ebb",e:"2d8"});
  (S.dmg.custRiders||[]).forEach(function(r){if(S.dmg.riders[r.n])riders.push(r);});
  riders.forEach(function(r){var rp=parseExpr(r.e,d),rv=rp.flat;rp.dice.forEach(function(x){rv+=x.n*x.m;});v+=rv;how.push("+"+rv+" "+r.n);});
- var disp=0;if(src.kos){var dp=kosDispPct();mhp+=dp;mhpN.push("Displacement "+dp+"%");tags.push("Displacement "+dp+"%");if(t&&num(t.hpMax)>0)disp=Math.floor(tMaxEff(t)*dp/100);}
+ var disp=0;if(src.kos){var dp=kosDispPct();mhp+=dp;mhpN.push("Displacement "+dp+"%");tags.push("Displacement "+dp+"%");}
  var line=how.join(" ")+" → "+v;
  function mul(k,f,lab){if(!on[k])return;v=Math.floor(v*f);line+=" · "+lab+" → "+v;tags.push(lab);}
  if(on.eop){v=Math.floor(v*(1+0.25*d.eop));line+=" · Edge +"+25*d.eop+"% → "+v;tags.push("Edge +"+25*d.eop+"%");}
@@ -1203,7 +1207,7 @@ function strike(d,o){var src=o.src,ov=o.ov,t=o.t,on=o.on;
  var sg=d.stat||statusAgg();if(sg.dmgOut!==1){v=Math.floor(v*sg.dmgOut);line+=" · status ×"+(+sg.dmgOut.toFixed(2))+" → "+v;tags.push("status ×"+(+sg.dmgOut.toFixed(2)));}
  if(on.half){v=Math.floor(v/2);line+=" · half → "+v;tags.push("half");}
  if(fa)tags.push("Fa Jin ×"+fa+(S.sf.ldRel?" · Long Death":""));
- var hasMax=!!(t&&num(t.hpMax)>0),pct=vitalPct(crit,t),vital=hasMax?Math.floor(tMaxEff(t)*pct/100):0;
+ var hasMax=false,pct=vitalPct(crit,t),vital=0;
  if(on.krush){mhp+=pct;mhpN.push("Krushing "+pct+"%");tags.push("Krushing");}
  if(on.shatter){mhp+=15;mhpN.push("shatter 15%");tags.push("shatter");}
  if(on.fatal){mhp+=20;mhpN.push("Fatal 20%");}
@@ -1230,7 +1234,7 @@ function dmgAdd(){var d=compute(),D=S.dmg,o=dmgOpts(d);if(o.src&&o.src.kos)retur
  if(src.spell&&D.pay){if(!castSpell(src.spell.id))return false;}
  doPay(cost);
  var label=(ov?ov.n+" · ":"")+src.n,total=r.each*n,extra=[];
- if(D.apply&&t&&!t.down){t.hp=num(t.hp)-total-(r.mhpAbs||0)*n;if(r.chose==="vital")t.vit=num(t.vit)+n;if(t.hp<=0)killTarget(t);}
+ if(D.apply&&t&&!t.down){hitTarget(t,total,num(r.mhp)*n);if(r.chose==="vital")t.vit=num(t.vit)+n;}
  if(D.build&&!src.noCombo){var hitsPer=(ov&&ov.hits)||1;var cb=comboHits({limb:(ov&&ov.ov.limb)||src.limb,tid:t?t.id:"",hits:n*hitsPer,special:!!((ov&&ov.sm)||src.sm)});
   extra.push("combo +"+cb.gain+(cb.sw?" (switch)":"")+(cb.ki?" · +"+cb.ki+" Ki":"")+(cb.ero?" · "+(t?t.name:"")+" −"+cb.ero+" AC":""));
   if(S.eco.atk&&!src.spell)S.eco.atk.left=Math.max(0,S.eco.atk.left-1);
@@ -1407,12 +1411,12 @@ function renderEquinox(d){var ph=S.phase?phaseDef(S.phase):null,h='<section id="
  return h+'</div></div></section>';}
 
 /* ===================== TARGETS ===================== */
-function renderTargets(d){var h='<section id="targets"><h2>Targets <span class="sub2">tap a name to aim the calculator · Erosion lowers AC automatically</span></h2>';
- h+='<div class="form"><div class="fld"><span class="lbl">Name</span><input type="text" id="tN" placeholder="e.g. Iron Warden"></div><div class="fld"><span class="lbl">Max HP</span><input class="num" type="number" id="tH" placeholder="for Vital"></div><div class="fld"><span class="lbl">AC</span><input class="num" type="number" id="tA" placeholder="AC"></div>'+btn("Add target","tadd",{},"pri")+'</div>';
- if(!S.targets.length)h+='<div class="empty">No targets. Add one to track its HP, Erosion and statuses, and to use Vital Damage.</div>';
- S.targets.forEach(function(t){var p=num(t.hpMax)?clamp(num(t.hp)/num(t.hpMax)*100,0,100):0,kr=krushReasons(t,d);
-  h+='<div class="tg'+(S.dmg.tgt===t.id?' sel':'')+(t.down?' down':'')+'"><div class="tn"'+A_("tsel",{id:t.id})+'>'+esc(t.name)+(t.down?' · down':'')+'<small>AC '+tAC(t)+(num(t.ero)?' (−'+t.ero+' Erosion)':'')+' · Vital '+num(t.vit)+'/'+d.vitCap+' this round'+(t.st.mark?' · mark hits '+num(t.markHits):'')+sfTargetBits(t)+'</small></div>'+
-   '<div class="hpcol"><div class="row" style="gap:4px">'+btn("−","thp",{id:t.id,n:-10},"sm")+'<input class="num w80" type="number" data-thp="'+t.id+'" value="'+num(t.hp)+'"><span class="sl">/ '+tMaxEff(t)+(num(t.ded)?'<s style="opacity:.5;margin-left:4px">'+num(t.hpMax)+'</s>':'')+'</span>'+btn("+","thp",{id:t.id,n:10},"sm")+(num(t.hpMax)&&num(t.hp)<=tMaxEff(t)*0.25&&!t.down?'<span class="chip warn">≤25%</span>':'')+'</div><div class="meter"><i style="width:'+p+'%;background:linear-gradient(90deg,#7a1c2c,#cf4763)"></i><span class="mk" style="left:25%"></span></div></div>'+
+function renderTargets(d){var h='<section id="targets"><h2>Targets <span class="sub2">tap a name to aim the calculator · counts only: damage dealt, AC reduction, max HP deducted</span></h2>';
+ h+='<div class="form"><div class="fld"><span class="lbl">Name</span><input type="text" id="tN" placeholder="e.g. Iron Warden"></div>'+btn("Add target","tadd",{},"pri")+'</div>';
+ if(!S.targets.length)h+='<div class="empty">No targets. Add one to track damage dealt, Erosion and statuses. You never need its max HP or AC: the sheet counts what you take off, and the DM does the rest.</div>';
+ S.targets.forEach(function(t){var kr=krushReasons(t,d);
+  h+='<div class="tg'+(S.dmg.tgt===t.id?' sel':'')+(t.down?' down':'')+'"><div class="tn"'+A_("tsel",{id:t.id})+'>'+esc(t.name)+(t.down?' · down':'')+'<small>AC '+tAC(t)+(num(t.ero)?' (Erosion '+t.ero+')':'')+(num(t.ded)?' · max HP −'+num(t.ded):'')+' · Vital '+num(t.vit)+'/'+d.vitCap+' this round'+(t.st.mark?' · mark hits '+num(t.markHits):'')+sfTargetBits(t)+'</small></div>'+
+   '<div class="hpcol"><div class="row" style="gap:4px"><b style="color:#fff">'+esc(tTally(t))+'</b>'+btn("reset","tdealt",{id:t.id},"sm","Clear the damage tally")+chip("below ¼","tlow",{id:t.id},!!t.low,"","The DM says it's below a quarter of its max HP")+'</div></div>'+
    '<div class="row" style="gap:4px">'+(kr.length&&!t.down?'<span class="chip warn" title="'+esc(kr.join(", "))+'">Krushing ready</span>':'')+btn("ero −","tero",{id:t.id,n:-1},"sm","Undo 1 Erosion")+(t.down?btn("revive","trevive",{id:t.id},"sm"):btn("killed","tkill",{id:t.id},"sm","Mark it down: kill bonus, Touch of Death"))+btn("×","tdel",{id:t.id},"sm dgr")+'</div>'+
    '<div class="st">'+TSTAT.map(function(s){return chip(s[1],"tstat",{id:t.id,k:s[0]},!!t.st[s[0]],s[0]==="frozen"||s[0]==="broken"?"":"");}).join("")+'</div></div>';});
  return h+'</section>';}
@@ -1429,8 +1433,8 @@ function renderDmg(d){var D=S.dmg,o=dmgOpts(d),src=o.src,t=o.t,srcs=dmgSources(d
    h+='</optgroup></select>'+(o.ov?'<span class="sub" style="margin:0">'+esc(lead(o.ov.a.text))+'</span>':'')+'</div>';}}
  h+=sfCalcHtml(d,o);
  h+='<div class="modgrp"><span class="lbl">2 · Target</span><div class="row">'+chip("none","dtgt",{id:""},!D.tgt);
- S.targets.forEach(function(x){if(x.down)return;h+=chip(esc(x.name)+' <span style="opacity:.7">'+num(x.hp)+'/'+num(x.hpMax)+' · AC '+tAC(x)+'</span>',"dtgt",{id:x.id},D.tgt===x.id);});
- h+='<span class="sub" style="margin:0">'+(S.targets.length?'':'add targets above for Vital Damage, Erosion and HP')+'</span></div></div>';
+ S.targets.forEach(function(x){if(x.down)return;h+=chip(esc(x.name)+' <span style="opacity:.7">'+esc(tTally(x))+(tACred(x)?' · AC '+tAC(x):'')+'</span>',"dtgt",{id:x.id},D.tgt===x.id);});
+ h+='<span class="sub" style="margin:0">'+(S.targets.length?'':'add targets above to track damage dealt and Erosion')+'</span></div></div>';
  h+='<div class="modgrp"><span class="lbl">3 · Modifiers <span class="autonote">◆ = switched on automatically · tap to turn off</span></span>';
  [["roll","Roll"],["dice","Dice"],["flat","Flat"],["mult","Multipliers"],["rider","Riders"]].forEach(function(g){var ms=o.mods.filter(function(m){return m[2]===g[0];});if(!ms.length)return;
   h+='<div class="row" style="margin-top:5px"><span class="sub" style="margin:0;min-width:74px">'+g[1]+'</span>';
@@ -1439,7 +1443,7 @@ function renderDmg(d){var D=S.dmg,o=dmgOpts(d),src=o.src,t=o.t,srcs=dmgSources(d
   if(g[0]==="dice")h+='<span class="sub" style="margin:0 0 0 4px">extra</span><input class="num w44" type="number" data-b="dmg.xd" value="'+num(D.xd)+'"><span class="sub" style="margin:0">flat</span><input class="num w44" type="number" data-b="dmg.flat" value="'+num(D.flat)+'"><span class="sub" style="margin:0" title="Damage written as a % of the target\'s max HP. It stays separate for the DM.">+ % of target\'s max HP</span><input class="num w44" type="number" data-b="dmg.mhp" value="'+num(D.mhp)+'" min="0">';
   h+='</div>';});
  h+='</div><div class="modgrp"><span class="lbl">4 · Damage style</span><div class="row">'+chip("Regular","dstyle",{id:"regular"},D.style==="regular")+chip("Vital Damage","dstyle",{id:"vital"},D.style==="vital")+chip("Take the higher","dstyle",{id:"best"},D.style==="best")+
-  '<span class="sub" style="margin:0">'+'Vital now '+vitalPct(o.on.crit||o.on.krush||o.on.shatter,t)+'% of target\'s max HP · cap '+d.vitCap+'/round'+(t&&num(t.hpMax)?' (≈'+Math.floor(tMaxEff(t)*vitalPct(o.on.crit||o.on.krush||o.on.shatter,t)/100)+' on '+esc(t.name)+')':'')+'</span></div></div>';
+  '<span class="sub" style="margin:0">'+'Vital now '+vitalPct(o.on.crit||o.on.krush||o.on.shatter,t)+'% of target\'s max HP · cap '+d.vitCap+'/round'+'</span></div></div>';
  h+='<div class="modgrp row"><span class="sub" style="margin:0">Hits</span><input class="num w44" type="number" data-b="dmg.n" value="'+D.n+'" min="1">'+
   '<label class="sub" style="margin:0"><input type="checkbox" data-b="dmg.build"'+(D.build?' checked':'')+'> build combo, Ki on hit, Erosion</label><label class="sub" style="margin:0"><input type="checkbox" data-b="dmg.pay"'+(D.pay?' checked':'')+'> pay costs</label><label class="sub" style="margin:0"><input type="checkbox" data-b="dmg.apply"'+(D.apply?' checked':'')+'> apply to target HP</label></div>';
  h+='<div class="row" style="margin-top:12px;align-items:center"><div id="dmgPrev" class="prev">'+dmgPreview(d)+'</div><button class="btn pri lg"'+A_("dmgadd")+'>Add strike</button></div>';
@@ -1501,8 +1505,8 @@ function renderCombo(d){var v=S.combo.v,c=comboColor(v),tr=tierOf(v),nx=nextTier
  (C.thresholds||[]).forEach(function(t){var done=v>=t[0],now=tr&&tr[0]===t[0];h+='<div class="lad'+(done?' done':'')+(now?' now':'')+'"><div class="nm">'+t[0]+'</div><div class="tx2">'+esc(t[1])+'</div></div>';});
  h+='</div></section>';
  h+='<section id="erosion"><h2>Erosion by target</h2>';
- if(!S.targets.length)h+='<div class="empty">Add targets on the Turn tab.</div>';else{h+='<table><tr><th>Target</th><th class="n">AC</th><th class="n">Erosion</th><th>Krushing</th></tr>';
-  S.targets.forEach(function(t){var kr=krushReasons(t,d);h+='<tr'+(S.combo.lastT===t.id?' class="hl"':'')+'><td>'+esc(t.name)+(S.combo.lastT===t.id?' <span class="chip on">streak '+S.combo.streak+'</span>':'')+'</td><td class="n">'+tAC(t)+' / '+num(t.ac)+'</td><td class="n">−'+num(t.ero)+'</td><td>'+(kr.length?esc(kr.join(", ")):'<span class="sub">—</span>')+'</td></tr>';});h+='</table>';}
+ if(!S.targets.length)h+='<div class="empty">Add targets on the Turn tab.</div>';else{h+='<table><tr><th>Target</th><th class="n">AC reduction</th><th class="n">Erosion</th><th>Krushing</th></tr>';
+  S.targets.forEach(function(t){var kr=krushReasons(t,d);h+='<tr'+(S.combo.lastT===t.id?' class="hl"':'')+'><td>'+esc(t.name)+(S.combo.lastT===t.id?' <span class="chip on">streak '+S.combo.streak+'</span>':'')+'</td><td class="n">'+tAC(t)+'</td><td class="n">−'+num(t.ero)+'</td><td>'+(kr.length?esc(kr.join(", ")):'<span class="sub">—</span>')+'</td></tr>';});h+='</table>';}
  h+='</section><section id="buildlose"><h2>Building &amp; losing</h2><div class="grid2"><div class="card"><h3>Builds</h3><ul><li>+1 per successful hit with a monk weapon.</li><li>+2 when the hit uses a different monk weapon than the previous strike.</li><li>+2 from Surging Step (+2 more if adjacent).</li><li>+3 from Combo Acceleration.</li><li>Special moves always count as a switch.</li></ul></div><div class="card"><h3>Breaks</h3><ul><li>Three misses in a row.</li><li>Ending the turn without a hit.</li><li>Dropping to 0 HP.</li><li>Long rest.</li></ul><p class="note">Shifting stance never breaks it: the meter carries across every stance. Each real break asks first, so you can spend Frustration to keep it.</p></div></div></section>';
  $("body-combo").innerHTML=h;}
 
@@ -1830,7 +1834,7 @@ function sfAfterStrike(d,o,r,n,t,extra){var parts=[];S.sf.act.hit=true;
   if(ph){for(var i=0;i<n;i++){phaseStrike(ph,t,"self",parts);ph=phNext(ph);}S.sf.ph=ph;}
   else if(S.sf.chain.length){parts.push("no Phase: chain breaks");S.sf.chain=[];}
   if(t&&t.down&&firstPh==="water")t.waterKill=true;}
- if(t&&!t.down){var mx=tMaxEff(t);if(num(t.hp)>mx)t.hp=mx;if(num(t.hpMax)>0&&mx<=0){parts.push(t.name+" is struck from the register");killTarget(t);if(r.unarmed&&S.sf.chain.length&&S.sf.chain[S.sf.chain.length-1]==="water")t.waterKill=true;}}
+ /* deducted max HP is a count: the DM says when a creature is struck from the register (mark it killed) */
  if(parts.length){extra.push(parts.join(" · "));logline(parts.join(" · "));}}
 
 /* ---------- KÖS swing: every creature in the arc ---------- */
@@ -1841,9 +1845,9 @@ function kosSwing(d,o){var D=S.dmg,src=o.src,n=Math.max(1,Math.round(num(D.n,1))
  for(var s=0;s<n;s++){
   if(!ids.length){var r0=strike(d,o);if(!r0.ok){flash(r0.msg);return false;}D.lines.push({id:uid("d"),label:"KÖS swing",target:"",n:1,each:r0.each,total:r0.each,how:r0.how,tags:r0.tags.join(", "),round:S.round,extra:"no target: add Displacement by aiming"});total+=r0.each;hit++;continue;}
   ids.forEach(function(id){var t=tById(id);if(!t||t.down)return;var oo=optsFor(d,id),r=strike(d,oo);if(!r.ok)return;
-   if(D.apply){t.hp=num(t.hp)-r.each-(r.mhpAbs||0);if(t.hp<=0)killTarget(t);}
-   var cv=Math.floor(r.dice/2)+Math.floor(r.disp/2);S.kos.cav.push({id:uid("c"),tid:id,amt:cv,label:"Cavitation · KÖS swing"});
-   creatures++;D.lines.push({id:uid("d"),label:"KÖS swing",target:t.name,n:1,each:r.each,total:r.each,how:r.how,tags:r.tags.join(", "),round:S.round,extra:"cavitation "+cv+" queued for End turn"});total+=r.each;hit++;});}
+   if(D.apply)hitTarget(t,r.each,num(r.mhp));
+   var cv=Math.floor(r.dice/2),cvp=tPct(kosDispPct()/2);S.kos.cav.push({id:uid("c"),tid:id,amt:cv,pct:cvp,label:"Cavitation · KÖS swing"});
+   creatures++;D.lines.push({id:uid("d"),label:"KÖS swing",target:t.name,n:1,each:r.each,total:r.each,how:r.how,tags:r.tags.join(", "),round:S.round,extra:"cavitation "+cv+" + "+cvp+"% max HP queued for End turn"});total+=r.each;hit++;});}
  if(!hit){flash("No target in the arc");return false;}
  for(var w=0;w<n;w++)kosWaveAdd("Swing");
  if(D.build){var cb=comboHits({limb:"kos",tid:ids[0]||"",hits:Math.max(1,creatures)});parts.push("combo +"+cb.gain+" ("+Math.max(1,creatures)+" creature hit"+(creatures===1?"":"s")+(cb.sw?", switch":"")+")");}
@@ -1852,9 +1856,10 @@ function kosSwing(d,o){var D=S.dmg,src=o.src,n=Math.max(1,Math.round(num(D.n,1))
  D.tog.crit=false;D.tog.nat20=false;D.tog.krush=false;D.tog.half=false;D.tog.savage=false;D.tog.aqua=false;D.off={};D.n=1;
  logline("KÖS swing"+(n>1?" ×"+n:"")+": "+total+" across "+ids.length+" target"+(ids.length===1?"":"s")+" · "+n+" Shockwave"+(n>1?"s":"")+" · "+2*n+" attacks"+(parts.length?" · "+parts.join(" · "):""));return true;}
 function kosWaveAdd(why,units,mult){S.kos.seq=num(S.kos.seq)+1;S.kos.waves.push({id:uid("w"),n:(why||"Wave")+" "+S.kos.seq,rounds:3,ft:0,units:units||1,mult:mult||1,sel:false});}
-function waveDmg(w,t,save){var per=72+Math.floor(tMaxEff(t)*0.04),v=num(w.units,1)*num(w.mult,1)*per;return save?Math.floor(v/2):v;}
-function dmgLine(label,t,v,how,extra){S.dmg.lines.push({id:uid("d"),label:label,target:t?t.name:"",n:1,each:v,total:v,how:how||"",tags:"",round:S.round,extra:extra||""});}
-function hitTarget(t,v){if(!t||t.down)return;t.hp=num(t.hp)-v;if(t.hp<=0)killTarget(t);}
+function waveDmg(w,t,save){var v=num(w.units,1)*num(w.mult,1)*72;return save?Math.floor(v/2):v;}
+function wavePct(w,save){var p=num(w.units,1)*num(w.mult,1)*4;return save?p/2:p;}
+function dmgLine(label,t,v,how,extra,pct){S.dmg.lines.push({id:uid("d"),label:label,target:t?t.name:"",n:1,each:v,total:v,how:(how||"")+(num(pct)?" "+mhpTxt(pct):""),tags:num(pct)?"+"+tPct(pct)+"% max HP":"",round:S.round,extra:extra||""});}
+function hitTarget(t,v,pct){if(!t||t.down)return;t.dealt=num(t.dealt)+num(v);if(num(pct))t.dpct=num(t.dpct)+num(pct);}
 
 /* ---------- turn hooks ---------- */
 function kosStartTurn(d,parts){var K=S.kos;
@@ -1868,7 +1873,7 @@ function sfEndTurn(d,parts){var F=S.sf;
  S.targets.forEach(function(t){if(num(t.listen)>0){t.listen--;if(!t.listen&&!t.down)parts.push("stopped Listening to "+t.name);}});
  for(var k in F.used)if(k.indexOf("turn:")===0)delete F.used[k];
  F.faUsed=false;F.gcFa=false;F.gcDone=false;F.hourFree=false;
- if(S.kos.cav.length){var tot=0;S.kos.cav.forEach(function(c){var t=tById(c.tid);if(!t||t.down)return;hitTarget(t,c.amt);tot+=c.amt;dmgLine(c.label,t,c.amt,"half dice + half Displacement · not an attack, can't be reacted to","Cavitation");});S.kos.cav=[];if(tot)parts.push("Cavitation "+tot);}}
+ if(S.kos.cav.length){var tot=0;S.kos.cav.forEach(function(c){var t=tById(c.tid);if(!t||t.down)return;hitTarget(t,c.amt,c.pct);tot+=c.amt;dmgLine(c.label,t,c.amt,"half dice + half Displacement · not an attack, can't be reacted to","Cavitation",c.pct);});S.kos.cav=[];if(tot)parts.push("Cavitation "+tot);}}
 function sfEndRound(d,parts){var F=S.sf,a=F.act;
  if(resVal("coil")>0&&!(a.hit||a.took||a.parry)&&!F.noSlack){S.res.coil=0;parts.push("Slack: no hit, no hit taken, no Parry · Coils 0");}
  F.act={hit:false,took:false,parry:false};F.noSlack=false;
@@ -1922,11 +1927,11 @@ function sfAct(a,el,d){var id=el.getAttribute("data-id"),n=num(el.getAttribute("
  case "sfseam":if(!t)return false;t.seams=clamp(num(t.seams)+n,0,5);return true;
  case "sfnoki":if(!t)return false;t.noKi=!t.noKi;return true;
  case "sfunjoint":if(!t)return false;if(resVal("coil")<15){flash("Unjointing needs 15 Coils");return false;}S.res.coil=resVal("coil")-15;
-  if(el.getAttribute("data-k")==="fail"){logline("Unjointing: "+t.name+" comes apart along its seams");t.hp=0;killTarget(t);}
+  if(el.getAttribute("data-k")==="fail"){logline("Unjointing: "+t.name+" comes apart along its seams");killTarget(t);}
   else{var lm=S.combo.last&&UNARMED_L[S.combo.last]?S.combo.last:"fist";v=limbMaxDice(lm)*15;hitTarget(t,v);dmgLine("Unjointing (saved) · Fa Jin of 15 Coils",t,v,cap1(lm)+" dice × 15 = "+v,"15 Coils spent");logline("Unjointing: "+t.name+" saves, takes "+v);}return true;
  case "sflisten":if(!t)return false;if(num(t.listen)>0){t.listen=0;}else{listenTo(t,parts);if(parts.length)logline(parts.join(" · "));}return true;
  /* long dusk */
- case "dbreath":if(!t)return false;var tmp=d.mod.wis+Math.floor(tMaxEff(t)*0.1)||d.mod.wis+Math.floor(num(t.hpMax)*0.1),disc=el.getAttribute("data-k")==="disc";
+ case "dbreath":if(!t)return false;var bm=window.prompt("Last Breath is WIS + 10% of "+t.name+"'s max HP. What max HP did the DM give?","");if(bm===null)return false;bm=num(bm);if(!(bm>0)){flash("Ask the DM for its max HP");return false;}var tmp=d.mod.wis+Math.floor(bm*0.1),disc=el.getAttribute("data-k")==="disc";
   t.inhaled=true;S.pend.breath=null;coilAdd(3);var kk=t.waterKill?5:0;if(kk)S.res.ki=Math.min(d.kiMax,resVal("ki")+kk);
   if(!disc){if(tmp>num(S.hp.temp)){S.hp.temp=tmp;S.dusk.breathTemp=tmp;S.dusk.breathFade=S.turnOn?2:1;}}
   logline("Last Breath of "+t.name+": "+(disc?tmp+" temp HP exhaled to a disciple":"temp "+tmp+" (higher kept)")+" · +3 Coils"+(kk?" · +5 Ki (Water kill)":"")+" · fades end of your next turn");return true;
@@ -1934,7 +1939,7 @@ function sfAct(a,el,d){var id=el.getAttribute("data-id"),n=num(el.getAttribute("
   if(tmp>num(S.hp.temp)){S.hp.temp=tmp;S.dusk.breathTemp=tmp;S.dusk.breathFade=S.turnOn?2:1;}logline("Last Breath (off-roster creature): temp "+tmp+" · +3 Coils");return true;
  case "dbreathno":S.pend.breath=null;return true;
  case "dwaterkill":if(!t)return false;t.waterKill=!t.waterKill;return true;
- case "dded":if(!t)return false;t.ded=Math.max(0,num(t.ded)+n);if(tMaxEff(t)<=0&&num(t.hpMax)>0&&!t.down){logline(t.name+" is struck from the register");killTarget(t);}else if(num(t.hp)>tMaxEff(t))t.hp=tMaxEff(t);return true;
+ case "dded":if(!t)return false;t.ded=Math.max(0,num(t.ded)+n);return true;
  case "dself":S.dusk.self=Math.max(0,num(S.dusk.self)+n);return true;
  case "dhour":if(n){if(!S.sf.hourFree){flash("No free Hour: needs a Great Circulation this turn");return false;}S.sf.hourFree=false;}
   else{if(resVal("ki")<5){flash("Hour of the Long Dusk costs 5 Ki");return false;}S.res.ki=resVal("ki")-5;if(S.eco.bon)S.eco.bon.left=Math.max(0,S.eco.bon.left-1);}
@@ -1959,9 +1964,9 @@ function sfAct(a,el,d){var id=el.getAttribute("data-id"),n=num(el.getAttribute("
  case "kwsel":S.kos.waves.forEach(function(w){if(w.id===id)w.sel=!w.sel;});return true;
  case "kwt":S.kos.wt=S.kos.wt===id?"":id;return true;
  case "kwhit":var w=S.kos.waves.filter(function(x){return x.id===el.getAttribute("data-w");})[0];t=tById(S.kos.wt);if(!w||!t){flash("Pick the creature it hits");return false;}
-  var sv=el.getAttribute("data-k")==="save";v=waveDmg(w,t,sv);hitTarget(t,v);resSet("swell",resVal("swell")+1);
-  var cv=Math.floor(v/2);S.kos.cav.push({id:uid("c"),tid:t.id,amt:cv,label:"Cavitation · "+w.n});
-  dmgLine(w.n+(w.units*w.mult>1?" (×"+w.units*w.mult+")":""),t,v,(w.units*w.mult>1?w.units*w.mult+" × ":"")+"(6d12 72 + 4% "+Math.floor(tMaxEff(t)*0.04)+")"+(sv?" · saved, half":" · failed, pushed 10 ft"),"+1 Swell · cavitation "+cv+" queued");
+  var sv=el.getAttribute("data-k")==="save";v=waveDmg(w,t,sv);var wp=wavePct(w,sv);hitTarget(t,v,wp);resSet("swell",resVal("swell")+1);
+  var cv=Math.floor(v/2);S.kos.cav.push({id:uid("c"),tid:t.id,amt:cv,pct:wp/2,label:"Cavitation · "+w.n});
+  dmgLine(w.n+(w.units*w.mult>1?" (×"+w.units*w.mult+")":""),t,v,(w.units*w.mult>1?w.units*w.mult+" × ":"")+"(6d12 72 + 4%)"+(sv?" · saved, half":" · failed, pushed 10 ft"),"+1 Swell · cavitation "+cv+" + "+tPct(wp/2)+"% queued",wp);
   logline(w.n+" hits "+t.name+" for "+v+(sv?" (saved)":" (pushed 10 ft)")+" · +1 Swell");return true;
  case "kwint":var sel=S.kos.waves.filter(function(x){return x.sel;});if(sel.length<2||sel.length>3){flash("Select two or three Shockwaves");return false;}
   var units=0;sel.forEach(function(x){units+=num(x.units,1)*num(x.mult,1);});var m=sel.length===3?6:2;
@@ -1973,21 +1978,21 @@ function sfAct(a,el,d){var id=el.getAttribute("data-id"),n=num(el.getAttribute("
   for(var i=0;i<4;i++)kosWaveAdd("Cloudbreak");S.kos.water=true;var st0=S.kos.rain;if(S.kos.rain<3)S.kos.rain++;if(S.kos.rain>=2&&S.kos.rain>st0)S.kos.strainR=num(S.kos.strainR)+1;
   if(S.eco.bon)S.eco.bon.left=Math.max(0,S.eco.bon.left-1);S.kos.cloud=true;
   logline("Cloudbreak: 4 Shockwaves · standing water · "+RAIN[S.kos.rain]+(S.kos.rain>=2&&S.kos.rain>st0?" · +1 Strain":""));return true;
- case "kcloudres":if(!t)return false;sv=el.getAttribute("data-k")==="save";v=120+Math.floor(tMaxEff(t)*0.1);if(sv)v=Math.floor(v/2);hitTarget(t,v);dmgLine("Cloudbreak",t,v,"10d12 120 + 10%"+(sv?" · saved, half":""),"");return true;
+ case "kcloudres":if(!t)return false;sv=el.getAttribute("data-k")==="save";v=sv?60:120;var cp=sv?5:10;hitTarget(t,v,cp);dmgLine("Cloudbreak",t,v,"10d12 120"+(sv?" · saved, half":""),"",cp);return true;
  case "kclouddone":S.kos.cloud=false;return true;
- case "krain":var hit=0;liveTargets().forEach(function(x){if(x.ally)return;v=Math.floor(tMaxEff(x)*0.02);if(v){hitTarget(x,v);hit+=v;}});logline("Rain: 2% to every hostile ("+hit+" total)");return true;
- case "kraint":if(!t)return false;v=Math.floor(tMaxEff(t)*0.02);hitTarget(t,v);logline("Rain on "+t.name+": "+v);return true;
+ case "krain":var hit=0;liveTargets().forEach(function(x){if(x.ally)return;hitTarget(x,0,2);hit++;});logline("Rain: every hostile takes 2% of its max HP ("+hit+" creature"+(hit===1?"":"s")+", the DM applies it)");return true;
+ case "kraint":if(!t)return false;hitTarget(t,0,2);logline("Rain on "+t.name+": 2% of its max HP (the DM applies it)");return true;
  case "krainset":S.kos.rain=clamp(n,0,3);return true;
  case "kstrain":var key="strain"+el.getAttribute("data-k");S.kos[key]=Math.max(0,num(S.kos[key])+n);return true;
  case "knarrows":t=tById(S.dmg.tgt);if(!t){flash("Aim the calculator at the creature first");return false;}if(resVal("swell")<6){flash("The Narrows costs 6 Swell");return false;}
   S.res.swell=resVal("swell")-6;S.kos.narrows={tid:t.id,r:0};setTStat(t,"vuln",true);if(S.eco.act)S.eco.act.left=Math.max(0,S.eco.act.left-1);
   S.effects=S.effects.filter(function(e){return !/^Concentrating/.test(e.name);});S.effects.push({id:uid("e"),name:"Concentrating: The Narrows",target:"self",rounds:0,note:"concentration check (DC "+d.dc+") each time you're hit"});
   logline("The Narrows: "+t.name+" impaled · speed 0 · vulnerable · AC −5");return true;
- case "ktick":var N=S.kos.narrows;t=tById(N.tid);if(!t)return false;var dd=8+num(N.r),pc=10+2*num(N.r);v=dd*12+Math.floor(tMaxEff(t)*pc/100);hitTarget(t,v);
-  dmgLine("In The Narrows · round "+(num(N.r)+1),t,v,dd+"d12 "+dd*12+" + "+pc+"% "+Math.floor(tMaxEff(t)*pc/100),"no save");N.r=num(N.r)+1;logline(t.name+" In The Narrows: "+v);return true;
- case "kclose":N=S.kos.narrows;t=tById(N.tid);if(!t)return false;sv=el.getAttribute("data-k")==="save";v=360+Math.floor(tMaxEff(t)*0.25);if(sv)v=Math.floor(v/2);hitTarget(t,v);
-  var low=!t.down&&num(t.hp)<tMaxEff(t)*0.25;if(low){t.hp=0;killTarget(t);}
-  dmgLine("The Closing",t,v,"30d12 360 + 25%"+(sv?" · saved, half":"")+(low?" · below a quarter: 0 HP":""),"8 Shockwaves");
+ case "ktick":var N=S.kos.narrows;t=tById(N.tid);if(!t)return false;var dd=8+num(N.r),pc=10+2*num(N.r);v=dd*12;hitTarget(t,v,pc);
+  dmgLine("In The Narrows · round "+(num(N.r)+1),t,v,dd+"d12 "+dd*12,"no save",pc);N.r=num(N.r)+1;logline(t.name+" In The Narrows: "+v);return true;
+ case "kclose":N=S.kos.narrows;t=tById(N.tid);if(!t)return false;sv=el.getAttribute("data-k")==="save";v=sv?180:360;var clp=sv?12.5:25;hitTarget(t,v,clp);
+  var low=!t.down&&!!t.low;if(low){killTarget(t);}
+  dmgLine("The Closing",t,v,"30d12 360"+(sv?" · saved, half":"")+(low?" · below a quarter: 0 HP":" · if it ends below a quarter, the DM drops it to 0"),"8 Shockwaves",clp);
   for(i=0;i<8;i++)kosWaveAdd("Closing");setTStat(t,"vuln",false);S.kos.narrows={tid:"",r:0};S.effects=S.effects.filter(function(e){return e.name!=="Concentrating: The Narrows";});
   if(S.eco.act)S.eco.act.left=Math.max(0,S.eco.act.left-1);logline("The Closing on "+t.name+": "+v+(low?" → 0 HP":"")+" · 8 Shockwaves · each ally who hears it takes an action");return true;
  case "knend":N=S.kos.narrows;t=tById(N.tid);if(t)setTStat(t,"vuln",false);S.kos.narrows={tid:"",r:0};S.effects=S.effects.filter(function(e){return e.name!=="Concentrating: The Narrows";});logline("The Narrows ends");return true;
@@ -2020,8 +2025,8 @@ function sfBarHtml(d){var c=resVal("coil"),ch=S.sf.chain,last=ch.length?ch[ch.le
   '<div class="sub">'+chip(K.air?"airborne":"grounded","kair",{},K.air,"","Ground and Sky")+(d.kosGround?' <span class="amber">½ speed · no Dash</span>':'')+(K.waves.length?' · '+K.waves.length+' wave'+(K.waves.length>1?'s':''):'')+(K.rain?' · '+RAIN[K.rain]:'')+(d.strain?' · <span class="amber">Strain −'+d.strain+'</span>':'')+(K.cav.length?' · '+K.cav.length+' cavitation queued':'')+'</div></div>';
  return h;}
 function sfPendingHtml(d){var P=S.pend,h="";
- if(P.breath){var t=tById(P.breath);if(t&&!t.inhaled){var tmp=d.mod.wis+Math.floor(tMaxEff(t)*0.1||num(t.hpMax)*0.1);
-  h+='<div class="pending" style="width:100%;margin-top:6px;border-color:#a98bd6"><h3>Last Breath · '+esc(t.name)+' dropped</h3><p class="note" style="margin:2px 0">Temp '+tmp+' (WIS + 10% of its max) · +3 Coils'+(t.waterKill?' · +5 Ki (Water kill)':'')+' · fades at the end of your next turn.</p><div class="row" style="margin-top:7px">'+
+ if(P.breath){var t=tById(P.breath);if(t&&!t.inhaled){var tmp="WIS + 10% of its max HP";
+  h+='<div class="pending" style="width:100%;margin-top:6px;border-color:#a98bd6"><h3>Last Breath · '+esc(t.name)+' dropped</h3><p class="note" style="margin:2px 0">Temp '+tmp+' (ask the DM for its max HP) · +3 Coils'+(t.waterKill?' · +5 Ki (Water kill)':'')+' · fades at the end of your next turn.</p><div class="row" style="margin-top:7px">'+
    btn("Inhale","dbreath",{id:t.id},"pri")+btn("Exhale to a disciple","dbreath",{id:t.id,k:"disc"})+chip("Water strike killed it","dwaterkill",{id:t.id},!!t.waterKill)+btn("Not within 30 ft","dbreathno",{},"dgr")+'</div></div>';}}
  if(P.mehter)h+='<div class="pending" style="width:100%;margin-top:6px"><h3>Mehter · fourth step</h3><p class="note" style="margin:2px 0">Each ally can take one additional action on its next turn. You take 8d20 untyped: roll it and enter it. Mehter ends after this step.</p><div class="row" style="margin-top:7px"><input class="num w80" type="number" data-b="kos.mehterIn" value="'+num(S.kos.mehterIn)+'">'+btn("Take it","kmehter4",{},"pri")+btn("End Mehter","kmehterend",{},"dgr")+'</div></div>';
  return h;}
@@ -2037,7 +2042,7 @@ function sfCalcHtml(d,o){var src=o.src;if(!src)return "";var limb=(o.ov&&o.ov.ov
   h+='<div class="row" style="margin-top:5px"><span class="sub" style="margin:0;min-width:74px">Long Death</span><input class="num w44" type="number" data-b="sf.tld" value="'+num(S.sf.tld)+'" min="0" max="20"><span class="sub" style="margin:0">Ki on Touch of the Long Death (0–20) · 2d10 necrotic each · Deducts Years'+(t&&num(t.seams)?' · <span style="color:#9fd8ff">crit '+(20-num(t.seams))+'–20 vs '+esc(t.name)+'</span>':'')+'</span></div></div>';}
  if(src.kos){var ids=liveTargets();h+='<div class="modgrp"><span class="lbl">KÖS · 90-ft arc · Displacement '+kosDispPct()+'% each · 2 attacks per swing</span><div class="row" style="margin-top:4px">';
   if(!ids.length)h+='<span class="sub" style="margin:0">add targets to catch them in the arc</span>';
-  ids.forEach(function(x){h+=chip(esc(x.name)+(num(x.hpMax)?' <span style="opacity:.7">+'+Math.floor(tMaxEff(x)*kosDispPct()/100)+'</span>':''),"karc",{id:x.id},!!S.kos.arc[x.id]);});
+  ids.forEach(function(x){h+=chip(esc(x.name),"karc",{id:x.id},!!S.kos.arc[x.id]);});h+='<span class="sub" style="margin:0">Displacement +'+kosDispPct()+'% of each one\'s max HP</span>';
   h+='<span class="sub" style="margin:0">none picked = the aimed target · each gets its own line and cavitation · every creature hit adds to the combo</span></div></div>';}
  return h;}
 function sfTargetBits(t){var b=[];if(num(t.ded))b.push('<span style="color:#a98bd6">Ledger −'+t.ded+' max</span>');if(num(t.listen)>0)b.push('<span style="color:#9fd8ff">Listening</span>');
@@ -2074,8 +2079,8 @@ function renderSifu(d){var c=resVal("coil"),F=S.sf,ch=F.chain,last=ch.length?ch[
  h+='<section id="sf-listen"><h2>Listening Jin · Cook Ding\'s Ox <span class="sub2">blindsight 120 · up to 3 · crit range per target</span>'+sfLink("sifu-listen")+'</h2>';
  var ts=liveTargets(),dh=desecHeld();if(!ts.length)h+='<div class="empty">No targets. Add them on the Turn tab.</div>';
  if(dh)h+='<p class="note amber">'+esc(dh.name)+' is Desecrated: you count as undead and can\'t Listen to anyone else while it lives.</p>';
- ts.forEach(function(t){var all4=["fist","elbow","knee","kick"].every(function(k){return t.limbs&&t.limbs[k];}),low=t.st.desec||(num(t.hpMax)&&num(t.hp)<=tMaxEff(t)*0.25),uj=all4&&low&&c>=15&&lv>=25;
-  h+='<div class="card sfrow"><div class="row"><b class="cz" style="color:#fff">'+esc(t.name)+'</b><span class="sub" style="margin:0">'+num(t.hp)+'/'+tMaxEff(t)+'</span>'+chip(num(t.listen)>0?"Listening":"not listening","sflisten",{id:t.id},num(t.listen)>0)+chip("has no Ki","sfnoki",{id:t.id},!!t.noKi,"","Water strikes: you regain 2 Ki instead of draining")+
+ ts.forEach(function(t){var all4=["fist","elbow","knee","kick"].every(function(k){return t.limbs&&t.limbs[k];}),low=t.st.desec||!!t.low,uj=all4&&low&&c>=15&&lv>=25;
+  h+='<div class="card sfrow"><div class="row"><b class="cz" style="color:#fff">'+esc(t.name)+'</b><span class="sub" style="margin:0">'+esc(tTally(t))+'</span>'+chip(num(t.listen)>0?"Listening":"not listening","sflisten",{id:t.id},num(t.listen)>0)+chip("has no Ki","sfnoki",{id:t.id},!!t.noKi,"","Water strikes: you regain 2 Ki instead of draining")+
    '<span class="sub" style="margin:0">Seams</span>'+btn("−","sfseam",{id:t.id,n:-1},"sm")+'<b style="color:#9fd8ff">crit '+(num(t.seams)?(20-num(t.seams))+'–20':'20')+'</b>'+btn("+","sfseam",{id:t.id,n:1},"sm")+'</div>'+
    '<div class="row" style="margin-top:6px"><span class="sub" style="margin:0">Limbs landed</span>'+["fist","elbow","knee","kick"].map(function(k){return chip(cap1(k),"sflimb",{id:t.id,k:k},!!(t.limbs&&t.limbs[k]));}).join("")+
    (lv>=25?'<span class="sub" style="margin:0">'+(uj?'<b style="color:#9fd8ff">Unjointing ready</b>':'Unjointing: '+[all4?"":"all four limbs",low?"":"≤ ¼ HP or Desecrated",c>=15?"":"15 Coils"].filter(Boolean).join(", "))+'</span>'+btn("fails CON → 0 HP","sfunjoint",{id:t.id,k:"fail"},"sm"+(uj?" pri":""),"",!uj)+btn("saves → Fa Jin ×15","sfunjoint",{id:t.id,k:"save"},"sm","",!uj):'')+'</div></div>';});
@@ -2090,12 +2095,12 @@ function renderDusk(d){var h=jumpRow([["dk-breath","Last Breath"],["dk-ledger","
  h+='<p class="note">Water is your Phase. You attack the hit point maximum: Deductions last until the creature\'s long rest, and every Year you deduct takes 10% from your own maximum until yours.</p>';
  h+='<section id="dk-breath"><h2>Last Breath <span class="sub2">once per creature · temp WIS + 10% · +3 Coils · +5 Ki on a Water kill</span>'+sfLink("dusk-21")+'</h2><div class="card">';
  var down=ts.filter(function(t){return t.down;});
- down.forEach(function(t){var tmp=d.mod.wis+Math.floor(tMaxEff(t)*0.1||num(t.hpMax)*0.1);h+='<div class="row" style="margin-bottom:6px"><b class="cz">'+esc(t.name)+'</b>'+(t.inhaled?'<span class="chip">inhaled</span>':btn("Inhale · temp "+tmp,"dbreath",{id:t.id},"sm pri")+btn("to a disciple","dbreath",{id:t.id,k:"disc"},"sm")+chip("Water kill","dwaterkill",{id:t.id},!!t.waterKill))+'</div>';});
+ down.forEach(function(t){h+='<div class="row" style="margin-bottom:6px"><b class="cz">'+esc(t.name)+'</b>'+(t.inhaled?'<span class="chip">inhaled</span>':btn("Inhale · WIS + 10% of its max HP","dbreath",{id:t.id},"sm pri")+btn("to a disciple","dbreath",{id:t.id,k:"disc"},"sm")+chip("Water kill","dwaterkill",{id:t.id},!!t.waterKill))+'</div>';});
  h+='<div class="row"><span class="sub" style="margin:0">Creature not on the roster · its max HP</span><input class="num w80" type="number" id="breathMax">'+btn("Inhale","dbreathx",{},"sm")+'</div>'+
   '<p class="sub">'+(num(S.dusk.breathFade)?'Borrowed breath: '+S.dusk.breathTemp+' temp, fades at the end of '+(S.dusk.breathFade>1?'your next turn':'this turn'):'No borrowed breath held.')+'</p></div></section>';
- h+='<section id="dk-ledger"><h2>The Ledger of Years <span class="sub2">Deduct Days · Deduct Years · the Register</span>'+sfLink("dusk-21")+'</h2><div class="card"><table><tr><th>Creature</th><th class="n">Max</th><th class="n">Deducted</th><th class="n">Now</th><th></th></tr>';
- if(!ts.length)h+='<tr><td colspan="5" class="sub">No targets yet.</td></tr>';
- ts.forEach(function(t){h+='<tr><td class="cz">'+esc(t.name)+(t.down?' · down':'')+'</td><td class="n">'+num(t.hpMax)+'</td><td class="n" style="color:#a98bd6">'+num(t.ded)+'</td><td class="n">'+tMaxEff(t)+'</td><td>'+btn("Days −"+d.mod.wis,"dded",{id:t.id,n:d.mod.wis},"sm","Water hit by a disciple or outside the calculator")+btn("+10","dded",{id:t.id,n:10},"sm")+btn("−10","dded",{id:t.id,n:-10},"sm")+'</td></tr>';});
+ h+='<section id="dk-ledger"><h2>The Ledger of Years <span class="sub2">Deduct Days · Deduct Years · the Register</span>'+sfLink("dusk-21")+'</h2><div class="card"><table><tr><th>Creature</th><th class="n">Max HP deducted</th><th></th></tr>';
+ if(!ts.length)h+='<tr><td colspan="3" class="sub">No targets yet.</td></tr>';
+ ts.forEach(function(t){h+='<tr><td class="cz">'+esc(t.name)+(t.down?' · down':'')+'</td><td class="n" style="color:#a98bd6">−'+num(t.ded)+'</td><td>'+btn("Days −"+d.mod.wis,"dded",{id:t.id,n:d.mod.wis},"sm","Water hit by a disciple or outside the calculator")+btn("+10","dded",{id:t.id,n:10},"sm")+btn("−10","dded",{id:t.id,n:-10},"sm")+'</td></tr>';});
  h+='</table><div class="row" style="margin-top:10px"><span class="lbl" style="margin:0">Your column</span><span class="cur" style="font-size:20px;color:#ff8f9a">−'+num(S.dusk.self)+'</span><span class="sub" style="margin:0">max HP until a long rest (10% of every Year deducted)'+(num(S.sf.burnHP)?' · Burning the Capital −'+S.sf.burnHP:'')+' · max now '+d.hpMax+'</span>'+btn("−","dself",{n:-1},"sm")+btn("+","dself",{n:1},"sm")+'</div>'+
   '<p class="sub">The calculator writes both columns: Long Death release (Fa Jin) and Touch of the Long Death Ki on an unarmed hit. A creature whose maximum reaches 0 dies.</p></div></section>';
  h+='<section id="dk-hour"><h2>Hour of the Long Dusk <span class="sub2">bonus · 5 Ki · free once per turn on a Great Circulation · WIS save DC '+d.dc+'</span>'+sfLink("dusk-24")+'</h2><div class="card"><div class="row">'+
@@ -2130,15 +2135,15 @@ function renderKos(d){var K=S.kos,sw=resVal("swell"),wt=tById(K.wt),lt=liveTarge
  h+='<div class="row" style="margin-top:8px">'+btn("+ Shockwave","kwadd",{},"sm")+btn("Interfere selected","kwint",{},"sm pri","Two: total ×2 · three: total ×3 then ×2 · +2 Swell · a creature picked above takes it with no save and is stunned")+'<span class="sub" style="margin:0">'+(K.narrows.tid?'<span style="color:#5aa9e6">every new Shockwave routes through the Narrows first</span>':'')+'</span></div>'+
   (K.cav.length?'<p class="sub">Cavitation queued for End turn: '+K.cav.map(function(c){var t=tById(c.tid);return (t?esc(t.name):"?")+" "+c.amt;}).join(" · ")+'</p>':'')+'</div></section>';
  h+='<section id="ks-cloud"><h2>Cloudbreak · The Rain <span class="sub2">bonus · airborne · DEX save DC '+d.dc+' · '+RAIN[K.rain]+'</span></h2><div class="card"><div class="row">'+btn("Cloudbreak","kcloud",{},"pri","4 Shockwaves · standing water · advances the rain")+'<span class="sub" style="margin:0">Rain stage</span>'+[0,1,2,3].map(function(i){return chip(RAIN[i],"krainset",{n:i},K.rain===i);}).join("")+'</div>';
- if(K.cloud&&lt.length){h+='<div class="row" style="margin-top:8px"><span class="lbl" style="margin:0">Within 20 ft of impact</span>';lt.forEach(function(t){h+='<span class="sub" style="margin:0">'+esc(t.name)+'</span>'+btn("fails · "+(120+Math.floor(tMaxEff(t)*0.1)),"kcloudres",{id:t.id,k:"fail"},"sm pri")+btn("saves","kcloudres",{id:t.id,k:"save"},"sm");});h+=btn("done","kclouddone",{},"sm")+'</div>';}
+ if(K.cloud&&lt.length){h+='<div class="row" style="margin-top:8px"><span class="lbl" style="margin:0">Within 20 ft of impact</span>';lt.forEach(function(t){h+='<span class="sub" style="margin:0">'+esc(t.name)+'</span>'+btn("fails · 120 + 10%","kcloudres",{id:t.id,k:"fail"},"sm pri")+btn("saves","kcloudres",{id:t.id,k:"save"},"sm");});h+=btn("done","kclouddone",{},"sm")+'</div>';}
  if(K.rain)h+='<p class="sub">Allies regain '+sw+' (your Swell) at the start of their turns. Hostiles take 2% of their max at the start of theirs, disadvantage on Perception, no fire, smoke, gas, dust or spores. Every surface counts as water for Crashing Tide.'+(K.rain>=3?' <span class="amber">Flooding: non-aquatic hostiles at half speed, and you take 5% ('+Math.floor(d.hpMax*0.05)+') at the start of your turn (Start turn applies it).</span>':'')+'</p>'+
-  '<div class="row">'+btn("Rain: 2% to every hostile","krain",{},"sm")+lt.map(function(t){return btn(esc(t.name)+" −"+Math.floor(tMaxEff(t)*0.02),"kraint",{id:t.id},"sm");}).join("")+'</div>';
+  '<div class="row">'+btn("Rain: 2% to every hostile","krain",{},"sm")+lt.map(function(t){return btn(esc(t.name)+" · 2%","kraint",{id:t.id},"sm");}).join("")+'</div>';
  h+='</div></section>';
  var N=K.narrows,nt=tById(N.tid);
  h+='<section id="ks-narrows"><h2>The Narrows · The Closing <span class="sub2">6 Swell · action · concentration DC '+d.dc+'</span></h2><div class="card">';
  if(!nt)h+='<div class="row">'+btn("Impale the aimed target · 6 Swell","knarrows",{},"pri","",sw<6)+'<span class="sub" style="margin:0">'+(S.dmg.tgt&&tById(S.dmg.tgt)?'aimed: '+esc(tById(S.dmg.tgt).name):'aim the calculator at a creature first')+'</span></div>';
- else{var dd=8+num(N.r),pc=10+2*num(N.r);h+='<div class="row"><b class="cz" style="color:#5aa9e6">'+esc(nt.name)+'</b><span class="sub" style="margin:0">impaled · speed 0 · vulnerable · AC −5 ('+tAC(nt)+') · round '+(num(N.r)+1)+'</span></div><div class="row" style="margin-top:8px">'+
-  btn("Start of its turn: "+dd+"d12 + "+pc+"% = "+(dd*12+Math.floor(tMaxEff(nt)*pc/100)),"ktick",{},"pri")+btn("Closing · fails · "+(360+Math.floor(tMaxEff(nt)*0.25)),"kclose",{k:"fail"})+btn("Closing · saves","kclose",{k:"save"})+btn("release","knend",{},"sm dgr")+'</div><p class="sub">The Closing drops it to 0 if it ends below a quarter of its max ('+Math.floor(tMaxEff(nt)*0.25)+'), makes eight Shockwaves, and each ally who hears it takes an action. You can\'t use other techniques while it holds.</p>';}
+ else{var dd=8+num(N.r),pc=10+2*num(N.r);h+='<div class="row"><b class="cz" style="color:#5aa9e6">'+esc(nt.name)+'</b><span class="sub" style="margin:0">impaled · speed 0 · vulnerable · AC −5 (total AC '+tAC(nt)+') · round '+(num(N.r)+1)+'</span></div><div class="row" style="margin-top:8px">'+
+  btn("Start of its turn: "+dd+"d12 ("+dd*12+") + "+pc+"% of max HP","ktick",{},"pri")+btn("Closing · fails · 360 + 25%","kclose",{k:"fail"})+btn("Closing · saves","kclose",{k:"save"})+btn("release","knend",{},"sm dgr")+'</div><p class="sub">The Closing drops it to 0 if it ends below a quarter of its max HP (the DM says so; tick "below ¼" on the target), makes eight Shockwaves, and each ally who hears it takes an action. You can\'t use other techniques while it holds.</p>';}
  h+='</div></section>';
  h+='<section id="ks-tools"><h2>Anchor · Breakwater · Mehter</h2><div class="card"><div class="row">'+btn("The Anchor · 2 Swell","pay",{id:"kos:The Anchor"},"sm")+btn("Breakwater · 1 Swell","pay",{id:"kos:Breakwater"},"sm","Reaction · makes a Shockwave back along the attack's path")+(K.mehter.on?'':btn("Mehter · 3 Swell","pay",{id:"kos:Mehter"},"sm pri"))+'</div>';
  if(K.mehter.on)h+='<div class="row" style="margin-top:8px"><span class="lbl" style="margin:0">Mehter tempo</span>'+[1,2,3,4].map(function(i){return '<span class="chip'+(K.mehter.step>=i?' on':'')+'">'+i+'</span>';}).join("")+'<span class="sub" style="margin:0">allies <b style="color:#fff">+'+2*num(K.mehter.step)+'</b> to attacks and saves, can\'t be frightened · advances at Start turn · step 4: extra action for allies, 8d20 to you, then it ends</span>'+btn("end","kmehterend",{},"sm dgr")+'</div>';
@@ -2325,13 +2330,15 @@ function act(a,el){var id=el.getAttribute("data-id"),n=num(el.getAttribute("data
  case "adaptdel":delete S.st.adapt[id];break;
  case "spirit":comboHits({limb:"spirit:"+id,tid:S.dmg.tgt,hits:1});logline("Spirit strike ("+id+") · combo "+S.combo.v);break;
  /* targets */
- case "tadd":v=val("tN").trim();if(!v)return flash("Name the target");var hm=num(val("tH"));t={id:uid("t"),name:v,hpMax:hm,hp:hm,ac:num(val("tA")),ero:0,st:{},vit:0,markHits:0,down:false};S.targets.push(t);if(!S.dmg.tgt)S.dmg.tgt=t.id;break;
+ case "tadd":v=val("tN").trim();if(!v)return flash("Name the target");t={id:uid("t"),name:v,hpMax:0,hp:0,ac:0,dealt:0,dpct:0,low:false,ero:0,st:{},vit:0,markHits:0,down:false};S.targets.push(t);if(!S.dmg.tgt)S.dmg.tgt=t.id;break;
  case "tsel":S.dmg.tgt=S.dmg.tgt===id?"":id;break;
  case "tstat":t=tById(id);if(!t)return;var k=el.getAttribute("data-k");setTStat(t,k,!t.st[k]);if(k==="mark"&&t.st.mark){t.markHits=0;}if(k==="insight"&&t.st.insight)S.targets.forEach(function(x){if(x!==t)x.st.insight=false;});break;
  case "thp":t=tById(id);if(!t)return;t.hp=num(t.hp)+n;if(t.hp<=0&&!t.down)killTarget(t);break;
  case "tero":t=tById(id);if(t)t.ero=Math.max(0,num(t.ero)+n);break;
  case "tkill":t=tById(id);if(t)killTarget(t);break;
- case "trevive":t=tById(id);if(t){t.down=false;if(num(t.hp)<=0)t.hp=1;}break;
+ case "tdealt":t=tById(id);if(t){t.dealt=0;t.dpct=0;}break;
+ case "tlow":t=tById(id);if(t)t.low=!t.low;break;
+ case "trevive":t=tById(id);if(t){t.down=false;}break;
  case "tdel":S.targets=S.targets.filter(function(x){return x.id!==id;});if(S.dmg.tgt===id)S.dmg.tgt="";break;
  case "tinsight":t=tById(id);if(!t)return;var was=t.st.insight;S.targets.forEach(function(x){x.st.insight=false;});t.st.insight=!was;if(t.st.insight){S.effects=S.effects.filter(function(e){return e.name!=="Insightful Fighting";});S.effects.push({id:uid("e"),name:"Insightful Fighting",target:t.name,rounds:10,note:"Sneak Attack without advantage"});}break;
  /* calculator */
