@@ -3159,7 +3159,7 @@ function act(a,el){var id=el.getAttribute("data-id"),n=num(el.getAttribute("data
  case "hp":if(n<0){takeDamage(-n,false);autoStruck();}else heal(n);break;
  case "hpfull":S.hp.cur=d.hpCeil;break;
  case "hpadjreset":S.hpAdj=hpAdjDef();var dr=compute();S.hp.cur=Math.min(num(S.hp.cur),dr.hpCeil);logline("HP adjustment reset · max HP "+dr.hpMax);break;
- case "blkon":uiBlk().on=!uiBlk().on;break;
+ case "blkon":if(!uiBlk().on){if(!S.eco.rx||S.eco.rx.left<1){flash("No Dynamic Reactions left: can't Block");return;}S.eco.rx.left--;uiBlk().on=true;logline("Block (Dynamic Reaction, "+S.eco.rx.left+" left)"+(S.eco.rx.left===0?" · Vulnerable":""));}else{uiBlk().on=false;if(S.eco.rx)S.eco.rx.left=Math.min(S.eco.rx.max,S.eco.rx.left+1);logline("Block taken back (Dynamic Reaction returned)");}break;
   case "blkcrit":uiBlk().crit=!uiBlk().crit;break;
   case "blkrung":uiBlk().r=clamp(n,0,4);break;
   case "blkreset":uiBlk().r=0;uiBlk().crit=false;break;
@@ -3178,7 +3178,7 @@ function act(a,el){var id=el.getAttribute("data-id"),n=num(el.getAttribute("data
  case "eco":r=S.eco[id];r.left=n<r.left?n:n+1;break;
  case "ecomax":if(id==="atk"){S.atkBonus=num(S.atkBonus)+n;if(n>0)S.eco.atk.left++;break;}if(id==="rx"){S.drBonus=num(S.drBonus)+n;if(n>0)S.eco.rx.left++;break;}
   r=S.eco[id];r.max=clamp(r.max+n,0,20);r.left=Math.min(r.left+(n>0?1:0),r.max);break;
- case "drx":if(!S.eco.rx||S.eco.rx.left<1){flash("No Dynamic Reactions left: Vulnerable");return;}if(id==="Parry"&&d.monkL<2){flash("Parry needs monk 2");return;}S.eco.rx.left--;logline(id+" (Dynamic Reaction, "+S.eco.rx.left+" left)"+(S.eco.rx.left===0?" · Vulnerable":""));break;
+ case "drx":if(id==="Block"&&uiBlk().on){flash("Block is already up for the next hit");return;}if(!S.eco.rx||S.eco.rx.left<1){flash("No Dynamic Reactions left: Vulnerable");return;}if(id==="Block")uiBlk().on=true;if(id==="Parry"&&d.monkL<2){flash("Parry needs monk 2");return;}S.eco.rx.left--;logline(id+" (Dynamic Reaction, "+S.eco.rx.left+" left)"+(S.eco.rx.left===0?" · Vulnerable":""));break;
  case "deflect":if(num(S.res.tempo)<1){flash("No Tempo left");return;}S.res.tempo=num(S.res.tempo)-1;logline("Deflect (1 Tempo)");break;
  case "feint":if(num(S.res.tempo)<1){flash("No Tempo left");return;}if(id==="react"){if(!S.eco.rx||S.eco.rx.left<1){flash("Reactive Feints also need a Dynamic Reaction");return;}S.eco.rx.left--;}S.res.tempo=num(S.res.tempo)-1;logline((id==="react"?"Reactive":"Offensive")+" Feint (1 Tempo"+(id==="react"?" + 1 Dynamic Reaction":"")+")");break;
  case "flurry":var kc=d.monkL>=20?0:1;if(S.eco.bon&&S.eco.bon.left<1){flash("No bonus action left");return;}if(num(S.res.ki)<kc){flash("Not enough Ki");return;}
@@ -3523,11 +3523,11 @@ function uiDrRow(d){var L=uiInParts(false),tot=Math.min(100,sumP(L)+num(S.hp.drp
 /* ---------- BLOCK LADDER: each blocked hit uses the rung you're on (100 / 75 / 50 / 25% stopped, then Vulnerable), after ADR; a crit drops 2 rungs first; resets at the start of your turn ---------- */
 var BLK=[100,75,50,25,0];
 function uiBlk(){if(!S.blk||typeof S.blk!=="object")S.blk={on:false,crit:false,r:0};S.blk.r=clamp(num(S.blk.r),0,4);return S.blk;}
-function uiBlkRow(){var B=uiBlk(),h='<div class="row ui-blk" style="margin-top:4px;gap:4px;flex-wrap:wrap"><button class="btn sm'+(B.on?' pri':'')+'" data-a="blkon" title="Declare Block (1 Dynamic Reaction) against an incoming physical attack. While on, hit and hit − ADR apply your rung after ADR, then move down a rung.">🛡 Block'+(B.on?' on':'')+'</button>';
- BLK.forEach(function(p,i){h+='<button class="chip'+(B.r===i?' on':'')+(i===4?' bad':'')+'" data-a="blkrung" data-n="'+i+'" title="Set the rung by hand">'+(i===4?'Vulnerable':p+'%')+'</button>';});
+function uiBlkRow(){var B=uiBlk(),h='<div class="row ui-blk" style="margin-top:4px;gap:4px;flex-wrap:wrap"><button class="btn sm'+(B.on?' pri':'')+'" data-a="blkon"'+(!B.on&&!(S.eco.rx&&S.eco.rx.left>0)?' disabled':'')+' title="Declare Block: spends 1 Dynamic Reaction and covers the next hit. That hit applies your rung after ADR, then the ladder moves down a rung. Tap again before the hit to take it back.">🛡 Block'+(B.on?' up':' (1 DR)')+'</button>';
+ BLK.forEach(function(p,i){h+='<button class="chip'+(B.r===i?' on':'')+(i===4&&B.r===4?' bad':'')+'" data-a="blkrung" data-n="'+i+'" title="Set the rung by hand">'+(i===4?'Vulnerable':p+'%')+'</button>';});
  return h+'<button class="chip'+(B.crit?' bad on':'')+'" data-a="blkcrit" title="The incoming hit is a crit: the ladder drops 2 rungs before Block applies">crit</button><button class="btn sm" data-a="blkreset" title="Back to 100% (also happens at the start of your turn)">reset</button></div>';}
 function uiBlkApply(v,n,notes){var B=uiBlk();if(!B.on||num(v)<=0)return n;var c=B.crit;if(c)B.r=Math.min(4,B.r+2);var bp=BLK[B.r],st=Math.floor(n*bp/100);n-=st;
- notes.push(B.r<4?st+" blocked ("+bp+"% rung"+(c?", crit dropped 2":"")+")":"Block broken: Vulnerable"+(c?" (crit dropped 2)":""));B.r=Math.min(4,B.r+1);B.crit=false;return n;}
+ notes.push(B.r<4?st+" blocked ("+bp+"% rung"+(c?", crit dropped 2":"")+")":"Block broken: Vulnerable"+(c?" (crit dropped 2)":""));B.r=Math.min(4,B.r+1);B.crit=false;B.on=false;return n;}
 function uiIncoming(v,useAdr){var d=compute(),n=Math.max(0,Math.floor(num(v))),notes=[];
  if(useAdr){var a=uiAdr(d),r=Math.min(n,a);n-=r;if(r)notes.push(r+" ADR"+(uiAdrMul()>1?" (×"+uiAdrMul()+")":""));}
  uiMods().forEach(function(m){if(uiModOn(m)&&num(m.flatPB)&&n>0){var f=Math.min(n,num(m.flatPB)*num(d.pb));n-=f;notes.push(f+" "+(m.short||m.name)+" ("+m.flatPB+" × PB)");}});
