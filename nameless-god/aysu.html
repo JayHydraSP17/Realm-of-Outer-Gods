@@ -1105,7 +1105,12 @@ function setTStat(t,k,on){if(k==="weak"&&on&&t.st.weak)t.st.weak2=true;t.st[k]=o
 
 /* ===================== DAMAGE CALCULATOR ===================== */
 var STATTOK={STR:"str",DEX:"dex",CON:"con",INT:"int",WIS:"wis",CHA:"cha"};
-function parseExpr(s,d){var out={dice:[],flat:0,ok:false};s=String(s==null?"":s).toUpperCase().replace(/\s+/g,"");if(!s)return out;
+/* "% of the target's max HP" stays its own part (as on the Mythic Covenant sheets): it's only turned into a number when the target's max HP is known */
+var MHP_RE=/[+]?\s*(\d+(?:\.\d+)?)\s*%\s*(?:of\s+)?(?:(?:the\s+)?(?:target|creature|enemy)(?:'s|s)?\s+)?max(?:imum)?\.?\s*(?:hp|health|hit\s*points)/ig;
+function mhpOf(str){var t=0,m;MHP_RE.lastIndex=0;while((m=MHP_RE.exec(String(str||""))))t+=+m[1];return t;}
+function mhpStrip(str){return String(str||"").replace(MHP_RE,"");}
+function mhpTxt(p){return "+ "+(Math.round(p*100)/100)+"% of target's max HP";}
+function parseExpr(s,d){var out={dice:[],flat:0,ok:false};var mp0=mhpOf(s);s=mhpStrip(s);s=String(s==null?"":s).toUpperCase().replace(/\s+/g,"");if(!s){if(mp0)out.ok=true;return out;}
  var re=/([+\-]?)(\d*D\d+|\d+|STR|DEX|CON|INT|WIS|CHA|PB)/g,m,pos=0;
  while((m=re.exec(s))){if(m.index!==pos)return out;pos=re.lastIndex;var sg=m[1]==="-"?-1:1,t=m[2];
   if(/^\d*D\d+$/.test(t)){var p=t.split("D");out.dice.push({n:(p[0]===""?1:+p[0])*sg,m:+p[1]});}
@@ -1169,6 +1174,7 @@ function dmgOpts(d){var D=S.dmg,src=srcByKey(d,D.src),ov=D.ov?ovByKey(D.ov):null
 function strike(d,o){var src=o.src,ov=o.ov,t=o.t,on=o.on;
  if(!src)return {ok:false,msg:"Pick an attack."};
  var p=parseExpr(src.e,d);if(!p.ok)return {ok:false,msg:"Couldn't read \""+src.e+"\"."};
+ var mhp=mhpOf(src.e)+num(S.dmg.mhp),mhpN=[];if(mhpOf(src.e))mhpN.push(src.n+" "+mhpOf(src.e)+"%");if(num(S.dmg.mhp))mhpN.push(num(S.dmg.mhp)+"% (box)");
  var how=[],tags=[],die0=p.dice.length?p.dice[0].m:0,dice=0;
  p.dice.forEach(function(x){dice+=x.n*x.m;});
  var limbS=(ov&&ov.ov.limb)||src.limb||"",unarmed=!!UNARMED_L[limbS],fa=unarmed?sfFaCoils():0,faD=fa?dice*fa:0;
@@ -1188,7 +1194,7 @@ function strike(d,o){var src=o.src,ov=o.ov,t=o.t,on=o.on;
  var riders=[],tldK=unarmed?sfTldKi():0,tldAmt=tldK*20;if(tldK)riders.push({n:"Touch of the Long Death "+tldK+" Ki",e:(2*tldK)+"d10"});if(on.sneak)riders.push({n:"Sneak Attack",e:"4d6"});if(on.ebb)riders.push({n:"Ebb",e:"2d8"});
  (S.dmg.custRiders||[]).forEach(function(r){if(S.dmg.riders[r.n])riders.push(r);});
  riders.forEach(function(r){var rp=parseExpr(r.e,d),rv=rp.flat;rp.dice.forEach(function(x){rv+=x.n*x.m;});v+=rv;how.push("+"+rv+" "+r.n);});
- var disp=0;if(src.kos&&t&&num(t.hpMax)>0){var dp=kosDispPct();disp=Math.floor(tMaxEff(t)*dp/100);v+=disp;how.push("+"+disp+" Displacement "+dp+"%");tags.push("Displacement "+dp+"%");}
+ var disp=0;if(src.kos){var dp=kosDispPct();mhp+=dp;mhpN.push("Displacement "+dp+"%");tags.push("Displacement "+dp+"%");if(t&&num(t.hpMax)>0)disp=Math.floor(tMaxEff(t)*dp/100);}
  var line=how.join(" ")+" → "+v;
  function mul(k,f,lab){if(!on[k])return;v=Math.floor(v*f);line+=" · "+lab+" → "+v;tags.push(lab);}
  if(on.eop){v=Math.floor(v*(1+0.25*d.eop));line+=" · Edge +"+25*d.eop+"% → "+v;tags.push("Edge +"+25*d.eop+"%");}
@@ -1198,15 +1204,17 @@ function strike(d,o){var src=o.src,ov=o.ov,t=o.t,on=o.on;
  if(on.half){v=Math.floor(v/2);line+=" · half → "+v;tags.push("half");}
  if(fa)tags.push("Fa Jin ×"+fa+(S.sf.ldRel?" · Long Death":""));
  var hasMax=!!(t&&num(t.hpMax)>0),pct=vitalPct(crit,t),vital=hasMax?Math.floor(tMaxEff(t)*pct/100):0;
- if(on.krush&&hasMax){v+=vital;line+=" · +"+vital+" Krushing (Vital "+pct+"%) → "+v;tags.push("Krushing");}
- if(on.shatter&&hasMax){var s15=Math.floor(num(t.hpMax)*0.15);v+=s15;line+=" · +"+s15+" shatter (15%) → "+v;tags.push("shatter");}
- if(on.fatal&&hasMax){var f20=Math.floor(num(t.hpMax)*0.20);v+=f20;line+=" · +"+f20+" Fatal (20%) → "+v;}
+ if(on.krush){mhp+=pct;mhpN.push("Krushing "+pct+"%");tags.push("Krushing");}
+ if(on.shatter){mhp+=15;mhpN.push("shatter 15%");tags.push("shatter");}
+ if(on.fatal){mhp+=20;mhpN.push("Fatal 20%");}
  if(crit&&!on.fatal)tags.unshift(on.krush?"Krushing crit":on.shatter?"shatter crit":"crit");if(on.nat20)tags.push("nat 20");if(on.inf)tags.push("infusion");riders.forEach(function(r){tags.push(r.n);});
- var regular=v,style=S.dmg.style,each=regular,chose="regular";
- if(style!=="regular"){if(!hasMax)return {ok:false,msg:"Vital Damage needs a target with max HP. Add one under Targets."};
-  if(style==="vital"||vital>regular){each=vital;chose="vital";line+=" ‖ Vital "+pct+"% of "+t.hpMax+" = "+vital+(style==="best"?" (higher)":"");tags.push("Vital "+pct+"%");}
-  else line+=" ‖ Vital "+pct+"% = "+vital+" (regular higher)";}
- return {ok:true,each:each,how:line,tags:tags,chose:chose,crit:crit,regular:regular,vital:vital,pct:pct,dice:dice,faAmt:faAmt,fa:fa,tldAmt:tldAmt,tldK:tldK,disp:disp,unarmed:unarmed,limb:limbS};}
+ var regular=v,style=S.dmg.style,each=regular,chose="regular",mhpEach=mhp;
+ if(style==="vital"){each=0;mhpEach=pct;chose="vital";line+=" ‖ Vital "+pct+"% of target's max HP instead of "+regular;tags.push("Vital "+pct+"%");}
+ else if(style==="best"){if(hasMax){var regAbs=regular+Math.floor(tMaxEff(t)*mhp/100);if(vital>regAbs){each=0;mhpEach=pct;chose="vital";line+=" ‖ Vital "+pct+"% is higher on "+t.name;tags.push("Vital "+pct+"%");}else line+=" ‖ Vital "+pct+"% (regular higher)";}
+  else{line+=" ‖ or Vital "+pct+"% of target's max HP: the DM uses the higher";tags.push("or Vital "+pct+"%");}}
+ if(mhpEach)tags.push("+"+(Math.round(mhpEach*100)/100)+"% max HP");
+ var mhpAbs=hasMax&&mhpEach?Math.floor(tMaxEff(t)*mhpEach/100):null;
+ return {ok:true,each:each,how:line,tags:tags,chose:chose,mhp:mhpEach,mhpN:mhpN,mhpAbs:mhpAbs,crit:crit,regular:regular,vital:vital,pct:pct,dice:dice,faAmt:faAmt,fa:fa,tldAmt:tldAmt,tldK:tldK,disp:disp,unarmed:unarmed,limb:limbS};}
 function strikeCost(d,o){var c={};if(!S.dmg.pay)return c;var src=o.src,ov=o.ov;
  if(src&&src.kit&&src.kit.a.pay){var p=payParts(src.kit);for(var r in p)c[r]=(c[r]||0)+p[r];}
  if(ov){var k=num(ov.ov.ki);if(ov.kis&&S.combo.v>=70)k=Math.max(1,k-1);if(k)c.ki=(c.ki||0)+kiCost(ov.kit,k);}
@@ -1222,7 +1230,7 @@ function dmgAdd(){var d=compute(),D=S.dmg,o=dmgOpts(d);if(o.src&&o.src.kos)retur
  if(src.spell&&D.pay){if(!castSpell(src.spell.id))return false;}
  doPay(cost);
  var label=(ov?ov.n+" · ":"")+src.n,total=r.each*n,extra=[];
- if(D.apply&&t&&!t.down){t.hp=num(t.hp)-total;if(r.chose==="vital")t.vit=num(t.vit)+n;if(t.hp<=0)killTarget(t);}
+ if(D.apply&&t&&!t.down){t.hp=num(t.hp)-total-(r.mhpAbs||0)*n;if(r.chose==="vital")t.vit=num(t.vit)+n;if(t.hp<=0)killTarget(t);}
  if(D.build&&!src.noCombo){var hitsPer=(ov&&ov.hits)||1;var cb=comboHits({limb:(ov&&ov.ov.limb)||src.limb,tid:t?t.id:"",hits:n*hitsPer,special:!!((ov&&ov.sm)||src.sm)});
   extra.push("combo +"+cb.gain+(cb.sw?" (switch)":"")+(cb.ki?" · +"+cb.ki+" Ki":"")+(cb.ero?" · "+(t?t.name:"")+" −"+cb.ero+" AC":""));
   if(S.eco.atk&&!src.spell)S.eco.atk.left=Math.max(0,S.eco.atk.left-1);
@@ -1428,10 +1436,10 @@ function renderDmg(d){var D=S.dmg,o=dmgOpts(d),src=o.src,t=o.t,srcs=dmgSources(d
   h+='<div class="row" style="margin-top:5px"><span class="sub" style="margin:0;min-width:74px">'+g[1]+'</span>';
   ms.forEach(function(m){var on=o.on[m[0]],avail=m[4];h+=chip((m[3]==="auto"&&avail?'◆ ':'')+esc(m[1]),"dmod",{id:m[0],m:m[3]},on,on&&m[2]==="mult"?"":"",m[5],!avail);});
   if(g[0]==="rider"){(D.custRiders||[]).forEach(function(r){h+=chip(esc(r.n)+' <span style="opacity:.7">'+esc(r.e)+'</span>',"drider",{id:r.n},!!D.riders[r.n]);});h+='<input type="text" id="riderE" placeholder="e.g. Frost 1d4" style="width:130px">'+btn("add","rideradd",{},"sm");}
-  if(g[0]==="dice")h+='<span class="sub" style="margin:0 0 0 4px">extra</span><input class="num w44" type="number" data-b="dmg.xd" value="'+num(D.xd)+'"><span class="sub" style="margin:0">flat</span><input class="num w44" type="number" data-b="dmg.flat" value="'+num(D.flat)+'">';
+  if(g[0]==="dice")h+='<span class="sub" style="margin:0 0 0 4px">extra</span><input class="num w44" type="number" data-b="dmg.xd" value="'+num(D.xd)+'"><span class="sub" style="margin:0">flat</span><input class="num w44" type="number" data-b="dmg.flat" value="'+num(D.flat)+'"><span class="sub" style="margin:0" title="Damage written as a % of the target\'s max HP. It stays separate for the DM.">+ % of target\'s max HP</span><input class="num w44" type="number" data-b="dmg.mhp" value="'+num(D.mhp)+'" min="0">';
   h+='</div>';});
  h+='</div><div class="modgrp"><span class="lbl">4 · Damage style</span><div class="row">'+chip("Regular","dstyle",{id:"regular"},D.style==="regular")+chip("Vital Damage","dstyle",{id:"vital"},D.style==="vital")+chip("Take the higher","dstyle",{id:"best"},D.style==="best")+
-  '<span class="sub" style="margin:0">'+(t&&num(t.hpMax)?'Vital now '+vitalPct(o.on.crit||o.on.krush||o.on.shatter,t)+'% of '+t.hpMax+' · cap '+d.vitCap+'/round':'Vital needs a target with max HP')+'</span></div></div>';
+  '<span class="sub" style="margin:0">'+'Vital now '+vitalPct(o.on.crit||o.on.krush||o.on.shatter,t)+'% of target\'s max HP · cap '+d.vitCap+'/round'+(t&&num(t.hpMax)?' (≈'+Math.floor(tMaxEff(t)*vitalPct(o.on.crit||o.on.krush||o.on.shatter,t)/100)+' on '+esc(t.name)+')':'')+'</span></div></div>';
  h+='<div class="modgrp row"><span class="sub" style="margin:0">Hits</span><input class="num w44" type="number" data-b="dmg.n" value="'+D.n+'" min="1">'+
   '<label class="sub" style="margin:0"><input type="checkbox" data-b="dmg.build"'+(D.build?' checked':'')+'> build combo, Ki on hit, Erosion</label><label class="sub" style="margin:0"><input type="checkbox" data-b="dmg.pay"'+(D.pay?' checked':'')+'> pay costs</label><label class="sub" style="margin:0"><input type="checkbox" data-b="dmg.apply"'+(D.apply?' checked':'')+'> apply to target HP</label></div>';
  h+='<div class="row" style="margin-top:12px;align-items:center"><div id="dmgPrev" class="prev">'+dmgPreview(d)+'</div><button class="btn pri lg"'+A_("dmgadd")+'>Add strike</button></div>';
@@ -1447,7 +1455,7 @@ function dmgPreview(d){var o=dmgOpts(d),r=strike(d,o);if(!r.ok)return '<span cla
  var n=Math.max(1,num(S.dmg.n,1)),hw=esc(r.how).replace(/(\d+)$/,"<b>$1</b>"),cost=strikeCost(d,o),cs=Object.keys(cost).length?' · <span style="color:var(--moon)">costs '+payLabel(cost)+'</span>':'';
  var limb=(o.ov&&o.ov.ov.limb)||(o.src&&o.src.limb)||"",sw=o.src&&!o.src.noCombo&&((o.ov&&o.ov.sm)||o.src.sm||S.combo.armSwitch||(limb&&S.combo.last&&limb!==S.combo.last));
  var cmb=o.src&&!o.src.noCombo&&S.dmg.build?' · <span style="color:var(--ac)">combo +'+(n*((o.ov&&o.ov.hits)||1)+(sw?2:0))+(sw?' (switch)':'')+'</span>':'';
- return hw+(n>1?' · ×'+n+' = <b>'+r.each*n+'</b>':'')+(r.chose==="vital"?' · <b>Vital</b>':'')+cs+cmb;}
+ return hw+(n>1?' · ×'+n+' = <b>'+r.each*n+'</b>':'')+(num(r.mhp)?' <b style="color:#ffd27a">'+esc(mhpTxt(r.mhp))+(n>1?' per hit':'')+'</b> <span class="sub" style="margin:0">'+(r.mhpAbs!=null?'(≈'+r.mhpAbs+' on this target)':'(the DM adds this)')+'</span>':'')+(r.chose==="vital"?' · <b>Vital</b>':'')+cs+cmb;}
 
 /* ===================== LOADOUT / KIT CARDS ===================== */
 function renderLoadout(d){var cols={};KINDS.forEach(function(k){cols[k[0]]=[];});
@@ -1833,7 +1841,7 @@ function kosSwing(d,o){var D=S.dmg,src=o.src,n=Math.max(1,Math.round(num(D.n,1))
  for(var s=0;s<n;s++){
   if(!ids.length){var r0=strike(d,o);if(!r0.ok){flash(r0.msg);return false;}D.lines.push({id:uid("d"),label:"KÖS swing",target:"",n:1,each:r0.each,total:r0.each,how:r0.how,tags:r0.tags.join(", "),round:S.round,extra:"no target: add Displacement by aiming"});total+=r0.each;hit++;continue;}
   ids.forEach(function(id){var t=tById(id);if(!t||t.down)return;var oo=optsFor(d,id),r=strike(d,oo);if(!r.ok)return;
-   if(D.apply){t.hp=num(t.hp)-r.each;if(t.hp<=0)killTarget(t);}
+   if(D.apply){t.hp=num(t.hp)-r.each-(r.mhpAbs||0);if(t.hp<=0)killTarget(t);}
    var cv=Math.floor(r.dice/2)+Math.floor(r.disp/2);S.kos.cav.push({id:uid("c"),tid:id,amt:cv,label:"Cavitation · KÖS swing"});
    creatures++;D.lines.push({id:uid("d"),label:"KÖS swing",target:t.name,n:1,each:r.each,total:r.each,how:r.how,tags:r.tags.join(", "),round:S.round,extra:"cavitation "+cv+" queued for End turn"});total+=r.each;hit++;});}
  if(!hit){flash("No target in the arc");return false;}
