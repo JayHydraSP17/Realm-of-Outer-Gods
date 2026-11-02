@@ -2526,6 +2526,7 @@ function parseExpr(s,d){var out={dice:[],flat:0,ok:false};s=mhpStrip(s);if(!Stri
 var MHP_RE=/[+]?\s*(\d+(?:\.\d+)?)\s*%\s*(?:of\s+)?(?:(?:the\s+)?(?:target|creature|enemy)(?:'s|s)?\s+)?max(?:imum)?\.?\s*(?:hp|health|hit\s*points)/ig;
 function mhpOf(str){var t=0,m;MHP_RE.lastIndex=0;while((m=MHP_RE.exec(String(str||""))))t+=+m[1];return t;}
 function mhpStrip(str){return String(str||"").replace(MHP_RE,"");}
+function lnPct(l){return Math.round(num(l.mhp)*Math.max(1,num(l.n,1))*100)/100;}
 function mhpTxt(p){return "+ "+(Math.round(p*100)/100)+"% of target's max HP";}
 function exprFrom(str){str=String(str||"");var mp=mhpOf(str);str=mhpStrip(str);var i=str.search(/\d+\s*d\s*\d+/i);if(i<0)return mp?mp+"% max HP":"";
  var r=dmgScan(str.slice(i).replace(/(\d+)\s*d\s*(\d+)/ig,"$1d$2"));if(!r.toks.length)return "";
@@ -2574,10 +2575,10 @@ function renderDmg0(d){var D=S.dmg,src=dmgSources(),h='<section id="damage"><h2>
  h+='<div class="row" style="margin-top:10px;align-items:center"><div id="dmgPrev" class="mono" style="flex:1;font-size:12.5px;color:var(--dim)">'+dmgPreview(d)+'</div><button class="btn pri lg" data-a="dmgadd">Add</button></div>';
  if(D.lines.length){var tot=0,byT={};
   h+='<table style="margin-top:12px"><tr><th>Strike</th><th>How</th><th class="n">Damage</th><th></th></tr>';
-  D.lines.forEach(function(l){tot+=l.total;var tk=l.target||"—";byT[tk]=(byT[tk]||0)+l.total;
-   h+='<tr><td>'+esc(l.label||"Strike")+(l.n>1?' ×'+l.n:'')+(l.target?'<div class="sub">→ '+esc(l.target)+'</div>':'')+(l.tags?'<div class="sub">'+esc(l.tags)+'</div>':'')+'</td><td class="mono" style="font-size:12px;color:var(--dim)">'+esc(l.how)+'</td><td class="n" style="font-size:16px;color:#fff">'+l.total+(l.n>1?'<div class="sub">'+l.each+' each</div>':'')+'</td><td><button class="btn sm dgr" data-a="dmgdel" data-id="'+l.id+'">×</button></td></tr>';});
-  h+='</table><div class="row" style="justify-content:space-between;border-top:2px solid var(--ac-line);padding-top:10px"><div><span class="lbl">Total</span><span class="cz" style="font-size:34px;color:var(--ac);font-weight:700">'+tot+'</span>';
-  var tks=Object.keys(byT);if(tks.length>1||tks[0]!=="—")h+='<div class="sub">'+tks.map(function(t){return esc(t)+" "+byT[t];}).join(" · ")+'</div>';
+  var totP=0,byP={};D.lines.forEach(function(l){tot+=l.total;var tk=l.target||"—";byT[tk]=(byT[tk]||0)+l.total;if(lnPct(l)){totP+=lnPct(l);byP[tk]=(byP[tk]||0)+lnPct(l);}
+   h+='<tr><td>'+esc(l.label||"Strike")+(l.n>1?' ×'+l.n:'')+(l.target?'<div class="sub">→ '+esc(l.target)+'</div>':'')+(l.tags?'<div class="sub">'+esc(l.tags)+'</div>':'')+'</td><td class="mono" style="font-size:12px;color:var(--dim)">'+esc(l.how)+'</td><td class="n" style="font-size:16px;color:#fff">'+l.total+(lnPct(l)?'<div style="font-size:13px;color:#ffd27a">+ '+lnPct(l)+'% max HP</div>':'')+(l.n>1?'<div class="sub">'+l.each+(num(l.mhp)?' + '+num(l.mhp)+'%':'')+' each</div>':'')+'</td><td><button class="btn sm dgr" data-a="dmgdel" data-id="'+l.id+'">×</button></td></tr>';});
+  h+='</table><div class="row" style="justify-content:space-between;border-top:2px solid var(--ac-line);padding-top:10px"><div><span class="lbl">Total</span><span class="cz" style="font-size:34px;color:var(--ac);font-weight:700">'+tot+'</span>'+(totP?'<span style="font-size:20px;color:#ffd27a;margin-left:8px">+ '+Math.round(totP*100)/100+'% of max HP</span><div class="sub">The DM adds the % part: the sheet never needs a target\'s max HP.</div>':'');
+  var tks=Object.keys(byT);if(tks.length>1||tks[0]!=="—")h+='<div class="sub">'+tks.map(function(t){return esc(t)+" "+byT[t]+(byP[t]?" + "+Math.round(byP[t]*100)/100+"%":"");}).join(" · ")+'</div>';
   h+='</div><div class="row"><button class="btn" data-a="dmgcopy">Copy summary</button><button class="btn" data-a="dmgundo">Undo last</button><button class="btn dgr" data-a="dmgclear">Clear</button></div></div>';}
  else h+='<div class="empty" style="margin-top:8px">No strikes added yet. Pick an attack, set modifiers, press Add. Each strike stacks below with its math; the total sits at the bottom.</div>';
  return h+'<p class="note">Order: dice (crit doubles weapon and extra dice, not riders) + flat + riders → effective ×1.5 → vulnerable ×2 → half → minus ADR. Crit, half and extra dice reset after each Add; everything else stays until you change it.</p></div></section>';}
@@ -2585,11 +2586,11 @@ function dmgPreview(d){var D=S.dmg;if(!D.expr&&!num(D.flat))return "Pick an atta
  var n=Math.max(1,num(D.n,1));var hw=esc(r.how).replace(/(\d+)$/,"<b style='color:#fff'>$1</b>");return hw+(n>1?" · ×"+n+" = <b style='color:#fff'>"+r.each*n+"</b>":"")+(num(r.mhp)?" <b style='color:#ffd27a'>"+esc(mhpTxt(r.mhp))+(n>1?" per hit":"")+"</b> <span class='sub' style='margin:0'>(the DM adds this)</span>":"");}
 function dmgAdd0(){var d=compute(),D=S.dmg,o=dmgOpts(),r=strike(d,o);if(!r.ok){flash(r.msg);return false;}var n=Math.max(1,num(D.n,1));
  var tags=[D.crit?"crit":"",D.eff?"effective":"",D.vuln?"vulnerable":"",D.half?"half":""].concat(o.riders.map(function(x){return x.n;})).filter(Boolean).join(", ");
- D.lines.push({id:uid("d"),label:D.label||D.expr,target:D.target,n:n,each:r.each,total:r.each*n,how:r.how,tags:tags,round:S.round});
+ D.lines.push({id:uid("d"),label:D.label||D.expr,target:D.target,n:n,each:r.each,total:r.each*n,how:r.how,tags:tags,round:S.round,mhp:num(S.dmg.mhp)+mhpOf(S.dmg.expr)});
  if(D.pip&&S.eco.atk)S.eco.atk.left=Math.max(0,S.eco.atk.left-n);
  if(D.half)D.atk=true;D.crit=false;D.half=false;D.xd=0;D.n=1;return true;}
 function dmgSummary(){var D=S.dmg,tot=0,t=(C.name||"")+" · round "+S.round+"\n";
- D.lines.forEach(function(l){tot+=l.total;t+="• "+(l.label||"Strike")+(l.n>1?" ×"+l.n:"")+(l.target?" → "+l.target:"")+": "+l.total+(l.tags?" ("+l.tags+")":"")+"\n";});return t+"Total: "+tot;}
+ D.lines.forEach(function(l){tot+=l.total;t+="• "+(l.label||"Strike")+(l.n>1?" ×"+l.n:"")+(l.target?" → "+l.target:"")+": "+l.total+(lnPct(l)?" + "+lnPct(l)+"% max HP":"")+(l.tags?" ("+l.tags+")":"")+"\n";});var tp=0;D.lines.forEach(function(l){tp+=lnPct(l);});return t+"Total: "+tot+(tp?" + "+Math.round(tp*100)/100+"% of max HP":"");}
 
 /* ===================== BATTALIONS ===================== */
 var BAT_TIERS=[["Bronze",1,200],["Silver",2,400],["Gold",3,600]];
@@ -3134,7 +3135,7 @@ function dmgAdd(){var d=compute(),D=S.dmg,n=Math.max(1,num(D.n,1)),outS=(C.strea
  for(var i=0;i<n;i++){var o=dmgOpts();if(outS.length){var L=uiOutParts(i);o.pct=num(D.pct)+sumP(L);o.pctN=L.map(function(x){return x.n;}).join(", ");}var r=strike(d,o);if(!r.ok){flash(r.msg);return false;}if(!first)first=r;tot+=r.each;eachs.push(r.each);}
  var same=eachs.every(function(x){return x===eachs[0];});
  var tags=[D.crit?"crit":"",D.eff?"effective":"",D.vuln?"vulnerable":"",D.half?"half":"",o0.pct?sgn(o0.pct)+"%":"",o0.tdr?"target −"+o0.tdr+"%":"",o0.mhp?"+"+o0.mhp+"% max HP":""].concat(o0.riders.map(function(x){return x.n;})).filter(Boolean).join(", ");
- D.lines.push({id:uid("d"),label:D.label||D.expr,target:D.target,n:n,each:same?eachs[0]:Math.round(tot/n),total:tot,how:same?first.how:first.how+" · per hit "+eachs.join(" + "),tags:tags,round:S.round});
+ D.lines.push({id:uid("d"),label:D.label||D.expr,target:D.target,n:n,each:same?eachs[0]:Math.round(tot/n),total:tot,how:same?first.how:first.how+" · per hit "+eachs.join(" + "),tags:tags,round:S.round,mhp:num(S.dmg.mhp)+mhpOf(S.dmg.expr)});
  outS.forEach(function(z){S.streak[z.id].n=num(S.streak[z.id].n)+n;});
  if(D.pip&&S.eco.atk)S.eco.atk.left=Math.max(0,S.eco.atk.left-n);
  if(D.half)D.atk=true;D.crit=false;D.half=false;D.xd=0;D.n=1;return true;}
