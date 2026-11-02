@@ -1405,7 +1405,7 @@ main td:first-child{color:#fff}
 <td style="text-align: center;">1 Dynamic Reaction</td>
 <td style="text-align: center;">Declared vs. incoming physical attack</td>
 <td style="text-align: center;">Reduces damage. The ladder only advances when you are actually hit: 100% → 75% → 50% → 25% → Vulnerable. <strong>Read:</strong> while Blocking, you have advantage on your next Read against that attacker.</td>
-<td style="text-align: center;">Ladder advances on each hit taken while blocking.</td>
+<td style="text-align: center;">Ladder advances on each hit taken while blocking. <strong>A critical hit drops the ladder 2 rungs before the Block applies</strong> (a fresh Block stops 50% of a crit, then the next hit uses 25%).</td>
 </tr>
 <tr>
 <td style="text-align: center;"><strong>Dodge</strong></td>
@@ -2671,6 +2671,14 @@ main td:first-child{color:#fff}
 </tr>
 </tbody>
 </table>
+<h3 id="defense-order">Defense Order</h3>
+<p>Every hit resolves the same way. Armor properties give flat numbers, so the only percentages left on defense are the Block ladder and character-specific abilities.</p>
+<ol>
+<li><strong>Total damage</strong>, crit dice included. Any "% of max HP" is turned into a number here by the DM (players never need an enemy's max HP).</li>
+<li><strong>Subtract ADR</strong>: armor ADR, Bonus ADR and armor property reductions, added into one number.</li>
+<li><strong>Block</strong>, if declared: apply the rung you're on once (100 / 75 / 50 / 25% stopped). Each blocked hit uses its own rung; rungs never add together.</li>
+<li><strong>Resistance or vulnerability</strong>: halve or double.</li>
+</ol>
 <h2 id="layer-3-reaction-synergy">Layer 3 — Reaction Synergy</h2>
 <p>These apply automatically to anyone wearing the armor.</p>
 <ul>
@@ -2799,7 +2807,7 @@ main td:first-child{color:#fff}
 <ul>
 <li>Tier 1–2: Reduce damage from the first attack that hits you each round by PB</li>
 <li>Tier 3–4: Reduce it by PS</li>
-<li>Tier 5: If that hit is a heavy hit, reduce its damage by 20%, then gain Bonus ADR equal to PS until the start of your next turn</li>
+<li>Tier 5: If that hit is a heavy hit, reduce it by PS more, then gain Bonus ADR equal to PS until the start of your next turn</li>
 </ul>
 <h4 id="read-through">Read Through</h4>
 <p><em>You see tricks for what they are.</em></p>
@@ -2818,9 +2826,9 @@ main td:first-child{color:#fff}
 <h4 id="tempered">Tempered</h4>
 <p><em>The second hit is never as good as the first.</em></p>
 <ul>
-<li>Tier 1–2: The second and later hits against you each round are reduced by PB or 10%, whichever is better</li>
-<li>Tier 3–4: The second and later hits against you each round are reduced by PS or 15%, whichever is better</li>
-<li>Tier 5: The second and later hits against you each round deal 20% less damage, and each additional hit grants Bonus ADR equal to PS ÷ 2 until the start of your next turn, up to PS</li>
+<li>Tier 1–2: It builds up: the 2nd hit against you each round is reduced by PB, the 3rd by 2 × PB, and the 4th and later by 3 × PB</li>
+<li>Tier 3–4: The same build-up, using PS</li>
+<li>Tier 5: The same build-up, using PS + PB, and each additional hit grants Bonus ADR equal to PS ÷ 2 until the start of your next turn, up to PS</li>
 </ul>
 <h4 id="catch">Catch</h4>
 <p><em>You stop one nearby ally from getting opened up for free.</em></p>
@@ -2883,9 +2891,9 @@ main td:first-child{color:#fff}
 <h4 id="juggernaut">Juggernaut</h4>
 <p><em>The things meant to crack tanks work worse on you.</em></p>
 <ul>
-<li>Tier 1–2: Reduce percent-based damage, max HP damage, and takedown damage by 5%</li>
-<li>Tier 3–4: Reduce them by 10%</li>
-<li>Tier 5: Reduce them by 15%, and when this reduction applies gain Bonus ADR equal to PS until the start of your next turn</li>
+<li>Tier 1–2: Lower the percentage of percent-based, max HP and takedown damage against you by 5 points (a 25% max HP hit becomes 20%)</li>
+<li>Tier 3–4: Lower it by 10 points</li>
+<li>Tier 5: Lower it by 15 points, and when this applies gain Bonus ADR equal to PS until the start of your next turn</li>
 </ul>
 <h4 id="anchor">Anchor</h4>
 <p><em>You are not where the enemy wants you.</em></p>
@@ -2899,14 +2907,14 @@ main td:first-child{color:#fff}
 <ul>
 <li>Tier 1–2: Reduce critical bonus damage by 25%</li>
 <li>Tier 3–4: Reduce critical bonus damage by 50%</li>
-<li>Tier 5: Critical hits against you become normal hits unless the attacker exceeds your AC by 10 or more</li>
+<li>Tier 5: Critical hits against you are normal hits (no bonus damage). Only an attack that beats your AC by 10 or more crits as usual</li>
 </ul>
 <h4 id="last-stand">Last Stand</h4>
 <p><em>The closer you are to falling, the harder you are to finish.</em></p>
 <ul>
-<li>Tier 1–2: While below half HP, reduce all incoming damage by 10%</li>
-<li>Tier 3–4: While below half HP, reduce all incoming damage by 15%</li>
-<li>Tier 5: While below half HP, reduce all incoming damage by 20% and gain resistance to forced movement, disarm, and Disable effects</li>
+<li>Tier 1–2: While below half HP, gain +PB ADR. Below a quarter, it doubles</li>
+<li>Tier 3–4: While below half HP, gain +PS ADR, doubled below a quarter</li>
+<li>Tier 5: While below half HP, gain +2 × PS ADR, doubled below a quarter, and resistance to forced movement, disarm, and Disable effects</li>
 </ul>
 <h4 id="lockdown">Lockdown</h4>
 <p><em>Getting close to you costs movement and freedom.</em></p>
@@ -2948,7 +2956,7 @@ main td:first-child{color:#fff}
 <ul>
 <li>Tier 1–2: Gain +PB against becoming prone, airborne, Vulnerable, or otherwise takedown-eligible</li>
 <li>Tier 3–4: Gain +PS instead</li>
-<li>Tier 5: Once per round, if you would become takedown-eligible, you may immediately end one qualifying condition, and takedown damage against you is reduced by 15%</li>
+<li>Tier 5: Once per round, if you would become takedown-eligible, you may immediately end one qualifying condition, and the percentage of takedown damage against you is lowered by 15 points</li>
 </ul>
 <h4 id="platebreak-resist">Platebreak Resist</h4>
 <p><em>You are harder to dismantle with precision and call shots.</em></p>
@@ -2985,7 +2993,7 @@ main td:first-child{color:#fff}
 <p><strong>Guardian’s Exchange.</strong> Once per round, when an ally within 10 feet would be hit, knocked back, launched, or made takedown-eligible, you may intervene. Reduce the triggering damage or effect by PS. You may then move up to 10 feet toward that ally or the attacker without provoking opportunity attacks. If you end this movement adjacent to the attacker, your next attack against it before the end of your next turn gains advantage.</p>
 <h4 id="legendary-heavy">Legendary Heavy</h4>
 <p><strong>Throne of Iron.</strong> While you are standing and conscious, enemies within 10 feet of you treat the area as difficult terrain. Creatures within that area take a penalty equal to PS on shove attempts, launch attempts, takedown setup effects, and movement-based reaction plays. If a creature starts its turn adjacent to you, it must either remain engaged with you or take a penalty equal to PS on its first attack or movement-based action that turn.</p>
-<p><strong>Juggernaut Core.</strong> Reduce percent-based damage, max HP damage, takedown damage, and other effects based on your own durability by 10%. In addition, once per round, when one of those effects is reduced this way, gain Bonus ADR equal to PS until the start of your next turn. If the effect would also make you prone, airborne, Vulnerable, or otherwise takedown-eligible, you may make an immediate resistance check with a bonus equal to PS.</p>
+<p><strong>Juggernaut Core.</strong> Lower the percentage of percent-based damage, max HP damage, takedown damage, and other effects based on your own durability by 10 points. In addition, once per round, when one of those effects is reduced this way, gain Bonus ADR equal to PS until the start of your next turn. If the effect would also make you prone, airborne, Vulnerable, or otherwise takedown-eligible, you may make an immediate resistance check with a bonus equal to PS.</p>
 <p><strong>Iron Verdict.</strong> Once per round, when a creature within 5 feet attacks you or an ally adjacent to you, you may impose one of the following on that attack before the roll is resolved: reduce the attack roll by PS, reduce the damage by PS, or prevent the attack from applying knockback, launch, or takedown setup effects. If the attack still hits, the attacker’s speed is reduced by PS × 5 feet until the end of its next turn.</p>
 <p><strong>Last Wall.</strong> Once per long rest, when you would become prone, airborne, Vulnerable, takedown-eligible, or reduced below a major HP threshold chosen by the table, you may ignore that state until the end of your next turn. During that time, gain Bonus ADR equal to PS × 2, gain resistance to percent-based damage, max HP damage, and critical damage, and enemies within 5 feet take a penalty equal to PS on attack rolls against targets other than you.</p>
 </section>
