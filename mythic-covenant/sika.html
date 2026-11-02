@@ -933,10 +933,10 @@ var ARMOR_PROPS={
   ["Mirage","Enemy precision becomes less reliable against you.","The first called shot against you each round takes a penalty equal to PB.","Use PS instead.","If that called shot fails, the attacker loses its bonus action or 10 feet of movement, attacker's choice."],
   ["Opportunist","You capitalize when the enemy has already been opened.","Gain +PB to attacks against creatures that are airborne, prone, rattled, or otherwise compromised.","Use PS instead.","Against compromised targets, your attacks gain +PS damage and ignore one layer of defensive mitigation as determined by the table's normal rules."]],
  medium:[
-  ["Brace","You do not take the full force of a clean hit.","Reduce damage from the first attack that hits you each round by PB.","Reduce it by PS.","If that hit is a heavy hit, reduce its damage by 20%, then gain Bonus ADR equal to PS until the start of your next turn."],
+  ["Brace","You do not take the full force of a clean hit.","Reduce damage from the first attack that hits you each round by PB.","Reduce it by PS.","If that hit is a heavy hit, reduce it by PS more, then gain Bonus ADR equal to PS until the start of your next turn."],
   ["Read Through","You see tricks for what they are.","Gain +PB against Feints and reaction baits.","Use PS instead.","The first Feint used against you each round automatically fails unless the attacker exceeds your defense by PS or more, and that attacker takes a penalty equal to PS on its next attack."],
   ["Counterweight","You are hard to throw out of the exchange.","Reduce knockback and forced movement by PB, rounded up.","Reduce it by PS.","If forced movement is reduced to 0, gain +PS on your next Block, Deflect, or Dodge before the end of your next turn."],
-  ["Tempered","The second hit is never as good as the first.","The second and later hits against you each round are reduced by PB or 10%, whichever is better.","The second and later hits against you each round are reduced by PS or 15%, whichever is better.","The second and later hits against you each round deal 20% less damage, and each additional hit grants Bonus ADR equal to PS ÷ 2 until the start of your next turn, up to PS."],
+  ["Tempered","The second hit is never as good as the first.","It builds up: the 2nd hit against you each round is reduced by PB, the 3rd by 2 × PB, and the 4th and later by 3 × PB.","The same build-up, using PS.","The same build-up, using PS + PB, and each additional hit grants Bonus ADR equal to PS ÷ 2 until the start of your next turn, up to PS."],
   ["Catch","You stop one nearby ally from getting opened up for free.","When an ally within 5 feet is hit, reduce that damage by PB.","Reduce it by PS.","That ally also gains +PS AC against the next attack made against it before the start of your next turn."],
   ["Recenter","A successful defense lets you recover your structure.","When you succeed on a saving throw against an attack, effect, or Disable, gain temp HP equal to PB.","Gain temp HP equal to PS.","Also remove one temporary movement penalty, attack penalty, or similar debuff."],
   ["Deflect Line","You defend with good form, not desperation.","Gain +PB to Block.","Use PS instead.","After a successful Block or Deflect, gain +PS AC until the start of your next turn and +PS against the next called shot made against you in that time."],
@@ -946,16 +946,16 @@ var ARMOR_PROPS={
   ["Layered Guard","Precision attacks do not unravel you as easily.","Gain +PB against called shots, limb-targeting, and Disable attempts.","Use PS instead.","The first successful called shot against you each round has its duration halved or its effect downgraded, and any Disable duration applied to you is reduced by 50%."],
   ["Backswing","A failed defense does not mean the exchange is lost.","The first time each round your Block, Deflect, or Dodge fails, reduce the resulting damage by PB.","Reduce it by PS.","Gain +PS to your next defensive contest before the end of your next turn, and the attacker takes a penalty equal to PS on its next attack."]],
  heavy:[
-  ["Juggernaut","The things meant to crack tanks work worse on you.","Reduce percent-based damage, max HP damage, and takedown damage by 5%.","Reduce them by 10%.","Reduce them by 15%, and when this reduction applies gain Bonus ADR equal to PS until the start of your next turn."],
+  ["Juggernaut","The things meant to crack tanks work worse on you.","Lower the percentage of percent-based, max HP and takedown damage against you by 5 points (a 25% max HP hit becomes 20%).","Lower it by 10 points.","Lower it by 15 points, and when this applies gain Bonus ADR equal to PS until the start of your next turn."],
   ["Anchor","You are not where the enemy wants you.","Reduce knockback and forced movement by PB × 5 feet.","Reduce it by PS × 5 feet.","Once per round, if forced movement or launch would still apply, you may ignore it entirely."],
-  ["Fortress","Burst does not land cleanly against you.","Reduce critical bonus damage by 25%.","Reduce critical bonus damage by 50%.","Critical hits against you become normal hits unless the attacker exceeds your AC by 10 or more."],
-  ["Last Stand","The closer you are to falling, the harder you are to finish.","While below half HP, reduce all incoming damage by 10%.","While below half HP, reduce all incoming damage by 15%.","While below half HP, reduce all incoming damage by 20% and gain resistance to forced movement, disarm, and Disable effects."],
+  ["Fortress","Burst does not land cleanly against you.","Reduce critical bonus damage by 25%.","Reduce critical bonus damage by 50%.","Critical hits against you are normal hits (no bonus damage). Only an attack that beats your AC by 10 or more crits as usual."],
+  ["Last Stand","The closer you are to falling, the harder you are to finish.","While below half HP, gain +PB ADR. Below a quarter, it doubles.","While below half HP, gain +PS ADR, doubled below a quarter.","While below half HP, gain +2 × PS ADR, doubled below a quarter, and resistance to forced movement, disarm, and Disable effects."],
   ["Lockdown","Getting close to you costs movement and freedom.","When you hit a creature, reduce its speed by PB.","Reduce it by PS.","If its speed is reduced to 0 this way, it also loses a reaction."],
   ["Suppress","Enemies near you do not execute cleanly.","Enemies within 5 feet take a penalty equal to PB on attack rolls.","Penalty becomes PS.","Those enemies also deal reduced damage equal to PS."],
   ["Phalanx","Your armor protects the line, not just yourself.","Allies within 5 feet gain +PB AC against ranged attacks, opportunity attacks, and movement-triggered reactions.","Use PS instead.","The first time an ally within 5 feet would be knocked back, launched, or forced prone each round, reduce that effect by PS."],
   ["Intercept","If they try to attack through you, they pay for it.","When a creature within 5 feet attacks an ally, that attack takes a penalty equal to PB.","Penalty becomes PS.","If that attack misses, you may immediately make one basic attack against that creature."],
   ["Bastion","Standing your ground makes you even harder to break.","If you move no more than 5 feet this turn, gain +PB AC until the start of your next turn.","Gain +PS AC instead.","Also gain Bonus ADR equal to PS."],
-  ["Bulwark","You refuse to become an easy finish.","Gain +PB against becoming prone, airborne, Vulnerable, or otherwise takedown-eligible.","Gain +PS instead.","Once per round, if you would become takedown-eligible, you may immediately end one qualifying condition, and takedown damage against you is reduced by 15%."],
+  ["Bulwark","You refuse to become an easy finish.","Gain +PB against becoming prone, airborne, Vulnerable, or otherwise takedown-eligible.","Gain +PS instead.","Once per round, if you would become takedown-eligible, you may immediately end one qualifying condition, and the percentage of takedown damage against you is lowered by 15 points."],
   ["Platebreak Resist","You are harder to dismantle with precision and called shots.","Gain +PB against called shots, limb-targeting, and precision-based Disable attempts.","Gain +PS instead.","The first successful called shot against you each round is downgraded, shortened, or negated if the attack did not exceed your AC by at least PS."],
   ["Weight","Your mass affects the fight before your weapon does.","Enemies within 5 feet take a penalty equal to PB on Dynamic Reaction checks.","Penalty becomes PS.","The first Dynamic Reaction used by an adjacent enemy each round is made with disadvantage or a penalty equal to PS."],
   ["Iron Grip","You turn control attempts into control of your own.","Gain +PB on shove and grapple attempts.","Gain +PS instead.","If you succeed on a shove or grapple, the target also loses 1 Momentum stack or takes damage equal to PS."]]};
@@ -2614,14 +2614,19 @@ function dmgScan(s){var toks=[],pos=0,m;s=dmgNorm(s);DMG_TOK.lastIndex=0;
   toks.push({sg:m[1]==="-"?-1:1,t:m[2],x:m[3]?+m[3]:1});pos=DMG_TOK.lastIndex;}
  var rest=s.slice(pos);return {toks:toks,rest:rest,ok:toks.length>0&&(!rest||/^ ?[A-Z·(]/.test(rest))};}
 function dmgStatVal(t,d){if(t==="PB")return d.pb;if(t==="MOD"){var k=S.dmg&&S.dmg.statFor===S.dmg.expr?S.dmg.stat:"";if(k==="best"||!k||d.mod[k]==null)return Math.max(d.mod.str,d.mod.dex);return d.mod[k];}return num(d.mod[STATTOK[t]]);}
-function parseExpr(s,d){var out={dice:[],flat:0,ok:false};if(!String(s||"").trim())return out;var r=dmgScan(s);if(!r.ok)return out;
+function parseExpr(s,d){var out={dice:[],flat:0,ok:false};s=mhpStrip(s);if(!String(s||"").trim()){if(mhpOf(arguments[0]))out.ok=true;return out;}var r=dmgScan(s);if(!r.ok)return out;
  r.toks.forEach(function(k){var t=k.t;
   if(/^\d*D\d+$/.test(t)){var p=t.split("D");out.dice.push({n:(p[0]===""?1:+p[0])*k.sg*k.x,m:+p[1]});}
   else if(/^\d+$/.test(t))out.flat+=k.sg*(+t)*k.x;else out.flat+=k.sg*k.x*dmgStatVal(t,d);});
  out.ok=true;return out;}
-function exprFrom(str){str=String(str||"");var i=str.search(/\d+\s*d\s*\d+/i);if(i<0)return "";
+/* "% of the target's max HP" is never folded into the number: players don't know enemy max HP, so it rides along as its own part for the DM */
+var MHP_RE=/[+]?\s*(\d+(?:\.\d+)?)\s*%\s*(?:of\s+)?(?:(?:the\s+)?(?:target|creature|enemy)(?:'s|s)?\s+)?max(?:imum)?\.?\s*(?:hp|health|hit\s*points)/ig;
+function mhpOf(str){var t=0,m;MHP_RE.lastIndex=0;while((m=MHP_RE.exec(String(str||""))))t+=+m[1];return t;}
+function mhpStrip(str){return String(str||"").replace(MHP_RE,"");}
+function mhpTxt(p){return "+ "+(Math.round(p*100)/100)+"% of target's max HP";}
+function exprFrom(str){str=String(str||"");var mp=mhpOf(str);str=mhpStrip(str);var i=str.search(/\d+\s*d\s*\d+/i);if(i<0)return mp?mp+"% max HP":"";
  var r=dmgScan(str.slice(i).replace(/(\d+)\s*d\s*(\d+)/ig,"$1d$2"));if(!r.toks.length)return "";
- return r.toks.map(function(k,j){return (k.sg<0?"-":j?"+":"")+(/^\d*D\d+$/.test(k.t)?k.t.replace("D","d"):k.t)+(k.x>1?"*"+k.x:"");}).join("");}
+ return r.toks.map(function(k,j){return (k.sg<0?"-":j?"+":"")+(/^\d*D\d+$/.test(k.t)?k.t.replace("D","d"):k.t)+(k.x>1?"*"+k.x:"");}).join("")+(mp?"+"+mp+"% max HP":"");}
 function dmgType(str){var m=/\b(slashing|piercing|bludgeoning|psychic|necrotic|radiant|cold|fire|lightning|thunder|acid|poison|force|true|soul erosion|vile)\b/i.exec(String(str||""));return m?m[1].toLowerCase():"";}
 function dmgSources(){var out=[];
  equipped().forEach(function(it){if(it.cat==="weapon"&&exprFrom(it.dmg))out.push({g:"Weapons",n:it.name,e:exprFrom(it.dmg),t:dmgType(it.dmg)});
@@ -2674,7 +2679,7 @@ function renderDmg0(d){var D=S.dmg,src=dmgSources(),h='<section id="damage"><h2>
  else h+='<div class="empty" style="margin-top:8px">No strikes added yet. Pick an attack, set modifiers, press Add. Each strike stacks below with its math; the total sits at the bottom.</div>';
  return h+'<p class="note">Order: dice (crit doubles weapon and extra dice, not riders) + flat + riders → effective ×1.5 → vulnerable ×2 → half → minus ADR. Crit, half and extra dice reset after each Add; everything else stays until you change it.</p></div></section>';}
 function dmgPreview(d){var D=S.dmg;if(!D.expr&&!num(D.flat))return "Pick an attack or type its damage.";var r=strike(d,dmgOpts());if(!r.ok)return '<span style="color:#ffb3ba">'+esc(r.msg)+'</span>';
- var n=Math.max(1,num(D.n,1));var hw=esc(r.how).replace(/(\d+)$/,"<b style='color:#fff'>$1</b>");return hw+(n>1?" · ×"+n+" = <b style='color:#fff'>"+r.each*n+"</b>":"");}
+ var n=Math.max(1,num(D.n,1));var hw=esc(r.how).replace(/(\d+)$/,"<b style='color:#fff'>$1</b>");return hw+(n>1?" · ×"+n+" = <b style='color:#fff'>"+r.each*n+"</b>":"")+(num(r.mhp)?" <b style='color:#ffd27a'>"+esc(mhpTxt(r.mhp))+(n>1?" per hit":"")+"</b> <span class='sub' style='margin:0'>(the DM adds this)</span>":"");}
 function dmgAdd0(){var d=compute(),D=S.dmg,o=dmgOpts(),r=strike(d,o);if(!r.ok){flash(r.msg);return false;}var n=Math.max(1,num(D.n,1));
  var tags=[D.crit?"crit":"",D.eff?"effective":"",D.vuln?"vulnerable":"",D.half?"half":""].concat(o.riders.map(function(x){return x.n;})).filter(Boolean).join(", ");
  D.lines.push({id:uid("d"),label:D.label||D.expr,target:D.target,n:n,each:r.each,total:r.each*n,how:r.how,tags:tags,round:S.round});
@@ -3202,17 +3207,17 @@ function uiIncoming(v,useAdr){var d=compute(),n=Math.max(0,Math.floor(num(v))),n
  (C.streaks||[]).forEach(function(z){var t=S.streak[z.id];if(z.dir==="in"&&t&&t.on)t.n=num(t.n)+1;});
  if(notes.length)logline("Incoming "+v+": "+notes.join(", ")+" → "+n);
  if(n>0)takeDamage(n,false);else if(notes.length)flash("Fully reduced: no damage");}
-function dmgOpts(){uiState();var o=dmgOpts0(),L=uiOutParts(0);o.pct=num(S.dmg.pct)+sumP(L);o.pctN=L.map(function(x){return x.n;}).concat(num(S.dmg.pct)?["bonus"]:[]).join(", ");o.tdr=num(S.dmg.tdr);return o;}
+function dmgOpts(){uiState();var o=dmgOpts0(),L=uiOutParts(0);o.mhp=num(S.dmg.mhp)+mhpOf(S.dmg.expr);o.pct=num(S.dmg.pct)+sumP(L);o.pctN=L.map(function(x){return x.n;}).concat(num(S.dmg.pct)?["bonus"]:[]).join(", ");o.tdr=num(S.dmg.tdr);return o;}
 function strike(d,o){var o2={};for(var k in o)if(o.hasOwnProperty(k))o2[k]=o[k];o2.atk=false;var r=strike0(d,o2);if(!r.ok)return r;var v=r.each,line=r.how;
  if(num(o.pct)){v=Math.max(0,Math.floor(v*(100+num(o.pct))/100));line+=" · "+sgn(num(o.pct))+"%"+(o.pctN?" ("+o.pctN+")":"")+" → "+v;}
  if(o.atk&&num(o.adr)>0){var adr=Math.max(0,num(o.adr)-(o.sunder?d.pb:0));v=Math.max(0,v-adr);line+=" · −"+adr+" ADR"+(o.sunder?" (Sundering −PB)":"")+" → "+v;}
  if(num(o.tdr)>0){var t=clamp(num(o.tdr),0,100);v-=Math.floor(v*t/100);line+=" · target −"+t+"% → "+v;}
- return {ok:true,each:v,how:line};}
+ return {ok:true,each:v,how:line,mhp:num(o.mhp)};}
 function dmgAdd(){var d=compute(),D=S.dmg,n=Math.max(1,num(D.n,1)),outS=(C.streaks||[]).filter(function(z){return z.dir==="out"&&S.streak[z.id]&&S.streak[z.id].on;});
  var tot=0,eachs=[],first=null,o0=dmgOpts();
  for(var i=0;i<n;i++){var o=dmgOpts();if(outS.length){var L=uiOutParts(i);o.pct=num(D.pct)+sumP(L);o.pctN=L.map(function(x){return x.n;}).join(", ");}var r=strike(d,o);if(!r.ok){flash(r.msg);return false;}if(!first)first=r;tot+=r.each;eachs.push(r.each);}
  var same=eachs.every(function(x){return x===eachs[0];});
- var tags=[D.crit?"crit":"",D.eff?"effective":"",D.vuln?"vulnerable":"",D.half?"half":"",o0.pct?sgn(o0.pct)+"%":"",o0.tdr?"target −"+o0.tdr+"%":""].concat(o0.riders.map(function(x){return x.n;})).filter(Boolean).join(", ");
+ var tags=[D.crit?"crit":"",D.eff?"effective":"",D.vuln?"vulnerable":"",D.half?"half":"",o0.pct?sgn(o0.pct)+"%":"",o0.tdr?"target −"+o0.tdr+"%":"",o0.mhp?"+"+o0.mhp+"% max HP":""].concat(o0.riders.map(function(x){return x.n;})).filter(Boolean).join(", ");
  D.lines.push({id:uid("d"),label:D.label||D.expr,target:D.target,n:n,each:same?eachs[0]:Math.round(tot/n),total:tot,how:same?first.how:first.how+" · per hit "+eachs.join(" + "),tags:tags,round:S.round});
  outS.forEach(function(z){S.streak[z.id].n=num(S.streak[z.id].n)+n;});
  if(D.pip&&S.eco.atk)S.eco.atk.left=Math.max(0,S.eco.atk.left-n);
@@ -3221,7 +3226,7 @@ function renderDmg(d){uiState();var h=renderDmg0(d),D=S.dmg,L=uiOutParts(0);
  h=h.replace('<div class="card">','<div class="card">'+uiHitStrip(d));
  var pr='<div class="row" style="margin-top:8px"><span class="kx-lb">Percent</span><span class="lbl" style="margin:0">bonus damage %</span><input class="num w44" type="number" data-b="dmg.pct" value="'+num(D.pct)+'" title="Any % increase: a feature, a buff, Prey…">'+
   L.map(function(x){return '<span class="chip ok">'+esc(x.n)+' +'+pctTxt(x.p)+'</span>';}).join("")+
-  '<span class="lbl" style="margin:0 0 0 8px">target reduction %</span><input class="num w44" type="number" data-b="dmg.tdr" value="'+num(D.tdr)+'" min="0" max="100" title="The target\'s % damage reduction (barrier stages, resistances written as a %)"></div>';
+  '<span class="lbl" style="margin:0 0 0 8px" title="Damage written as a % of the target\'s max HP. It stays separate for the DM to add.">+ % of target\'s max HP</span><input class="num w44" type="number" data-b="dmg.mhp" value="'+num(D.mhp)+'" min="0"><span class="lbl" style="margin:0 0 0 8px">target reduction %</span><input class="num w44" type="number" data-b="dmg.tdr" value="'+num(D.tdr)+'" min="0" max="100" title="The target\'s % damage reduction (barrier stages, resistances written as a %)"></div>';
  var mk='<div class="row" style="margin-top:8px"><label class="sub" style="margin:0"><input type="checkbox" data-b="dmg.atk"';
  if(h.indexOf(mk)>=0)h=h.replace(mk,pr+mk);
  return h.replace("Order: dice (crit doubles weapon and extra dice, not riders) + flat + riders → effective ×1.5 → vulnerable ×2 → half → minus ADR.","Order: dice (crit doubles weapon and extra dice, not riders) + flat + riders → effective ×1.5 → vulnerable ×2 → half → statuses → bonus % → minus ADR → target reduction %.");}
