@@ -609,7 +609,7 @@ var STARTS={facing:"left",aura:"",planted:false,plantedTurn:false,tether:"",mutu
  ro:{pending:false},bi:{pending:false,round:0},biNext:false,aboveHalf:true};
 
 return {
- id:"dylan",name:"Dylan",epithet:"The Flagbearer of Betrayal",accent:"#e0565b",
+ id:"dylan",treeStart:8,name:"Dylan",epithet:"The Flagbearer of Betrayal",accent:"#e0565b",
  level:14,classes:[{name:"Vagabond (Brigand)",level:14,die:10},{name:"Ravager (Desecrator)",level:14,die:12}],
  hpAdj:28,
  identity:{"Name":"Dylan","Race":"Human","Gender":"Male · he/him","Age":"15","Height":"7' 0\"","Weight":"200 lb","Alignment":"Neutral Good","Background":"Commoner / Outlander","Deity":"Brutus","Hair":"White, long and wavy","Eyes":"Red","Skin":"White","Wanderer's Secret":"Hunted","Languages":"Common, Giant","Tools":"Drum"},
@@ -1787,6 +1787,7 @@ function sanitize(){
  econDefs().forEach(function(e){if(!S.eco[e.id])S.eco[e.id]={max:e.max,left:e.max};});
  (C.resources||[]).forEach(function(r){if(typeof S.res[r.id]!=="number")S.res[r.id]=(r.start!=null)?r.start:0;});
  if(C.tx&&C.tx.modes&&S.tx.mode&&!C.tx.modes.some(function(m){return m.id===S.tx.mode;}))S.tx.mode="";
+ if(trStartTopUp())S.treeStartNote=true;
 }
 var saveT=null,hintT=null,remoteSave=null;
 function save(){try{relPushOut();}catch(e){}S.schema=3;store.set(KEY,JSON.stringify(S));
@@ -2950,7 +2951,7 @@ function initSync(){var CFG=window.FIREBASE_CONFIG||{},pill=$("syncPill");
   if(!snap.exists){push();startCmd();return;}var data=snap.data();if(!data)return;
   applying=true;try{if(data.schema===3){var ui=S.ui;S=defaults();deep(S,data);markRes(data);S.ui=ui;}
    else if(C.migrate&&!S.migratedRemote){C.migrate(data,S,api);S.migratedRemote=true;logline("Imported the v2 cloud save");}
-   sanitize();store.set(KEY,JSON.stringify(S));renderAll();}catch(e){}applying=false;if(S.statFixNote){delete S.statFixNote;logline("Stats corrected to match the reference sheet");setTimeout(push,0);}
+   sanitize();store.set(KEY,JSON.stringify(S));renderAll();}catch(e){}applying=false;if(S.statFixNote){delete S.statFixNote;logline("Stats corrected to match the reference sheet");setTimeout(push,0);}if(S.treeStartNote){delete S.treeStartNote;logline("Upgrade points: starting total set to "+trStart());setTimeout(push,0);}
   if(data.schema!==3){if(backedUp)push();else{backedUp=true;var bk=db.collection("campaigns").doc(window.CAMPAIGN_ID||"astrology-club").collection("characters").doc(C.id+"__backup_"+Date.now());
    bk.set({backupOf:C.id,savedAt:new Date().toISOString(),data:JSON.parse(JSON.stringify(data))}).then(push,function(){setPill("○ backup failed · not overwriting","#e08");});logline("Older cloud save backed up before upgrading");}}
   setPill("● synced","#7c7");startCmd();},function(){setPill("○ offline","#c96");});}
@@ -3477,9 +3478,10 @@ function trOwn(t){var T=trS();if(!T.own[t.id]||typeof T.own[t.id]!=="object"){T.
   if(t.replaces&&S.kitOwn)t.nodes.forEach(function(n){if(n.n&&S.kitOwn[t.replaces+":"+n.n])T.own[t.id][n.id]=1;});}return T.own[t.id];}
 function trCharTrees(){return trMine().filter(function(t){return t.kind==="char";});}
 function trPtsSpent(){var s=0;trCharTrees().forEach(function(t){s+=trSpent(t,trOwn(t));});return s;}
-/* Starting points (the campaign was already underway): level 12: 6 · 13: 8 · 14+: 10. DM awards are added on top in S.tree.pts. */
-function trStart(d){if(C.charTree===false)return 0;var l=trLvl(d);return l>=14?10:l>=13?8:l>=12?6:0;}
-function trEarned(d){return trStart(d)+num(trS().pts);}
+/* Starting points (the campaign was already underway): 6 per character, Dylan 8 (C.treeStart). They live in S.tree.pts with every DM award, so the DM console sees the same total. trStartTopUp runs once per save: if the DM already sent them, nothing changes; if not, it tops the total up to the starting number. Level-ups never change it. */
+function trStart(){return C.charTree===false?0:(C.treeStart!=null?num(C.treeStart):6);}
+function trStartTopUp(){if(C.charTree===false)return 0;var T=trS();if(T.startDone)return 0;T.startDone=1;var st=trStart(),add=Math.max(0,st-num(T.pts));if(add){T.pts=st;T.log.push(new Date().toLocaleDateString()+" · Starting points: total set to "+st);}return add;}
+function trEarned(d){return num(trS().pts);}
 function trPtsLeft(){return trEarned()-trPtsSpent();}
 function trLvl(d){d=d||compute();return num(d.level);}
 function trHave(t,n){return t.kind==="char"?trPtsLeft():num(trS().mat[trCur(t,n)]);}
@@ -3509,7 +3511,7 @@ function renderTree(d){var b=$("body-tree"),btn=document.querySelector('.rail-bt
  var noCh=C.charTree===false;if(btn)btn.style.display=(mine.length||!noCh)?"":"none";if(!b)return;var T=trS();
  if(noCh&&!mine.length){b.innerHTML='<div class="empty">No equipment upgrade tree has been published for '+esc(C.name||"this character")+' yet.</div>';return;}
  var ch=trCharTrees(),left=trPtsLeft(),h='<section id="trhead"><div class="card"><div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:10px">';
- if(ch.length||(!mine.length&&!noCh))h+='<div class="row"><span class="cz" style="font-size:30px">'+left+'</span><span class="sl">points to spend · '+trEarned(d)+' earned ('+trStart(d)+' starting for level '+trLvl(d)+' + '+num(T.pts)+' from the DM)</span>'+(TRDM?'<button class="btn sm" data-a="trpts" data-n="-1" title="DM correction">−</button><button class="btn sm" data-a="trpts" data-n="1" title="DM correction">+</button>':'')+'</div>';
+ if(ch.length||(!mine.length&&!noCh))h+='<div class="row"><span class="cz" style="font-size:30px">'+left+'</span><span class="sl">points to spend · '+trEarned(d)+' earned (starting '+trStart()+' + battles) · '+trPtsSpent()+' spent</span>'+(TRDM?'<button class="btn sm" data-a="trpts" data-n="-1" title="DM correction">−</button><button class="btn sm" data-a="trpts" data-n="1" title="DM correction">+</button>':'')+'</div>';
  var ms=trMats();if(ms.length)h+='<div class="row">'+ms.map(function(c){return '<span class="lbl" style="margin:0">'+esc(c)+'</span><span class="cz" style="font-size:20px">'+num(T.mat[c])+'</span>'+(TRDM?'<button class="btn sm" data-a="trmat" data-id="'+esc(c)+'" data-n="-1">−</button><button class="btn sm" data-a="trmat" data-id="'+esc(c)+'" data-n="1">+</button>':'');}).join("")+'</div>';
  h+='<div class="row"><button class="btn sm'+(TRDM?' pri':'')+'" data-a="trdm" title="Taken upgrades are locked. The DM unlocks changes with the DM passphrase.">'+(TRDM?'DM mode on · lock again':'🔒 DM: change upgrades')+'</button></div>';
  if(ch.length&&TRDM){var rq=S.ui.trRespec,dr=trDraught();h+='<div class="row">'+(rq?'<button class="btn sm dgr" data-a="trrespec" data-n="2">Confirm: refund every point'+(dr?' · uses '+esc(dr.name):' · no draught on hand (DM approved)')+'</button><button class="btn sm" data-a="trrespec" data-n="0">Cancel</button>':'<button class="btn sm" data-a="trrespec" data-n="1" title="A Lesser Draught of Regression refunds every point in the upgrade tree. Class and stats stay.">Respec (Lesser Draught of Regression)</button>')+'</div>';}
