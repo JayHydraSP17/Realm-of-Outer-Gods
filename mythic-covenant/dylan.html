@@ -2313,14 +2313,18 @@ function extAct(a,el,d){var n=num(el.getAttribute("data-n")),v=num(el.getAttribu
  case "spadd":var sn=val("spN").trim();if(!sn)return false;S.spells.list.push({id:uid("sp"),name:sn,lvl:num(val("spL")),kind:"action",range:"",conc:false,dmg:"",src:"",desc:""});S.ui.spell=S.spells.list.length-1;return true;
  }return null;}
 
-function payLabel(p){var bits=[];if(p.tl)bits.push(tlCostFor(p.tl,true)+" TL");if(p.hp)bits.push(p.hp+" HP");for(var k in (p.res||{}))bits.push(p.res[k]+" "+k);return "pay "+bits.join(" + ");}
+function payLabel(p){var bits=[];if(p.tl)bits.push(tlCostFor(p.tl,true)+" TL");if(p.hp)bits.push(p.hp+" HP");for(var k in (p.res||{}))bits.push(p.res[k]+" "+k);if(p.dr)bits.push(p.dr+" Dynamic Reaction");if(p.bon)bits.push("Bonus Action");return "pay "+bits.join(" + ");}
 function findKit(key){var all=allKit();for(var i=0;i<all.length;i++)if(all[i].key===key)return all[i];return null;}
 function pay(key){var k=findKit(key);if(!k||!k.a.pay)return;var p=k.a.pay;
  for(var r in (p.res||{}))if(num(S.res[r])<p.res[r]){flash("Not enough "+r);return;}
+ if(p.dr&&(!S.eco.rx||S.eco.rx.left<p.dr)){flash("No Dynamic Reactions left");return;}
+ if(p.bon&&(!S.eco.bon||S.eco.bon.left<p.bon)){flash("No Bonus Action left");return;}
  if(p.hp&&num(S.hp.cur)<p.hp){flash("Not enough HP");return;}
  if(p.tl&&!spendTL(p.tl,true,k.a.n))return;
  for(r in (p.res||{}))S.res[r]=num(S.res[r])-p.res[r];
  if(p.hp)S.hp.cur=num(S.hp.cur)-p.hp;
+ if(p.bon)S.eco.bon.left-=p.bon;
+ if(p.dr){S.eco.rx.left-=p.dr;if(S.eco.rx.left===0)logline("0 Dynamic Reactions left · Vulnerable");}
  if(!p.tl)logline(k.a.n+" paid");
  if(C.hooks&&C.hooks.pay)C.hooks.pay(k.a,api);}
 
