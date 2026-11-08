@@ -2111,7 +2111,7 @@ function renderReactRow(d){var rx=S.eco.rx||{left:0,max:0},t=num(S.res.tempo),tm
  var h='<div class="card" style="margin-top:10px"><div class="row"><b class="cz" style="color:#fff">Dynamic Reactions</b><span class="chip'+(rx.left?' ok':' bad')+'">'+rx.left+'/'+rx.max+(rx.left?'':' · Vulnerable')+'</span>';
  ["Block","Dodge"].concat(d.monkL>=2?["Parry"]:[]).concat(["Riposte","Help (save)","Team Attack"]).forEach(function(n){h+='<button class="btn sm" data-a="drx" data-id="'+n+'"'+(rx.left?'':' disabled')+'>'+n+'</button>';});
  h+='<span style="margin-left:auto" class="row"><b class="cz" style="color:var(--veil)">Tempo</b><span class="chip">'+t+'/'+tm+'</span><button class="btn sm" data-a="deflect"'+(t?'':' disabled')+' title="Block active, incoming melee: cancel the hit and act immediately">Deflect</button><button class="btn sm" data-a="feint" data-id="off"'+(t?'':' disabled')+' title="Your turn, replaces one attack">Feint</button><button class="btn sm" data-a="feint" data-id="react"'+(t&&rx.left?'':' disabled')+' title="Enemy turn: 1 Dynamic Reaction + 1 Tempo">Reactive feint</button></span></div>'+
-  '<p class="sub">3 per round for every special-or-higher creature, refreshed at the start of your turn. Declare before the roll (Block, Dodge'+(d.monkL>=2?', Parry':'')+'). At 0 you are Vulnerable to Takedowns. Tempo = PB, refreshed on a short rest.'+(num(S.drBonus)?' Other sources '+sgn(num(S.drBonus))+'.':'')+'</p></div>';
+  '<p class="sub">3 per round for every special-or-higher creature, refreshed at the end of each round. Declare before the roll (Block, Dodge'+(d.monkL>=2?', Parry':'')+'). At 0 you are Vulnerable to Takedowns. Tempo = PB, refreshed on a short rest.'+(num(S.drBonus)?' Other sources '+sgn(num(S.drBonus))+'.':'')+'</p></div>';
  return h;}
 function renderMonk(d){var L=d.monkL,kc=L>=20?0:1,fl=S.eco.fl?{left:S.eco.fl.left,max:S.eco.fl.max}:{left:num(S.monk.fl),max:num(S.monk.flMax)},n=maDice(L),ki=num(S.res.ki),kiMax=jtKi(L);
  var h='<section id="monk"><h2>Monk <span class="sub2">J.T.\'s Revised Monk · monk level '+L+'</span></h2><div class="card">';
@@ -3321,14 +3321,14 @@ function stStartTurn(parts,d){var mine=(S.status||[]).concat(DMS||[]),tot=0,rem=
  return rem;}
 function startTurn(auto){var P=phase();if(P.st&&!auto){flash("This turn already started. End turn, then End round.");return false;}
  var parts=[],d=compute();P.st=true;P.en=false;
- syncEco(d);if(S.eco.rx)S.eco.rx.left=S.eco.rx.max;if(S.blk){S.blk.r=0;S.blk.crit=false;S.blk.on=false;}
+ syncEco(d);if(S.blk){S.blk.r=0;S.blk.crit=false;S.blk.on=false;}
  if(S.monk){S.monk.fl=0;S.monk.flMax=0;}if(S.eco.fl&&monkLevel()>0)S.eco.fl.left=0;
  if(C.tx&&S.tx.on&&!S.tx.burning){var u=upkeep(d);if(u.gain){S.tl.cur=num(S.tl.cur)+u.gain;parts.push("+"+u.gain+" TL");afterTL();}}
  var rem=stStartTurn(parts,d);
  if(C.hooks&&C.hooks.startTurn)try{C.hooks.startTurn(api,parts);}catch(e){if(window.console)console.error(e);}
  logline("Start of turn"+(auto?" (auto)":"")+(parts.length?": "+parts.join(", "):""));
  if(rem.length){logline("Start-of-turn checks: "+rem.join(" · "));S.ui.turnRem=rem;}else S.ui.turnRem=[];
- if(!auto)flash(parts.length||rem.length?"Start of turn: "+parts.concat(rem.map(function(r){return r.split(":")[0]+" check";})).join(" · "):"Turn started · reactions refreshed");return true;}
+ if(!auto)flash(parts.length||rem.length?"Start of turn: "+parts.concat(rem.map(function(r){return r.split(":")[0]+" check";})).join(" · "):"Turn started");return true;}
 function endTurn(){var P=phase();if(P.en){flash("Turn already ended. Press End round when the round is over.");return false;}if(!P.st)startTurn(true);
  var parts=[];P.en=true;S.ui.turnRem=[];
  if(C.hooks&&C.hooks.endTurn)C.hooks.endTurn(api,parts);
@@ -3345,7 +3345,7 @@ function endRound(){var P=phase(),parts=[],d=compute();if(P.st&&!P.en)endTurn();
  if(C.hooks&&C.hooks.endRound)try{C.hooks.endRound(api,parts);}catch(e){if(window.console)console.error(e);}
  var keep=[];S.effects.forEach(function(e){if(num(e.rounds)>0){e.rounds--;if(e.rounds<=0){parts.push(e.name+(e.target&&e.target!=="self"?" on "+e.target:"")+" ended");return;}}keep.push(e);});S.effects=keep;statusTick(parts);
  moraleEndRound(parts);
- syncEco(compute());for(var k in S.eco){if(k==="rx"||k==="fl")continue;S.eco[k].left=S.eco[k].max;}
+ syncEco(compute());for(var k in S.eco){if(k==="fl")continue;S.eco[k].left=S.eco[k].max;}if(S.eco.rx)parts.push("Dynamic Reactions refreshed");
  linkRefresh("");
  if(!P.st)parts.unshift("no turn taken");
  S.round++;S.ph={r:S.round,st:false,en:false};logline("End of round"+(parts.length?": "+parts.join(", "):""));return true;}
